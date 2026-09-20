@@ -965,3 +965,213 @@ body {
     width: 20rem;
   }
 }
+
+/* --- صفحه ایجاد نقش --- */
+.page-header-with-back {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  width: fit-content;
+}
+
+.back-btn:hover {
+  color: var(--primary);
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+/* کارت فرم */
+.form-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  max-width: 800px;
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-icon-box {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.form-card-title {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.form-card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* بدنه فرم */
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.required {
+  color: var(--danger);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-light);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e5e7eb;
+  background-color: var(--white);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-input.error {
+  border-color: var(--danger);
+}
+
+.form-input::placeholder {
+  color: var(--text-light);
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--danger);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.form-help-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.form-actions .btn-outline {
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ریسپانسیو فرم */
+@media (min-width: 768px) {
+  .form-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .form-actions .btn-outline {
+    width: auto;
+    padding: 0.75rem 2rem;
+  }
+
+  .form-actions .btn-primary {
+    width: auto;
+    padding: 0.75rem 2rem;
+  }
+}
+
+.swal-rtl {
+  direction: rtl;
+  font-family: inherit;
+}
+
+.swal-confirm {
+  margin-left: 8px !important;
+}
+
+.swal-cancel {
+  margin-right: 8px !important;
+}

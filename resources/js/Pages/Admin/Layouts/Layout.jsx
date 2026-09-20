@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import { Menu } from "lucide-react";
+import StickyAlert from "../../../Components/StickyAlert";
 import "../Assets/css/styles.css"; // ایمپورت استایل‌ها
 
 export default function Layout({ children }) {
@@ -8,6 +9,13 @@ export default function Layout({ children }) {
 
     return (
         <div className="admin-layout">
+            <StickyAlert type="success" message={flash?.success} />
+
+            <StickyAlert type="error" message={flash?.error} />
+
+            <StickyAlert type="warning" message={flash?.warning} />
+
+            <StickyAlert type="info" message={flash?.info} />
             {/* دکمه منوی موبایل */}
             <button
                 className="mobile-menu-btn"

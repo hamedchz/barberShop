@@ -23,6 +23,8 @@
         "lucide-react": "^1.47.0",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
-        "recharts": "^3.10.1"
+        "react-select": "^5.10.2",
+        "recharts": "^3.10.1",
+        "sweetalert2": "^11.26.25"
     }
 }

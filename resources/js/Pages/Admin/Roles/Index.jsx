@@ -1,8 +1,8 @@
 import React from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "./Layouts/Layout";
-import PermissionBadge from "./Components/PermissionBadge";
-import EmptyList from "./Components/EmptyList";
+import Layout from "../Layouts/Layout";
+import PermissionBadge from "../Components/PermissionBadge";
+import EmptyList from "../Components/EmptyList";
 
 import {
     Shield,
@@ -64,7 +64,7 @@ export default function Roles({ auth, roles, scope }) {
                 {/* هدر صفحه */}
                 <div className="roles-page-header">
                     <div>
-                        <h1 className="roles-page-title">Role Management</h1>
+                        <h1 className="roles-page-title">مدیریت نقش ها</h1>
                         <p
                             style={{
                                 color: "#6b7280",
@@ -72,7 +72,7 @@ export default function Roles({ auth, roles, scope }) {
                                 marginTop: "0.25rem",
                             }}
                         >
-                            Total {roles.total} roles found
+                            {roles.total} نقش پیدا شد
                         </p>
                     </div>
                     <Link
@@ -87,7 +87,7 @@ export default function Roles({ auth, roles, scope }) {
                             textDecoration: "none",
                         }}
                     >
-                        <Plus size={18} /> Add New Role
+                        <Plus size={18} /> نقش جدید
                     </Link>
                 </div>
 

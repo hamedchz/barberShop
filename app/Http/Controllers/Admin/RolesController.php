@@ -28,22 +28,29 @@ class RolesController extends Controller
         $pers = Permissions::toArray();
         $roles = Role::latest()->paginate(20);
         $context = [
-            'title' => 'Roles List',
+            'title' => 'لیست نقش ها',
             'roles' => $roles,
             'scope' => ['roles', 'role-list'],
         ];
-        // dd($context);
-        return Inertia::render('Admin/Roles', $context);
+        return Inertia::render('Admin/Roles/Index', $context);
     }
     public function create()
     {
-        $permissions = Permission::all();
+        $permissions = Permission::all()->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name,
+                'label' => __($permission->name),
+            ];
+        });
+
         $context = [
-            'title' => 'Create new role',
+            'title' => __('roles.create'),
             'permissions' => $permissions,
             'scope' => ['roles', 'role-create'],
         ];
-        return view('admin.users.roles.create', $context);
+
+        return Inertia::render('Admin/Roles/Create', $context);
     }
 
     public function store(Request $request)
