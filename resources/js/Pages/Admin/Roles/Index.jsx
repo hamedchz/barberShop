@@ -6,6 +6,7 @@ import EmptyList from "../Components/EmptyList";
 import ConfirmModal from "../Components/ConfirmModal";
 import { toJalaali } from "jalaali-js";
 import Pagination from "../Components/Pagination";
+import Search from "../../../Components/Search";
 
 import {
     Shield,
@@ -51,7 +52,7 @@ const formatJalaliDate = (date) => {
     return `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`;
 };
 
-export default function Roles({ auth, roles, scope }) {
+export default function Roles({ auth, roles, filters, scope }) {
     // ============ State مدیریت Modal حذف ============
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
@@ -59,7 +60,26 @@ export default function Roles({ auth, roles, scope }) {
         isLoading: false,
     });
 
+    // ============ State جستجو ============
+    const [searchTerm, setSearchTerm] = useState(filters?.search || "");
+    const [isSearching, setIsSearching] = useState(false);
+
     const rolesList = roles.data || [];
+
+    // ============ جستجوی سمت سرور ============
+    const handleSearch = (term) => {
+        setIsSearching(true);
+        router.get(
+            "/admin/roles",
+            { search: term },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true, // جایگزینی history به جای اضافه کردن
+                onFinish: () => setIsSearching(false),
+            },
+        );
+    };
 
     // ============ باز کردن Modal ============
     const openDeleteModal = (role) => {
@@ -132,7 +152,16 @@ export default function Roles({ auth, roles, scope }) {
                         <Plus size={18} /> نقش جدید
                     </Link>
                 </div>
-
+                <div style={{ marginBottom: "1.5rem", maxWidth: "500px" }}>
+                    <Search
+                        value={searchTerm}
+                        onChange={setSearchTerm}
+                        onSearch={handleSearch}
+                        placeholder="جستجو در نام، توضیحات یا دسترسی‌ها..."
+                        delay={500}
+                        isLoading={isSearching}
+                    />
+                </div>
                 {/* ============ اگر هیچ نقشی وجود نداشت ============ */}
                 {rolesList.length === 0 && (
                     <div

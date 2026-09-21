@@ -26,11 +26,43 @@ class RolesController extends Controller
             'permissions' => ['required', 'array', Rule::in($this->getPermissions()->pluck('id')->toArray())],
         ];
     }
-    public function index()
+
+    /**
+     * اعمال فیلتر جستجو روی کوئری
+     */
+    private function applySearch($query, string $search): void
     {
-        $roles = Role::with('permissions')
-            ->latest()
-            ->paginate(20);
+        // تبدیل جستجوی فارسی به کلیدهای انگلیسی دسترسی‌ها
+        $matchedPermissionKeys = search_permission_keys($search);
+
+        $query->where(function ($q) use ($search, $matchedPermissionKeys) {
+            // جستجو در نام و توضیحات نقش
+            $q->where('name', 'like', "%{$search}%");
+
+            // جستجو در دسترسی‌ها
+            $q->orWhereHas('permissions', function ($permQuery) use ($search, $matchedPermissionKeys) {
+                $permQuery->where(function ($inner) use ($search, $matchedPermissionKeys) {
+                    // الف) جستجوی مستقیم در نام انگلیسی
+                    $inner->where('name', 'like', "%{$search}%");
+
+                    // ب) جستجو با کلیدهای مطابق ترجمه فارسی
+                    if (!empty($matchedPermissionKeys)) {
+                        $inner->orWhereIn('name', $matchedPermissionKeys);
+                    }
+                });
+            });
+        });
+    }
+    public function index(Request $request)
+    {
+        $query = Role::with('permissions');
+
+        // ============ جستجو ============
+        if ($search = trim($request->input('search', ''))) {
+            $this->applySearch($query, $search);
+        }
+
+        $roles = $query->latest()->paginate(20)->withQueryString();
 
         $roles->getCollection()->transform(function ($role) {
             return [
