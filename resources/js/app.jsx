@@ -1,8 +1,10 @@
 // import "./bootstrap";
 import "../css/app.css";
 import { createInertiaApp } from "@inertiajs/react";
+import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
-import { SweetAlertProvider } from "./Components/StickyAlert";
+// import { SweetAlertProvider, SweetAlertFlash } from "./Components/StickyAlert";
+import AlertProvider from "./Components/AlertProvider";
 
 createInertiaApp({
     resolve: (name) => {
@@ -11,9 +13,13 @@ createInertiaApp({
     },
     setup({ el, App, props }) {
         createRoot(el).render(
-            <SweetAlertProvider>
+            // <SweetAlertProvider>
+            <AlertProvider>
                 <App {...props} />
-            </SweetAlertProvider>,
+            </AlertProvider>,
+
+            //   <SweetAlertFlash />
+            //  </SweetAlertProvider>,
         );
     },
 });

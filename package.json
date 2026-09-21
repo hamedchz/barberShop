@@ -20,11 +20,13 @@
     "dependencies": {
         "@inertiajs/react": "^3.7.1",
         "@inertiajs/vite": "^3.7.1",
+        "jalaali-js": "^2.0.1",
         "lucide-react": "^1.47.0",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
         "react-select": "^5.10.2",
         "recharts": "^3.10.1",
-        "sweetalert2": "^11.26.25"
+        "sweetalert2": "^11.26.25",
+        "sweetalert2-react-content": "^5.1.2"
     }
 }

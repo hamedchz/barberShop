@@ -7,10 +7,9 @@ import { ArrowRight, Save, Shield, AlertCircle } from "lucide-react";
 export default function Create({ auth, permissions, scope }) {
     // استفاده از useForm اینرشا برای مدیریت فرم
     const { data, setData, post, processing, errors } = useForm({
-        name: "",
+        role: "",
         permissions: [],
     });
-
     // تبدیل permissions به فرمت مورد نیاز react-select
     const permissionOptions = permissions.map((perm) => ({
         value: perm.id,
@@ -77,15 +76,15 @@ export default function Create({ auth, permissions, scope }) {
                                 className={`form-input ${errors.name ? "error" : ""}`}
                                 value={data.name}
                                 onChange={(e) =>
-                                    setData("name", e.target.value)
+                                    setData("role", e.target.value)
                                 }
                                 placeholder="مثلاً: مدیر سیستم، معلم، دانش‌آموز"
                                 autoFocus
                             />
-                            {errors.name && (
+                            {errors.role && (
                                 <div className="form-error">
                                     <AlertCircle size={14} />
-                                    <span>{errors.name}</span>
+                                    <span>{errors.role}</span>
                                 </div>
                             )}
                         </div>

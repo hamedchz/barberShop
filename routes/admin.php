@@ -13,5 +13,8 @@ Route::prefix('/roles')
     Route::get('/',  'index')->name('list');
     Route::get('/create',  'create')->name('create');
     Route::post('/store',  'store')->name('store');
+    Route::get('/{role}/edit',  'edit')->name('edit');
+    Route::put('/{role}/update',  'update')->name('update');
+    Route::delete('/{role}/destroy',  'destroy')->name('destroy');
   });
 // });
