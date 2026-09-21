@@ -17,4 +17,13 @@ Route::prefix('/roles')
     Route::put('/{role}/update',  'update')->name('update');
     Route::delete('/{role}/destroy',  'destroy')->name('destroy');
   });
+
+Route::prefix('/admins')
+  ->name('admins.')->controller(AdminController::class)->group(function () {
+    Route::get('/', AllAdmins::class)->name('list');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/{user:slug}/edit',  'edit')->name('edit');
+    Route::patch('/{user:slug}/update',  'update')->name('update');
+  });
 // });

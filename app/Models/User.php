@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\Casts\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -23,11 +25,26 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+    protected $fillable = [
+        'name',
+        'phone',
+        'phone_verified_at',
+        'password',
+        'status',
+        'is_admin'
+    ];
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => UserStatus::class,
+            'is_admin' => 'bool'
         ];
     }
+    protected $attributes = [
+        'is_admin' => false,
+        'status' => UserStatus::pending->value,
+    ];
 }
