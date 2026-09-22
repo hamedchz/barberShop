@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Casts\LogsStatus;
 use App\Enums\Casts\Permissions;
 use App\Enums\Casts\UserStatus;
-use App\Facades\AssetManager;
-use App\Helpers\StickyAlert;
+use App\Facades\GenerateUtf8Slug;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
@@ -27,14 +26,14 @@ class AdminController extends Controller
 
     public function index()
     {
-        $users = User::where('is_admin', true)->latest()->paginate(21);
+        $users = User::with('roles')->where('is_admin', true)->latest()->paginate(21);
         $roles = Role::all();
 
 
         $context = [
             'title' => 'لیست ادمین ها',
             'roles' => $roles,
-            'users' => $users,
+            'admins' => $users,
             'scope' => ['admins', 'admin-list'],
         ];
 
@@ -49,25 +48,21 @@ class AdminController extends Controller
             'scope' => ['admins', 'admin-create'],
         ];
 
-        return view('admin.users.admin.create')->with($context);
+        return Inertia::render('Admin/Admins/Create', $context);
     }
-    public function store($locale, Request $request)
+    public function store(Request $request)
     {
 
-        $this->authorize(Permissions::manageAdmins->value);
+        // $this->authorize(Permissions::manageAdmins->value);
         $validated = $request->validate([
-            'name' => 'required',
-            'country_code' => 'required',
-            'family' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|unique:users,phone',
-            'password' => 'required|min:8|max:191|confirmed',
-            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('name')->toArray())],
-            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'password' => ['required', 'confirmed', Password::min(8)],
+            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
         ]);
         // slug
 
-        $slug = AssetManager::generateUtf8Slug($request->input('name') . ' ' . $request->input('family'));
+        $slug = GenerateUtf8Slug::generateUtf8Slug($request->input('name'));
         $num = 1;
         while (User::where('slug', $slug)->exists()) {
             $num++;
@@ -77,49 +72,86 @@ class AdminController extends Controller
 
         $store = User::create([
             'name' => Str::lower($validated['name']),
-            'family' => Str::lower($validated['family']),
             'phone' => $validated['phone'],
-            'email' => $validated['email'],
-            'country_code' => $validated['country_code'],
             'password' => Hash::make($validated['password']),
             'is_admin' => true,
             'slug' => $slug,
-            'email_verified_at' => Carbon::now(),
             'phone_verified_at' => Carbon::now(),
             'status' => UserStatus::approved->value,
 
         ]);
-        if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
 
-            $store->addMediaFromRequest('avatar')->usingFileName(Str::random(50) . '.' . $request->avatar->extension())
-                ->toMediaCollection('avatar');
-        }
         $store->syncRoles($request->roles);
 
         if ($store) {
             (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . 'admin', LogsStatus::store->value);
-            StickyAlert::success(trans('Added Successfully'));
+            StickyAlert::toast(
+                'ادمین جدید با موفقیت ایجاد شد.',
+                'success'
+            );
         } else {
-            StickyAlert::error(trans('Something is wrong'));
+            StickyAlert::toast(
+                'مشکلی وجود دارد.',
+                'error'
+            );
         }
 
-        return to_route('admin.admins.list', app()->getLocale());
+        return to_route('admin.admins.list');
     }
 
     //edit admin
-    public function edit($locale, User $user)
+    public function edit(User $user)
     {
-        $this->authorize(Permissions::manageAdmins->value);
-        $scope = ['admins', 'admin-edit'];
-        $context = [
-            'title' => 'Edit',
-            'user' => $user,
-            'roles' => Role::all(),
-            'scope' => $scope,
-        ];
+        // بررسی اینکه کاربر ادمین است
+        if (!$user->is_admin) {
+            StickyAlert::alert(
+                'این کاربر ادمین نیست.',
+                'error'
+            );
+            return to_route('admin.admins.list');
+        }
 
-        return view('admin.users.admin.edit', $context);
+        // دریافت تمام نقش‌ها
+        $roles = Role::select('id', 'name')->get()->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                // 'label' => $this->translateRoleName($role->name),
+            ];
+        });
+
+        // دریافت ID نقش‌های فعلی این ادمین
+        $adminRoleIds = $user->roles->pluck('id')->toArray();
+
+        return Inertia::render('Admin/Admins/Edit', [
+            'title' => 'ویرایش ادمین',
+            'admin' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'phone' => $user->phone,
+                'email' => $user->email,
+                'is_active' => (bool) ($user->is_active ?? true),
+                'roles' => $adminRoleIds, // آرایه‌ای از ID نقش‌ها
+                'created_at' => $user->created_at,
+            ],
+            'roles' => $roles,
+            'scope' => ['admins', 'admin-edit'],
+        ]);
     }
+    // public function edit(User $user)
+    // {
+    //     // $this->authorize(Permissions::manageAdmins->value);
+    //     $user  = User::with('roles')->where('slug',$user->slug)->first();
+    //     $scope = ['admins', 'admin-edit'];
+    //     $context = [
+    //         'title' => 'Edit',
+    //         'admin' => $user,
+    //         'roles' => Role::all(),
+    //         'scope' => $scope,
+    //     ];
+
+    //     return Inertia::render('Admin/Admins/Edit', $context);
+    // }
 
     //edit admin
     public function update($locale, Request $request, User $user)

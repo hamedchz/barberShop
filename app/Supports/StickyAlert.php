@@ -24,6 +24,24 @@ class StickyAlert
       'position' => $position,
     ]);
   }
+
+  public static function alert(
+    string $title,
+    string $type = 'success',
+    // int $timer = 3000,
+    string $position = 'center'
+  ) {
+
+
+    Session::flash('alert', [
+      'type' => $type,
+      'title' => $title,
+      'message' => '',
+      'toast' => false,
+      // 'timer' => $timer,
+      'position' => $position,
+    ]);
+  }
   public static function success(
     string $title = 'موفق',
     string $message = ''

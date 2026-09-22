@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RolesController;
 use Illuminate\Support\Facades\Route;
@@ -20,7 +21,7 @@ Route::prefix('/roles')
 
 Route::prefix('/admins')
   ->name('admins.')->controller(AdminController::class)->group(function () {
-    Route::get('/', AllAdmins::class)->name('list');
+    Route::get('/', 'index')->name('list');
     Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
     Route::get('/{user:slug}/edit',  'edit')->name('edit');

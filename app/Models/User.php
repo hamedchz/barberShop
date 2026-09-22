@@ -32,7 +32,8 @@ class User extends Authenticatable
         'phone_verified_at',
         'password',
         'status',
-        'is_admin'
+        'is_admin',
+        'slug'
     ];
     protected function casts(): array
     {
@@ -45,6 +46,6 @@ class User extends Authenticatable
     }
     protected $attributes = [
         'is_admin' => false,
-        'status' => UserStatus::pending->value,
+        'status' => UserStatus::PENDING->value,
     ];
 }
