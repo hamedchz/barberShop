@@ -1,6 +1,15 @@
 import React from "react";
 import Select from "react-select";
 
+const colorMap = {
+    green: { bg: "#ecfdf5", color: "#065f46", border: "#d1fae5" },
+    blue: { bg: "#eff6ff", color: "#1e40af", border: "#dbeafe" },
+    orange: { bg: "#fff7ed", color: "#9a3412", border: "#ffedd5" },
+    red: { bg: "#fef2f2", color: "#991b1b", border: "#fee2e2" },
+    gray: { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" },
+    purple: { bg: "#f5f3ff", color: "#5b21b6", border: "#ede9fe" },
+};
+
 export default function Select2({
     options = [],
     value = null,
@@ -12,7 +21,9 @@ export default function Select2({
     isLoading = false,
     isClearable = true,
     isSearchable = true,
+    showColors = false, // ← نمایش رنگ گزینه‌ها
 }) {
+    // ============ استایل ============
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
@@ -32,8 +43,6 @@ export default function Select2({
         valueContainer: (provided) => ({
             ...provided,
             padding: "0.25rem 0.5rem",
-            gap: "0.25rem",
-            flexWrap: "wrap",
         }),
         option: (provided, state) => ({
             ...provided,
@@ -47,37 +56,14 @@ export default function Select2({
             padding: "0.625rem 1rem",
             fontFamily: "inherit",
             fontSize: "0.875rem",
-            "&:active": {
-                backgroundColor: "#059669",
-            },
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
         }),
-        // Badge های انتخاب شده (سبز)
-        multiValue: (provided) => ({
+        singleValue: (provided) => ({
             ...provided,
-            backgroundColor: "#ecfdf5",
-            borderRadius: "0.5rem",
-            padding: "0.125rem 0.375rem",
-            margin: "0.125rem",
-            border: "1px solid #d1fae5",
-        }),
-        multiValueLabel: (provided) => ({
-            ...provided,
-            color: "#065f46",
-            fontWeight: "500",
-            fontSize: "0.8125rem",
-            padding: "0.125rem 0.25rem",
-            paddingRight: "0.5rem",
-        }),
-        multiValueRemove: (provided) => ({
-            ...provided,
-            color: "#065f46",
-            borderRadius: "0.25rem",
-            cursor: "pointer",
-            padding: "0 0.25rem",
-            ":hover": {
-                backgroundColor: "#10b981",
-                color: "white",
-            },
+            color: "#1f2937",
+            fontSize: "0.875rem",
         }),
         placeholder: (provided) => ({
             ...provided,
@@ -88,7 +74,6 @@ export default function Select2({
             ...provided,
             fontSize: "0.875rem",
             fontFamily: "inherit",
-            color: "#1f2937",
         }),
         menu: (provided) => ({
             ...provided,
@@ -105,20 +90,20 @@ export default function Select2({
             maxHeight: "280px",
             padding: "0.25rem",
         }),
-        clearIndicator: (provided) => ({
-            ...provided,
-            cursor: "pointer",
-            color: "#9ca3af",
-            ":hover": {
-                color: "#ef4444",
-            },
-        }),
         dropdownIndicator: (provided) => ({
             ...provided,
             cursor: "pointer",
             color: "#9ca3af",
-            ":hover": {
+            "&:hover": {
                 color: "#10b981",
+            },
+        }),
+        clearIndicator: (provided) => ({
+            ...provided,
+            cursor: "pointer",
+            color: "#9ca3af",
+            "&:hover": {
+                color: "#ef4444",
             },
         }),
         indicatorSeparator: (provided) => ({
@@ -131,6 +116,36 @@ export default function Select2({
             color: "#9ca3af",
             padding: "0.75rem",
         }),
+    };
+
+    // ============ فرمت‌دهی گزینه‌ها ============
+    const formatOptionLabel = (option, { context }) => {
+        if (!showColors || !option.color) {
+            return option.label;
+        }
+
+        const colorConfig = colorMap[option.color] || colorMap.gray;
+
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                }}
+            >
+                <span
+                    style={{
+                        width: "0.625rem",
+                        height: "0.625rem",
+                        borderRadius: "50%",
+                        backgroundColor: colorConfig.color,
+                        flexShrink: 0,
+                    }}
+                ></span>
+                <span>{option.label}</span>
+            </div>
+        );
     };
 
     return (
@@ -146,12 +161,13 @@ export default function Select2({
             isSearchable={isSearchable}
             styles={customStyles}
             isRtl={isRtl}
+            formatOptionLabel={showColors ? formatOptionLabel : undefined}
             noOptionsMessage={() => "موردی یافت نشد"}
             loadingMessage={() => "در حال بارگذاری..."}
             className="react-select-container"
             classNamePrefix="react-select"
             menuPlacement="auto"
-            closeMenuOnSelect={false} // مهم: منو بسته نشود تا کاربر چند مورد انتخاب کند
+            closeMenuOnSelect={!isMulti}
             hideSelectedOptions={true} // گزینه‌های انتخاب شده از لیست حذف شوند
             isOptionDisabled={() => false}
         />

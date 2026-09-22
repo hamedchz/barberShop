@@ -16,24 +16,40 @@ import {
     CheckCircle,
     Info,
     KeyRound,
+    Activity,
+    CheckCircle2,
+    XCircle,
+    PauseCircle,
+    Clock,
+    Ban,
+    ChevronLeft,
 } from "lucide-react";
 
-export default function Edit({ auth, admin, roles, scope }) {
+// ============ نقشه آیکون‌ها ============
+const iconMap = {
+    CheckCircle: CheckCircle2,
+    XCircle: XCircle,
+    PauseCircle: PauseCircle,
+    Clock: Clock,
+    Ban: Ban,
+};
+
+export default function Edit({ auth, admin, roles, statuses, scope }) {
     // ============ useForm ============
     const { data, setData, put, processing, errors } = useForm({
         name: admin.name || "",
         phone: admin.phone || "",
+        status: admin.status || "active", // ← وضعیت فعلی
         password: "",
         password_confirmation: "",
-        roles: admin.roles || [], // آرایه ID نقش‌های فعلی
+        roles: admin.roles || [],
     });
 
-    // ============ State نمایش رمز عبور ============
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [changePassword, setChangePassword] = useState(false);
 
-    // ============ تبدیل نقش‌ها به فرمت Select2 ============
+    // ============ گزینه‌های نقش ============
     const allRoleOptions = useMemo(
         () =>
             roles.map((role) => ({
@@ -43,19 +59,16 @@ export default function Edit({ auth, admin, roles, scope }) {
         [roles],
     );
 
-    // ============ نقش‌های انتخاب شده ============
     const selectedRoles = useMemo(
         () => allRoleOptions.filter((opt) => data.roles.includes(opt.value)),
         [allRoleOptions, data.roles],
     );
 
-    // ============ نقش‌های انتخاب نشده ============
     const unselectedRoleOptions = useMemo(
         () => allRoleOptions.filter((opt) => !data.roles.includes(opt.value)),
         [allRoleOptions, data.roles],
     );
 
-    // ============ هندل تغییر نقش‌ها ============
     const handleRolesChange = (selectedOptions) => {
         const selectedIds = selectedOptions
             ? selectedOptions.map((opt) => opt.value)
@@ -63,31 +76,53 @@ export default function Edit({ auth, admin, roles, scope }) {
         setData("roles", selectedIds);
     };
 
-    // ============ انتخاب همه ============
-    const handleSelectAll = () => {
+    const handleSelectAll = () =>
         setData(
             "roles",
             allRoleOptions.map((opt) => opt.value),
         );
-    };
 
-    // ============ پاک کردن همه ============
-    const handleClearAll = () => {
-        setData("roles", []);
+    const handleClearAll = () => setData("roles", []);
+
+    // ============ گزینه‌های وضعیت (از Enum) ============
+    const statusOptions = useMemo(
+        () =>
+            statuses.map((status) => ({
+                value: status.value,
+                label: status.label,
+                color: status.color,
+                icon: status.icon,
+            })),
+        [statuses],
+    );
+
+    // ============ وضعیت انتخاب شده فعلی ============
+    const selectedStatus = useMemo(
+        () => statusOptions.find((opt) => opt.value === data.status),
+        [statusOptions, data.status],
+    );
+
+    // ============ هندل تغییر وضعیت ============
+    const handleStatusChange = (selectedOption) => {
+        setData("status", selectedOption ? selectedOption.value : "");
     };
 
     // ============ ارسال فرم ============
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // اگر کاربر نمی‌خواهد رمز را تغییر دهد، فیلدها را خالی کن
         if (!changePassword) {
             data.password = "";
             data.password_confirmation = "";
         }
 
-        put(`/admin/admins/${admin.id}`);
+        put(`/admin/admins/${admin.slug}/update`);
     };
+
+    // ============ آیکون وضعیت انتخاب شده ============
+    const StatusIcon = selectedStatus?.icon
+        ? iconMap[selectedStatus.icon]
+        : Activity;
 
     return (
         <Layout>
@@ -120,8 +155,8 @@ export default function Edit({ auth, admin, roles, scope }) {
                                 ویرایش اطلاعات ادمین
                             </h2>
                             <p className="form-card-subtitle">
-                                اطلاعات کاربری و نقش‌های ادمین را می‌توانید
-                                تغییر دهید.
+                                اطلاعات کاربری، وضعیت و نقش‌های ادمین را
+                                می‌توانید تغییر دهید.
                             </p>
                         </div>
                     </div>
@@ -137,7 +172,9 @@ export default function Edit({ auth, admin, roles, scope }) {
                             <input
                                 id="name"
                                 type="text"
-                                className={`form-input ${errors.name ? "error" : ""}`}
+                                className={`form-input ${
+                                    errors.name ? "error" : ""
+                                }`}
                                 value={data.name}
                                 onChange={(e) =>
                                     setData("name", e.target.value)
@@ -163,7 +200,9 @@ export default function Edit({ auth, admin, roles, scope }) {
                             <input
                                 id="phone"
                                 type="text"
-                                className={`form-input ${errors.phone ? "error" : ""}`}
+                                className={`form-input ${
+                                    errors.phone ? "error" : ""
+                                }`}
                                 value={data.phone}
                                 onChange={(e) =>
                                     setData("phone", e.target.value)
@@ -178,49 +217,109 @@ export default function Edit({ auth, admin, roles, scope }) {
                                     <span>{errors.phone}</span>
                                 </div>
                             )}
+                        </div>
+
+                        {/* ============ فیلد وضعیت (از Enum) ============ */}
+                        <div className="form-group">
+                            <label htmlFor="status" className="form-label">
+                                <StatusIcon size={16} />
+                                وضعیت کاربری
+                                <span className="required">*</span>
+                            </label>
+
+                            <Select2
+                                options={statusOptions}
+                                value={selectedStatus}
+                                onChange={handleStatusChange}
+                                placeholder="انتخاب وضعیت..."
+                                isMulti={false}
+                                isRtl={true}
+                                isClearable={false}
+                                showColors={true}
+                            />
+
+                            {errors.status && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>{errors.status}</span>
+                                </div>
+                            )}
+
                             <p className="form-help-text">
-                                این شماره برای ورود به سیستم استفاده می‌شود.
+                                وضعیت کاربری تعیین می‌کند که ادمین بتواند وارد
+                                سیستم شود یا خیر.
                             </p>
                         </div>
 
                         {/* ============ بخش تغییر رمز عبور ============ */}
+                        {/* ============ بخش تغییر رمز عبور ============ */}
                         <div className="password-section">
-                            <div className="password-section-header">
-                                <div className="password-section-title">
-                                    <KeyRound size={18} />
-                                    <span>رمز عبور</span>
+                            {/* کارت قابل کلیک برای فعال/غیرفعال کردن تغییر رمز */}
+                            <button
+                                type="button"
+                                className={`password-toggle-card ${changePassword ? "active" : ""}`}
+                                onClick={() => {
+                                    const newState = !changePassword;
+                                    setChangePassword(newState);
+                                    if (!newState) {
+                                        setData("password", "");
+                                        setData("password_confirmation", "");
+                                    }
+                                }}
+                            >
+                                <div className="password-toggle-card-icon">
+                                    <KeyRound size={22} />
                                 </div>
-                                <label className="toggle-switch-wrapper">
-                                    <input
-                                        type="checkbox"
-                                        checked={changePassword}
-                                        onChange={(e) => {
-                                            setChangePassword(e.target.checked);
-                                            if (!e.target.checked) {
-                                                setData("password", "");
-                                                setData(
-                                                    "password_confirmation",
-                                                    "",
-                                                );
-                                            }
-                                        }}
-                                        className="toggle-switch-input"
-                                    />
-                                    <span className="toggle-switch"></span>
-                                    <span className="toggle-switch-label">
+
+                                <div className="password-toggle-card-content">
+                                    <h4 className="password-toggle-card-title">
                                         {changePassword
                                             ? "تغییر رمز عبور"
-                                            : "بدون تغییر"}
-                                    </span>
-                                </label>
-                            </div>
+                                            : "تغییر رمز عبور"}
+                                    </h4>
+                                    <p className="password-toggle-card-description">
+                                        {changePassword
+                                            ? "رمز عبور جدید را در فیلدهای زیر وارد کنید"
+                                            : "برای تغییر رمز عبور، این کارت را کلیک کنید"}
+                                    </p>
+                                </div>
 
+                                <div className="password-toggle-card-action">
+                                    <span
+                                        className={`password-toggle-card-status ${
+                                            changePassword
+                                                ? "active"
+                                                : "inactive"
+                                        }`}
+                                    >
+                                        {changePassword ? (
+                                            <>
+                                                <CheckCircle size={14} />
+                                                فعال
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Lock size={14} />
+                                                غیرفعال
+                                            </>
+                                        )}
+                                    </span>
+                                    <ChevronLeft
+                                        size={20}
+                                        className={`password-toggle-card-chevron ${
+                                            changePassword ? "rotated" : ""
+                                        }`}
+                                    />
+                                </div>
+                            </button>
+
+                            {/* فیلدهای رمز عبور (فقط وقتی فعال است) */}
                             {changePassword && (
                                 <div
                                     className="password-fields"
                                     style={{ animation: "slideDown 0.3s ease" }}
                                 >
-                                    {/* فیلد رمز جدید */}
+                                    {/* رمز جدید */}
                                     <div className="form-group">
                                         <label
                                             htmlFor="password"
@@ -279,7 +378,7 @@ export default function Edit({ auth, admin, roles, scope }) {
                                         )}
                                     </div>
 
-                                    {/* فیلد تکرار رمز */}
+                                    {/* تکرار رمز */}
                                     <div className="form-group">
                                         <label
                                             htmlFor="password_confirmation"
@@ -358,16 +457,6 @@ export default function Edit({ auth, admin, roles, scope }) {
                                     </div>
                                 </div>
                             )}
-
-                            {!changePassword && (
-                                <div className="password-info-box">
-                                    <Info size={16} />
-                                    <p>
-                                        اگر نمی‌خواهید رمز عبور را تغییر دهید،
-                                        این بخش را غیرفعال بگذارید.
-                                    </p>
-                                </div>
-                            )}
                         </div>
 
                         {/* ============ فیلد نقش‌ها ============ */}
@@ -387,7 +476,6 @@ export default function Edit({ auth, admin, roles, scope }) {
                                         type="button"
                                         className="shortcut-btn"
                                         onClick={handleSelectAll}
-                                        title="انتخاب تمام نقش‌ها"
                                     >
                                         <CheckCircle size={14} />
                                         انتخاب همه
@@ -396,14 +484,12 @@ export default function Edit({ auth, admin, roles, scope }) {
                                         type="button"
                                         className="shortcut-btn danger"
                                         onClick={handleClearAll}
-                                        title="حذف تمام انتخاب‌ها"
                                     >
                                         ✕ پاک کردن همه
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Select2 */}
                             <Select2
                                 options={unselectedRoleOptions}
                                 value={selectedRoles}

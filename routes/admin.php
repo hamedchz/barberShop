@@ -25,6 +25,6 @@ Route::prefix('/admins')
     Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
     Route::get('/{user:slug}/edit',  'edit')->name('edit');
-    Route::patch('/{user:slug}/update',  'update')->name('update');
+    Route::put('/{user:slug}/update',  'update')->name('update');
   });
 // });

@@ -77,7 +77,7 @@ class AdminController extends Controller
             'is_admin' => true,
             'slug' => $slug,
             'phone_verified_at' => Carbon::now(),
-            'status' => UserStatus::approved->value,
+            'status' => UserStatus::ACTIVE->value,
 
         ]);
 
@@ -126,64 +126,64 @@ class AdminController extends Controller
         return Inertia::render('Admin/Admins/Edit', [
             'title' => 'ویرایش ادمین',
             'admin' => [
-                'id' => $user->id,
                 'name' => $user->name,
+                'slug' => $user->slug,
                 'phone' => $user->phone,
-                'email' => $user->email,
-                'is_active' => (bool) ($user->is_active ?? true),
+                'status' => $user->status->value ?? 'active',
                 'roles' => $adminRoleIds, // آرایه‌ای از ID نقش‌ها
-                'created_at' => $user->created_at,
             ],
             'roles' => $roles,
+            'statuses' => UserStatus::toSelectArray(), // ← لیست Enum
             'scope' => ['admins', 'admin-edit'],
         ]);
     }
-    // public function edit(User $user)
-    // {
-    //     // $this->authorize(Permissions::manageAdmins->value);
-    //     $user  = User::with('roles')->where('slug',$user->slug)->first();
-    //     $scope = ['admins', 'admin-edit'];
-    //     $context = [
-    //         'title' => 'Edit',
-    //         'admin' => $user,
-    //         'roles' => Role::all(),
-    //         'scope' => $scope,
-    //     ];
-
-    //     return Inertia::render('Admin/Admins/Edit', $context);
-    // }
 
     //edit admin
-    public function update($locale, Request $request, User $user)
+    public function update(Request $request, User $user)
     {
-        $this->authorize(Permissions::manageAdmins->value);
+        // $this->authorize(Permissions::manageAdmins->value);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'family' => ['required', 'string', 'max:255'],
-            'country_code' => ['required'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'phone' => ['required',  Rule::unique('users')->ignore($user->id)],
-            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('name')->toArray())],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-            'status' => ['required', Rule::enum(UserStatus::class)],
-        ]);
-
-        // Storing the original and thumbnail profile picture
-        if ($request->hasFile('avatar') and $request->file('avatar')->isValid()) {
-            $user->addMediaFromRequest('avatar')->usingFileName(Str::random(50) . '.' . $request->avatar->extension())
-                ->toMediaCollection('avatar');
+        if (!$user->is_admin) {
+            StickyAlert::alert(
+                'این کاربر ادمین نیست.',
+                'error'
+            );
+            return to_route('admin.admins.list');
         }
+        // ============ اعتبارسنجی ============
+        $rules = [
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
+            'status' => ['required', Rule::enum(UserStatus::class)], // ← اعتبارسنجی Enum
+            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = ['required', 'confirmed', Password::min(8)];
+        }
+
+        $validated = $request->validate($rules);
+
+
         if ($request->has('password') && !is_null($request->password)) {
             $validated['password'] = Hash::make($request->input('password'));
         }
         // Unique Slug Creator
-        $slug = AssetManager::generateUtf8Slug($request->input('name') . ' ' . $request->input('family'));
+        $slug = GenerateUtf8Slug::generateUtf8Slug($request->input('name'));
+
         $num = 1;
-        while (User::where([['slug', $slug], ['id', '!=', $user->id]])->exists()) {
+        $originalSlug = $slug;
+
+        while (
+            User::where('slug', $slug)
+            ->where('id', '!=', $user->id)
+            ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $num;
             $num++;
-            $slug = $slug . "-$num";
         }
+
+        $validated['slug'] = $slug;
 
 
 
@@ -192,11 +192,16 @@ class AdminController extends Controller
 
         if ($update) {
             (new \App\Models\Log())->storeLog($user->id, LogsStatus::edit->value . 'admin', LogsStatus::edit->value);
-            StickyAlert::success(trans('Updated Successfully'));
+            StickyAlert::toast(
+                'ادمین  با موفقیت ویرایش شد.',
+                'success'
+            );
         } else {
-            StickyAlert::error(trans('Something is wrong'));
+            StickyAlert::toast(
+                'مشکلی وجود دارد.',
+                'error'
+            );
         }
-
-        return to_route('admin.admins.list', app()->getLocale());
+        return to_route('admin.admins.list');
     }
 }
