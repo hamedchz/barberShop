@@ -26,5 +26,10 @@ Route::prefix('/admins')
     Route::post('/store', 'store')->name('store');
     Route::get('/{user:slug}/edit',  'edit')->name('edit');
     Route::put('/{user:slug}/update',  'update')->name('update');
+    Route::delete('/{admin}/destroy',  'destroy')->name('destroy');
+
+    Route::get('/online-status', [AdminController::class, 'onlineStatus'])
+      ->name('online-status');
   });
+
 // });

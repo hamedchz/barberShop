@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import EmptyList from "../Components/EmptyList";
 import ConfirmModal from "../Components/ConfirmModal";
 import Search from "../../../Components/Search";
 import Select2 from "../Components/Select2";
+import axios from "axios";
 import { toJalaali } from "jalaali-js";
 import Pagination from "../Components/Pagination";
 
@@ -22,9 +23,54 @@ import {
     Clock,
     Filter,
     X,
-    LogIn,
-    Mail,
+    Wifi,
+    WifiOff,
+    Activity,
+    Lock,
 } from "lucide-react";
+
+// ============ نقشه وضعیت کاربران ============
+const statusConfig = {
+    active: {
+        icon: CheckCircle,
+        color: "#065f46",
+        bg: "#ecfdf5",
+        border: "#d1fae5",
+        label: "فعال",
+    },
+    inactive: {
+        icon: XCircle,
+        color: "#374151",
+        bg: "#f3f4f6",
+        border: "#e5e7eb",
+        label: "غیرفعال",
+    },
+    suspended: {
+        icon: Clock,
+        color: "#9a3412",
+        bg: "#fff7ed",
+        border: "#ffedd5",
+        label: "معلق",
+    },
+    pending: {
+        icon: Clock,
+        color: "#1e40af",
+        bg: "#eff6ff",
+        border: "#dbeafe",
+        label: "در انتظار تایید",
+    },
+    banned: {
+        icon: XCircle,
+        color: "#991b1b",
+        bg: "#fef2f2",
+        border: "#fee2e2",
+        label: "مسدود",
+    },
+};
+
+// تابع کمکی برای گرفتن تنظیمات وضعیت
+const getStatusConfig = (status) =>
+    statusConfig[status] || statusConfig.inactive;
 
 // ============ تبدیل تاریخ به شمسی ============
 const formatJalaliDate = (date) => {
@@ -89,11 +135,25 @@ const getRoleConfig = (roleName) => {
     );
 };
 
-export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
+export default function AdminsIndex({
+    auth,
+    admins,
+    roles,
+    filters,
+    totalOnline: initialTotalOnline,
+    scope,
+}) {
+    const currentUserId = auth?.user?.id;
     // ============ State ============
     const [searchTerm, setSearchTerm] = useState(filters?.search || "");
     const [isSearching, setIsSearching] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
+
+    // ============ State آنلاین ============
+    const [onlineStatuses, setOnlineStatuses] = useState({});
+    const [totalOnline, setTotalOnline] = useState(initialTotalOnline || 0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [lastUpdate, setLastUpdate] = useState(new Date());
 
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
@@ -101,20 +161,71 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
         isLoading: false,
     });
 
-    const [toggleModal, setToggleModal] = useState({
-        isOpen: false,
-        admin: null,
-        isLoading: false,
-    });
-
     const adminsList = admins.data || [];
+
+    // ============ مقداردهی اولیه وضعیت آنلاین ============
+    useEffect(() => {
+        const statuses = {};
+        adminsList.forEach((admin) => {
+            statuses[admin.id] = {
+                is_online: admin.is_online,
+                last_activity: admin.last_activity,
+            };
+        });
+        setOnlineStatuses(statuses);
+    }, [adminsList]);
+
+    // ============ Polling هر ۳۰ ثانیه ============
+    useEffect(() => {
+        const fetchOnlineStatus = async () => {
+            try {
+                setIsRefreshing(true);
+                const response = await axios.get("/admin/admins/online-status");
+                const statuses = {};
+                response.data.admins.forEach((admin) => {
+                    statuses[admin.id] = {
+                        is_online: admin.is_online,
+                        last_activity: admin.last_activity,
+                    };
+                });
+                setOnlineStatuses(statuses);
+                setTotalOnline(response.data.total_online);
+                setLastUpdate(new Date());
+            } catch (error) {
+                console.error("Failed to fetch online status:", error);
+            } finally {
+                setIsRefreshing(false);
+            }
+        };
+
+        // اولین بار بعد از ۱۰ ثانیه
+        const initialTimeout = setTimeout(fetchOnlineStatus, 10000);
+
+        // سپس هر ۳۰ ثانیه
+        const interval = setInterval(fetchOnlineStatus, 30000);
+
+        return () => {
+            clearTimeout(initialTimeout);
+            clearInterval(interval);
+        };
+    }, []);
+
+    // ============ تابع کمکی ============
+    const getOnlineStatus = (adminId) => {
+        return (
+            onlineStatuses[adminId] || {
+                is_online: false,
+                last_activity: null,
+            }
+        );
+    };
 
     // ============ گزینه‌های نقش ============
     const roleOptions = useMemo(
         () =>
             roles.map((role) => ({
                 value: role.id,
-                label: role.label,
+                label: role.name,
             })),
         [roles],
     );
@@ -125,14 +236,22 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
     }, [filters?.role, roleOptions]);
 
     const hasActiveFilters =
-        filters?.status || filters?.role || filters?.search;
+        filters?.status ||
+        filters?.role ||
+        filters?.search ||
+        filters?.only_online;
 
-    // ============ جستجو ============
+    // ============ جستجو و فیلترها ============
     const handleSearch = (term) => {
         setIsSearching(true);
         router.get(
             "/admin/admins",
-            { search: term, status: filters?.status, role: filters?.role },
+            {
+                search: term,
+                status: filters?.status,
+                role: filters?.role,
+                only_online: filters?.only_online ? 1 : 0,
+            },
             {
                 preserveState: true,
                 preserveScroll: true,
@@ -145,7 +264,12 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
     const handleStatusFilter = (status) => {
         router.get(
             "/admin/admins",
-            { search: searchTerm, status, role: filters?.role },
+            {
+                search: searchTerm,
+                status,
+                role: filters?.role,
+                only_online: filters?.only_online ? 1 : 0,
+            },
             { preserveState: true, preserveScroll: true, replace: true },
         );
     };
@@ -157,6 +281,21 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                 search: searchTerm,
                 status: filters?.status,
                 role: selectedOption ? selectedOption.value : "",
+                only_online: filters?.only_online ? 1 : 0,
+            },
+            { preserveState: true, preserveScroll: true, replace: true },
+        );
+    };
+
+    // ============ فیلتر فقط آنلاین ============
+    const handleOnlyOnlineToggle = () => {
+        router.get(
+            "/admin/admins",
+            {
+                search: searchTerm,
+                status: filters?.status,
+                role: filters?.role,
+                only_online: filters?.only_online ? 0 : 1,
             },
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -171,7 +310,13 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
         );
     };
 
-    // ============ Modal حذف ============
+    // ============ Modalها ============
+    const [toggleModal, setToggleModal] = useState({
+        isOpen: false,
+        admin: null,
+        isLoading: false,
+    });
+
     const openDeleteModal = (admin) =>
         setDeleteModal({ isOpen: true, admin, isLoading: false });
     const closeDeleteModal = () =>
@@ -180,7 +325,7 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
     const handleConfirmDelete = () => {
         if (!deleteModal.admin) return;
         setDeleteModal((prev) => ({ ...prev, isLoading: true }));
-        router.delete(`/admin/admins/${deleteModal.admin.id}`, {
+        router.delete(`/admin/admins/${deleteModal.admin.id}/destroy`, {
             preserveScroll: true,
             onSuccess: () => closeDeleteModal(),
             onError: () =>
@@ -188,7 +333,6 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
         });
     };
 
-    // ============ Modal تغییر وضعیت ============
     const openToggleModal = (admin) =>
         setToggleModal({ isOpen: true, admin, isLoading: false });
     const closeToggleModal = () =>
@@ -209,27 +353,43 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
         );
     };
 
+    // ============ مرتب‌سازی: آنلاین‌ها اول ============
+    const sortedAdmins = useMemo(() => {
+        return [...adminsList].sort((a, b) => {
+            const aOnline = getOnlineStatus(a.id).is_online;
+            const bOnline = getOnlineStatus(b.id).is_online;
+            if (aOnline === bOnline) return 0;
+            return aOnline ? -1 : 1;
+        });
+    }, [adminsList, onlineStatuses]);
+
     return (
         <Layout>
             <Head title="مدیریت ادمین‌ها" />
 
             <div className="center-column">
-                {/* ============ هدر صفحه ============ */}
+                {/* ============ هدر با شمارنده آنلاین ============ */}
                 <div className="roles-page-header">
                     <div>
                         <h1 className="roles-page-title">مدیریت ادمین‌ها</h1>
-                        <p
-                            style={{
-                                color: "#6b7280",
-                                fontSize: "0.875rem",
-                                marginTop: "0.25rem",
-                            }}
-                        >
-                            {hasActiveFilters
-                                ? `${admins.total} نتیجه یافت شد`
-                                : `${admins.total} ادمین در سیستم`}
-                        </p>
+                        <div className="header-stats">
+                            <p className="stats-text">
+                                {admins.total} ادمین در سیستم
+                            </p>
+
+                            {/* شمارنده آنلاین‌ها */}
+                            <div className="online-counter-badge">
+                                <span className="online-dot pulse"></span>
+                                <span className="online-counter-text">
+                                    {totalOnline} آنلاین
+                                </span>
+                                {isRefreshing && (
+                                    <span className="refreshing-indicator"></span>
+                                )}
+                            </div>
+                        </div>
                     </div>
+
                     <Link
                         href="/admin/admins/create"
                         className="btn-primary"
@@ -260,8 +420,25 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                     </div>
 
                     <div className="admins-toolbar-actions">
+                        {/* دکمه فقط آنلاین‌ها */}
                         <button
-                            className={`filter-toggle-btn ${showFilters ? "active" : ""}`}
+                            className={`only-online-btn ${
+                                filters?.only_online ? "active" : ""
+                            }`}
+                            onClick={handleOnlyOnlineToggle}
+                            title="فقط ادمین‌های آنلاین"
+                        >
+                            <Wifi size={16} />
+                            فقط آنلاین
+                            {filters?.only_online && (
+                                <span className="active-dot"></span>
+                            )}
+                        </button>
+
+                        <button
+                            className={`filter-toggle-btn ${
+                                showFilters ? "active" : ""
+                            }`}
                             onClick={() => setShowFilters(!showFilters)}
                         >
                             <Filter size={16} />
@@ -269,9 +446,11 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                             {hasActiveFilters && (
                                 <span className="filter-count-badge">
                                     {
-                                        [filters?.status, filters?.role].filter(
-                                            Boolean,
-                                        ).length
+                                        [
+                                            filters?.status,
+                                            filters?.role,
+                                            filters?.only_online,
+                                        ].filter(Boolean).length
                                     }
                                 </span>
                             )}
@@ -296,27 +475,34 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                             <label className="filter-label">وضعیت</label>
                             <div className="status-filter-buttons">
                                 <button
-                                    className={`status-filter-btn ${!filters?.status ? "active" : ""}`}
+                                    className={`status-filter-btn ${
+                                        !filters?.status ? "active" : ""
+                                    }`}
                                     onClick={() => handleStatusFilter("")}
                                 >
                                     همه
                                 </button>
-                                <button
-                                    className={`status-filter-btn ${filters?.status === "active" ? "active" : ""}`}
-                                    onClick={() => handleStatusFilter("active")}
-                                >
-                                    <CheckCircle size={14} />
-                                    فعال
-                                </button>
-                                <button
-                                    className={`status-filter-btn ${filters?.status === "inactive" ? "active" : ""}`}
-                                    onClick={() =>
-                                        handleStatusFilter("inactive")
-                                    }
-                                >
-                                    <XCircle size={14} />
-                                    غیرفعال
-                                </button>
+                                {Object.entries(statusConfig).map(
+                                    ([key, config]) => {
+                                        const StatusIcon = config.icon;
+                                        return (
+                                            <button
+                                                key={key}
+                                                className={`status-filter-btn ${
+                                                    filters?.status === key
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                                onClick={() =>
+                                                    handleStatusFilter(key)
+                                                }
+                                            >
+                                                <StatusIcon size={14} />
+                                                {config.label}
+                                            </button>
+                                        );
+                                    },
+                                )}
                             </div>
                         </div>
 
@@ -336,107 +522,144 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                 )}
 
                 {/* ============ حالت خالی ============ */}
-                {adminsList.length === 0 && (
+                {sortedAdmins.length === 0 && (
                     <div className="card" style={{ padding: "3rem" }}>
                         <EmptyList
                             title={
-                                hasActiveFilters
-                                    ? "نتیجه‌ای یافت نشد"
-                                    : "ادمینی پیدا نشد"
+                                filters?.only_online
+                                    ? "هیچ ادمینی آنلاین نیست"
+                                    : hasActiveFilters
+                                      ? "نتیجه‌ای یافت نشد"
+                                      : "ادمینی پیدا نشد"
                             }
                             message={
-                                hasActiveFilters
-                                    ? "هیچ ادمینی با فیلترهای انتخاب شده مطابقت ندارد."
-                                    : "در حال حاضر هیچ ادمینی در سیستم ثبت نشده است."
+                                filters?.only_online
+                                    ? "در حال حاضر هیچ ادمینی آنلاین نیست."
+                                    : hasActiveFilters
+                                      ? "هیچ ادمینی با فیلترهای انتخاب شده مطابقت ندارد."
+                                      : "در حال حاضر هیچ ادمینی در سیستم ثبت نشده است."
                             }
                         />
                     </div>
                 )}
 
-                {/* ============ گرید کارت‌های ادمین ============ */}
-                {adminsList.length > 0 && (
+                {/* ============ گرید کارت‌ها ============ */}
+                {sortedAdmins.length > 0 && (
                     <div className="admins-cards-grid">
-                        {adminsList.map((admin) => (
-                            <div key={admin.id} className="admin-card">
-                                {/* نوار بالای کارت */}
-                                <div
-                                    className={`admin-card-stripe ${
-                                        admin.is_active ? "active" : "inactive"
-                                    }`}
-                                ></div>
+                        {sortedAdmins.map((admin) => {
+                            const onlineData = getOnlineStatus(admin.id);
+                            const statusCfg = getStatusConfig(admin.status);
+                            const StatusIcon = statusCfg.icon;
 
-                                {/* بخش بالایی: آواتار و وضعیت */}
-                                <div className="admin-card-top">
-                                    <div className="admin-card-avatar-wrapper">
-                                        <div className="admin-card-avatar">
-                                            {admin.avatar ? (
-                                                <img
-                                                    src={admin.avatar}
-                                                    alt={admin.name}
-                                                />
-                                            ) : (
-                                                <span>
-                                                    {admin.name
-                                                        ?.charAt(0)
-                                                        .toUpperCase()}
-                                                </span>
-                                            )}
+                            return (
+                                <div
+                                    key={admin.id}
+                                    className={`admin-card ${
+                                        onlineData.is_online
+                                            ? "admin-card-online"
+                                            : ""
+                                    }`}
+                                >
+                                    {/* نوار بالا */}
+                                    <div
+                                        className={`admin-card-stripe status-${admin.status}`}
+                                    ></div>
+
+                                    {/* بخش بالایی: آواتار + دکمه وضعیت */}
+                                    <div className="admin-card-top">
+                                        <div className="admin-card-avatar-wrapper">
+                                            <div className="admin-card-avatar">
+                                                {admin.avatar ? (
+                                                    <img
+                                                        src={admin.avatar}
+                                                        alt={admin.name}
+                                                    />
+                                                ) : (
+                                                    <span>
+                                                        {admin.name
+                                                            ?.charAt(0)
+                                                            .toUpperCase()}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* نشانگر آنلاین روی آواتار */}
+                                            <span
+                                                className={`admin-card-avatar-status ${
+                                                    onlineData.is_online
+                                                        ? "online"
+                                                        : "offline"
+                                                }`}
+                                                title={
+                                                    onlineData.is_online
+                                                        ? "آنلاین"
+                                                        : onlineData.last_activity
+                                                          ? `آخرین فعالیت: ${formatLastLogin(
+                                                                onlineData.last_activity,
+                                                            )}`
+                                                          : "آفلاین"
+                                                }
+                                            >
+                                                {onlineData.is_online && (
+                                                    <span className="pulse-ring"></span>
+                                                )}
+                                            </span>
                                         </div>
-                                        <span
-                                            className={`admin-card-avatar-status ${
-                                                admin.is_active
-                                                    ? "online"
-                                                    : "offline"
-                                            }`}
-                                            title={
-                                                admin.is_active
-                                                    ? "فعال"
-                                                    : "غیرفعال"
+
+                                        <button
+                                            className={`admin-card-status-btn status-${admin.status}`}
+                                            onClick={() =>
+                                                openToggleModal(admin)
                                             }
-                                        ></span>
+                                            style={{
+                                                backgroundColor: statusCfg.bg,
+                                                color: statusCfg.color,
+                                                borderColor: statusCfg.border,
+                                            }}
+                                        >
+                                            <StatusIcon size={13} />
+                                            {statusCfg.label}
+                                        </button>
                                     </div>
 
-                                    <button
-                                        className={`admin-card-status-btn ${
-                                            admin.is_active
-                                                ? "active"
-                                                : "inactive"
-                                        }`}
-                                        onClick={() => openToggleModal(admin)}
-                                        title="تغییر وضعیت"
-                                    >
-                                        {admin.is_active ? (
-                                            <>
-                                                <CheckCircle size={13} />
-                                                فعال
-                                            </>
+                                    {/* نام و شناسه */}
+                                    <div className="admin-card-name-wrapper">
+                                        <h3 className="admin-card-name">
+                                            {admin.name}
+                                        </h3>
+                                        <p className="admin-card-id">
+                                            شناسه: #{admin.id}
+                                        </p>
+                                    </div>
+
+                                    {/* نشانگر آنلاین متنی */}
+                                    <div className="admin-card-online-indicator">
+                                        {onlineData.is_online ? (
+                                            <div className="online-badge online">
+                                                <span className="online-dot"></span>
+                                                <span>آنلاین</span>
+                                            </div>
                                         ) : (
-                                            <>
-                                                <XCircle size={13} />
-                                                غیرفعال
-                                            </>
+                                            <div className="online-badge offline">
+                                                <WifiOff size={12} />
+                                                <span>
+                                                    {onlineData.last_activity
+                                                        ? `آخرین فعالیت: ${formatLastLogin(
+                                                              onlineData.last_activity,
+                                                          )}`
+                                                        : "آفلاین"}
+                                                </span>
+                                            </div>
                                         )}
-                                    </button>
-                                </div>
+                                    </div>
 
-                                {/* نام و شناسه */}
-                                <div className="admin-card-name-wrapper">
-                                    <h3 className="admin-card-name">
-                                        {admin.name}
-                                    </h3>
-                                    <p className="admin-card-id">
-                                        شناسه: #{admin.id}
-                                    </p>
-                                </div>
-
-                                {/* Badgeهای نقش */}
-                                <div className="admin-card-roles">
-                                    {admin.roles?.length > 0 ? (
-                                        admin.roles.map((role) => {
+                                    {/* Badgeهای نقش */}
+                                    <div className="admin-card-roles">
+                                        {admin.roles?.map((role) => {
                                             const config = getRoleConfig(
                                                 role.name,
                                             );
-                                            const IconComponent = config.icon;
+                                            const RoleIcon = config.icon;
                                             return (
                                                 <span
                                                     key={role.id}
@@ -448,116 +671,86 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                                                         border: `1px solid ${config.border}`,
                                                     }}
                                                 >
-                                                    <IconComponent size={12} />
+                                                    <RoleIcon size={12} />
                                                     {role.name}
                                                 </span>
                                             );
-                                        })
-                                    ) : (
-                                        <span className="no-role-text">
-                                            بدون نقش
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* اطلاعات تماس و تاریخ */}
-                                <div className="admin-card-info">
-                                    <div className="admin-card-info-row">
-                                        <Phone size={14} />
-                                        <span dir="ltr">
-                                            {admin.phone || "-"}
-                                        </span>
+                                        })}
                                     </div>
 
-                                    {admin.email && (
+                                    {/* اطلاعات */}
+                                    <div className="admin-card-info">
                                         <div className="admin-card-info-row">
-                                            <Mail size={14} />
-                                            <span dir="ltr">{admin.email}</span>
+                                            <Phone size={14} />
+                                            <span dir="ltr">
+                                                {admin.phone || "-"}
+                                            </span>
                                         </div>
-                                    )}
-
-                                    <div className="admin-card-info-row">
-                                        <Calendar size={14} />
-                                        <span>
-                                            عضویت:{" "}
-                                            {formatJalaliDate(admin.created_at)}
-                                        </span>
+                                        <div className="admin-card-info-row">
+                                            <Calendar size={14} />
+                                            <span>
+                                                عضویت:{" "}
+                                                {formatJalaliDate(
+                                                    admin.created_at,
+                                                )}
+                                            </span>
+                                        </div>
+                                        <div className="admin-card-info-row">
+                                            <Calendar size={14} />
+                                            <span>
+                                                آخرین تاریخ ورود:{" "}
+                                                {formatJalaliDate(
+                                                    admin.last_login_at,
+                                                )}
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className="admin-card-info-row">
-                                        <Clock size={14} />
-                                        <span>
-                                            آخرین ورود:{" "}
-                                            {formatLastLogin(
-                                                admin.last_login_at,
-                                            )}
-                                        </span>
+                                    {/* دکمه‌های عملیات */}
+                                    <div className="admin-card-actions">
+                                        <Link
+                                            href={`/admin/admins/${admin.slug}/edit`}
+                                            className="admin-card-btn edit"
+                                        >
+                                            <Edit size={16} />
+                                            ویرایش
+                                        </Link>
+                                        {currentUserId === admin.id ? (
+                                            <button
+                                                className="admin-card-btn delete disabled"
+                                                disabled
+                                                title="نمی‌توانید حساب خودتان را حذف کنید"
+                                                style={{
+                                                    cursor: "not-allowed",
+                                                    opacity: 0.5,
+                                                }}
+                                            >
+                                                <Lock size={16} />
+                                                حذف
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="admin-card-btn delete"
+                                                onClick={() =>
+                                                    openDeleteModal(admin)
+                                                }
+                                            >
+                                                <Trash2 size={16} />
+                                                حذف
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-
-                                {/* دکمه‌های عملیات */}
-                                <div className="admin-card-actions">
-                                    <Link
-                                        href={`/admin/admins/${admin.slug}/edit`}
-                                        className="admin-card-btn edit"
-                                        title="ویرایش"
-                                    >
-                                        <Edit size={16} />
-                                        ویرایش
-                                    </Link>
-                                    <button
-                                        className="admin-card-btn delete"
-                                        onClick={() => openDeleteModal(admin)}
-                                        title="حذف"
-                                    >
-                                        <Trash2 size={16} />
-                                        حذف
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 
-                {/* ============ صفحه‌بندی ============ */}
-                {admins.links && admins.links.length > 3 && (
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            marginTop: "1.5rem",
-                            flexWrap: "wrap",
-                            direction: "ltr",
-                        }}
-                    >
-                        {admins.links.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.url || "#"}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`btn-outline ${link.active ? "active" : ""}`}
-                                style={{
-                                    padding: "0.5rem 1rem",
-                                    fontSize: "0.875rem",
-                                    textDecoration: "none",
-                                    opacity: link.url ? 1 : 0.5,
-                                    pointerEvents: link.url ? "auto" : "none",
-                                    backgroundColor: link.active
-                                        ? "var(--primary)"
-                                        : "transparent",
-                                    color: link.active
-                                        ? "white"
-                                        : "var(--primary)",
-                                    width: "auto",
-                                }}
-                            />
-                        ))}
-                    </div>
-                )}
+                {/* صفحه‌بندی */}
+                <Pagination links={admins.links} />
             </div>
 
-            {/* ============ Modal حذف ============ */}
+            {/* Modalها */}
             <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
@@ -565,7 +758,7 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                 title="حذف ادمین"
                 message={
                     deleteModal.admin
-                        ? `آیا از حذف ادمین "${deleteModal.admin.name}" مطمئن هستید؟ این عملیات قابل بازگشت نیست و تمام دسترسی‌های این کاربر حذف خواهند شد.`
+                        ? `آیا از حذف ادمین "${deleteModal.admin.name}" مطمئن هستید؟`
                         : ""
                 }
                 confirmText="بله، حذف کن"
@@ -574,26 +767,19 @@ export default function AdminsIndex({ auth, admins, roles, filters, scope }) {
                 isLoading={deleteModal.isLoading}
             />
 
-            {/* ============ Modal تغییر وضعیت ============ */}
             <ConfirmModal
                 isOpen={toggleModal.isOpen}
                 onClose={closeToggleModal}
                 onConfirm={handleConfirmToggle}
-                title={
-                    toggleModal.admin?.is_active
-                        ? "غیرفعال کردن ادمین"
-                        : "فعال کردن ادمین"
-                }
+                title="تغییر وضعیت ادمین"
                 message={
                     toggleModal.admin
-                        ? toggleModal.admin.is_active
-                            ? `آیا می‌خواهید ادمین "${toggleModal.admin.name}" را غیرفعال کنید؟ این کاربر دیگر نمی‌تواند وارد سیستم شود.`
-                            : `آیا می‌خواهید ادمین "${toggleModal.admin.name}" را فعال کنید؟`
+                        ? `آیا می‌خواهید وضعیت ادمین "${toggleModal.admin.name}" را تغییر دهید؟`
                         : ""
                 }
                 confirmText="بله، تغییر بده"
                 cancelText="انصراف"
-                type={toggleModal.admin?.is_active ? "warning" : "success"}
+                type="warning"
                 isLoading={toggleModal.isLoading}
             />
         </Layout>

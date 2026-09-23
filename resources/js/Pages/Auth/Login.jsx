@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import Button from "../../Components/Button";
+import { useAlert } from "../../Components/AlertProvider";
+
 // import { route } from "ziggy-js";
 
-const heroImageUrl =
-    "https://images.unsplash.com/photo-1487958449943-2429e8be8625?q=80&w=1200&auto=format&fit=crop";
+import heroImageUrl from "./Assets/img/login-bg.jpg";
 
 export default function EmployeePortalLogin() {
     const [showPassword, setShowPassword] = useState(false);
+    const { success, error, toast, alert } = useAlert();
+
+    console.log("Alert:", {
+        success,
+        alert,
+        toast,
+    });
 
     const { data, setData, post, processing, errors } = useForm({
         phone: "",

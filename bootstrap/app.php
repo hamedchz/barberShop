@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\LogUserActivity;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use \Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             //     ->name('member.')
             //     ->group(base_path('routes/member.php'));
             Route::prefix('admin')
-                ->middleware(['web', 'auth'])
+                ->middleware(['web', 'auth', 'ensure-user-is-active'])
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
             // Route::prefix('check')
@@ -43,6 +47,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+        ]);
+        $middleware->appendToGroup('web', LogUserActivity::class);
+        RedirectIfAuthenticated::redirectUsing(fn() => route('user.home'));
+        $middleware->redirectGuestsTo(fn(Request $request) => route('auth.login'));
+        $middleware->alias([
+            'ensure-user-is-active' => EnsureUserIsActive::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
