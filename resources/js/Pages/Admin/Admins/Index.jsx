@@ -608,9 +608,6 @@ export default function AdminsIndex({
 
                                         <button
                                             className={`admin-card-status-btn status-${admin.status}`}
-                                            onClick={() =>
-                                                openToggleModal(admin)
-                                            }
                                             style={{
                                                 backgroundColor: statusCfg.bg,
                                                 color: statusCfg.color,
@@ -765,22 +762,6 @@ export default function AdminsIndex({
                 cancelText="انصراف"
                 type="danger"
                 isLoading={deleteModal.isLoading}
-            />
-
-            <ConfirmModal
-                isOpen={toggleModal.isOpen}
-                onClose={closeToggleModal}
-                onConfirm={handleConfirmToggle}
-                title="تغییر وضعیت ادمین"
-                message={
-                    toggleModal.admin
-                        ? `آیا می‌خواهید وضعیت ادمین "${toggleModal.admin.name}" را تغییر دهید؟`
-                        : ""
-                }
-                confirmText="بله، تغییر بده"
-                cancelText="انصراف"
-                type="warning"
-                isLoading={toggleModal.isLoading}
             />
         </Layout>
     );

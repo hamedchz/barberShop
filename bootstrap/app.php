@@ -32,6 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->middleware(['web', 'auth', 'ensure-user-is-active'])
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
+            Route::prefix('barber')
+                ->middleware(['web', 'auth', 'ensure-user-is-active'])
+                ->name('barber.')
+                ->group(base_path('routes/barber.php'));
             // Route::prefix('check')
             //     ->middleware(['web'])
             //     ->name('check.')

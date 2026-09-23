@@ -335,6 +335,8 @@ class AdminController extends Controller
         // return redirect()->back()->with('success', 'ادمین با موفقیت حذف شد.');
     }
 
+
+
     public function onlineStatus()
     {
         $admins = User::query()
