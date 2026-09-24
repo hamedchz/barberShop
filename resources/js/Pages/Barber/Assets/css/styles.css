@@ -1,0 +1,921 @@
+/* ============ Services Grid ============ */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.service-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #d1d5db;
+}
+
+.service-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.service-icon-box {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.service-status-badge.active {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #d1fae5;
+}
+
+.service-status-badge.inactive {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.service-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.service-description {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.service-meta {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.service-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.service-meta-item svg {
+  color: var(--primary);
+}
+
+.service-meta-item.price {
+  color: #059669;
+  font-weight: 700;
+}
+
+.service-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+/* ============ Availability Grid ============ */
+.availability-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .availability-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.availability-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: #f9fafb;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.availability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.availability-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.availability-item:hover {
+  background-color: #d1fae5;
+}
+
+.availability-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.day-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.day-time {
+  font-size: 0.75rem;
+  color: #047857;
+  direction: ltr;
+  text-align: right;
+}
+
+/* ============ Time Slots Layout ============ */
+.time-slots-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .time-slots-layout {
+    grid-template-columns: 380px 1fr;
+  }
+}
+
+.time-slots-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.time-slots-content {
+  min-width: 0;
+}
+
+/* ============ Time Slots Stats ============ */
+.time-slots-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.25rem;
+}
+
+.stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.stat-item.available {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.stat-item.booked {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.stat-item.blocked {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+/* ============ Time Slots List ============ */
+.time-slots-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-slot-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  flex-wrap: wrap;
+}
+
+.time-slot-row.status-available {
+  background-color: #ecfdf5;
+  border-color: #d1fae5;
+}
+
+.time-slot-row.status-booked {
+  background-color: #eff6ff;
+  border-color: #dbeafe;
+}
+
+.time-slot-row.status-blocked {
+  background-color: #fef2f2;
+  border-color: #fee2e2;
+}
+
+.time-slot-row-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  direction: ltr;
+  min-width: 120px;
+}
+
+.time-slot-row-service {
+  padding: 0.1875rem 0.5rem;
+  background-color: white;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.time-slot-row-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.status-available .time-slot-row-status {
+  color: #065f46;
+}
+
+.status-booked .time-slot-row-status {
+  color: #1e40af;
+}
+
+.status-blocked .time-slot-row-status {
+  color: #991b1b;
+}
+
+.time-slot-row-actions {
+  display: flex;
+  gap: 0.375rem;
+  margin-right: auto;
+}
+
+/* ============ Jalali Calendar ============ */
+.jalali-calendar {
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: var(--radius-md);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.25rem;
+}
+
+.calendar-nav-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.calendar-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.calendar-month {
+  font-size: 0.9375rem;
+}
+
+.calendar-year {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+}
+
+.calendar-day-wrapper {
+  aspect-ratio: 1;
+}
+
+.calendar-day {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: none;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+
+.calendar-day:hover:not(.selected):not(.empty) {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.calendar-day.today {
+  border: 2px solid var(--primary);
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.calendar-day.selected {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.calendar-day.empty {
+  cursor: default;
+  background-color: transparent;
+}
+
+/* ============ info-box ============ */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #eff6ff;
+  border-radius: var(--radius-sm);
+  border-right: 3px solid #3b82f6;
+  margin-top: 0.75rem;
+}
+
+.info-box p {
+  font-size: 0.75rem;
+  color: #1e40af;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============ empty-text ============ */
+.empty-text {
+  font-size: 0.8125rem;
+  color: var(--text-light);
+  font-style: italic;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+/* ============ Service Status Card ============ */
+.service-status-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.25rem;
+  background-color: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  text-align: right;
+  position: relative;
+  overflow: hidden;
+}
+
+/* نوار رنگی سمت راست کارت */
+.service-status-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background-color: #d1d5db;
+  transition: background-color 0.3s;
+}
+
+.service-status-card:hover {
+  border-color: #d1d5db;
+  background-color: #fafafa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* حالت فعال */
+.service-status-card.active {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+}
+
+.service-status-card.active::before {
+  background: linear-gradient(180deg, #10b981, #059669);
+  width: 4px;
+}
+
+.service-status-card.active:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.18);
+  transform: translateY(-2px);
+}
+
+/* حالت غیرفعال */
+.service-status-card.inactive {
+  border-color: #d1d5db;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+}
+
+.service-status-card.inactive::before {
+  background: linear-gradient(180deg, #9ca3af, #6b7280);
+}
+
+.service-status-card.inactive:hover {
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ============ آیکون ============ */
+.service-status-card-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.service-status-card.active .service-status-card-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.service-status-card.inactive .service-status-card-icon {
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  color: #6b7280;
+}
+
+/* ============ محتوا ============ */
+.service-status-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.service-status-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  transition: color 0.3s;
+}
+
+.service-status-card.active .service-status-card-title {
+  color: #065f46;
+}
+
+.service-status-card.inactive .service-status-card-title {
+  color: #374151;
+}
+
+.service-status-card-description {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+  transition: color 0.3s;
+}
+
+.service-status-card.active .service-status-card-description {
+  color: #047857;
+}
+
+/* ============ Action (Badge + Switch) ============ */
+.service-status-card-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Badge وضعیت */
+.service-status-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.service-status-card-badge.active {
+  background-color: #10b981;
+  color: white;
+  border: 1px solid #10b981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.service-status-card-badge.inactive {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* ============ Switch ============ */
+.service-status-card-switch {
+  display: flex;
+  align-items: center;
+}
+
+.switch-track {
+  position: relative;
+  width: 3rem;
+  height: 1.75rem;
+  background-color: #d1d5db;
+  border-radius: 9999px;
+  transition: background-color 0.3s;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.service-status-card.active .switch-track {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 0.1875rem;
+  right: 0.1875rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.service-status-card.active .switch-thumb {
+  transform: translateX(-1.25rem);
+}
+
+/* ============ ریسپانسیو ============ */
+@media (max-width: 640px) {
+  .service-status-card {
+    padding: 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .service-status-card-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.875rem;
+  }
+
+  .service-status-card-title {
+    font-size: 0.9375rem;
+  }
+
+  .service-status-card-description {
+    font-size: 0.6875rem;
+  }
+
+  .service-status-card-action {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px dashed #e5e7eb;
+  }
+
+  .service-status-card-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+  }
+
+  .switch-track {
+    width: 2.5rem;
+    height: 1.5rem;
+  }
+
+  .switch-thumb {
+    width: 1.125rem;
+    height: 1.125rem;
+    top: 0.1875rem;
+    right: 0.1875rem;
+  }
+
+  .service-status-card.active .switch-thumb {
+    transform: translateX(-1rem);
+  }
+}
+
+.service-status-card.active .service-status-card-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+/* ============ Service Card Image ============ */
+.service-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  margin-bottom: 0.25rem;
+}
+
+.service-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.service-card:hover .service-card-image {
+  transform: scale(1.05);
+}
+
+.service-card-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #93c5fd;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.service-card-image-wrapper .service-status-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-card-image-wrapper .service-status-badge.active {
+  background-color: rgba(236, 253, 245, 0.95);
+  color: #065f46;
+  border-color: #d1fae5;
+}
+
+.service-card-image-wrapper .service-status-badge.inactive {
+  background-color: rgba(243, 244, 246, 0.95);
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+/* ============ Image Upload ============ */
+.image-upload-wrapper {
+  width: 100%;
+}
+
+/* باکس آپلود */
+.image-upload-box {
+  display: block;
+  position: relative;
+  width: 100%;
+  border: 2px dashed #d1d5db;
+  border-radius: var(--radius-md);
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+
+.image-upload-box:hover {
+  border-color: var(--primary);
+  background-color: #ecfdf5;
+}
+
+.image-upload-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.image-upload-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.image-upload-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.image-upload-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* پیش‌نمایش تصویر */
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* دکمه حذف تصویر */
+.image-remove-btn {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: rgba(239, 68, 68, 0.95);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.image-remove-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* ریسپانسیو */
+@media (max-width: 640px) {
+  .image-upload-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .image-upload-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .image-upload-text {
+    font-size: 0.8125rem;
+  }
+
+  .image-upload-hint {
+    font-size: 0.6875rem;
+  }
+}

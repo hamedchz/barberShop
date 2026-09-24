@@ -53,7 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
         $middleware->appendToGroup('web', LogUserActivity::class);
-        RedirectIfAuthenticated::redirectUsing(fn() => route('user.home'));
+        // RedirectIfAuthenticated::redirectUsing(fn() => route('user.home'));
         $middleware->redirectGuestsTo(fn(Request $request) => route('auth.login'));
         $middleware->alias([
             'ensure-user-is-active' => EnsureUserIsActive::class,

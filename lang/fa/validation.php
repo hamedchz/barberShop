@@ -312,7 +312,7 @@ return [
         'category_id' => "دسته بندی",
         'published_at' => 'تاریخ انتشار',
         "type" => "نوع",
-        "duration" => "مدت زمان اعتبار",
+        "duration" => "مدت زمان",
         "job_post" => "تعداد پیشنهاد ها",
         "job_highlight" => "تعداد پیشنهاد های برجسته",
         "job_featured" => "تعداد ویژگی‌های شغلی",

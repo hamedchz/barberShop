@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'user_id',
         'name',
@@ -13,12 +15,14 @@ class Service extends Model
         'duration',
         'price',
         'is_active',
+        'image',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
     ];
+
 
     public function user()
     {
