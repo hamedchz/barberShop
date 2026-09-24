@@ -12,16 +12,31 @@ use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    // public function show()
-    // {
-    //     return 'pashm';
-    // }
-    public function index()
-    {
-        $services = Service::where('user_id', auth()->id())
-            ->latest()
-            ->paginate(21);
 
+    public function index(Request $request)
+    {
+        $query = Service::where('user_id', auth()->id());
+
+        // ============ جستجو ============
+        if ($search = trim($request->input('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // ============ فیلتر وضعیت ============
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $services = $query->latest()->paginate(12)->withQueryString();
+
+        // ============ تبدیل داده‌ها ============
         $services->through(function ($service) {
             return [
                 'id' => $service->id,
@@ -29,10 +44,10 @@ class ServiceController extends Controller
                 'description' => $service->description,
                 'image' => $service->image
                     ? asset('storage/' . $service->image)
-                    : null,  // ← URL کامل
+                    : null,
                 'duration' => $service->duration,
                 'price' => $service->price,
-                'is_active' => $service->is_active,
+                'is_active' => (bool) $service->is_active,
                 'created_at' => $service->created_at,
                 'updated_at' => $service->updated_at,
             ];
@@ -40,6 +55,10 @@ class ServiceController extends Controller
 
         return Inertia::render('Barber/Services/Index', [
             'services' => $services,
+            'filters' => [
+                'search' => $search ?? '',
+                'status' => $request->input('status', ''),
+            ],
         ]);
     }
 

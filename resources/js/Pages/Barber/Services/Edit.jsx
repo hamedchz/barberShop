@@ -68,16 +68,16 @@ export default function ServicesEdit({ auth, service }) {
 
     return (
         <Layout>
-            <Head title={`ویرایش خدمت: ${service.name}`} />
+            <Head title={`ویرایش سرویس: ${service.name}`} />
 
             <div className="center-column">
                 {/* ============ هدر با دکمه بازگشت ============ */}
                 <div className="page-header-with-back">
                     <Link href="/barber/services" className="back-btn">
                         <ArrowRight size={20} />
-                        <span>بازگشت به لیست خدمات</span>
+                        <span>بازگشت به لیست سرویس ها</span>
                     </Link>
-                    <h1 className="page-title">ویرایش خدمت: {service.name}</h1>
+                    <h1 className="page-title">ویرایش سرویس: {service.name}</h1>
                 </div>
 
                 {/* ============ کارت فرم ============ */}
@@ -94,10 +94,10 @@ export default function ServicesEdit({ auth, service }) {
                         </div>
                         <div>
                             <h2 className="form-card-title">
-                                ویرایش اطلاعات خدمت
+                                ویرایش اطلاعات سرویس
                             </h2>
                             <p className="form-card-subtitle">
-                                مشخصات خدمت را می‌توانید تغییر دهید.
+                                مشخصات سرویس را می‌توانید تغییر دهید.
                             </p>
                         </div>
                     </div>
@@ -110,7 +110,7 @@ export default function ServicesEdit({ auth, service }) {
                         <div className="form-group">
                             <label className="form-label">
                                 <ImageIcon size={16} />
-                                تصویر خدمت
+                                تصویر سرویس
                                 <span className="form-hint">(اختیاری)</span>
                             </label>
 
@@ -169,11 +169,11 @@ export default function ServicesEdit({ auth, service }) {
                                 </p>
                             )}
                         </div>
-                        {/* ============ نام خدمت ============ */}
+                        {/* ============ نام سرویس ============ */}
                         <div className="form-group">
                             <label htmlFor="name" className="form-label">
                                 <Scissors size={16} />
-                                نام خدمت
+                                نام سرویس
                                 <span className="required">*</span>
                             </label>
                             <input
@@ -212,7 +212,7 @@ export default function ServicesEdit({ auth, service }) {
                                 onChange={(e) =>
                                     setData("description", e.target.value)
                                 }
-                                placeholder="توضیح مختصری درباره این خدمت..."
+                                placeholder="توضیح مختصری درباره این سرویس..."
                                 rows={3}
                             />
                             {errors.description && (
@@ -258,7 +258,7 @@ export default function ServicesEdit({ auth, service }) {
                                     </div>
                                 )}
                                 <p className="form-help-text">
-                                    مدت زمان تقریبی این خدمت به دقیقه
+                                    مدت زمان تقریبی این سرویس به دقیقه
                                 </p>
                             </div>
 
@@ -274,12 +274,11 @@ export default function ServicesEdit({ auth, service }) {
                                     className={`form-input ${
                                         errors.price ? "error" : ""
                                     }`}
-                                    value={data.price}
+                                    value={Number(data.price)}
                                     onChange={(e) =>
                                         setData("price", e.target.value)
                                     }
                                     min={0}
-                                    step={1000}
                                     dir="ltr"
                                     style={{ textAlign: "left" }}
                                 />
@@ -321,13 +320,13 @@ export default function ServicesEdit({ auth, service }) {
                             <div className="service-status-card-content">
                                 <h4 className="service-status-card-title">
                                     {data.is_active
-                                        ? "خدمت فعال است"
-                                        : "خدمت غیرفعال است"}
+                                        ? "سرویس فعال است"
+                                        : "سرویس غیرفعال است"}
                                 </h4>
                                 <p className="service-status-card-description">
                                     {data.is_active
-                                        ? "این خدمت در لیست خدمات قابل رزرو مشتریان نمایش داده می‌شود."
-                                        : "این خدمت در لیست خدمات قابل رزرو مشتریان نمایش داده نمی‌شود."}
+                                        ? "این سرویس در لیست سرویس ها قابل رزرو مشتریان نمایش داده می‌شود."
+                                        : "این سرویس در لیست سرویس ها قابل رزرو مشتریان نمایش داده نمی‌شود."}
                                 </p>
                             </div>
 
@@ -362,9 +361,9 @@ export default function ServicesEdit({ auth, service }) {
                         <div className="info-box">
                             <Info size={16} />
                             <p>
-                                <strong>نکته:</strong> اگر خدمت را غیرفعال کنید،
-                                در لیست خدمات مشتریان نمایش داده نمی‌شود، اما
-                                رزروهای قبلی آن حفظ می‌شوند.
+                                <strong>نکته:</strong> اگر سرویس را غیرفعال
+                                کنید، در لیست سرویس ها مشتریان نمایش داده
+                                نمی‌شود، اما رزروهای قبلی آن حفظ می‌شوند.
                             </p>
                         </div>
 

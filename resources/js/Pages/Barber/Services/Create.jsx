@@ -51,15 +51,15 @@ export default function ServicesCreate() {
 
     return (
         <Layout>
-            <Head title="ایجاد خدمت جدید" />
+            <Head title="ایجاد سرویس جدید" />
 
             <div className="center-column">
                 <div className="page-header-with-back">
                     <Link href="/barber/services" className="back-btn">
                         <ArrowRight size={20} />
-                        <span>بازگشت به لیست خدمات</span>
+                        <span>بازگشت به لیست سرویس ها</span>
                     </Link>
-                    <h1 className="page-title">ایجاد خدمت جدید</h1>
+                    <h1 className="page-title">ایجاد سرویس جدید</h1>
                 </div>
 
                 <div className="form-card">
@@ -74,9 +74,9 @@ export default function ServicesCreate() {
                             <Scissors size={24} />
                         </div>
                         <div>
-                            <h2 className="form-card-title">اطلاعات خدمت</h2>
+                            <h2 className="form-card-title">اطلاعات سرویس</h2>
                             <p className="form-card-subtitle">
-                                مشخصات خدمتی که ارائه می‌دهید را وارد کنید.
+                                مشخصات سرویسی که ارائه می‌دهید را وارد کنید.
                             </p>
                         </div>
                     </div>
@@ -86,7 +86,7 @@ export default function ServicesCreate() {
                         <div className="form-group">
                             <label className="form-label">
                                 <ImageIcon size={16} />
-                                تصویر خدمت
+                                تصویر سرویس
                                 <span className="form-hint">(اختیاری)</span>
                             </label>
 
@@ -143,7 +143,7 @@ export default function ServicesCreate() {
                         <div className="form-group">
                             <label className="form-label">
                                 <Scissors size={16} />
-                                نام خدمت
+                                نام سرویس
                                 <span className="required">*</span>
                             </label>
                             <input
@@ -177,7 +177,7 @@ export default function ServicesCreate() {
                                 onChange={(e) =>
                                     setData("description", e.target.value)
                                 }
-                                placeholder="توضیح مختصری درباره این خدمت..."
+                                placeholder="توضیح مختصری درباره این سرویس..."
                                 rows={3}
                             />
                         </div>
@@ -266,13 +266,13 @@ export default function ServicesCreate() {
                             <div className="service-status-card-content">
                                 <h4 className="service-status-card-title">
                                     {data.is_active
-                                        ? "خدمت فعال است"
-                                        : "خدمت غیرفعال است"}
+                                        ? "سرویس فعال است"
+                                        : "سرویس غیرفعال است"}
                                 </h4>
                                 <p className="service-status-card-description">
                                     {data.is_active
-                                        ? "این خدمت در لیست خدمات قابل رزرو مشتریان نمایش داده می‌شود."
-                                        : "این خدمت در لیست خدمات قابل رزرو مشتریان نمایش داده نمی‌شود."}
+                                        ? "این سرویس در لیست سرویس ها قابل رزرو مشتریان نمایش داده می‌شود."
+                                        : "این سرویس در لیست سرویس ها قابل رزرو مشتریان نمایش داده نمی‌شود."}
                                 </p>
                             </div>
 
@@ -315,8 +315,8 @@ export default function ServicesCreate() {
                                 <span className="toggle-switch"></span>
                                 <span className="toggle-switch-label">
                                     {data.is_active
-                                        ? "خدمت فعال است"
-                                        : "خدمت غیرفعال است"}
+                                        ? "سرویس فعال است"
+                                        : "سرویس غیرفعال است"}
                                 </span>
                             </label>
                         </div> */}
@@ -348,7 +348,7 @@ export default function ServicesCreate() {
                                 ) : (
                                     <>
                                         <Save size={18} />
-                                        ذخیره خدمت
+                                        ذخیره سرویس
                                     </>
                                 )}
                             </button>
