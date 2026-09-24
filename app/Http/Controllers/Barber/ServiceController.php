@@ -72,7 +72,7 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'duration' => 'required|integer|min:5|max:480',
+            'duration' => 'required|integer|min:1|max:480',
             'price' => 'required|numeric|min:0',
             'is_active' => 'boolean',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',

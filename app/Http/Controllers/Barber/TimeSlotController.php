@@ -9,31 +9,49 @@ use App\Models\TimeSlot;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Hekmatinasser\Verta\Verta;
 
 class TimeSlotController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $jalaliYear = $request->input('jy', null);
-        $jalaliMonth = $request->input('jm', null);
-        $jalaliDay = $request->input('jd', null);
 
-        // اگر تاریخ انتخاب نشده، امروز
-        $selectedDate = $jalaliYear && $jalaliMonth && $jalaliDay
-            ? \Morilog\Jalali\Jalalian::fromFormat('Y/m/d', "$jalaliYear/$jalaliMonth/$jalaliDay")->toCarbon()
-            : Carbon::today();
+        $user = auth()->user();
+
+        $jalaliYear = $request->input('jy');
+        $jalaliMonth = $request->input('jm');
+        $jalaliDay = $request->input('jd');
+
+        // اگر تاریخ شمسی انتخاب شده باشد
+        if ($jalaliYear && $jalaliMonth && $jalaliDay) {
+
+            $jalaliDate = sprintf(
+                '%04d/%02d/%02d',
+                $jalaliYear,
+                $jalaliMonth,
+                $jalaliDay
+            );
+
+            // تبدیل تاریخ شمسی به میلادی با Verta
+            $selectedDate = Verta::parseFormat('Y/m/d', $jalaliDate)->datetime();
+        } else {
+            // اگر تاریخ انتخاب نشده، امروز
+            $selectedDate = Carbon::today();
+        }
+
+        // تاریخ میلادی برای Query
+        $gregorianDate = Carbon::parse($selectedDate)->toDateString();
 
         // بازه‌های این تاریخ
         $timeSlots = TimeSlot::where('user_id', $user->id)
-            ->where('date', $selectedDate->toDateString())
+            ->where('date', $gregorianDate)
             ->with(['service', 'bookedBy'])
             ->orderBy('start_time')
             ->get();
 
         // بررسی اینکه این روز در برنامه هفتگی هست یا نه
         $availability = Availability::where('user_id', $user->id)
-            ->where('day_of_week', $selectedDate->dayOfWeek)
+            ->where('day_of_week', Carbon::parse($selectedDate)->dayOfWeek)
             ->where('is_active', true)
             ->first();
 
@@ -45,7 +63,10 @@ class TimeSlotController extends Controller
         return Inertia::render('Barber/TimeSlots/Index', [
             'timeSlots' => $timeSlots,
             'services' => $services,
-            'selectedDate' => $selectedDate->toDateString(),
+
+            // تاریخ میلادی ذخیره‌شده در دیتابیس
+            'selectedDate' => $gregorianDate,
+
             'availability' => $availability,
         ]);
     }

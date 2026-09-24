@@ -18,13 +18,13 @@ Route::prefix('/services')
     Route::delete('/{service}',  'destroy')->name('destroy');
   });
 
-Route::prefix('/availability')
-  ->name('availability.')->controller(AvailabilityController::class)->group(function () {
+Route::prefix('/availabilities')
+  ->name('availabilities.')->controller(AvailabilityController::class)->group(function () {
 
 
-    Route::get('/', 'index')->name('list');
+    Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
-    Route::get('/{availability}', 'destroy')->name('destroy');
+    Route::delete('/{availability}', 'destroy')->name('destroy');
   });
 
 Route::prefix('/time-slots')

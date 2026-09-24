@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Barber;
 
+use App\Enums\Casts\LogsStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Availability;
+use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,13 +29,8 @@ class AvailabilityController extends Controller
             'day_of_week' => 'required|integer|min:0|max:6',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-        ], [
-            'day_of_week.required' => 'انتخاب روز هفته الزامی است.',
-            'start_time.required' => 'ساعت شروع الزامی است.',
-            'end_time.after' => 'ساعت پایان باید بعد از ساعت شروع باشد.',
         ]);
-
-        Availability::updateOrCreate(
+        $store = Availability::updateOrCreate(
             [
                 'user_id' => auth()->id(),
                 'day_of_week' => $validated['day_of_week'],
@@ -45,9 +42,19 @@ class AvailabilityController extends Controller
             ]
         );
 
-        return redirect()
-            ->route('barber.availabilities.index')
-            ->with('success', 'برنامه کاری ذخیره شد.');
+        if ($store) {
+            (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . ' برنامه کاری ', LogsStatus::store->value);
+            StickyAlert::toast(
+                'برنامه کاری با موفقیت ایجاد شد.',
+                'success'
+            );
+        } else {
+            StickyAlert::toast(
+                'مشکلی وجود دارد.',
+                'error'
+            );
+        }
+        return to_route('barber.availabilities.index');
     }
 
     public function destroy(Availability $availability)
@@ -56,10 +63,20 @@ class AvailabilityController extends Controller
             abort(403);
         }
 
-        $availability->delete();
+        $delete = $availability->delete();
 
-        return redirect()
-            ->route('barber.availabilities.index')
-            ->with('success', 'روز مورد نظر حذف شد.');
+        if ($delete) {
+            (new \App\Models\Log())->storeLog($availability->id, LogsStatus::delete->value . ' برنامه کاری ', LogsStatus::delete->value);
+            StickyAlert::toast(
+                'روز مورد نظر حذف شد.',
+                'success'
+            );
+        } else {
+            StickyAlert::toast(
+                'مشکلی وجود دارد.',
+                'error'
+            );
+        }
+        return to_route('barber.availabilities.index');
     }
 }

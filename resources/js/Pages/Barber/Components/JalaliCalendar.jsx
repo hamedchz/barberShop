@@ -117,7 +117,9 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                     <span className="calendar-month">
                         {monthNames[currentMonth - 1]}
                     </span>
-                    <span className="calendar-year">{currentYear}</span>
+                    <span className="calendar-year">
+                        {currentYear.toLocaleString("fa-IR")}
+                    </span>
                 </div>
 
                 <button

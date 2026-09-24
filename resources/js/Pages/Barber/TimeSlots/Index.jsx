@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { Head, router } from "@inertiajs/react";
-import Layout from "../../../Layouts/Layout";
-import JalaliCalendar from "../../../Components/JalaliCalendar";
+import Layout from "../Layouts/Layout";
+import ConfirmModal from "../../Admin/Components/ConfirmModal";
+import JalaliCalendar from "../Components/JalaliCalendar";
 import { toJalaali } from "jalaali-js";
+import {
+    toPersianNumber,
+    toPersianTime,
+    toPersianTimeRange,
+} from "../../../utils/persianNumbers";
 import {
     Clock,
     Plus,
@@ -23,12 +29,20 @@ export default function TimeSlotsIndex({
 }) {
     const [date, setDate] = useState(new Date(selectedDate));
     const [selectedService, setSelectedService] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const selectedJalali = toJalaali(
         date.getFullYear(),
         date.getMonth() + 1,
         date.getDate(),
     );
+
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        timeSlot: null,
+        isLoading: false,
+    });
 
     const formattedJalaliDate = `${selectedJalali.jy}/${String(
         selectedJalali.jm,
@@ -52,6 +66,8 @@ export default function TimeSlotsIndex({
     // ============ ساخت بازه‌ها ============
     const handleGenerate = (e) => {
         e.preventDefault();
+        setErrors({});
+        setIsSubmitting(true);
         const dateStr = `${date.getFullYear()}-${String(
             date.getMonth() + 1,
         ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -62,7 +78,17 @@ export default function TimeSlotsIndex({
                 date: dateStr,
                 service_id: selectedService || null,
             },
-            { preserveScroll: true },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsSubmitting(false);
+                    setErrors({});
+                },
+                onError: (err) => {
+                    setErrors(err);
+                    setIsSubmitting(false);
+                },
+            },
         );
     };
 
@@ -77,13 +103,26 @@ export default function TimeSlotsIndex({
         );
     };
 
-    // ============ حذف ============
-    const handleDelete = (id) => {
-        if (confirm("این بازه حذف شود؟")) {
-            router.delete(`/barber/time-slots/${id}`, {
-                preserveScroll: true,
-            });
-        }
+    // ============ باز کردن Modal ============
+    const openDeleteModal = (timeSlot) =>
+        setDeleteModal({ isOpen: true, timeSlot, isLoading: false });
+
+    // ============ بستن Modal ============
+    const closeDeleteModal = () =>
+        setDeleteModal({ isOpen: false, timeSlot: null, isLoading: false });
+
+    // ============ تایید حذف ============
+    const handleConfirmDelete = () => {
+        if (!deleteModal.timeSlot) return;
+
+        setDeleteModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.delete(`/barber/time-slots/${deleteModal.timeSlot.id}`, {
+            preserveScroll: true,
+            onSuccess: () => closeDeleteModal(),
+            onError: () =>
+                setDeleteModal((prev) => ({ ...prev, isLoading: false })),
+        });
     };
 
     // ============ آمار ============
@@ -162,26 +201,59 @@ export default function TimeSlotsIndex({
                                             </option>
                                             {services.map((s) => (
                                                 <option key={s.id} value={s.id}>
-                                                    {s.name} ({s.duration}{" "}
+                                                    {s.name} (
+                                                    {toPersianNumber(
+                                                        s.duration,
+                                                    )}{" "}
                                                     دقیقه)
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
-                                    <button
+                                    {/* <button
                                         type="submit"
                                         className="btn-primary"
                                     >
                                         <Plus size={16} />
                                         ساخت بازه‌ها
+                                    </button> */}
+                                    <button
+                                        type="submit"
+                                        className="btn-primary"
+                                        disabled={isSubmitting}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.5rem",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <span className="spinner"></span>
+                                                در حال ذخیره...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <>
+                                                    <Plus size={16} />
+                                                    ذخیره برنامه
+                                                </>
+                                            </>
+                                        )}
                                     </button>
                                 </form>
                                 <div className="info-box">
                                     <p>
                                         برنامه این روز:{" "}
                                         <strong>
-                                            {availability.start_time} -{" "}
-                                            {availability.end_time}
+                                            {toPersianTime(
+                                                availability.start_time,
+                                            )}{" "}
+                                            -{" "}
+                                            {toPersianTime(
+                                                availability.end_time,
+                                            )}
                                         </strong>
                                     </p>
                                 </div>
@@ -219,10 +291,11 @@ export default function TimeSlotsIndex({
                             <div className="card-header">
                                 <h2 className="card-title">
                                     <Clock size={20} />
-                                    بازه‌های {formattedJalaliDate}
+                                    بازه‌های{" "}
+                                    {toPersianNumber(formattedJalaliDate)}
                                 </h2>
                                 <span className="permissions-count">
-                                    {stats.total} بازه
+                                    {toPersianNumber(stats.total)} بازه
                                 </span>
                             </div>
 
@@ -230,15 +303,22 @@ export default function TimeSlotsIndex({
                             <div className="time-slots-stats">
                                 <div className="stat-item available">
                                     <Unlock size={16} />
-                                    <span>{stats.available} قابل رزرو</span>
+                                    <span>
+                                        {toPersianNumber(stats.available)} قابل
+                                        رزرو
+                                    </span>
                                 </div>
                                 <div className="stat-item booked">
                                     <CheckCircle size={16} />
-                                    <span>{stats.booked} رزرو شده</span>
+                                    <span>
+                                        {toPersianNumber(stats.booked)} رزرو شده
+                                    </span>
                                 </div>
                                 <div className="stat-item blocked">
                                     <Lock size={16} />
-                                    <span>{stats.blocked} بسته</span>
+                                    <span>
+                                        {toPersianNumber(stats.blocked)} بسته
+                                    </span>
                                 </div>
                             </div>
 
@@ -257,8 +337,13 @@ export default function TimeSlotsIndex({
                                             <div className="time-slot-row-time">
                                                 <Clock size={16} />
                                                 <span>
-                                                    {slot.start_time} -{" "}
-                                                    {slot.end_time}
+                                                    {toPersianTime(
+                                                        slot.start_time,
+                                                    )}{" "}
+                                                    -{" "}
+                                                    {toPersianTime(
+                                                        slot.end_time,
+                                                    )}
                                                 </span>
                                             </div>
 
@@ -317,8 +402,8 @@ export default function TimeSlotsIndex({
                                                     <button
                                                         className="btn-icon danger"
                                                         onClick={() =>
-                                                            handleDelete(
-                                                                slot.id,
+                                                            openDeleteModal(
+                                                                slot,
                                                             )
                                                         }
                                                         title="حذف"
@@ -335,6 +420,25 @@ export default function TimeSlotsIndex({
                     </div>
                 </div>
             </div>
+            {/* ============ Modal حذف ============ */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleConfirmDelete}
+                title="حذف بازه زمانی"
+                message={
+                    deleteModal.timeSlot
+                        ? `آیا از حذف بازه زمانی «${toPersianTimeRange(
+                              deleteModal.timeSlot.start_time,
+                              deleteModal.timeSlot.end_time,
+                          )}» در تاریخ ${toPersianNumber(formattedJalaliDate)} مطمئن هستید؟ این عملیات قابل بازگشت نیست.`
+                        : ""
+                }
+                confirmText="بله، حذف کن"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={deleteModal.isLoading}
+            />
         </Layout>
     );
 }

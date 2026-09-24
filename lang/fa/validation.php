@@ -184,6 +184,7 @@ return [
     */
 
     'attributes' => [
+        'day_of_week' => 'روز هفته',
         'slug' => 'نامک',
         'schema_code' => 'کد اسکیما',
         'date' => 'تاریخ',
