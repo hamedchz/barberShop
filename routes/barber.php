@@ -30,10 +30,6 @@ Route::prefix('/availabilities')
 Route::prefix('/time-slots')
   ->name('time-slots.')->controller(TimeSlotController::class)->group(function () {
 
-    // Route::post('/generate', 'generateTimeSlots')->name('generate');
-    // Route::patch('/{timeSlot}', 'updateTimeSlot')->name('update');
-    // Route::delete('/{timeSlot}', 'destroyTimeSlot')->name('destroy');
-
     Route::get('/',  'index')->name('index');
     Route::post('/generate', 'generate')->name('generate');
     Route::patch('/{timeSlot}',  'update')->name('update');

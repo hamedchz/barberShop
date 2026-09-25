@@ -7,6 +7,7 @@ import TimePicker from "../Components/TimePicker";
 import {
     toPersianTime,
     toPersianTimeRange,
+    toPersianNumber,
 } from "../../../utils/persianNumbers";
 import {
     Calendar,
@@ -369,7 +370,7 @@ export default function AvailabilitiesIndex({
                                 برنامه فعلی
                             </h2>
                             <span className="permissions-count">
-                                {availabilities.length} روز
+                                {toPersianNumber(availabilities.length)} روز
                             </span>
                         </div>
 

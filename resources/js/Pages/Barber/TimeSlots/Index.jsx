@@ -26,11 +26,22 @@ export default function TimeSlotsIndex({
     services,
     selectedDate,
     availability,
+    selectedServiceId, // ← عدد
+    service, // ← اطلاعات کامل سرویس انتخاب شده
+    filters,
 }) {
     const [date, setDate] = useState(new Date(selectedDate));
-    const [selectedService, setSelectedService] = useState("");
+    // const [selectedService, setSelectedService] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // ============ State ============
+
+    // چون service_id اجباری است، selectedService همیشه پر است
+    const [selectedService, setSelectedService] = useState(
+        selectedServiceId ? String(selectedServiceId) : "",
+    );
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const selectedJalali = toJalaali(
         date.getFullYear(),
@@ -58,7 +69,7 @@ export default function TimeSlotsIndex({
         );
         router.get(
             "/barber/time-slots",
-            { jy: j.jy, jm: j.jm, jd: j.jd },
+            { jy: j.jy, jm: j.jm, jd: j.jd, service_id: selectedServiceId },
             { preserveState: true, preserveScroll: true, replace: true },
         );
     };
@@ -140,7 +151,10 @@ export default function TimeSlotsIndex({
             <div className="center-column">
                 <div className="roles-page-header">
                     <div>
-                        <h1 className="roles-page-title">زمان‌بندی نوبت‌ها</h1>
+                        <h1 className="roles-page-title">
+                            زمان‌بندی نوبت‌ها برای سرویس {service.name} (
+                            {toPersianNumber(service.duration)} دقیقه)
+                        </h1>
                         <p
                             style={{
                                 color: "#6b7280",
@@ -185,30 +199,11 @@ export default function TimeSlotsIndex({
                                 >
                                     <div className="form-group">
                                         <label className="form-label">
-                                            خدمت (اختیاری)
+                                            سرویس انتخاب شده:
                                         </label>
-                                        <select
-                                            className="form-input"
-                                            value={selectedService}
-                                            onChange={(e) =>
-                                                setSelectedService(
-                                                    e.target.value,
-                                                )
-                                            }
-                                        >
-                                            <option value="">
-                                                بدون خدمت (۳۰ دقیقه)
-                                            </option>
-                                            {services.map((s) => (
-                                                <option key={s.id} value={s.id}>
-                                                    {s.name} (
-                                                    {toPersianNumber(
-                                                        s.duration,
-                                                    )}{" "}
-                                                    دقیقه)
-                                                </option>
-                                            ))}
-                                        </select>
+                                        {service.name} (
+                                        {toPersianNumber(service.duration)}{" "}
+                                        دقیقه)
                                     </div>
                                     {/* <button
                                         type="submit"

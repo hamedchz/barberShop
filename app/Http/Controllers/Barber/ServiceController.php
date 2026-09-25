@@ -34,7 +34,7 @@ class ServiceController extends Controller
             }
         }
 
-        $services = $query->latest()->paginate(12)->withQueryString();
+        $services = $query->latest()->paginate(21)->withQueryString();
 
         // ============ تبدیل داده‌ها ============
         $services->through(function ($service) {
@@ -98,7 +98,7 @@ class ServiceController extends Controller
             );
         }
 
-        return to_route('barber.services.index');
+        return to_route('barber.time-slots.index', ['service_id' => $store->id]);
     }
 
     public function edit(Service $service)

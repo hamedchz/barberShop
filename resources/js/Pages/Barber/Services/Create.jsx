@@ -348,7 +348,7 @@ export default function ServicesCreate() {
                                 ) : (
                                     <>
                                         <Save size={18} />
-                                        ذخیره سرویس
+                                        ذخیره سرویس و ادامه
                                     </>
                                 )}
                             </button>

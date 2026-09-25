@@ -36,7 +36,8 @@ class User extends Authenticatable
         'is_admin',
         'slug',
         'last_activity_at',
-        'last_login_at'
+        'last_login_at',
+        'avatar'
     ];
     protected function casts(): array
     {
@@ -61,5 +62,23 @@ class User extends Authenticatable
     public function lastActivity(): ?string
     {
         return Cache::get('user-is-online-' . $this->id);
+    }
+    public function avatarBig(): string
+    {
+        return Storage::url($this->avatar);
+    }
+
+    public function avatar(): string
+    {
+        // If the user doesn't have avatar, we will return default avatar
+        if (empty($this->avatar)) {
+            return asset('img/avatar.png');
+        }
+
+        if (Storage::exists('thumbnails/' . $this->avatar)) {
+            return Storage::url('thumbnails/' . $this->avatar);
+        } else {
+            return $this->avatarBig();
+        }
     }
 }

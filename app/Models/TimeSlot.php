@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Casts\TimeSlotStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class TimeSlot extends Model
@@ -18,6 +19,7 @@ class TimeSlot extends Model
 
     protected $casts = [
         'date' => 'date',
+        'status' => TimeSlotStatus::class
     ];
 
     public function user()

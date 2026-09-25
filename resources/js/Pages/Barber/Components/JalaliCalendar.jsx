@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { toJalaali, toGregorian } from "jalaali-js";
 import { ChevronRight, ChevronLeft } from "lucide-react";
-
+import { toPersianNumber } from "../../../utils/persianNumbers";
 const monthNames = [
     "فروردین",
     "اردیبهشت",
@@ -118,7 +118,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                         {monthNames[currentMonth - 1]}
                     </span>
                     <span className="calendar-year">
-                        {currentYear.toLocaleString("fa-IR")}
+                        {toPersianNumber(currentYear)}
                     </span>
                 </div>
 
@@ -151,7 +151,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                                 } ${isToday(day) ? "today" : ""}`}
                                 onClick={() => handleSelectDay(day)}
                             >
-                                {day}
+                                {toPersianNumber(day)}
                             </button>
                         ) : (
                             <div className="calendar-day empty"></div>
