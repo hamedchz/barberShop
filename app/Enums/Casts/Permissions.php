@@ -22,6 +22,9 @@ enum Permissions: string
   case managePackages = 'manage-packages';
   case manageAdmins = 'manage-admins';
   case manageOrder = 'manage-order';
+  case barberDashboardPanel = 'barber-dashboard-panel';
+
+
 
   public static function toArray(): array
   {
