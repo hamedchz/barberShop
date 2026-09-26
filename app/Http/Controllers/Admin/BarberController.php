@@ -26,9 +26,12 @@ class BarberController extends Controller
 {
     public function index(Request $request)
     {
-
-
-        $query = User::query()->with('roles')->where('is_admin', true);
+        $query = User::query()
+            ->with('roles')
+            ->where('is_admin', false)
+            ->whereHas('roles', function ($q) {
+                $q->where('roles.id', 8);
+            });
 
         // ============ فیلتر جستجو ============
         if ($search = trim($request->input('search', ''))) {
@@ -53,96 +56,101 @@ class BarberController extends Controller
         // ============ فیلتر فقط آنلاین ============
         $onlyOnline = $request->boolean('only_online', false);
 
-        $admins = $query->latest()->get();
+        $barbers = $query->latest()->get();
 
         // ============ محاسبه وضعیت آنلاین و فیلتر ============
-        $admins = $admins->map(function ($admin) {
+        $barbers = $barbers->map(function ($admin) {
             $admin->is_online = $admin->isOnline();
             $admin->last_activity = $admin->lastActivity();
+
             return $admin;
         });
 
-        // اگر فقط آنلاین‌ها درخواست شده باشد
         if ($onlyOnline) {
-            $admins = $admins->filter(fn($a) => $a->is_online);
+            $barbers = $barbers->filter(fn($a) => $a->is_online);
         }
 
         // ============ مرتب‌سازی: آنلاین‌ها اول ============
-        $admins = $admins->sortByDesc('is_online')->values();
+        $barbers = $barbers->sortByDesc('is_online')->values();
 
         // ============ صفحه‌بندی دستی ============
         $perPage = 21;
         $currentPage = (int) $request->input('page', 1);
-        $total = $admins->count();
-        $paginatedAdmins = $admins->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
-        $adminsPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
-            $paginatedAdmins,
+        $total = $barbers->count();
+
+        $paginatedbarbers = $barbers
+            ->slice(($currentPage - 1) * $perPage, $perPage)
+            ->values();
+
+        $barbersPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedbarbers,
             $total,
             $perPage,
             $currentPage,
-            ['path' => $request->url(), 'query' => $request->query()]
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
         );
 
         // ============ شمارش کل آنلاین‌ها ============
         $totalOnline = User::query()
+            ->where('is_admin', false)
             ->whereHas('roles', function ($q) {
-                $q->where('is_admin', true);
+                $q->where('roles.id', 2);
             })
             ->get()
             ->filter(fn($user) => $user->isOnline())
             ->count();
 
-        return Inertia::render('Admin/Admins/Index', [
-            'title' => 'لیست ادمین‌ها',
-            'admins' => $adminsPaginator->through(function ($admin) {
-                return [
-                    'id' => $admin->id,
-                    'name' => $admin->name,
-                    'phone' => $admin->phone,
-                    'slug' => $admin->slug,
-                    'avatar' => $admin->avatar,
-                    'thumbnail' => $admin->avatar(),
+        return Inertia::render('Admin/Barbers/Index', [
+            'title' => 'لیست آرایشگر ها',
 
-                    'status' => $admin->status?->value ?? 'active',
-                    'is_online' => $admin->is_online,
-                    'last_activity' => $admin->last_activity,
-                    'created_at' => $admin->created_at,
-                    'last_login_at' => $admin->last_login_at,
-                    'roles' => $admin->roles->map(function ($role) {
+            'barbers' => $barbersPaginator->through(function ($barber) {
+                return [
+                    'id' => $barber->id,
+                    'name' => $barber->name,
+                    'phone' => $barber->phone,
+                    'slug' => $barber->slug,
+                    'avatar' => $barber->avatar,
+                    'thumbnail' => $barber->avatar(),
+
+                    'status' => $barber->status?->value ?? 'active',
+                    'is_online' => $barber->is_online,
+                    'last_activity' => $barber->last_activity,
+                    'created_at' => $barber->created_at,
+                    'last_login_at' => $barber->last_login_at,
+
+                    'roles' => $barber->roles->map(function ($role) {
                         return [
                             'id' => $role->id,
                             'name' => $role->name,
-                            // 'label' => $this->translateRoleName($role->name),
                         ];
                     }),
                 ];
             }),
-            'roles' => Role::select('id', 'name')->get()->map(fn($role) => [
-                'id' => $role->id,
-                'name' => $role->name,
-                // 'label' => $this->translateRoleName($role->name),
-            ]),
+
             'totalOnline' => $totalOnline,
             'filters' => [
                 'search' => $search ?? '',
                 'status' => $request->input('status', ''),
-                'role' => $request->input('role', ''),
                 'only_online' => $onlyOnline,
             ],
-            'scope' => ['admins', 'admin-list'],
+
+            'scope' => ['barbers', 'barber-list'],
         ]);
     }
     public function create()
     {
         // $this->authorize(Permissions::manageAdmins->value);
         $context = [
-            'title' => 'New Admin',
+            'title' => 'New barber',
             'roles' => Role::all(),
-            'scope' => ['admins', 'admin-create'],
+            'scope' => ['barbers', 'barber-create'],
         ];
 
-        return Inertia::render('Admin/Admins/Create', $context);
+        return Inertia::render('Admin/Barbers/Create', $context);
     }
     public function store(Request $request)
     {
@@ -154,7 +162,7 @@ class BarberController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone',
             'password' => ['required', 'confirmed', Password::min(8)],
-            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
+            // 'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
 
         ]);
@@ -189,7 +197,6 @@ class BarberController extends Controller
             'name' => Str::lower($validated['name']),
             'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
-            'is_admin' => true,
             'slug' => $slug,
             'phone_verified_at' => Carbon::now(),
             'status' => UserStatus::ACTIVE->value,
@@ -198,13 +205,13 @@ class BarberController extends Controller
         ]);
 
         $store->syncRoles(
-            Role::whereIn('id', $request->roles)->get()
+            Role::where('id', 8)->get()
         );
 
         if ($store) {
-            (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . 'admin', LogsStatus::store->value);
+            (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . 'barber', LogsStatus::store->value);
             StickyAlert::toast(
-                'ادمین جدید با موفقیت ایجاد شد.',
+                'آرایشگر جدید با موفقیت ایجاد شد.',
                 'success'
             );
         } else {
@@ -214,19 +221,17 @@ class BarberController extends Controller
             );
         }
 
-        return to_route('admin.admins.list');
+        return to_route('admin.barbers.list');
     }
 
     //edit admin
     public function edit(User $user)
     {
-        // بررسی اینکه کاربر ادمین است
-        if (!$user->is_admin) {
-            StickyAlert::alert(
-                'این کاربر ادمین نیست.',
-                'error'
-            );
-            return to_route('admin.admins.list');
+        // بررسی اینکه کاربر آرایشگر است
+        if (!$user->roles()->where('roles.id', 8)->exists()) {
+            StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
+
+            return to_route('admin.barbers.list');
         }
 
         // دریافت تمام نقش‌ها
@@ -238,12 +243,12 @@ class BarberController extends Controller
             ];
         });
 
-        // دریافت ID نقش‌های فعلی این ادمین
+        // دریافت ID نقش‌های فعلی این آرایشگر
         $adminRoleIds = $user->roles->pluck('id')->toArray();
 
-        return Inertia::render('Admin/Admins/Edit', [
-            'title' => 'ویرایش ادمین',
-            'admin' => [
+        return Inertia::render('Admin/Barbers/Edit', [
+            'title' => 'ویرایش آرایشگر',
+            'barber' => [
                 'name' => $user->name,
                 'slug' => $user->slug,
                 'phone' => $user->phone,
@@ -255,7 +260,7 @@ class BarberController extends Controller
             ],
             'roles' => $roles,
             'statuses' => UserStatus::toSelectArray(), // ← لیست Enum
-            'scope' => ['admins', 'admin-edit'],
+            'scope' => ['barbers', 'barber-edit'],
         ]);
     }
 
@@ -266,19 +271,17 @@ class BarberController extends Controller
 
         // $this->authorize(Permissions::manageAdmins->value);
 
-        if (!$user->is_admin) {
-            StickyAlert::alert(
-                'این کاربر ادمین نیست.',
-                'error'
-            );
-            return to_route('admin.admins.list');
+        if (!$user->roles()->where('roles.id', 8)->exists()) {
+            StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
+
+            return to_route('admin.barbers.list');
         }
         // ============ اعتبارسنجی ============
         $rules = [
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
             'status' => ['required', Rule::enum(UserStatus::class)], // ← اعتبارسنجی Enum
-            'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
+            // 'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
 
         ];
@@ -332,14 +335,12 @@ class BarberController extends Controller
             );
         }
         $update = $user->update($validated);
-        $user->syncRoles(
-            Role::whereIn('id', $request->roles)->get()
-        );
+
 
         if ($update) {
-            (new \App\Models\Log())->storeLog($user->id, LogsStatus::edit->value . 'admin', LogsStatus::edit->value);
+            (new \App\Models\Log())->storeLog($user->id, LogsStatus::edit->value . 'آرایشگر', LogsStatus::edit->value);
             StickyAlert::toast(
-                'ادمین  با موفقیت ویرایش شد.',
+                'آرایشگر  با موفقیت ویرایش شد.',
                 'success'
             );
         } else {
@@ -348,42 +349,23 @@ class BarberController extends Controller
                 'error'
             );
         }
-        return to_route('admin.admins.list');
+        return to_route('admin.barbers.list');
     }
 
-    public function destroy(User $admin)
+    public function destroy(User $barber)
     {
-        // جلوگیری از حذف خود
-        if (auth()->id() == $admin->id) {
-            session()->forget('alert');
-            StickyAlert::alert(
-                'نمی‌توانید حساب خودتان را حذف کنید.',
-                'success'
-            );
-            return redirect()->back();
-        }
 
-        // بررسی آخرین ادمین
-        $adminCount = User::where('is_admin', true)->count();
 
-        if ($adminCount <= 1) {
-            StickyAlert::alert(
-                'حداقل یک ادمین باید در سیستم باقی بماند.',
-                'success'
-            );
-            return to_route('admin.admins.list');
-        }
-
-        $adminName = $admin->name;
+        $barberName = $barber->name;
 
         // Soft Delete
-        $admin->delete();
+        $barber->delete();
 
 
-        (new \App\Models\Log())->storeLog($admin->id, LogsStatus::delete->value . 'حذف ادمین: ' . $adminName, LogsStatus::delete->value);
+        (new \App\Models\Log())->storeLog($barber->id, LogsStatus::delete->value . 'حذف آرایشگر: ' . $barberName, LogsStatus::delete->value);
 
         StickyAlert::toast(
-            'ادمین با موفقیت حذف شد.',
+            'آرایشگر با موفقیت حذف شد.',
             'success'
         );
         // return redirect()->back()->with('success', 'ادمین با موفقیت حذف شد.');
@@ -391,8 +373,10 @@ class BarberController extends Controller
 
     public function onlineStatus()
     {
-        $admins = User::query()
-            ->where('is_admin', true)
+        $barbers = User::query()
+            ->where('is_admin', false)->whereHas('roles', function ($q) {
+                $q->where('roles.id', 8);
+            })
             ->get()
             ->map(function ($admin) {
                 return [
@@ -403,8 +387,8 @@ class BarberController extends Controller
             });
 
         return response()->json([
-            'admins' => $admins,
-            'total_online' => $admins->where('is_online', true)->count(),
+            'barbers' => $barbers,
+            'total_online' => $barbers->where('is_online', true)->count(),
             'timestamp' => now()->toIso8601String(),
         ]);
     }

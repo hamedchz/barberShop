@@ -232,28 +232,27 @@ export default function Roles({ auth, roles, filters, scope }) {
                                 )}
                             </div>
                             <div className="role-actions">
-                                {role.name !== "آرایشگر" &&
-                                    role.name !== "سوپر ادمین" && (
-                                        <>
-                                            <Link
-                                                href={`/admin/roles/${role.id}/edit`}
-                                                className="btn-icon"
-                                                title="ویرایش نقش"
-                                            >
-                                                <Edit size={18} />
-                                            </Link>
+                                {role.id !== 1 && role.id !== 2 && (
+                                    <>
+                                        <Link
+                                            href={`/admin/roles/${role.id}/edit`}
+                                            className="btn-icon"
+                                            title="ویرایش نقش"
+                                        >
+                                            <Edit size={18} />
+                                        </Link>
 
-                                            <button
-                                                className="btn-icon danger"
-                                                title="حذف نقش"
-                                                onClick={() =>
-                                                    openDeleteModal(role)
-                                                }
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </>
-                                    )}
+                                        <button
+                                            className="btn-icon danger"
+                                            title="حذف نقش"
+                                            onClick={() =>
+                                                openDeleteModal(role)
+                                            }
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

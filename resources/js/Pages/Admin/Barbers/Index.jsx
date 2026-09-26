@@ -137,8 +137,7 @@ const getRoleConfig = (roleName) => {
 
 export default function AdminsIndex({
     auth,
-    admins,
-    roles,
+    barbers,
     filters,
     totalOnline: initialTotalOnline,
     scope,
@@ -157,35 +156,37 @@ export default function AdminsIndex({
 
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
-        admin: null,
+        barber: null,
         isLoading: false,
     });
 
-    const adminsList = admins.data || [];
+    const barbersList = barbers.data || [];
 
     // ============ مقداردهی اولیه وضعیت آنلاین ============
     useEffect(() => {
         const statuses = {};
-        adminsList.forEach((admin) => {
-            statuses[admin.id] = {
-                is_online: admin.is_online,
-                last_activity: admin.last_activity,
+        barbersList.forEach((barber) => {
+            statuses[barber.id] = {
+                is_online: barber.is_online,
+                last_activity: barber.last_activity,
             };
         });
         setOnlineStatuses(statuses);
-    }, [adminsList]);
+    }, [barbersList]);
 
     // ============ Polling هر ۳۰ ثانیه ============
     useEffect(() => {
         const fetchOnlineStatus = async () => {
             try {
                 setIsRefreshing(true);
-                const response = await axios.get("/admin/admins/online-status");
+                const response = await axios.get(
+                    "/admin/barbers/online-status",
+                );
                 const statuses = {};
-                response.data.admins.forEach((admin) => {
-                    statuses[admin.id] = {
-                        is_online: admin.is_online,
-                        last_activity: admin.last_activity,
+                response.data.barbers.forEach((barber) => {
+                    statuses[barber.id] = {
+                        is_online: barber.is_online,
+                        last_activity: barber.last_activity,
                     };
                 });
                 setOnlineStatuses(statuses);
@@ -211,45 +212,26 @@ export default function AdminsIndex({
     }, []);
 
     // ============ تابع کمکی ============
-    const getOnlineStatus = (adminId) => {
+    const getOnlineStatus = (barberId) => {
         return (
-            onlineStatuses[adminId] || {
+            onlineStatuses[barberId] || {
                 is_online: false,
                 last_activity: null,
             }
         );
     };
 
-    // ============ گزینه‌های نقش ============
-    const roleOptions = useMemo(
-        () =>
-            roles.map((role) => ({
-                value: role.id,
-                label: role.name,
-            })),
-        [roles],
-    );
-
-    const selectedRole = useMemo(() => {
-        if (!filters?.role) return null;
-        return roleOptions.find((opt) => opt.value == filters.role);
-    }, [filters?.role, roleOptions]);
-
     const hasActiveFilters =
-        filters?.status ||
-        filters?.role ||
-        filters?.search ||
-        filters?.only_online;
+        filters?.status || filters?.search || filters?.only_online;
 
     // ============ جستجو و فیلترها ============
     const handleSearch = (term) => {
         setIsSearching(true);
         router.get(
-            "/admin/admins",
+            "/admin/barbers",
             {
                 search: term,
                 status: filters?.status,
-                role: filters?.role,
                 only_online: filters?.only_online ? 1 : 0,
             },
             {
@@ -263,24 +245,10 @@ export default function AdminsIndex({
 
     const handleStatusFilter = (status) => {
         router.get(
-            "/admin/admins",
+            "/admin/barbers",
             {
                 search: searchTerm,
                 status,
-                role: filters?.role,
-                only_online: filters?.only_online ? 1 : 0,
-            },
-            { preserveState: true, preserveScroll: true, replace: true },
-        );
-    };
-
-    const handleRoleFilter = (selectedOption) => {
-        router.get(
-            "/admin/admins",
-            {
-                search: searchTerm,
-                status: filters?.status,
-                role: selectedOption ? selectedOption.value : "",
                 only_online: filters?.only_online ? 1 : 0,
             },
             { preserveState: true, preserveScroll: true, replace: true },
@@ -290,11 +258,10 @@ export default function AdminsIndex({
     // ============ فیلتر فقط آنلاین ============
     const handleOnlyOnlineToggle = () => {
         router.get(
-            "/admin/admins",
+            "/admin/barbers",
             {
                 search: searchTerm,
                 status: filters?.status,
-                role: filters?.role,
                 only_online: filters?.only_online ? 0 : 1,
             },
             { preserveState: true, preserveScroll: true, replace: true },
@@ -304,7 +271,7 @@ export default function AdminsIndex({
     const handleClearFilters = () => {
         setSearchTerm("");
         router.get(
-            "/admin/admins",
+            "/admin/barbers",
             {},
             { preserveState: true, preserveScroll: true, replace: true },
         );
@@ -313,19 +280,19 @@ export default function AdminsIndex({
     // ============ Modalها ============
     const [toggleModal, setToggleModal] = useState({
         isOpen: false,
-        admin: null,
+        barber: null,
         isLoading: false,
     });
 
-    const openDeleteModal = (admin) =>
-        setDeleteModal({ isOpen: true, admin, isLoading: false });
+    const openDeleteModal = (barber) =>
+        setDeleteModal({ isOpen: true, barber, isLoading: false });
     const closeDeleteModal = () =>
-        setDeleteModal({ isOpen: false, admin: null, isLoading: false });
+        setDeleteModal({ isOpen: false, barber: null, isLoading: false });
 
     const handleConfirmDelete = () => {
-        if (!deleteModal.admin) return;
+        if (!deleteModal.barber) return;
         setDeleteModal((prev) => ({ ...prev, isLoading: true }));
-        router.delete(`/admin/admins/${deleteModal.admin.id}/destroy`, {
+        router.delete(`/admin/barbers/${deleteModal.barber.id}/destroy`, {
             preserveScroll: true,
             onSuccess: () => closeDeleteModal(),
             onError: () =>
@@ -333,16 +300,16 @@ export default function AdminsIndex({
         });
     };
 
-    const openToggleModal = (admin) =>
-        setToggleModal({ isOpen: true, admin, isLoading: false });
+    const openToggleModal = (barber) =>
+        setToggleModal({ isOpen: true, barber, isLoading: false });
     const closeToggleModal = () =>
-        setToggleModal({ isOpen: false, admin: null, isLoading: false });
+        setToggleModal({ isOpen: false, barber: null, isLoading: false });
 
     const handleConfirmToggle = () => {
-        if (!toggleModal.admin) return;
+        if (!toggleModal.barber) return;
         setToggleModal((prev) => ({ ...prev, isLoading: true }));
         router.patch(
-            `/admin/admins/${toggleModal.admin.id}/toggle-status`,
+            `/admin/barbers/${toggleModal.barber.id}/toggle-status`,
             {},
             {
                 preserveScroll: true,
@@ -354,27 +321,27 @@ export default function AdminsIndex({
     };
 
     // ============ مرتب‌سازی: آنلاین‌ها اول ============
-    const sortedAdmins = useMemo(() => {
-        return [...adminsList].sort((a, b) => {
+    const sortedBarbers = useMemo(() => {
+        return [...barbersList].sort((a, b) => {
             const aOnline = getOnlineStatus(a.id).is_online;
             const bOnline = getOnlineStatus(b.id).is_online;
             if (aOnline === bOnline) return 0;
             return aOnline ? -1 : 1;
         });
-    }, [adminsList, onlineStatuses]);
+    }, [barbersList, onlineStatuses]);
 
     return (
         <Layout>
-            <Head title="مدیریت ادمین‌ها" />
+            <Head title="مدیریت آرایشگرها" />
 
             <div className="center-column">
                 {/* ============ هدر با شمارنده آنلاین ============ */}
                 <div className="roles-page-header">
                     <div>
-                        <h1 className="roles-page-title">مدیریت ادمین‌ها</h1>
+                        <h1 className="roles-page-title">مدیریت آرایشگرها</h1>
                         <div className="header-stats">
                             <p className="stats-text">
-                                {admins.total} ادمین در سیستم
+                                {barbers.total} آرایشگر در سیستم
                             </p>
 
                             {/* شمارنده آنلاین‌ها */}
@@ -391,7 +358,7 @@ export default function AdminsIndex({
                     </div>
 
                     <Link
-                        href="/admin/admins/create"
+                        href="/admin/barbers/create"
                         className="btn-primary"
                         style={{
                             width: "auto",
@@ -402,7 +369,7 @@ export default function AdminsIndex({
                             textDecoration: "none",
                         }}
                     >
-                        <UserPlus size={18} /> ادمین جدید
+                        <UserPlus size={18} /> آرایشگر جدید
                     </Link>
                 </div>
 
@@ -426,7 +393,7 @@ export default function AdminsIndex({
                                 filters?.only_online ? "active" : ""
                             }`}
                             onClick={handleOnlyOnlineToggle}
-                            title="فقط ادمین‌های آنلاین"
+                            title="فقط آرایشگرهای آنلاین"
                         >
                             <Wifi size={16} />
                             فقط آنلاین
@@ -448,7 +415,7 @@ export default function AdminsIndex({
                                     {
                                         [
                                             filters?.status,
-                                            filters?.role,
+
                                             filters?.only_online,
                                         ].filter(Boolean).length
                                     }
@@ -505,48 +472,35 @@ export default function AdminsIndex({
                                 )}
                             </div>
                         </div>
-
-                        <div className="filter-group">
-                            <label className="filter-label">نقش</label>
-                            <Select2
-                                options={roleOptions}
-                                value={selectedRole}
-                                onChange={handleRoleFilter}
-                                placeholder="همه نقش‌ها"
-                                isMulti={false}
-                                isClearable={true}
-                                isRtl={true}
-                            />
-                        </div>
                     </div>
                 )}
 
                 {/* ============ حالت خالی ============ */}
-                {sortedAdmins.length === 0 && (
+                {sortedBarbers.length === 0 && (
                     <div className="card" style={{ padding: "3rem" }}>
                         <EmptyList
                             title={
                                 filters?.only_online
-                                    ? "هیچ ادمینی آنلاین نیست"
+                                    ? "هیچ آرایشگری آنلاین نیست"
                                     : hasActiveFilters
                                       ? "نتیجه‌ای یافت نشد"
-                                      : "ادمینی پیدا نشد"
+                                      : "آرایشگری پیدا نشد"
                             }
                             message={
                                 filters?.only_online
-                                    ? "در حال حاضر هیچ ادمینی آنلاین نیست."
+                                    ? "در حال حاضر هیچ آرایشگری آنلاین نیست."
                                     : hasActiveFilters
-                                      ? "هیچ ادمینی با فیلترهای انتخاب شده مطابقت ندارد."
-                                      : "در حال حاضر هیچ ادمینی در سیستم ثبت نشده است."
+                                      ? "هیچ آرایشگری با فیلترهای انتخاب شده مطابقت ندارد."
+                                      : "در حال حاضر هیچ آرایشگری در سیستم ثبت نشده است."
                             }
                         />
                     </div>
                 )}
 
                 {/* ============ گرید کارت‌ها ============ */}
-                {sortedAdmins.length > 0 && (
+                {sortedBarbers.length > 0 && (
                     <div className="admins-cards-grid">
-                        {sortedAdmins.map((admin) => {
+                        {sortedBarbers.map((admin) => {
                             const onlineData = getOnlineStatus(admin.id);
                             const statusCfg = getStatusConfig(admin.status);
                             const StatusIcon = statusCfg.icon;
@@ -708,7 +662,7 @@ export default function AdminsIndex({
                                     {/* دکمه‌های عملیات */}
                                     <div className="admin-card-actions">
                                         <Link
-                                            href={`/admin/admins/${admin.slug}/edit`}
+                                            href={`/admin/barbers/${admin.slug}/edit`}
                                             className="admin-card-btn edit"
                                         >
                                             <Edit size={16} />
@@ -746,7 +700,7 @@ export default function AdminsIndex({
                 )}
 
                 {/* صفحه‌بندی */}
-                <Pagination links={admins.links} />
+                <Pagination links={barbers.links} />
             </div>
 
             {/* Modalها */}
@@ -754,10 +708,10 @@ export default function AdminsIndex({
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
                 onConfirm={handleConfirmDelete}
-                title="حذف ادمین"
+                title="حذف آرایشگر"
                 message={
-                    deleteModal.admin
-                        ? `آیا از حذف ادمین "${deleteModal.admin.name}" مطمئن هستید؟`
+                    deleteModal.barber
+                        ? `آیا از حذف آرایشگر "${deleteModal.barber.name}" مطمئن هستید؟`
                         : ""
                 }
                 confirmText="بله، حذف کن"
