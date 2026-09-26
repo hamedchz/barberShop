@@ -14,6 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -71,9 +72,6 @@ class User extends Authenticatable
     public function avatar(): string
     {
         // If the user doesn't have avatar, we will return default avatar
-        if (empty($this->avatar)) {
-            return asset('img/avatar.png');
-        }
 
         if (Storage::exists('thumbnails/' . $this->avatar)) {
             return Storage::url('thumbnails/' . $this->avatar);

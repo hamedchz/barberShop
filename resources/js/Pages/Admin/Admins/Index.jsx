@@ -571,7 +571,7 @@ export default function AdminsIndex({
                                             <div className="admin-card-avatar">
                                                 {admin.avatar ? (
                                                     <img
-                                                        src={admin.avatar}
+                                                        src={admin.thumbnail}
                                                         alt={admin.name}
                                                     />
                                                 ) : (
@@ -579,6 +579,8 @@ export default function AdminsIndex({
                                                         {admin.name
                                                             ?.charAt(0)
                                                             .toUpperCase()}
+
+                                                        {admin.avatar}
                                                     </span>
                                                 )}
                                             </div>

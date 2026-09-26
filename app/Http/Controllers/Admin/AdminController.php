@@ -6,6 +6,7 @@ use App\Enums\Casts\LogsStatus;
 use App\Enums\Casts\Permissions;
 use App\Enums\Casts\UserStatus;
 use App\Facades\GenerateUtf8Slug;
+use App\Helpers\Thumbnail;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -102,6 +103,8 @@ class AdminController extends Controller
                     'phone' => $admin->phone,
                     'slug' => $admin->slug,
                     'avatar' => $admin->avatar,
+                    'thumbnail' => $admin->avatar(),
+
                     'status' => $admin->status?->value ?? 'active',
                     'is_online' => $admin->is_online,
                     'last_activity' => $admin->last_activity,
@@ -145,12 +148,16 @@ class AdminController extends Controller
     public function store(Request $request)
     {
 
+
+
         // $this->authorize(Permissions::manageAdmins->value);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone',
             'password' => ['required', 'confirmed', Password::min(8)],
             'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+
         ]);
         // slug
 
@@ -161,6 +168,23 @@ class AdminController extends Controller
             $slug = $slug . "-$num";
         }
 
+        if ($request->hasFile('image')) {
+
+            $image = $validated['image'];
+
+            $filename = $image->hashName();
+
+            $avatarPath = $image->storeAs(
+                'avatars',
+                $filename,
+                'public'
+            );
+
+            Thumbnail::storeThumb(
+                $image,
+                $avatarPath
+            );
+        }
 
         $store = User::create([
             'name' => Str::lower($validated['name']),
@@ -170,10 +194,13 @@ class AdminController extends Controller
             'slug' => $slug,
             'phone_verified_at' => Carbon::now(),
             'status' => UserStatus::ACTIVE->value,
+            'avatar' => $avatarPath,
 
         ]);
 
-        $store->syncRoles($request->roles);
+        $store->syncRoles(
+            Role::whereIn('id', $request->roles)->get()
+        );
 
         if ($store) {
             (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . 'admin', LogsStatus::store->value);

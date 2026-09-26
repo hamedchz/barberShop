@@ -14,6 +14,9 @@ import {
     EyeOff,
     Shield,
     CheckCircle,
+    ImageIcon,
+    Upload,
+    X,
 } from "lucide-react";
 
 export default function Create({ auth, roles, scope }) {
@@ -23,8 +26,28 @@ export default function Create({ auth, roles, scope }) {
         phone: "",
         password: "",
         password_confirmation: "",
-        roles: [], // ← آرایه‌ای از ID نقش‌ها
+        roles: [],
+        image: null,
     });
+
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData("image", file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageRemove = () => {
+        setData("image", null);
+        setImagePreview(null);
+    };
     // ============ State نمایش رمز عبور ============
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -53,9 +76,10 @@ export default function Create({ auth, roles, scope }) {
     // ============ ارسال فرم ============
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/admin/admins/store", {
-            onSuccess: () => reset(),
-        });
+        forceFormData: (true,
+            post("/admin/admins/store", {
+                onSuccess: () => reset(),
+            }));
     };
 
     return (
@@ -93,6 +117,63 @@ export default function Create({ auth, roles, scope }) {
                     </div>
 
                     <form onSubmit={handleSubmit} className="form-body">
+                        {/* ============ آپلود عکس ============ */}
+                        <div className="form-group">
+                            <label className="form-label">
+                                <ImageIcon size={16} />
+                                تصویر ادمین
+                                <span className="required">*</span>
+                            </label>
+
+                            <div className="image-upload-wrapper">
+                                {imagePreview ? (
+                                    <div className="image-preview-container">
+                                        <img
+                                            src={imagePreview}
+                                            alt="پیش‌نمایش"
+                                            className="image-preview"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="image-remove-btn"
+                                            onClick={handleImageRemove}
+                                            title="حذف تصویر"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="image-upload-box">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className="image-upload-input"
+                                        />
+                                        <div className="image-upload-content">
+                                            <div className="image-upload-icon">
+                                                <Upload size={24} />
+                                            </div>
+                                            <p className="image-upload-text">
+                                                کلیک کنید یا تصویر را اینجا رها
+                                                کنید
+                                            </p>
+                                            <p className="image-upload-hint">
+                                                PNG, JPG, WEBP - حداکثر ۲
+                                                مگابایت
+                                            </p>
+                                        </div>
+                                    </label>
+                                )}
+                            </div>
+
+                            {errors.image && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>{errors.image}</span>
+                                </div>
+                            )}
+                        </div>
                         {/* ============ فیلد نام ============ */}
                         <div className="form-group">
                             <label htmlFor="name" className="form-label">
