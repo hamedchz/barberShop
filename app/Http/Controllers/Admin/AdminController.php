@@ -18,6 +18,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 
@@ -248,6 +249,9 @@ class AdminController extends Controller
                 'name' => $user->name,
                 'slug' => $user->slug,
                 'phone' => $user->phone,
+                'image' => $user->avatar
+                    ? asset('storage/' . $user->avatar)
+                    : null,  // ← URL کامل
                 'status' => $user->status->value ?? 'active',
                 'roles' => $adminRoleIds, // آرایه‌ای از ID نقش‌ها
             ],
@@ -260,6 +264,8 @@ class AdminController extends Controller
     //edit admin
     public function update(Request $request, User $user)
     {
+
+
         // $this->authorize(Permissions::manageAdmins->value);
 
         if (!$user->is_admin) {
@@ -275,6 +281,8 @@ class AdminController extends Controller
             'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
             'status' => ['required', Rule::enum(UserStatus::class)], // ← اعتبارسنجی Enum
             'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+
         ];
 
         if ($request->filled('password')) {
@@ -306,8 +314,29 @@ class AdminController extends Controller
 
 
 
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete($user->avatar);
+            Storage::disk('public')->delete('thumbnails/' . $user->avatar);
+
+            $image = $validated['image'];
+
+            $filename = $image->hashName();
+
+            $validated['avatar'] = $image->storeAs(
+                'avatars',
+                $filename,
+                'public'
+            );
+
+            Thumbnail::storeThumb(
+                $image,
+                $validated['avatar']
+            );
+        }
         $update = $user->update($validated);
-        $user->syncRoles($request->roles);
+        $user->syncRoles(
+            Role::whereIn('id', $request->roles)->get()
+        );
 
         if ($update) {
             (new \App\Models\Log())->storeLog($user->id, LogsStatus::edit->value . 'admin', LogsStatus::edit->value);

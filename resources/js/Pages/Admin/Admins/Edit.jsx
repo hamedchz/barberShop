@@ -23,6 +23,9 @@ import {
     Clock,
     Ban,
     ChevronLeft,
+    Image as ImageIcon,
+    Upload,
+    X,
 } from "lucide-react";
 
 // ============ نقشه آیکون‌ها ============
@@ -36,14 +39,36 @@ const iconMap = {
 
 export default function Edit({ auth, admin, roles, statuses, scope }) {
     // ============ useForm ============
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: "PUT",
         name: admin.name || "",
         phone: admin.phone || "",
         status: admin.status || "active", // ← وضعیت فعلی
         password: "",
         password_confirmation: "",
         roles: admin.roles || [],
+        image: null,
+        remove_image: false,
     });
+
+    const [imagePreview, setImagePreview] = useState(admin.image || null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData("image", file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleImageRemove = () => {
+        setData("image", null);
+        setImagePreview(null);
+    };
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -116,7 +141,17 @@ export default function Edit({ auth, admin, roles, statuses, scope }) {
             data.password_confirmation = "";
         }
 
-        put(`/admin/admins/${admin.slug}/update`);
+        // put(`/admin/admins/${admin.slug}/update`);
+        post(`/admin/admins/${admin.slug}/update`, {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                console.log("Success!", page);
+            },
+            onError: (errors) => {
+                console.error("Errors:", errors);
+            },
+        });
     };
 
     // ============ آیکون وضعیت انتخاب شده ============
@@ -162,6 +197,63 @@ export default function Edit({ auth, admin, roles, statuses, scope }) {
                     </div>
 
                     <form onSubmit={handleSubmit} className="form-body">
+                        {/* ============ آپلود عکس ============ */}
+                        <div className="form-group">
+                            <label className="form-label">
+                                <ImageIcon size={16} />
+                                تصویر ادمین
+                                <span className="required">*</span>
+                            </label>
+
+                            <div className="image-upload-wrapper">
+                                {imagePreview ? (
+                                    <div className="image-preview-container">
+                                        <img
+                                            src={imagePreview}
+                                            alt="پیش‌نمایش"
+                                            className="image-preview"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="image-remove-btn"
+                                            onClick={handleImageRemove}
+                                            title="حذف تصویر"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="image-upload-box">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className="image-upload-input"
+                                        />
+                                        <div className="image-upload-content">
+                                            <div className="image-upload-icon">
+                                                <Upload size={24} />
+                                            </div>
+                                            <p className="image-upload-text">
+                                                کلیک کنید یا تصویر را اینجا رها
+                                                کنید
+                                            </p>
+                                            <p className="image-upload-hint">
+                                                PNG, JPG, WEBP - حداکثر ۲
+                                                مگابایت
+                                            </p>
+                                        </div>
+                                    </label>
+                                )}
+                            </div>
+
+                            {errors.image && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>{errors.image}</span>
+                                </div>
+                            )}
+                        </div>
                         {/* ============ فیلد نام ============ */}
                         <div className="form-group">
                             <label htmlFor="name" className="form-label">

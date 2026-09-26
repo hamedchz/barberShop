@@ -21,7 +21,7 @@ import {
 export default function ServicesEdit({ auth, service }) {
     // ============ useForm ============
     const { data, setData, post, processing, errors } = useForm({
-        _method: "PUT", // ← این مهم است
+        _method: "PUT",
         name: service.name || "",
         description: service.description || "",
         duration: service.duration || 30,
