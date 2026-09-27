@@ -22,6 +22,7 @@ enum Permissions: string
   case managePackages = 'manage-packages';
   case manageAdmins = 'manage-admins';
   case manageOrder = 'manage-order';
+  case manageBarber = 'manage-barber';
   case barberDashboardPanel = 'barber-dashboard-panel';
 
 

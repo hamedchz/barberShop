@@ -86,7 +86,7 @@ class RolesController extends Controller
         $context = [
             'title' => 'لیست نقش ها',
             'roles' => $roles,
-            'scope' => ['roles', 'role-list'],
+            'scope' => ['rodles', 'rolfe-list'],
         ];
 
         return Inertia::render('Admin/Roles/Index', $context);

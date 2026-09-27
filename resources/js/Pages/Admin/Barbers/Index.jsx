@@ -25,7 +25,7 @@ import {
     X,
     Wifi,
     WifiOff,
-    Activity,
+    Info,
     Lock,
 } from "lucide-react";
 
@@ -692,6 +692,13 @@ export default function AdminsIndex({
                                                 حذف
                                             </button>
                                         )}
+                                        <Link
+                                            href={`/admin/barbers/${admin.slug}/detail`}
+                                            className="admin-card-btn info"
+                                        >
+                                            <Info size={16} />
+                                            جزئیات
+                                        </Link>
                                     </div>
                                 </div>
                             );

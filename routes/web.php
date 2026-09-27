@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\Customer\BarberController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return inertia('Welcome');
-});
 
-// Route::get('/login', function () {
-//     return Inertia::render('Auth/Login');
-// })->name('login');
+Route::prefix('/barbers')
+    ->name('barbers.')->controller(BarberController::class)->group(function () {
+        // لیست آرایشگران
+        Route::get('/', 'index')->name('index');
+
+        // جزئیات آرایشگر
+        Route::get('/{barber}', 'show')->name('show');
+    });

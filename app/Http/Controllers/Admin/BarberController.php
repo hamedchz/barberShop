@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\Casts\LogsStatus;
 use App\Enums\Casts\Permissions;
+use App\Enums\Casts\TimeSlotStatus;
 use App\Enums\Casts\UserStatus;
 use App\Facades\GenerateUtf8Slug;
 use App\Helpers\Thumbnail;
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
+use App\Models\Service;
+use App\Models\TimeSlot;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Supports\StickyAlert;
@@ -369,6 +373,139 @@ class BarberController extends Controller
             'success'
         );
         // return redirect()->back()->with('success', 'ادمین با موفقیت حذف شد.');
+    }
+
+    /**
+     * نمایش جزئیات کامل یک آرایشگر
+     */
+    public function show(User $barber)
+    {
+        // بررسی اینکه کاربر آرایشگر است
+        if (!$barber->roles()->where('roles.id', 8)->exists()) {
+            return redirect()
+                ->route('admin.barbers.list')
+                ->with('error', 'این کاربر آرایشگر نیست.');
+        }
+
+        // ============ اطلاعات پایه ============
+        $barberInfo = [
+            'id' => $barber->id,
+            'name' => $barber->name,
+            'phone' => $barber->phone,
+            'slug' => $barber->slug,
+            'avatar' => $barber->avatar,
+            'thumbnail' => $barber->avatar(),
+            'status' => $barber->status?->value ?? 'active',
+            'is_online' => $barber->isOnline(),
+            'last_activity' => $barber->lastActivity(),
+            'created_at' => $barber->created_at,
+            'last_login_at' => $barber->last_login_at,
+            'roles' => $barber->roles->map(fn($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'label' => $this->translateRoleName($role->name),
+            ]),
+        ];
+
+        // ============ خدمات ============
+        $services = Service::where('user_id', $barber->id)
+            ->latest()
+            ->get()
+            ->map(fn($service) => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'description' => $service->description,
+                'image' => $service->image ? asset('storage/' . $service->image) : null,
+                'duration' => $service->duration,
+                'price' => $service->price,
+                'is_active' => (bool) $service->is_active,
+                'created_at' => $service->created_at,
+            ]);
+
+        // ============ برنامه هفتگی ============
+        $availabilities = Availability::where('user_id', $barber->id)
+            ->orderBy('day_of_week')
+            ->get()
+            ->map(fn($avail) => [
+                'id' => $avail->id,
+                'day_of_week' => $avail->day_of_week,
+                'start_time' => $avail->start_time,
+                'end_time' => $avail->end_time,
+                'is_active' => (bool) $avail->is_active,
+            ]);
+
+        // ============ آمار ============
+        $stats = [
+            'total_services' => $services->count(),
+            'active_services' => $services->where('is_active', true)->count(),
+            'total_time_slots' => TimeSlot::where('user_id', $barber->id)->count(),
+            'available_slots' => TimeSlot::where('user_id', $barber->id)
+                ->where('status', TimeSlotStatus::available->value)->count(),
+            'booked_slots' => TimeSlot::where('user_id', $barber->id)
+                ->where('status', TimeSlotStatus::booked->value)->count(),
+            'blocked_slots' => TimeSlot::where('user_id', $barber->id)
+                ->where('status', TimeSlotStatus::blocked->value)->count(),
+            'total_bookings' => TimeSlot::where('user_id', $barber->id)
+                ->where('status', TimeSlotStatus::booked->value)->count(),
+            'total_revenue' => TimeSlot::where('user_id', $barber->id)
+                ->where('status', TimeSlotStatus::booked->value)
+                ->whereHas('service')
+                ->with('service')
+                ->get()
+                ->sum(fn($slot) => $slot->service?->price ?? 0),
+        ];
+
+        // ============ بازه‌های پیش رو (۷ روز آینده) ============
+        $upcomingSlots = TimeSlot::where('user_id', $barber->id)
+            ->where('date', '>=', Carbon::today())
+            ->where('date', '<=', Carbon::today()->addDays(7))
+            ->with(['service', 'bookedBy'])
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->limit(20)
+            ->get()
+            ->map(fn($slot) => [
+                'id' => $slot->id,
+                'date' => $slot->date,
+                'start_time' => $slot->start_time,
+                'end_time' => $slot->end_time,
+                'status' => $slot->status,
+                'service' => $slot->service ? [
+                    'id' => $slot->service->id,
+                    'name' => $slot->service->name,
+                    'price' => $slot->service->price,
+                ] : null,
+                'booked_by' => $slot->bookedBy ? [
+                    'id' => $slot->bookedBy->id,
+                    'name' => $slot->bookedBy->name,
+                    'phone' => $slot->bookedBy->phone,
+                ] : null,
+            ]);
+
+        return Inertia::render('Admin/Barbers/Show', [
+            'title' => "جزئیات آرایشگر: {$barber->name}",
+            'barber' => $barberInfo,
+            'services' => $services,
+            'availabilities' => $availabilities,
+            'stats' => $stats,
+            'upcomingSlots' => $upcomingSlots,
+        ]);
+    }
+
+    /**
+     * ترجمه نام نقش
+     */
+    private function translateRoleName(string $name): string
+    {
+        $translations = [
+            'super-admin' => 'مدیر ارشد',
+            'admin' => 'مدیر',
+            'barber' => 'آرایشگر',
+            'teacher' => 'معلم',
+            'student' => 'دانش‌آموز',
+        ];
+
+        return $translations[$name] ?? ucfirst(str_replace('-', ' ', $name));
     }
 
     public function onlineStatus()

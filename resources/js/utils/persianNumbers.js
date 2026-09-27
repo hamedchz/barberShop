@@ -32,7 +32,7 @@ export const toPersianTime = (time) => {
 // ورودی: "09:00:00", "18:00:00" → خروجی: "۰۹:۰۰ تا ۱۸:۰۰"
 export const toPersianTimeRange = (startTime, endTime) => {
     if (!startTime || !endTime) return "";
-    return `${toPersianTime(startTime)} تا ${toPersianTime(endTime)}`;
+    return `${toPersianTime(startTime)} - ${toPersianTime(endTime)}`;
 };
 
 // ============ نمایش ساعت ۱۲ ساعته با حذف ثانیه (اختیاری) ============

@@ -79,4 +79,13 @@ class User extends Authenticatable
             return $this->avatarBig();
         }
     }
+
+    public function services()
+    {
+        return $this->hasMany(Service::class, 'user_id');
+    }
+    // public function services(): BelongsTo
+    // {
+    //     return $this->belongsTo(Service::class, 'user_id');
+    // }
 }

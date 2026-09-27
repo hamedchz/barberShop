@@ -36,6 +36,7 @@ Route::prefix('/admins')
 Route::prefix('/barbers')
   ->name('barbers.')->controller(BarberController::class)->group(function () {
     Route::get('/', 'index')->name('list');
+    Route::get('/{barber:slug}/detail',  'show')->name('show');
     Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
     Route::get('/{user:slug}/edit',  'edit')->name('edit');
