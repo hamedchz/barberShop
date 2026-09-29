@@ -13,12 +13,15 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // مشتری
-            $table->foreignId('barber_id')->constrained('users')->onDelete('cascade'); // آرایشگر
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('barber_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->foreignId('time_slot_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
+            $table->string('status')->nullable();
+            $table->decimal('amount', 15, 2); // مبلغ نهایی
             $table->text('notes')->nullable();
+            $table->timestamp('confirmed_at')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
         });
     }

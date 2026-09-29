@@ -20,10 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('user.')
                 ->group(base_path('routes/web.php'));
 
-            // Route::prefix('customer')
-            //     ->middleware(['web'])
-            //     ->name('customer.')
-            //     ->group(base_path('routes/customer.php'));
+            Route::prefix('customer')
+                ->middleware(['auth', 'web'])
+                ->name('customer.')
+                ->group(base_path('routes/customer.php'));
             // Route::prefix('{locale}/dashboard')
             //     ->middleware(['web', 'auth', 'check-email-verification'])
             //     ->name('member.')

@@ -15,7 +15,7 @@ export default function BarberCard({ barber }) {
                 <div className="barber-card-public-avatar-wrapper">
                     <div className="barber-card-public-avatar">
                         {barber.avatar ? (
-                            <img src={barber.avatar} alt={barber.name} />
+                            <img src={barber.thumbnail} alt={barber.name} />
                         ) : (
                             <span>{barber.name?.charAt(0).toUpperCase()}</span>
                         )}
@@ -73,7 +73,7 @@ export default function BarberCard({ barber }) {
             )}
 
             <Link
-                href={`/barbers/${barber.id}`}
+                href={`/barbers/${barber.slug}`}
                 className="barber-card-public-cta"
             >
                 <span>مشاهده و رزرو</span>

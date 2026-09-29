@@ -1,7 +1,9 @@
 import React from "react";
 import { toJalaali } from "jalaali-js";
-import { toPersianNumber } from "../../utils/persianNumbers";
+import { toPersianNumber } from "../../../utils/persianNumbers";
 import { CheckCircle } from "lucide-react";
+import "../Assets/HorizentalCalendar.css";
+import Tooltip from "../Components/Tooltip";
 
 const persianDaysShort = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 const persianMonths = [
@@ -27,7 +29,6 @@ export default function HorizontalCalendar({
 }) {
     const today = new Date();
 
-    // ============ ساخت آرایه روزها ============
     const days = [];
     for (let i = 0; i < daysToShow; i++) {
         const date = new Date(today);
@@ -57,7 +58,6 @@ export default function HorizontalCalendar({
         });
     }
 
-    // ============ بررسی انتخاب شده ============
     const isSelected = (day) => {
         if (!selectedDate) return false;
         const sel = new Date(selectedDate);
@@ -70,37 +70,57 @@ export default function HorizontalCalendar({
     return (
         <div className="horizontal-calendar">
             <div className="horizontal-calendar-scroll">
-                {days.map((day) => (
-                    <button
-                        key={day.dateStr}
-                        type="button"
-                        className={`calendar-day-btn ${
-                            isSelected(day) ? "selected" : ""
-                        } ${day.isToday ? "today" : ""} ${
-                            !day.hasSlots ? "empty" : ""
-                        }`}
-                        onClick={() => onSelectDate(day.date)}
-                        disabled={!day.hasSlots}
-                    >
-                        <span className="calendar-day-name">{day.dayName}</span>
-                        <span className="calendar-day-number">
-                            {toPersianNumber(day.dayNumber)}
-                        </span>
-                        <span className="calendar-day-month">
-                            {day.monthName}
-                        </span>
+                {days.map((day) => {
+                    // ============ محتوای Tooltip ============
+                    const tooltipContent = day.hasSlots
+                        ? `${toPersianNumber(
+                              day.slotsCount,
+                          )} نوبت در این روز موجود است`
+                        : "برای این روز نوبتی موجود نیست";
 
-                        {day.hasSlots && (
-                            <span className="calendar-day-dot"></span>
-                        )}
+                    return (
+                        <Tooltip
+                            key={day.dateStr}
+                            content={tooltipContent}
+                            position="bottom"
+                            delay={200}
+                        >
+                            <button
+                                type="button"
+                                className={`calendar-day-btn ${
+                                    isSelected(day) ? "selected" : ""
+                                } ${day.isToday ? "today" : ""} ${
+                                    !day.hasSlots ? "no-slots" : ""
+                                }`}
+                                onClick={() =>
+                                    day.hasSlots && onSelectDate(day.date)
+                                }
+                                disabled={!day.hasSlots}
+                                aria-label={`${day.dayNumber} ${day.monthName}`}
+                            >
+                                <span className="calendar-day-name">
+                                    {day.dayName}
+                                </span>
+                                <span className="calendar-day-number">
+                                    {toPersianNumber(day.dayNumber)}
+                                </span>
+                                <span className="calendar-day-month">
+                                    {day.monthName}
+                                </span>
 
-                        {!day.hasSlots && (
-                            <span className="calendar-day-empty-label">
-                                تعطیل
-                            </span>
-                        )}
-                    </button>
-                ))}
+                                {day.hasSlots && (
+                                    <span className="calendar-day-dot"></span>
+                                )}
+
+                                {!day.hasSlots && (
+                                    <span className="calendar-day-empty-label">
+                                        تعطیل
+                                    </span>
+                                )}
+                            </button>
+                        </Tooltip>
+                    );
+                })}
             </div>
         </div>
     );

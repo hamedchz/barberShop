@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Customer\BarberController;
+use App\Http\Controllers\Customer\BookingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -11,5 +12,5 @@ Route::prefix('/barbers')
         Route::get('/', 'index')->name('index');
 
         // جزئیات آرایشگر
-        Route::get('/{barber}', 'show')->name('show');
+        Route::get('/{barber:slug}', 'show')->name('show');
     });

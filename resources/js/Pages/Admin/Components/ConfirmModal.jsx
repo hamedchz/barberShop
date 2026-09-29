@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { AlertTriangle, X, Trash2, CheckCircle, Info } from "lucide-react";
-
+import "../Assets/css/confirm-modal.css";
 export default function ConfirmModal({
     isOpen,
     onClose,

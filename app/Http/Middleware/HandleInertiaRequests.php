@@ -23,6 +23,8 @@ class HandleInertiaRequests extends Middleware
                         'id' => $request->user()->id,
                         'name' => $request->user()->name,
                         'phone' => $request->user()->phone,
+                        'avatar' => $request->user()->avatar,
+                        'thumbnail' => $request->user()->avatar(),
                         'roles' => $request->user()
                             ->getRoleNames()
                             ->toArray(),
@@ -41,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn() => $request->session()->get('info'),
                 'alert' => fn() => $request->session()->get('alert'),
             ],
+
         ]);
     }
 }

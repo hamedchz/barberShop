@@ -8,6 +8,7 @@ use App\Models\Availability;
 use App\Models\Service;
 use App\Models\TimeSlot;
 use App\Models\User;
+use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Morilog\Jalali\Jalalian;
@@ -19,6 +20,8 @@ class BarberController extends Controller
      */
     public function index()
     {
+
+
         $barbers = User::role('آرایشگر')
             ->where('status', UserStatus::ACTIVE)
             ->withCount(['services' => function ($q) {
@@ -32,8 +35,10 @@ class BarberController extends Controller
         $barbers->through(function ($barber) {
             return [
                 'id' => $barber->id,
+                'slug' => $barber->slug,
                 'name' => $barber->name,
                 'avatar' => $barber->avatar,
+                'thumbnail' => $barber->avatar(),
                 'is_online' => $barber->isOnline(),
                 'services_count' => $barber->services_count,
                 'services' => $barber->services->map(fn($s) => [
@@ -57,8 +62,9 @@ class BarberController extends Controller
      */
     public function show(User $barber)
     {
+        // StickyAlert::alert('این بازه قابل رزرو نیست.', 'error');
         // بررسی آرایشگر بودن
-        if (!$barber->hasRole('barber') || $barber->status?->value !== 'active') {
+        if (!$barber->hasRole('آرایشگر') || $barber->status?->value !== UserStatus::ACTIVE->value) {
             abort(404);
         }
 
@@ -67,6 +73,7 @@ class BarberController extends Controller
             'id' => $barber->id,
             'name' => $barber->name,
             'avatar' => $barber->avatar,
+            'thumbnail' => $barber->avatar(),
             'is_online' => $barber->isOnline(),
             'rating' => 4.8, // (نمونه)
             'total_reviews' => 24, // (نمونه)
@@ -101,20 +108,36 @@ class BarberController extends Controller
         $startDate = Carbon::today();
         $endDate = Carbon::today()->addDays(14);
 
+        $now = Carbon::now();
+        $today = Carbon::today()->toDateString();
+
         $timeSlots = TimeSlot::where('user_id', $barber->id)
             ->whereBetween('date', [$startDate, $endDate])
-            ->where('status', 'available')
+            // ->where('status', 'available')
             ->with('service')
             ->orderBy('date')
             ->orderBy('start_time')
             ->get()
+            ->filter(function ($slot) use ($now, $today) {
+                // ============ فیلتر بازه‌های گذشته امروز ============
+                if ($slot->date === $today) {
+                    // اگر تاریخ امروز است، فقط بازه‌هایی که start_time > الان
+                    $slotDateTime = Carbon::parse(
+                        $slot->date . ' ' . $slot->start_time
+                    );
+                    return $slotDateTime->greaterThan($now);
+                }
+                return true; // روزهای آینده همه قابل رزرو
+            })
             ->groupBy('date');
 
-        // تبدیل به آرایه با کلید تاریخ
+        // تبدیل به آرایه
         $slotsByDate = [];
         foreach ($timeSlots as $date => $slots) {
-            $slotsByDate[$date] = $slots->map(fn($slot) => [
+            $slotsByDate[Carbon::parse($date)->format('Y-m-d')] = $slots->map(fn($slot) => [
                 'id' => $slot->id,
+                'status' => $slot->status->value,
+
                 'start_time' => $slot->start_time,
                 'end_time' => $slot->end_time,
                 'service_id' => $slot->service_id,
@@ -123,7 +146,7 @@ class BarberController extends Controller
                     'name' => $slot->service->name,
                     'price' => $slot->service->price,
                 ] : null,
-            ])->toArray();
+            ])->values()->toArray(); // values برای ریست کردن کلیدها
         }
 
         return Inertia::render('Customer/Barbers/Show', [

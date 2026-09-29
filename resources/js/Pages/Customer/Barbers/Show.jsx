@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import PublicLayout from "../../../Layouts/PublicLayout";
-import HorizontalCalendar from "../../../Components/HorizontalCalendar";
-import ConfirmModal from "../../../Components/ConfirmModal";
+import PublicLayout from "../Layouts/PublicLayout";
+import HorizontalCalendar from "../Components/HorizontalCalendar";
+import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import {
     ArrowRight,
     Star,
@@ -55,13 +55,33 @@ export default function BarbersShow({
     availabilities,
     slotsByDate,
 }) {
-    const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedServiceId, setSelectedServiceId] = useState(null);
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [bookingModal, setBookingModal] = useState({
         isOpen: false,
         isLoading: false,
     });
+
+    // ============ پیدا کردن اولین روز دارای نوبت ============
+    const getFirstAvailableDate = () => {
+        const today = new Date();
+        for (let i = 0; i < 14; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const dateStr = `${date.getFullYear()}-${String(
+                date.getMonth() + 1,
+            ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+            if (slotsByDate[dateStr]?.length > 0) {
+                return date;
+            }
+        }
+        return today;
+    };
+
+    const [selectedDate, setSelectedDate] = useState(() =>
+        getFirstAvailableDate(),
+    );
 
     // ============ بررسی لاگین ============
     const isLoggedIn = !!auth?.user;
@@ -120,7 +140,7 @@ export default function BarbersShow({
         setBookingModal((prev) => ({ ...prev, isLoading: true }));
 
         router.post(
-            "/customer/bookings",
+            "/customer/bookings/create",
             { time_slot_id: selectedSlot.id },
             {
                 preserveScroll: true,
@@ -144,6 +164,18 @@ export default function BarbersShow({
         (a) => a.day_of_week === iranianDayOfWeek,
     );
 
+    // ============ بررسی گذشته بودن یک بازه ============
+    const isPastSlot = (slot, date) => {
+        const now = new Date();
+
+        // ساخت تاریخ و ساعت بازه
+        const slotDate = new Date(date);
+        const [hours, minutes] = slot.start_time.split(":").map(Number);
+        slotDate.setHours(hours, minutes, 0, 0);
+
+        return slotDate < now;
+    };
+
     return (
         <PublicLayout>
             <Head title={`رزرو نوبت - ${barber.name}`} />
@@ -166,7 +198,7 @@ export default function BarbersShow({
                             <div className="barber-hero-avatar">
                                 {barber.avatar ? (
                                     <img
-                                        src={barber.avatar}
+                                        src={barber.thumbnail}
                                         alt={barber.name}
                                     />
                                 ) : (
@@ -324,8 +356,10 @@ export default function BarbersShow({
                                                     دقیقه
                                                 </span>
                                                 <span className="price">
-                                                    {toPersianNumber(
-                                                        service.price.toLocaleString(),
+                                                    {parseFloat(
+                                                        service.price,
+                                                    ).toLocaleString(
+                                                        "fa-IR",
                                                     )}{" "}
                                                     تومان
                                                 </span>
@@ -411,24 +445,45 @@ export default function BarbersShow({
                         ) : (
                             <div className="public-slots-grid">
                                 {slotsForDate.map((slot) => {
+                                    const isBooked = slot.status === "booked";
+                                    const isBlocked = slot.status === "blocked";
+                                    const isDisabled = isBooked || isBlocked;
+                                    // ============ محتوای Tooltip ============
+
                                     const isSelected =
                                         selectedSlot?.id === slot.id;
+                                    const isPast = isPastSlot(
+                                        slot,
+                                        selectedDateStr,
+                                    );
 
                                     return (
                                         <button
                                             key={slot.id}
                                             type="button"
-                                            className={`public-slot-btn ${
-                                                isSelected ? "selected" : ""
-                                            }`}
-                                            onClick={() =>
-                                                handleSelectSlot(slot)
+                                            className={
+                                                isDisabled
+                                                    ? "public-slot-btn-reserved"
+                                                    : isPast
+                                                      ? "public-slot-btn-past"
+                                                      : isSelected
+                                                        ? "selected public-slot-btn"
+                                                        : "public-slot-btn"
                                             }
+                                            onClick={
+                                                !isDisabled && !isPast
+                                                    ? () =>
+                                                          handleSelectSlot(slot)
+                                                    : undefined
+                                            }
+                                            disabled={isDisabled || isPast}
                                         >
                                             <Clock size={14} />
+
                                             <span className="slot-time">
                                                 {toPersianTime(slot.start_time)}
                                             </span>
+
                                             {slot.service && (
                                                 <span className="slot-service">
                                                     {slot.service.name}
@@ -463,6 +518,14 @@ export default function BarbersShow({
                                         selectedSlot.start_time,
                                         selectedSlot.end_time,
                                     )}
+                                </span>
+                            </div>
+                            <div className="summary-item">
+                                <DollarSign size={16} />
+                                <span>
+                                    {parseFloat(
+                                        selectedSlot.service.price,
+                                    ).toLocaleString("fa-IR")}{" "}
                                 </span>
                             </div>
                         </div>

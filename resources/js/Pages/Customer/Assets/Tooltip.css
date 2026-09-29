@@ -1,0 +1,376 @@
+/* ============ Tooltip Wrapper ============ */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============ Tooltip اصلی ============ */
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+  max-width: 260px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ============ محتوای Tooltip ============ */
+.tooltip-content {
+  padding: 0.5rem 0.875rem;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.6;
+  border-radius: 0.625rem;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  direction: rtl;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============ فلش Tooltip ============ */
+.tooltip-arrow {
+  position: absolute;
+  width: 0.625rem;
+  height: 0.625rem;
+  background-color: #1f2937;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* ============ موقعیت بالا (پیش‌فرض) ============ */
+.tooltip-top {
+  bottom: calc(100% + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-top .tooltip-arrow {
+  bottom: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* ============ موقعیت پایین ============ */
+.tooltip-bottom {
+  top: calc(100% + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-bottom .tooltip-arrow {
+  top: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* ============ موقعیت راست ============ */
+.tooltip-right {
+  right: calc(100% + 0.75rem);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip-right .tooltip-arrow {
+  left: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ============ موقعیت چپ ============ */
+.tooltip-left {
+  left: calc(100% + 0.75rem);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip-left .tooltip-arrow {
+  right: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ============ انیمیشن ============ */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* انیمیشن برای موقعیت‌های دیگر */
+.tooltip-bottom {
+  animation: tooltipFadeInBottom 0.2s ease;
+}
+
+@keyframes tooltipFadeInBottom {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.tooltip-right {
+  animation: tooltipFadeInRight 0.2s ease;
+}
+
+@keyframes tooltipFadeInRight {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.tooltip-left {
+  animation: tooltipFadeInLeft 0.2s ease;
+}
+
+@keyframes tooltipFadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* ============ واریانت‌های رنگی ============ */
+/* اگر خواستید Tooltip رنگی داشته باشید */
+.tooltip.tooltip-success .tooltip-content {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.tooltip.tooltip-success .tooltip-arrow {
+  background-color: #10b981;
+}
+
+.tooltip.tooltip-danger .tooltip-content {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.tooltip.tooltip-danger .tooltip-arrow {
+  background-color: #ef4444;
+}
+
+.tooltip.tooltip-warning .tooltip-content {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.tooltip.tooltip-warning .tooltip-arrow {
+  background-color: #f59e0b;
+}
+
+.tooltip.tooltip-info .tooltip-content {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.tooltip.tooltip-info .tooltip-arrow {
+  background-color: #3b82f6;
+}
+
+/* ============ Tooltip سبک (Light) ============ */
+.tooltip.tooltip-light .tooltip-content {
+  background-color: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.tooltip.tooltip-light .tooltip-arrow {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-right: none;
+}
+
+/* ============ Tooltip سبز (برای تقویم) ============ */
+.tooltip.tooltip-primary .tooltip-content {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.tooltip.tooltip-primary .tooltip-arrow {
+  background-color: #10b981;
+}
+
+/* ============ ریسپانسیو ============ */
+@media (max-width: 640px) {
+  .tooltip-content {
+    font-size: 0.6875rem;
+    padding: 0.4375rem 0.75rem;
+    max-width: 220px;
+  }
+}
+
+/* ============ Tooltip Portal ============ */
+.tooltip-portal {
+  position: absolute;
+  z-index: 999999;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+  max-width: 260px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tooltip-portal.tooltip-top {
+  transform: translate(-50%, -100%);
+}
+
+.tooltip-portal.tooltip-bottom {
+  transform: translate(-50%, 0);
+}
+
+.tooltip-portal.tooltip-left {
+  transform: translate(-100%, -50%);
+}
+
+.tooltip-portal.tooltip-right {
+  transform: translate(0, -50%);
+}
+
+/* فلش */
+.tooltip-portal .tooltip-arrow {
+  position: absolute;
+  width: 0.625rem;
+  height: 0.625rem;
+  background-color: #1f2937;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-portal.tooltip-top .tooltip-arrow {
+  bottom: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.tooltip-portal.tooltip-bottom .tooltip-arrow {
+  top: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.tooltip-portal.tooltip-left .tooltip-arrow {
+  right: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.tooltip-portal.tooltip-right .tooltip-arrow {
+  left: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* محتوا */
+.tooltip-portal .tooltip-content {
+  padding: 0.5rem 0.875rem;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1.6;
+  border-radius: 0.625rem;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  direction: rtl;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* واریانت‌ها */
+.tooltip-portal.tooltip-success .tooltip-content {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.tooltip-portal.tooltip-success .tooltip-arrow {
+  background-color: #10b981;
+}
+
+.tooltip-portal.tooltip-danger .tooltip-content {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.tooltip-portal.tooltip-danger .tooltip-arrow {
+  background-color: #ef4444;
+}
+
+.tooltip-portal.tooltip-warning .tooltip-content {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.tooltip-portal.tooltip-warning .tooltip-arrow {
+  background-color: #f59e0b;
+}
+
+.tooltip-portal.tooltip-info .tooltip-content {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.tooltip-portal.tooltip-info .tooltip-arrow {
+  background-color: #3b82f6;
+}
+
+.tooltip-portal.tooltip-primary .tooltip-content {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.tooltip-portal.tooltip-primary .tooltip-arrow {
+  background-color: #10b981;
+}
+
+.tooltip-portal.tooltip-light .tooltip-content {
+  background-color: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.tooltip-portal.tooltip-light .tooltip-arrow {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+/* انیمیشن */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

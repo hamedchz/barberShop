@@ -16,7 +16,6 @@ export default function Navbar() {
     const { auth } = usePage().props;
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-
     // ============ تغییر ظاهر با اسکرول ============
     useEffect(() => {
         const handleScroll = () => {
@@ -83,7 +82,7 @@ export default function Navbar() {
                                     <div className="navbar-user-avatar">
                                         {auth.user.avatar ? (
                                             <img
-                                                src={auth.user.avatar}
+                                                src={auth.user.thumbnail}
                                                 alt={auth.user.name}
                                             />
                                         ) : (

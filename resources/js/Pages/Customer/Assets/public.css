@@ -1484,6 +1484,68 @@ body {
   gap: 0.75rem;
 }
 
+.public-slot-btn-reserved {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 1rem 0.75rem;
+  background-color: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 1rem;
+  cursor: not-allowed;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #9ca3af;
+  min-height: 5rem;
+  opacity: 0.75;
+  user-select: none;
+}
+
+.public-slot-btn-reserved::after {
+  content: "رزرو شده";
+  position: absolute;
+  top: 0.35rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fc0202;
+
+}
+
+.public-slot-btn-past {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 1rem 0.75rem;
+  background-color: #f3f4f6;
+  border: 2px solid #d1d5db;
+  border-radius: 1rem;
+  cursor: not-allowed;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #9ca3af;
+  min-height: 5rem;
+  opacity: 0.75;
+  user-select: none;
+}
+
+.public-slot-btn-past::after {
+  content: "گذشته";
+  position: absolute;
+  top: 0.35rem;
+  right: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #070505;
+
+}
+
 .public-slot-btn {
   position: relative;
   display: flex;
