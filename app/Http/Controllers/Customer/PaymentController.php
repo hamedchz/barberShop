@@ -197,48 +197,6 @@ class PaymentController extends Controller
                 $booking->id
             );
         }
-
-        // if ($result['success']) {
-        //     // ============ پرداخت موفق ============
-        //     $payment->update([
-        //         'status' => PaymentStatus::success->value,
-        //         'transaction_id' => $result['transaction_id'],
-        //         'paid_at' => now(),
-        //         'gateway_response' => $result['response'],
-        //     ]);
-
-        //     $booking->update([
-        //         'status' => BookingStatus::confirmed->value,
-        //         'confirmed_at' => now(),
-        //     ]);
-
-        //     // ============ بروزرسانی بازه ============
-        //     $booking->timeSlot->update([
-        //         'status' => TimeSlotStatus::booked->value,
-        //         'booked_by' => $booking->user_id,
-        //     ]);
-
-        //     return redirect()->route('customer.payment.success', $booking->id);
-        // } else {
-        //     // ============ پرداخت ناموفق ============
-        //     $payment->update([
-        //         'status' => PaymentStatus::failed->value,
-        //         'gateway_response' => $result['response'],
-        //     ]);
-
-        //     $booking->update([
-        //         'status' => BookingStatus::cancelled->value,
-        //         'cancelled_at' => now(),
-        //     ]);
-
-        //     // ============ آزاد کردن بازه ============
-        //     $booking->timeSlot->update([
-        //         'status' => TimeSlotStatus::available->value,
-        //         'booked_by' => null,
-        //     ]);
-
-        //     return redirect()->route('customer.payment.failed', $booking->id);
-        // }
     }
 
     /**
@@ -310,7 +268,7 @@ class PaymentController extends Controller
 
         $result = $payment->pay();
 
-        dd($result);
+
 
         return ShPayment::purchase(
             (new ShInvoice)->amount($payment->amount)->detail([

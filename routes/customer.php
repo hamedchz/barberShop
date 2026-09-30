@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\PaymentController;
+use App\Http\Controllers\Customer\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/bookings')
@@ -25,3 +26,13 @@ Route::prefix('/payment')
     Route::get('/failed/{booking}',  'failed')
       ->name('failed');
   });
+
+Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
+  // نظرات
+  Route::post('/{barber}/reviews', 'store')
+    ->name('store');
+  Route::put('/{review}', 'update')
+    ->name('update');
+  Route::delete('/{review}', 'destroy')
+    ->name('destroy');
+});

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Availability;
+use App\Models\Review;
 use App\Models\Service;
 use App\Models\TimeSlot;
 use App\Models\User;
@@ -47,8 +49,11 @@ class BarberController extends Controller
                     'duration' => $s->duration,
                     'price' => $s->price,
                 ]),
-                'rating' => 4.8, // (نمونه - از دیتابیس واقعی بیاورید)
-                'total_reviews' => 24, // (نمونه)
+                'rating' => $barber->average_rating,
+                'total_reviews' => $barber->total_reviews,
+                'bio' => $barber->bio ?? 'آرایشگر حرفه‌ای',
+                'specialty' => $barber->specialty,
+                'experience_years' => $barber->experience_years,
             ];
         });
 
@@ -75,10 +80,50 @@ class BarberController extends Controller
             'avatar' => $barber->avatar,
             'thumbnail' => $barber->avatar(),
             'is_online' => $barber->isOnline(),
-            'rating' => 4.8, // (نمونه)
-            'total_reviews' => 24, // (نمونه)
-            'bio' => $barber->bio ?? 'آرایشگر حرفه‌ای با بیش از ۵ سال سابقه', // (نمونه)
+            'rating' => $barber->average_rating,
+            'total_reviews' => $barber->total_reviews,
+            'rating_distribution' => $barber->rating_distribution,
+            'bio' => $barber->bio,
+            'specialty' => $barber->specialty,
+            'experience_years' => $barber->experience_years,
+            'city' => $barber->city,
+            'address' => $barber->address,
         ];
+        // $barberInfo = [
+        //     'id' => $barber->id,
+        //     'name' => $barber->name,
+        //     'avatar' => $barber->avatar,
+        //     'thumbnail' => $barber->avatar(),
+        //     'is_online' => $barber->isOnline(),
+        //     // ============ اطلاعات جدید ============
+        //     'rating' => $barber->average_rating,
+        //     'total_reviews' => $barber->total_reviews,
+        //     'rating_distribution' => $barber->rating_distribution,
+        //     'bio' => $barber->bio ?? 'آرایشگر حرفه‌ای با بیش از ۵ سال سابقه',
+        //     'specialty' => $barber->specialty ?? 'آرایش مردانه',
+        //     'experience_years' => $barber->experience_years ?? 5,
+        //     'city' => $barber->city,
+        //     'address' => $barber->address,
+        // ];
+
+        // ============ آخرین نظرات ============
+        $reviews = Review::where('barber_id', $barber->id)
+            ->where('status', 'approved')
+            ->with('user:id,name,avatar')
+            ->latest()
+            ->limit(5)
+            ->get()
+            ->map(fn($review) => [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'created_at' => $review->created_at,
+                'user' => [
+                    'id' => $review->user->id,
+                    'name' => $review->user->name,
+                    'avatar' => $review->user->avatar,
+                ],
+            ]);
 
         // ============ خدمات ============
         $services = Service::where('user_id', $barber->id)
@@ -154,6 +199,7 @@ class BarberController extends Controller
             'services' => $services,
             'availabilities' => $availabilities,
             'slotsByDate' => $slotsByDate,
+            'reviews' => $reviews,
         ]);
     }
 }

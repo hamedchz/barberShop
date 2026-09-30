@@ -1259,10 +1259,46 @@ body {
 }
 
 /* ============ Public Booking Steps ============ */
+/* .public-booking-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.public-booking-step {
+  padding: 1.25rem;
+} */
+
+.public-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* ← ۴ ستونه در دسکتاپ */
+  gap: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+  .public-slots-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .public-slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .public-slots-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .public-booking-steps {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
 .public-booking-step {
@@ -1480,9 +1516,22 @@ body {
 /* ============ Public Slots Grid ============ */
 .public-slots-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* .public-slots-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 0.75rem;
 }
+
+.public-slots-grid {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+} */
 
 .public-slot-btn-reserved {
   position: relative;
@@ -1553,7 +1602,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
-  padding: 1rem 0.75rem;
+  padding: 1rem 0.5rem;
   background-color: white;
   border: 2px solid #e5e7eb;
   border-radius: 1rem;
@@ -1562,6 +1611,10 @@ body {
   font-family: inherit;
   color: #1f2937;
   min-height: 5rem;
+  width: auto;
+  /* ← مهم: به جای 100% */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .public-slot-btn:hover {
@@ -2309,5 +2362,1612 @@ body {
     left: 1rem;
     width: 2.5rem;
     height: 2.5rem;
+  }
+}
+
+/* ============ Barber Hero Meta Additional ============ */
+.barber-hero-meta {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.barber-hero-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.barber-hero-meta-item svg {
+  color: #3b82f6;
+}
+
+.barber-hero-rating.new {
+  background-color: #f0fdf4;
+  border-color: #d1fae5;
+  color: #065f46;
+}
+
+.barber-hero-rating.new svg {
+  color: #10b981;
+}
+
+/* تخصص */
+.barber-hero-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 1px solid #ddd6fe;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5b21b6;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+}
+
+.barber-hero-specialty svg {
+  color: #8b5cf6;
+}
+
+/* ============ Public Tabs ============ */
+.public-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.375rem;
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.public-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.public-tab:hover {
+  background-color: #f0fdf4;
+  color: #10b981;
+}
+
+.public-tab.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.public-tab .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border-radius: 9999px;
+}
+
+.public-tab:not(.active) .tab-count {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ============ Reviews Section ============ */
+.barber-reviews-section {
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  animation: fadeIn 0.3s ease;
+}
+
+.reviews-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.reviews-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+
+.reviews-title svg {
+  color: #10b981;
+}
+
+.reviews-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background-color: #f0fdf4;
+  color: #065f46;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid #d1fae5;
+}
+
+.reviews-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .reviews-summary {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.reviews-average {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-radius: 1rem;
+  border: 1px solid #fde68a;
+  min-width: 140px;
+}
+
+.average-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #92400e;
+  line-height: 1;
+}
+
+.average-label {
+  font-size: 0.75rem;
+  color: #a16207;
+  font-weight: 600;
+}
+
+.rating-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.distribution-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.distribution-star {
+  min-width: 4rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.distribution-bar {
+  flex: 1;
+  height: 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.distribution-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.distribution-count {
+  min-width: 1.5rem;
+  text-align: left;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-card {
+  padding: 1.25rem;
+  background-color: #f9fafb;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.review-card:hover {
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border-color: #d1fae5;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.review-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.review-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-user-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.review-date {
+  display: block;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-top: 0.125rem;
+}
+
+.review-comment {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.no-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.no-reviews svg {
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.no-reviews h3 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+.no-reviews p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ============ Slot Buttons - Past/Booked ============ */
+.public-slot-btn.past {
+  background-color: #f9fafb;
+  border-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+  position: relative;
+  overflow: hidden;
+}
+
+.public-slot-btn.past::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg,
+      transparent,
+      transparent 4px,
+      rgba(156, 163, 175, 0.1) 4px,
+      rgba(156, 163, 175, 0.1) 8px);
+  pointer-events: none;
+}
+
+.public-slot-btn.disabled {
+  background-color: #f9fafb;
+  border-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.slot-past-label,
+.slot-booked-label {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slot-past-label {
+  background-color: #9ca3af;
+  color: white;
+}
+
+.slot-booked-label {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* ============ Summary Price ============ */
+.summary-item.price {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.summary-item.price svg {
+  color: #10b981;
+}
+
+/* ============ Animations ============ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .barber-reviews-section {
+    padding: 1.25rem;
+  }
+
+  .reviews-title {
+    font-size: 1.0625rem;
+  }
+
+  .average-number {
+    font-size: 2.25rem;
+  }
+
+  .review-card {
+    padding: 1rem;
+  }
+
+  .review-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.875rem;
+  }
+
+  .public-tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* ============================================================
+   PUBLIC BOOKING PAGE STYLES
+   ============================================================ */
+
+/* ============ Public Booking Container ============ */
+.public-booking-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.public-back-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.public-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.75rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.public-back-btn:hover {
+  background-color: #f0fdf4;
+  color: #10b981;
+  border-color: #a7f3d0;
+  transform: translateX(-2px);
+}
+
+/* ============ Barber Hero Card ============ */
+.barber-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+  border: 1px solid #d1fae5;
+  border-radius: 2rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+}
+
+.barber-hero-shape {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle,
+      rgba(16, 185, 129, 0.08) 0%,
+      transparent 70%);
+  pointer-events: none;
+}
+
+.barber-hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.barber-hero-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.barber-hero-avatar {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 2.5rem;
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.3);
+}
+
+.barber-hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-hero-online {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: #10b981;
+  border: 3px solid white;
+}
+
+.barber-hero-online .pulse-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.4);
+  animation: pulseRing 2s ease-out infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.barber-hero-info {
+  flex: 1;
+  min-width: 240px;
+}
+
+.barber-hero-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.barber-hero-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.barber-hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.barber-hero-status.online {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.barber-hero-status.offline {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* ============ Hero Meta ============ */
+.barber-hero-meta {
+  display: flex;
+  gap: 0.625rem;
+  margin-bottom: 0.875rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.barber-hero-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.barber-hero-rating .count {
+  color: #a16207;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.barber-hero-rating.new {
+  background-color: #f0fdf4;
+  border-color: #d1fae5;
+  color: #065f46;
+}
+
+.barber-hero-rating.new svg {
+  color: #10b981;
+}
+
+.barber-hero-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.barber-hero-meta-item svg {
+  color: #3b82f6;
+}
+
+.barber-hero-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 1px solid #ddd6fe;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5b21b6;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+}
+
+.barber-hero-specialty svg {
+  color: #8b5cf6;
+}
+
+.barber-hero-bio {
+  font-size: 0.9375rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ============ Weekly Schedule ============ */
+.barber-hero-schedule {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #a7f3d0;
+}
+
+.barber-hero-schedule-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 0.875rem;
+}
+
+.schedule-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.schedule-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background-color: white;
+  border: 1px solid #a7f3d0;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+}
+
+.chip-day {
+  color: #065f46;
+}
+
+.chip-time {
+  color: #047857;
+  font-size: 0.6875rem;
+  direction: ltr;
+}
+
+/* ============ Public Tabs ============ */
+.public-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.375rem;
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.public-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.public-tab:hover {
+  background-color: #f0fdf4;
+  color: #10b981;
+}
+
+.public-tab.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.public-tab .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border-radius: 9999px;
+}
+
+.public-tab:not(.active) .tab-count {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ============ Booking Steps ============ */
+.public-booking-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.public-booking-step {
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.public-step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.public-step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.public-step-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.375rem;
+}
+
+.public-step-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============ Services Grid ============ */
+.public-services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .public-services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.public-service-card {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: white;
+  border: 2px solid #f3f4f6;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  text-align: right;
+  width: 100%;
+}
+
+.public-service-card:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.1);
+}
+
+.public-service-card.selected {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+}
+
+.public-service-image {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.public-service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.public-service-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #93c5fd;
+}
+
+.public-service-check {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background-color: #10b981;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+
+  80% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.public-service-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.public-service-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.public-service-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.public-service-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.public-service-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.public-service-meta .price {
+  color: #10b981;
+  font-weight: 800;
+}
+
+/* ============ Day Info ============ */
+.public-day-info {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: #f0fdf4;
+  border-radius: 0.875rem;
+  border-right: 3px solid #10b981;
+}
+
+.public-day-info .day-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.public-day-info .day-info-item.warning {
+  color: #92400e;
+}
+
+.public-day-info .day-info-item svg {
+  flex-shrink: 0;
+}
+
+/* ============ Slots Grid ============ */
+
+
+.public-slot-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 1rem 0.75rem;
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #1f2937;
+  min-height: 5rem;
+}
+
+.public-slot-btn:hover:not(.disabled):not(.past) {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+}
+
+.public-slot-btn.selected {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+  color: white;
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.public-slot-btn .slot-time {
+  font-size: 1rem;
+  font-weight: 800;
+  direction: ltr;
+  line-height: 1.2;
+}
+
+.public-slot-btn .slot-service {
+  font-size: 0.6875rem;
+  opacity: 0.85;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ============ Disabled/Past Slots ============ */
+.public-slot-btn.disabled,
+.public-slot-btn.past {
+  background-color: #f9fafb;
+  border-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.public-slot-btn.past::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(45deg,
+      transparent,
+      transparent 4px,
+      rgba(156, 163, 175, 0.1) 4px,
+      rgba(156, 163, 175, 0.1) 8px);
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.slot-past-label,
+.slot-booked-label {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slot-past-label {
+  background-color: #9ca3af;
+  color: white;
+}
+
+.slot-booked-label {
+  background-color: #3b82f6;
+  color: white;
+}
+
+
+/* ============ Empty Slots ============ */
+.public-empty-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.public-empty-slots svg {
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.public-empty-slots h4 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+.public-empty-slots p {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ============ Booking Summary Bar ============ */
+.public-booking-summary {
+  position: sticky;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.125rem 1.5rem;
+  background: linear-gradient(135deg, #1f2937, #111827);
+  color: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+  z-index: 30;
+  flex-wrap: wrap;
+  animation: slideUp 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.summary-content {
+  display: flex;
+  gap: 0.75rem;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.summary-item svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.summary-item.price {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.summary-item.price svg {
+  color: #34d399;
+}
+
+.public-booking-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+.public-booking-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45);
+}
+
+/* ============ Reviews Section ============ */
+.barber-reviews-section {
+  background-color: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reviews-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.reviews-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 1.25rem;
+  flex-wrap: wrap;
+}
+
+.reviews-title svg {
+  color: #10b981;
+}
+
+.reviews-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background-color: #f0fdf4;
+  color: #065f46;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid #d1fae5;
+}
+
+.reviews-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .reviews-summary {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.reviews-average {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border-radius: 1rem;
+  border: 1px solid #fde68a;
+  min-width: 140px;
+}
+
+.average-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #92400e;
+  line-height: 1;
+}
+
+.average-label {
+  font-size: 0.75rem;
+  color: #a16207;
+  font-weight: 600;
+}
+
+/* ============ Rating Distribution ============ */
+.rating-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.distribution-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.distribution-star {
+  min-width: 4rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.distribution-bar {
+  flex: 1;
+  height: 0.5rem;
+  background-color: #f3f4f6;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.distribution-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 9999px;
+  transition: width 0.5s ease;
+}
+
+.distribution-count {
+  min-width: 1.5rem;
+  text-align: left;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ============ Reviews List ============ */
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-card {
+  padding: 1.25rem;
+  background-color: #f9fafb;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.review-card:hover {
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  border-color: #d1fae5;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.review-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.review-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-user-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.review-date {
+  display: block;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin-top: 0.125rem;
+}
+
+.review-comment {
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ============ No Reviews ============ */
+.no-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.no-reviews svg {
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.no-reviews h3 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.5rem;
+}
+
+.no-reviews p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ============ Rating Stars Component ============ */
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.stars-wrapper {
+  display: flex;
+  gap: 1px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .public-booking-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .barber-hero-card {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+
+  .barber-hero-avatar {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.75rem;
+  }
+
+  .barber-hero-name {
+    font-size: 1.375rem;
+  }
+
+  .barber-hero-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .barber-hero-name-row {
+    justify-content: center;
+  }
+
+  .barber-hero-meta {
+    justify-content: center;
+  }
+
+  .barber-hero-specialty {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .public-booking-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .summary-content {
+    justify-content: center;
+  }
+
+  .public-booking-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .public-services-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+
+  .barber-reviews-section {
+    padding: 1.25rem;
+  }
+
+  .reviews-title {
+    font-size: 1.0625rem;
+  }
+
+  .average-number {
+    font-size: 2.25rem;
+  }
+
+  .review-card {
+    padding: 1rem;
+  }
+
+  .review-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.875rem;
+  }
+
+  .public-tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .public-slot-btn.has-tooltip::after {
+    max-width: 180px;
+    white-space: normal;
+    font-size: 0.6875rem;
   }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\UserStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,7 +39,12 @@ class User extends Authenticatable
         'slug',
         'last_activity_at',
         'last_login_at',
-        'avatar'
+        'avatar',
+        'bio',
+        'specialty',
+        'experience_years',
+        'city',
+        'address',
     ];
     protected function casts(): array
     {
@@ -84,8 +90,102 @@ class User extends Authenticatable
     {
         return $this->hasMany(Service::class, 'user_id');
     }
-    // public function services(): BelongsTo
-    // {
-    //     return $this->belongsTo(Service::class, 'user_id');
-    // }
+
+      // ============ روابط ============
+
+    /**
+     * نظراتی که این کاربر (به عنوان آرایشگر) دریافت کرده
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'barber_id');
+    }
+
+    /**
+     * نظرات تایید شده
+     */
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class, 'barber_id')
+            ->where('status', ReviewStatus::approved->value);
+    }
+
+    /**
+     * نظراتی که این کاربر (به عنوان مشتری) داده
+     */
+    public function givenReviews()
+    {
+        return $this->hasMany(Review::class, 'user_id');
+    }
+
+    // ============ متدهای محاسبه‌ای ============
+
+    /**
+     * میانگین امتیاز آرایشگر (با کش برای عملکرد بهتر)
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        return Cache::remember(
+            "barber_rating_{$this->id}",
+            now()->addHours(6),
+            function () {
+                $avg = $this->approvedReviews()->avg('rating');
+                return $avg ? round($avg, 1) : 0;
+            }
+        );
+    }
+
+    /**
+     * تعداد کل نظرات
+     */
+    public function getTotalReviewsAttribute(): int
+    {
+        return Cache::remember(
+            "barber_reviews_count_{$this->id}",
+            now()->addHours(6),
+            function () {
+                return $this->approvedReviews()->count();
+            }
+        );
+    }
+
+    /**
+     * پاک کردن کش نظرات (بعد از ثبت نظر جدید)
+     */
+    public function clearReviewsCache(): void
+    {
+        Cache::forget("barber_rating_{$this->id}");
+        Cache::forget("barber_reviews_count_{$this->id}");
+    }
+
+    /**
+     * توزیع امتیازها (چند نفر ۵ ستاره، چند نفر ۴ ستاره و...)
+     */
+    public function getRatingDistributionAttribute(): array
+    {
+        return Cache::remember(
+            "barber_rating_dist_{$this->id}",
+            now()->addHours(6),
+            function () {
+                $distribution = [
+                    5 => 0,
+                    4 => 0,
+                    3 => 0,
+                    2 => 0,
+                    1 => 0,
+                ];
+
+                $reviews = $this->approvedReviews()
+                    ->selectRaw('rating, count(*) as count')
+                    ->groupBy('rating')
+                    ->get();
+
+                foreach ($reviews as $review) {
+                    $distribution[$review->rating] = $review->count;
+                }
+
+                return $distribution;
+            }
+        );
+    }
 }

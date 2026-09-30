@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import {
     Scissors,
     Menu,
@@ -33,7 +33,7 @@ export default function Navbar() {
 
     const handleLogout = () => {
         if (confirm("آیا می‌خواهید از حساب خود خارج شوید؟")) {
-            window.location.href = "/logout";
+            router.post("/auth/logout");
         }
     };
 

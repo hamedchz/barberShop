@@ -1,6 +1,15 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
-import { Star, Wifi, WifiOff, ChevronLeft, Scissors } from "lucide-react";
+import {
+    Wifi,
+    WifiOff,
+    ChevronLeft,
+    Scissors,
+    Award,
+    MapPin,
+} from "lucide-react";
+import RatingStars from "./RatingStars";
+
 import { toPersianNumber } from "../../../utils/persianNumbers";
 
 export default function BarberCard({ barber }) {
@@ -34,20 +43,50 @@ export default function BarberCard({ barber }) {
                     </span>
                 </div>
 
-                <div className="barber-card-public-rating">
-                    <Star size={14} fill="#fbbf24" color="#fbbf24" />
-                    <span>{toPersianNumber(barber.rating)}</span>
-                    <span className="rating-count">
-                        ({toPersianNumber(barber.total_reviews)})
-                    </span>
-                </div>
+                {/* ============ امتیاز واقعی ============ */}
+                {barber.total_reviews > 0 ? (
+                    <RatingStars
+                        rating={barber.rating}
+                        total={barber.total_reviews}
+                        size={14}
+                    />
+                ) : (
+                    <span className="no-rating-badge">آرایشگر جدید</span>
+                )}
             </div>
 
             <div className="barber-card-public-body">
                 <h3 className="barber-card-public-name">{barber.name}</h3>
+
+                {/* ============ تخصص ============ */}
+                {barber.specialty && (
+                    <div className="barber-card-specialty">
+                        <Award size={12} />
+                        <span>{barber.specialty}</span>
+                    </div>
+                )}
+
+                {/* ============ بیوگرافی ============ */}
                 <p className="barber-card-public-bio">
-                    آرایشگر حرفه‌ای با تجربه
+                    {barber.bio ||
+                        "آرایشگر حرفه‌ای با تجربه در ارائه خدمات آرایشی"}
                 </p>
+
+                {/* ============ تجربه و شهر ============ */}
+                <div className="barber-card-info-row">
+                    {barber.experience_years > 0 && (
+                        <span className="info-item">
+                            <Award size={12} />
+                            {toPersianNumber(barber.experience_years)} سال سابقه
+                        </span>
+                    )}
+                    {barber.city && (
+                        <span className="info-item">
+                            <MapPin size={12} />
+                            {barber.city}
+                        </span>
+                    )}
+                </div>
             </div>
 
             {/* خدمات */}

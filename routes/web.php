@@ -12,5 +12,5 @@ Route::prefix('/barbers')
         Route::get('/', 'index')->name('index');
 
         // جزئیات آرایشگر
-        Route::get('/{barber:slug}', 'show')->name('show');
+        Route::get('/{barber:slug}/details', 'show')->name('show');
     });

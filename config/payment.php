@@ -539,41 +539,12 @@ return [
     'gateways' => [
         'zarinpal' => [
             'name' => 'زرین‌پال',
-            'logo' => '/images/gateways/zarinpal.png',
+            'logo' => '/images/gateways/zarinpal.webp',
             'color' => '#ffd700',
             'enabled' => env('ZARINPAL_ENABLED', true),
             'merchant_id' => env('ZARINPAL_MERCHANT_ID'),
             'sandbox' => env('ZARINPAL_SANDBOX', true),
-        ],
-        'idpay' => [
-            'name' => 'آیدی‌پی',
-            'logo' => '/images/gateways/idpay.png',
-            'color' => '#00b4d8',
-            'enabled' => env('IDPAY_ENABLED', true),
-            'api_key' => env('IDPAY_API_KEY'),
-            'sandbox' => env('IDPAY_SANDBOX', false),
-        ],
-        'payping' => [
-            'name' => 'پی‌پینگ',
-            'logo' => '/images/gateways/payping.png',
-            'color' => '#ff6b35',
-            'enabled' => env('PAYPING_ENABLED', true),
-            'token' => env('PAYPING_TOKEN'),
-        ],
-        'nextpay' => [
-            'name' => 'نکست‌پی',
-            'logo' => '/images/gateways/nextpay.png',
-            'color' => '#7c3aed',
-            'enabled' => env('NEXTPAY_ENABLED', true),
-            'api_key' => env('NEXTPAY_API_KEY'),
-        ],
-        'local' => [
-            'name' => 'locallocal',
-            'logo' => '/images/gateways/nextpay.png',
-            'color' => '#7c3aed',
-            'enabled' => env('NEXTPAY_ENABLED', true),
-            'api_key' => env('NEXTPAY_API_KEY'),
-        ],
+        ]
     ],
 
     /*
