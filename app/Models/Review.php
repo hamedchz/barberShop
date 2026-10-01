@@ -23,9 +23,45 @@ class Review extends Model
     protected $attributes = [
         'status' => ReviewStatus::pending->value,
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($review) {
+            if ($review->status === 'approved') {
+                static::updateBarberRating($review->barber_id);
+            }
+        });
+
+        static::updated(function ($review) {
+            static::updateBarberRating($review->barber_id);
+        });
+
+        static::deleted(function ($review) {
+            static::updateBarberRating($review->barber_id);
+        });
+    }
+
+    protected static function updateBarberRating($barberId)
+    {
+        $stats = static::where('barber_id', $barberId)
+            ->where('status', 'approved')
+            ->selectRaw('COUNT(*) as count, SUM(rating) as sum')
+            ->first();
+
+        $average = $stats->count > 0
+            ? round($stats->sum / $stats->count, 2)
+            : 0;
+
+        User::where('id', $barberId)->update([
+            'average_rating' => $average,
+            'total_reviews' => $stats->count,
+            'total_rating_sum' => $stats->sum ?? 0,
+        ]);
+    }
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->withTrashed();
     }
 
     public function barber()

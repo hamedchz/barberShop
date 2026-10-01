@@ -1268,29 +1268,53 @@ body {
 .public-booking-step {
   padding: 1.25rem;
 } */
-
 .public-slots-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* ← ۴ ستونه در دسکتاپ */
-  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
-@media (max-width: 1024px) {
+.public-slots-grid>.tooltip-trigger {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.public-slots-grid>.tooltip-trigger>.public-slot-btn {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* بالای 1024 → 4 کارت */
+.public-slots-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media screen and (max-width: 728px) {
   .public-slots-grid {
-    grid-template-columns: repeat(3, 1fr);
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 425px) {
   .public-slots-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
 
-@media (max-width: 480px) {
+@media screen and (max-width: 319px) {
   .public-slots-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -1516,11 +1540,19 @@ body {
 /* ============ Public Slots Grid ============ */
 .public-slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.public-slots-grid>.tooltip-trigger {
   width: 100%;
-  padding: 0;
-  margin: 0;
+  min-width: 0;
+}
+
+.public-slots-grid .public-slot-btn {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* .public-slots-grid {
@@ -3969,5 +4001,87 @@ body {
     max-width: 180px;
     white-space: normal;
     font-size: 0.6875rem;
+  }
+}
+
+/* ============ Reviews Footer ============ */
+.reviews-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.view-all-reviews-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  color: #065f46;
+  border: 2px solid #a7f3d0;
+  border-radius: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.view-all-reviews-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+  background-size: 200% 100%;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.view-all-reviews-btn:hover {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.35);
+}
+
+.view-all-reviews-btn:hover::before {
+  transform: scaleX(1);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.view-all-reviews-btn svg {
+  transition: transform 0.2s;
+}
+
+.view-all-reviews-btn:hover svg {
+  transform: translateX(-4px);
+}
+
+/* ============ ریسپانسیو ============ */
+@media (max-width: 640px) {
+  .view-all-reviews-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
   }
 }

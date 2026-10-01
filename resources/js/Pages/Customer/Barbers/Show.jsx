@@ -3,8 +3,8 @@ import { Head, Link, router } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
 import HorizontalCalendar from "../Components/HorizontalCalendar";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
-// import RatingStars from "../Components/RatingStars";
-// import Tooltip from "../Components/Tooltip";
+import RatingStars from "../Components/RatingStars";
+import Tooltip from "../Components/Tooltip";
 
 import {
     ArrowRight,
@@ -22,6 +22,7 @@ import {
     MessageCircle,
     MapPin,
     Briefcase,
+    ChevronLeft,
 } from "lucide-react";
 
 import {
@@ -312,7 +313,7 @@ export default function BarbersShow({
                             <div className="barber-hero-avatar">
                                 {barber.avatar ? (
                                     <img
-                                        src={barber.avatar}
+                                        src={barber.thumbnail}
                                         alt={barber.name}
                                     />
                                 ) : (
@@ -658,9 +659,7 @@ export default function BarbersShow({
                             {slotsForDate.length === 0 ? (
                                 <div className="public-empty-slots">
                                     <Clock size={40} />
-
                                     <h4>هیچ نوبتی موجود نیست</h4>
-
                                     <p>
                                         برای این روز نوبتی ثبت نشده است یا همه
                                         نوبت‌ها گذشته‌اند. روز دیگری را امتحان
@@ -672,76 +671,93 @@ export default function BarbersShow({
                                     {slotsForDate.map((slot) => {
                                         const isBooked =
                                             slot.status === "booked";
-
                                         const isBlocked =
                                             slot.status === "blocked";
-
                                         const isDisabled =
                                             isBooked || isBlocked;
-
                                         const isSelected =
                                             selectedSlot?.id === slot.id;
-
                                         const isPast = isPastSlot(
                                             slot,
                                             selectedDateStr,
                                         );
 
+                                        // ============ محتوای Tooltip ============
+                                        const tooltipContent = isPast
+                                            ? "این نوبت منقضی شده است"
+                                            : isBooked
+                                              ? "این نوبت قبلاً رزرو شده"
+                                              : isBlocked
+                                                ? "این نوبت بسته شده است"
+                                                : "برای انتخاب کلیک کنید";
+
                                         return (
-                                            <button
+                                            <Tooltip
                                                 key={slot.id}
-                                                type="button"
-                                                className={`public-slot-btn ${
-                                                    isSelected ? "selected" : ""
-                                                } ${isPast ? "past" : ""} ${
-                                                    isDisabled ? "disabled" : ""
-                                                }`}
-                                                onClick={
-                                                    !isDisabled && !isPast
-                                                        ? () =>
-                                                              handleSelectSlot(
-                                                                  slot,
-                                                              )
-                                                        : (e) =>
-                                                              e.preventDefault()
-                                                }
-                                                disabled={isDisabled || isPast}
-                                                title={
+                                                content={tooltipContent}
+                                                position="bottom"
+                                                delay={200}
+                                                variant={
                                                     isPast
-                                                        ? "این نوبت منقضی شده است"
+                                                        ? "warning"
                                                         : isBooked
-                                                          ? "این نوبت قبلاً رزرو شده"
+                                                          ? "info"
                                                           : isBlocked
-                                                            ? "این نوبت بسته شده است"
-                                                            : "برای انتخاب کلیک کنید"
+                                                            ? "danger"
+                                                            : "dark"
                                                 }
                                             >
-                                                <Clock size={14} />
+                                                <button
+                                                    type="button"
+                                                    className={`public-slot-btn ${
+                                                        isSelected
+                                                            ? "selected"
+                                                            : ""
+                                                    } ${isPast ? "past" : ""} ${
+                                                        isDisabled
+                                                            ? "disabled"
+                                                            : ""
+                                                    }`}
+                                                    onClick={
+                                                        !isDisabled && !isPast
+                                                            ? () =>
+                                                                  handleSelectSlot(
+                                                                      slot,
+                                                                  )
+                                                            : (e) =>
+                                                                  e.preventDefault()
+                                                    }
+                                                    disabled={
+                                                        isDisabled || isPast
+                                                    }
+                                                >
+                                                    <Clock size={14} />
 
-                                                <span className="slot-time">
-                                                    {toPersianTime(
-                                                        slot.start_time,
+                                                    <span className="slot-time">
+                                                        {toPersianTime(
+                                                            slot.start_time,
+                                                        )}
+                                                    </span>
+
+                                                    {slot.service && (
+                                                        <span className="slot-service">
+                                                            {slot.service.name}
+                                                        </span>
                                                     )}
-                                                </span>
 
-                                                {slot.service && (
-                                                    <span className="slot-service">
-                                                        {slot.service.name}
-                                                    </span>
-                                                )}
+                                                    {isPast && (
+                                                        <span className="slot-past-label">
+                                                            منقضی
+                                                        </span>
+                                                    )}
 
-                                                {isPast && (
-                                                    <span className="slot-past-label">
-                                                        منقضی
-                                                    </span>
-                                                )}
-
-                                                {isBooked && (
-                                                    <span className="slot-booked-label">
-                                                        رزرو شده
-                                                    </span>
-                                                )}
-                                            </button>
+                                                    {isBooked && (
+                                                        <span className="slot-booked-label">
+                                                            رزرو شده
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            </Tooltip>
                                         );
                                     })}
                                 </div>
@@ -845,64 +861,85 @@ export default function BarbersShow({
                                 <p>اولین نفری باشید که نظر می‌دهید!</p>
                             </div>
                         ) : (
-                            <div className="reviews-list">
-                                {reviews.map((review) => (
-                                    <div
-                                        key={review.id}
-                                        className="review-card"
-                                    >
-                                        <div className="review-header">
-                                            <div className="review-user">
-                                                <div className="review-avatar">
-                                                    {review.user.avatar ? (
-                                                        <img
-                                                            src={
-                                                                review.user
-                                                                    .avatar
-                                                            }
-                                                            alt={
-                                                                review.user.name
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        <span>
-                                                            {review.user.name
-                                                                ?.charAt(0)
-                                                                .toUpperCase()}
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                <div>
-                                                    <span className="review-user-name">
-                                                        {review.user.name}
-                                                    </span>
-
-                                                    <span className="review-date">
-                                                        {formatRelativeDate(
-                                                            review.created_at,
+                            <>
+                                <div className="reviews-list">
+                                    {reviews.map((review) => (
+                                        <div
+                                            key={review.id}
+                                            className="review-card"
+                                        >
+                                            <div className="review-header">
+                                                <div className="review-user">
+                                                    <div className="review-avatar">
+                                                        {review.user.avatar ? (
+                                                            <img
+                                                                src={
+                                                                    review.user
+                                                                        .thumbnail
+                                                                }
+                                                                alt={
+                                                                    review.user
+                                                                        .name
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <span>
+                                                                {review.user.name
+                                                                    ?.charAt(0)
+                                                                    .toUpperCase()}
+                                                            </span>
                                                         )}
-                                                    </span>
+                                                    </div>
+
+                                                    <div>
+                                                        <span className="review-user-name">
+                                                            {review.user.name}
+                                                        </span>
+
+                                                        <span className="review-date">
+                                                            {formatRelativeDate(
+                                                                review.created_at,
+                                                            )}
+                                                        </span>
+                                                    </div>
                                                 </div>
+
+                                                <RatingStars
+                                                    rating={review.rating}
+                                                    size={14}
+                                                    showNumber={false}
+                                                    showTotal={false}
+                                                />
                                             </div>
 
-                                            <RatingStars
-                                                rating={review.rating}
-                                                size={14}
-                                                showNumber={false}
-                                                showTotal={false}
-                                            />
+                                            {review.comment && (
+                                                <p className="review-comment">
+                                                    {review.comment}
+                                                </p>
+                                            )}
                                         </div>
-
-                                        {review.comment && (
-                                            <p className="review-comment">
-                                                {review.comment}
-                                            </p>
-                                        )}
+                                    ))}
+                                </div>
+                                {barber.total_reviews > reviews.length && (
+                                    <div className="reviews-footer">
+                                        <Link
+                                            href={`/barber/reviews/${barber.slug}/list`}
+                                            className="view-all-reviews-btn"
+                                        >
+                                            <span>
+                                                مشاهده همه{" "}
+                                                {toPersianNumber(
+                                                    barber.total_reviews,
+                                                )}{" "}
+                                                نظر
+                                            </span>
+                                            <ChevronLeft size={18} />
+                                        </Link>
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         )}
+                        {/* barber-reviews-section */}
                     </div>
                 )}
 

@@ -45,6 +45,10 @@ class User extends Authenticatable
         'experience_years',
         'city',
         'address',
+        'average_rating',
+        'total_reviews',
+        'total_rating_sum',
+        'last_seen_at'
     ];
     protected function casts(): array
     {
@@ -61,9 +65,15 @@ class User extends Authenticatable
         'is_admin' => false,
         'status' => UserStatus::PENDING->value,
     ];
+    // public function isOnline(): bool
+    // {
+    //     return Cache::has('user-is-online-' . $this->id);
+    // }
+
     public function isOnline(): bool
     {
-        return Cache::has('user-is-online-' . $this->id);
+        return $this->last_seen_at &&
+            $this->last_seen_at->gt(now()->subMinutes(5));
     }
 
     public function lastActivity(): ?string
@@ -77,14 +87,19 @@ class User extends Authenticatable
 
     public function avatar(): string
     {
-        // If the user doesn't have avatar, we will return default avatar
+        // اگر آواتار وجود ندارد، آواتار پیش‌فرض را برگردان
+        if (
+            !empty($this->avatar) &&
+            Storage::exists('thumbnails/' . $this->avatar)
+        ) {
 
-        if (Storage::exists('thumbnails/' . $this->avatar)) {
             return Storage::url('thumbnails/' . $this->avatar);
-        } else {
-            return $this->avatarBig();
         }
+
+        return $this->avatarBig();
     }
+
+
 
     public function services()
     {
@@ -109,6 +124,8 @@ class User extends Authenticatable
         return $this->hasMany(Review::class, 'barber_id')
             ->where('status', ReviewStatus::approved->value);
     }
+
+
 
     /**
      * نظراتی که این کاربر (به عنوان مشتری) داده
@@ -161,12 +178,15 @@ class User extends Authenticatable
     /**
      * توزیع امتیازها (چند نفر ۵ ستاره، چند نفر ۴ ستاره و...)
      */
+    // app/Models/User.php
+
     public function getRatingDistributionAttribute(): array
     {
         return Cache::remember(
             "barber_rating_dist_{$this->id}",
             now()->addHours(6),
             function () {
+                // همیشه همه کلیدها را مقداردهی اولیه کن
                 $distribution = [
                     5 => 0,
                     4 => 0,
@@ -176,15 +196,17 @@ class User extends Authenticatable
                 ];
 
                 $reviews = $this->approvedReviews()
-                    ->selectRaw('rating, count(*) as count')
+                    ->selectRaw('rating, COUNT(*) as count')
                     ->groupBy('rating')
-                    ->get();
+                    ->pluck('count', 'rating')
+                    ->toArray();
 
-                foreach ($reviews as $review) {
-                    $distribution[$review->rating] = $review->count;
+                foreach ($reviews as $rating => $count) {
+                    $distribution[(int) $rating] = (int) $count;
                 }
 
-                return $distribution;
+                // اطمینان از اینکه همه مقادیر Integer هستند
+                return array_map('intval', $distribution);
             }
         );
     }

@@ -2,14 +2,87 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\ReviewStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
 
 class ReviewController extends Controller
 {
+    // app/Http/Controllers/Customer/BarberController.php
+
+    /**
+     * نمایش همه نظرات یک آرایشگر
+     */
+    public function reviews(Request $request, User $barber)
+    {
+        if (!$barber->hasRole('آرایشگر')) {
+            abort(404);
+        }
+
+        $query = Review::where('barber_id', $barber->id)
+            ->where('status', ReviewStatus::approved->value)
+            ->with(['user:id,name,avatar']); // ← با with
+
+        // فیلتر
+        if ($rating = $request->input('rating')) {
+            $query->where('rating', $rating);
+        }
+
+        // مرتب‌سازی
+        $sort = $request->input('sort', 'latest');
+        match ($sort) {
+            'oldest' => $query->oldest(),
+            'highest' => $query->orderBy('rating', 'desc')->latest(),
+            'lowest' => $query->orderBy('rating', 'asc')->latest(),
+            default => $query->latest(),
+        };
+
+        $reviews = $query->paginate(10)->withQueryString();
+
+        // ============ تبدیل داده‌ها ============
+        $reviews->through(function ($review) {
+            return [
+                'id' => $review->id,
+                'rating' => (int) $review->rating,
+                'comment' => $review->comment,
+                'created_at' => $review->created_at,
+                'user' => [
+                    'id' => $review->user?->id,
+                    'name' => $review->user?->name,
+
+                    'avatar' => $review->user?->avatar,
+                    'thumbnail' => $review->user?->avatar(),
+                ],
+
+            ];
+        });
+
+        // ============ اطلاعات آرایشگر ============
+        $barberInfo = [
+            'id' => $barber->id,
+            'name' => $barber->name,
+            'avatar' => $barber->avatar,
+            'thumbnail' => $barber->avatar(),
+            'slug' => $barber->slug,
+            'rating' => (float) $barber->average_rating,
+            'total_reviews' => (int) $barber->total_reviews,
+            'rating_distribution' => $barber->rating_distribution,
+        ];
+
+        return Inertia::render('Customer/Barbers/Reviews', [
+            'barber' => $barberInfo,
+            'reviews' => $reviews,
+            'filters' => [
+                'rating' => $request->input('rating', ''),
+                'sort' => $sort,
+            ],
+        ]);
+    }
     /**
      * ثبت نظر جدید
      */

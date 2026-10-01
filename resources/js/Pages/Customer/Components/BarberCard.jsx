@@ -1,34 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "@inertiajs/react";
 import {
     Wifi,
     WifiOff,
     ChevronLeft,
+    ChevronUp,
+    ChevronDown,
     Scissors,
     Award,
     MapPin,
 } from "lucide-react";
 import RatingStars from "./RatingStars";
-
 import { toPersianNumber } from "../../../utils/persianNumbers";
 
-export default function BarberCard({ barber }) {
+export default function BarberCard({ barber, viewMode = "grid" }) {
+    const [isBioExpanded, setIsBioExpanded] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    const bio = barber.bio || "آرایشگر حرفه‌ای با تجربه در ارائه خدمات آرایشی";
+    const isBioLong = bio.length > 100;
+
+    // ============ انتخاب تصویر بر اساس حالت ============
+    // در حالت لیستی: عکس اصلی (کیفیت بالا)
+    // در حالت شبکه‌ای: thumbnail (بهینه)
+    const imageSrc = viewMode === "list" ? barber.avatar : barber.thumbnail;
+    console.log(barber);
+    console.log(viewMode);
+
     return (
         <div
-            className={`barber-card-public ${barber.is_online ? "online" : ""}`}
+            className={`barber-card-public ${
+                barber.is_online ? "online" : ""
+            } ${viewMode === "list" ? "card-list-mode" : "card-grid-mode"}`}
         >
-            {/* نوار آنلاین */}
             {barber.is_online && <div className="barber-card-stripe"></div>}
 
             <div className="barber-card-public-header">
                 <div className="barber-card-public-avatar-wrapper">
                     <div className="barber-card-public-avatar">
-                        {barber.avatar ? (
-                            <img src={barber.thumbnail} alt={barber.name} />
+                        {imageSrc ? (
+                            <img
+                                src={imageSrc}
+                                alt={barber.name}
+                                loading="lazy"
+                                onLoad={() => setImageLoaded(true)}
+                                className={imageLoaded ? "loaded" : ""}
+                            />
                         ) : (
                             <span>{barber.name?.charAt(0).toUpperCase()}</span>
                         )}
                     </div>
+
                     <span
                         className={`barber-card-public-status ${
                             barber.is_online ? "online" : "offline"
@@ -43,7 +65,6 @@ export default function BarberCard({ barber }) {
                     </span>
                 </div>
 
-                {/* ============ امتیاز واقعی ============ */}
                 {barber.total_reviews > 0 ? (
                     <RatingStars
                         rating={barber.rating}
@@ -58,7 +79,7 @@ export default function BarberCard({ barber }) {
             <div className="barber-card-public-body">
                 <h3 className="barber-card-public-name">{barber.name}</h3>
 
-                {/* ============ تخصص ============ */}
+                {/* تخصص */}
                 {barber.specialty && (
                     <div className="barber-card-specialty">
                         <Award size={12} />
@@ -66,13 +87,41 @@ export default function BarberCard({ barber }) {
                     </div>
                 )}
 
-                {/* ============ بیوگرافی ============ */}
-                <p className="barber-card-public-bio">
-                    {barber.bio ||
-                        "آرایشگر حرفه‌ای با تجربه در ارائه خدمات آرایشی"}
-                </p>
+                {/* ============ بیوگرافی با قابلیت باز/بسته ============ */}
+                <div className="barber-card-bio-wrapper">
+                    <p
+                        className={`barber-card-public-bio ${
+                            isBioExpanded ? "expanded" : ""
+                        }`}
+                    >
+                        {bio}
+                    </p>
 
-                {/* ============ تجربه و شهر ============ */}
+                    {/* {isBioLong && (
+                        <button
+                            type="button"
+                            className="bio-toggle-btn"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setIsBioExpanded(!isBioExpanded);
+                            }}
+                        >
+                            {isBioExpanded ? (
+                                <>
+                                    <ChevronUp size={12} />
+                                    کمتر
+                                </>
+                            ) : (
+                                <>
+                                    <ChevronDown size={12} />
+                                    بیشتر
+                                </>
+                            )}
+                        </button>
+                    )} */}
+                </div>
+
+                {/* اطلاعات */}
                 <div className="barber-card-info-row">
                     {barber.experience_years > 0 && (
                         <span className="info-item">
@@ -112,7 +161,7 @@ export default function BarberCard({ barber }) {
             )}
 
             <Link
-                href={`/barbers/${barber.slug}`}
+                href={`/barbers/${barber.slug}/details`}
                 className="barber-card-public-cta"
             >
                 <span>مشاهده و رزرو</span>

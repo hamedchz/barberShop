@@ -5,7 +5,7 @@ import { CheckCircle } from "lucide-react";
 import "../Assets/HorizentalCalendar.css";
 import Tooltip from "../Components/Tooltip";
 
-const persianDaysShort = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+const persianDaysShort = ["ی", "د", "س", "چ", "پ", "ج", "ش"];
 const persianMonths = [
     "فروردین",
     "اردیبهشت",

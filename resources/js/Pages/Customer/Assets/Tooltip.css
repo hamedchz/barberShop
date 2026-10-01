@@ -1,9 +1,21 @@
 /* ============ Tooltip Wrapper ============ */
-.tooltip-wrapper {
+.tooltip-trigger {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* فقط Tooltip های مربوط به ساعات رزرو */
+.public-slots-grid>.tooltip-trigger {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.public-slots-grid>.tooltip-trigger>.public-slot-btn {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ============ Tooltip اصلی ============ */
@@ -222,13 +234,13 @@
 }
 
 /* ============ ریسپانسیو ============ */
-@media (max-width: 640px) {
+/* @media (max-width: 640px) {
   .tooltip-content {
     font-size: 0.6875rem;
     padding: 0.4375rem 0.75rem;
     max-width: 220px;
   }
-}
+} */
 
 /* ============ Tooltip Portal ============ */
 .tooltip-portal {
