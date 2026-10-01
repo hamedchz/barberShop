@@ -1,0 +1,800 @@
+/* ============================================
+   Booking Show Page
+   ============================================ */
+.booking-show-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.booking-show-back {
+  margin-bottom: 1.5rem;
+}
+
+/* ============ هدر وضعیت ============ */
+.booking-show-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  border: 1px solid;
+  border-radius: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-show-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.booking-show-header-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid;
+  position: relative;
+  z-index: 1;
+}
+
+.booking-show-header-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.booking-show-header-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.booking-show-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: 1px solid;
+}
+
+.booking-show-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 9999px;
+}
+
+.booking-show-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 0.375rem;
+  line-height: 1.5;
+}
+
+.booking-show-subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============ گرید اصلی ============ */
+.booking-show-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .booking-show-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+.booking-show-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.booking-show-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============ کارت‌ها ============ */
+.booking-show-card {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.booking-show-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.card-icon-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon-box.green {
+  background-color: #ecfdf5;
+  color: #10b981;
+}
+
+.card-icon-box.blue {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.card-icon-box.purple {
+  background-color: #f5f3ff;
+  color: #8b5cf6;
+}
+
+.card-icon-box.yellow {
+  background-color: #fffbeb;
+  color: #f59e0b;
+}
+
+.card-icon-box.gray {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* ============ Grid اطلاعات ============ */
+.booking-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .booking-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background-color: #f9fafb;
+  border-radius: 0.875rem;
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.info-block:hover {
+  background-color: #f0fdf4;
+  border-color: #d1fae5;
+  transform: translateY(-2px);
+}
+
+.info-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  min-width: 0;
+}
+
+.info-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* ============ توضیحات خدمت ============ */
+.service-description-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.875rem;
+  border-right: 3px solid #10b981;
+}
+
+.service-description-box svg {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.service-description-box p {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============ کارت باربر ============ */
+.barber-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+}
+
+.barber-info-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.barber-info-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-info-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-info-name {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.barber-info-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.barber-info-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.625rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.contact-item:hover {
+  background-color: #f0fdf4;
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.barber-info-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 0.5rem 0.625rem;
+  background-color: white;
+  border-radius: 0.5rem;
+}
+
+.barber-info-address svg {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.view-barber-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #dbeafe;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.view-barber-btn:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+/* ============ اطلاعات پرداخت ============ */
+.payment-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .payment-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 0.875rem;
+  background-color: #f9fafb;
+  border-radius: 0.75rem;
+  border: 1px solid #f3f4f6;
+}
+
+.payment-info-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.payment-info-value {
+  font-size: 0.8125rem;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.payment-info-value.mono {
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.05em;
+}
+
+.payment-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.payment-status.success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #d1fae5;
+}
+
+.payment-status.failed {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fee2e2;
+}
+
+.payment-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #a7f3d0;
+  border-radius: 0.875rem;
+}
+
+.payment-total-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.payment-total-value {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.payment-total-value .currency {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #047857;
+}
+
+/* ============ نمایش نظر ============ */
+.review-display {
+  padding: 1rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 1rem;
+}
+
+.review-display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.review-display-date {
+  font-size: 0.75rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.review-display-comment {
+  font-size: 0.875rem;
+  color: #78350f;
+  line-height: 1.8;
+  margin: 0;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  border-right: 3px solid #f59e0b;
+}
+
+/* ============ خلاصه ============ */
+.summary-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: #d1fae5;
+}
+
+.summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8125rem;
+}
+
+.summary-row-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.summary-row-value {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.summary-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #a7f3d0, transparent);
+  margin: 0.25rem 0;
+}
+
+.summary-row.total {
+  padding-top: 0.5rem;
+}
+
+.summary-row.total .summary-row-label {
+  font-size: 0.875rem;
+  color: #065f46;
+  font-weight: 800;
+}
+
+.summary-row.total .summary-row-value {
+  font-size: 1.25rem;
+  color: #065f46;
+  font-weight: 800;
+}
+
+.summary-row.total .currency {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #047857;
+}
+
+/* ============ دکمه‌های عملیات ============ */
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text-main);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: right;
+  width: 100%;
+}
+
+.action-btn svg {
+  flex-shrink: 0;
+}
+
+.action-btn.review {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.action-btn.review:hover {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
+}
+
+.action-btn.print {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+
+.action-btn.print:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.action-btn.contact {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-color: #d1fae5;
+}
+
+.action-btn.contact:hover {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+  transform: translateY(-1px);
+}
+
+.action-btn.cancel {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+
+.action-btn.cancel:hover {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+/* ============ جعبه اطلاعات ============ */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.info-box.warning {
+  background-color: #fffbeb;
+  border-right: 3px solid #f59e0b;
+  color: #92400e;
+}
+
+.info-box.info {
+  background-color: #eff6ff;
+  border-right: 3px solid #3b82f6;
+  color: #1e40af;
+}
+
+.info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-box p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============ راهنما ============ */
+.status-guide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-guide-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.status-guide-list li svg {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ============ چاپ ============ */
+@media print {
+
+  .booking-show-back,
+  .booking-show-sidebar .actions-card,
+  .public-navbar,
+  .public-footer {
+    display: none !important;
+  }
+
+  .booking-show-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .booking-show-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============ ریسپانسیو ============ */
+@media (max-width: 640px) {
+  .booking-show-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .booking-show-header {
+    flex-direction: column;
+    padding: 1.25rem;
+  }
+
+  .booking-show-header-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .booking-show-title {
+    font-size: 1.0625rem;
+  }
+
+  .barber-info-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .barber-info-contact {
+    justify-content: center;
+  }
+
+  .payment-total {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .summary-row.total .summary-row-value {
+    font-size: 1.0625rem;
+  }
+}

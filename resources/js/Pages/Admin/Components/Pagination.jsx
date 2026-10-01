@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
+import "../Assets/css/styles.css";
+import { toPersianNumber } from "../../../utils/persianNumbers";
 
 const Pagination = ({ links = [] }) => {
     if (!links || links.length <= 3) {
@@ -61,7 +63,7 @@ const Pagination = ({ links = [] }) => {
                         borderRadius: "6px",
                     }}
                 >
-                    {getLabel(link.label)}
+                    {toPersianNumber(getLabel(link.label))}
                 </Link>
             ))}
         </div>

@@ -10,7 +10,15 @@ Route::prefix('/bookings')
     // رزرو
     Route::post('/create', 'create')
       ->name('create');
+
+    Route::get('/', 'index')->name('index');
+    Route::delete('/{booking}/cancel', 'cancel')
+      ->name('cancel');
+
+    Route::get('/{booking}', 'show')
+      ->name('show');
   });
+
 Route::prefix('/payment')
   ->name('payment.')->controller(PaymentController::class)->group(function () {
     // پرداخت
