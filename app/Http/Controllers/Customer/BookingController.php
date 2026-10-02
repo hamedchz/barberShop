@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\PaymentStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Review;
 use App\Models\TimeSlot;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -154,58 +159,102 @@ class BookingController extends Controller
      */
     public function cancel(Booking $booking)
     {
-        // بررسی مالکیت
+        // ============ بررسی مالکیت ============
         if ($booking->user_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'این رزرو متعلق به شما نیست.');
         }
 
-        // بررسی وضعیت
-        if (!in_array($booking->status, ['pending', 'confirmed'])) {
-            return redirect()->back()
-                ->with('error', 'این رزرو قابل لغو نیست.');
+        // ============ بررسی وضعیت ============
+        if (!in_array($booking->status->value, [
+            BookingStatus::pending->value,
+            BookingStatus::confirmed->value,
+        ])) {
+            StickyAlert::alert('این رزرو قابل لغو نیست.', 'error');
+            return redirect()
+                ->back();
         }
 
-        // بررسی زمان (حداقل ۲ ساعت قبل)
-        $timeSlot = $booking->timeSlot;
+        // ============ بررسی وجود TimeSlot ============
+        if (!$booking->timeSlot) {
+
+            StickyAlert::alert('اطلاعات زمان این رزرو یافت نشد.', 'error');
+
+            return redirect()
+                ->back();
+        }
+
+        // ============ بررسی زمان لغو ============
+        $timeSlotDate = Carbon::parse($booking->timeSlot->date)->format('Y-m-d');
         $slotDateTime = Carbon::parse(
-            $timeSlot->date . ' ' . $timeSlot->start_time
+            $timeSlotDate . ' ' . $booking->timeSlot->start_time
         );
 
-        if ($slotDateTime->diffInHours(Carbon::now(), false) > -2) {
-            return redirect()->back()
-                ->with('error', 'لغو رزرو حداقل ۲ ساعت قبل از نوبت امکان‌پذیر است.');
+        // اگر نوبت گذشته باشد
+        if ($slotDateTime->isPast()) {
+            StickyAlert::alert('زمان این نوبت گذشته است و قابل لغو نیست.', 'error');
+
+            return redirect()
+                ->back();
         }
 
-        // لغو رزرو
-        $booking->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-        ]);
+        // اگر کمتر از ۲ ساعت به نوبت باقی است
+        $hoursUntilSlot = Carbon::now()->diffInHours($slotDateTime, false);
+        if ($hoursUntilSlot < 2) {
+            StickyAlert::alert('لغو رزرو حداقل ۲ ساعت قبل از زمان نوبت امکان‌پذیر است.', 'error');
 
-        // آزاد کردن بازه
-        $timeSlot->update([
-            'status' => 'available',
-            'booked_by' => null,
-        ]);
+            return redirect()
+                ->back();
+        }
 
-        // برگشت مبلغ (اینجا باید به درگاه برگردانید)
-        // ...
+        // ============ لغو رزرو ============
+        DB::beginTransaction();
 
-        return redirect()->back()
-            ->with('success', 'نوبت شما با موفقیت لغو شد.');
+        try {
+            // ۱. بروزرسانی رزرو
+            $booking->update([
+                'status' => BookingStatus::cancelled->value,
+                'cancelled_at' => now(),
+                'notes' => ($booking->notes ? $booking->notes . "\n" : '') .
+                    'لغو شده توسط مشتری در ' . verta()->format('Y/m/d H:i'),
+            ]);
+
+            // ۲. آزاد کردن بازه زمانی
+            $booking->timeSlot->update([
+                'status' => TimeSlotStatus::available->value,
+                'booked_by' => null,
+            ]);
+            // ۳. اگر پرداخت موفق داشته، برگشت مبلغ
+            if ($booking->payment && $booking->payment->status->value === PaymentStatus::success->value) {
+                $this->refundPayment($booking->payment);
+            }
+
+            DB::commit();
+
+            StickyAlert::alert('نوبت شما با موفقیت لغو شد.', 'error');
+            return redirect()
+                ->back();
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            StickyAlert::alert('خطا در لغو رزرو. لطفاً دوباره تلاش کنید.', 'error');
+            return redirect()
+                ->back();
+        }
     }
+
 
     /**
      * نمایش جزئیات یک رزرو
      */
     public function show(Booking $booking)
     {
-        // بررسی مالکیت
+        // ============ بررسی مالکیت ============
         if ($booking->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // بارگذاری روابط
+        // ============ بارگذاری روابط ============
         $booking->load([
             'barber' => function ($q) {
                 $q->select('id', 'name', 'avatar', 'phone', 'slug', 'specialty', 'city', 'address');
@@ -219,25 +268,75 @@ class BookingController extends Controller
             'payment',
         ]);
 
-        // بررسی نظر
+        // ============ بررسی نظر ============
         $review = Review::where('user_id', $booking->user_id)
             ->where('booking_id', $booking->id)
             ->first();
 
-        // بررسی امکان لغو (حداقل ۲ ساعت قبل)
+        // ============ محاسبه دسترسی‌ها ============
         $canCancel = false;
-        if (in_array($booking->status, ['pending', 'confirmed']) && $booking->timeSlot) {
-            $slotDateTime = Carbon::parse(
-                $booking->timeSlot->date . ' ' . $booking->timeSlot->start_time
-            );
-            $canCancel = $slotDateTime->isFuture() &&
-                $slotDateTime->diffInHours(Carbon::now()) >= 2;
+        $canPay = false;
+        $canReview = false;
+        $expiresAt = null;
+        $isExpired = false;
+
+        // ============ وضعیت Pending (در انتظار پرداخت) ============
+        if ($booking->status->value === BookingStatus::pending->value) {
+            $expiresAt = $booking->created_at->addMinutes(15);
+            $isExpired = now()->greaterThan($expiresAt);
+
+
+
+            if (!$isExpired) {
+                // هنوز زمان دارد: می‌تواند پرداخت کند و لغو کند
+                $canPay = true;
+                $canCancel = true;
+            } else {
+                // منقضی شده: لغو خودکار
+                $booking->update([
+                    'status' => BookingStatus::cancelled->value,
+                    'cancelled_at' => now(),
+                    'notes' => ($booking->notes ? $booking->notes . "\n" : '') .
+                        'لغو خودکار به دلیل عدم پرداخت در ۱۵ دقیقه',
+                ]);
+
+                if ($booking->timeSlot) {
+                    $booking->timeSlot->update([
+                        'status' => TimeSlotStatus::available->value,
+                        'booked_by' => null,
+                    ]);
+                }
+
+                // Refresh برای اعمال تغییرات
+                $booking->refresh();
+                $booking->load(['timeSlot', 'payment']);
+            }
         }
 
-        // بررسی گذشته بودن
+        // ============ وضعیت Confirmed (تایید شده) ============
+        if ($booking->status->value === BookingStatus::confirmed->value) {
+            if ($booking->timeSlot) {
+                $timSlotDate = Carbon::parse($booking->timeSlot->date)->format('Y-m-d');
+                $slotDateTime = Carbon::parse(
+                    $timSlotDate . ' ' . $booking->timeSlot->start_time
+                );
+
+                // امکان لغو: نوبت در آینده باشد و حداقل ۲ ساعت فاصله داشته باشد
+                $canCancel = $slotDateTime->isFuture() &&
+                    Carbon::now()->diffInHours($slotDateTime) >= 2;
+            }
+        }
+
+        // ============ وضعیت Completed (تکمیل شده) ============
+        if ($booking->status->value === BookingStatus::completed->value && !$review) {
+            $canReview = true;
+        }
+
+        // ============ بررسی گذشته بودن ============
         $isPast = $booking->timeSlot &&
             Carbon::parse($booking->timeSlot->date)->isPast();
 
+        // ============ ارسال به React ============
         return Inertia::render('Customer/Bookings/Show', [
             'booking' => [
                 'id' => $booking->id,
@@ -247,10 +346,16 @@ class BookingController extends Controller
                 'created_at' => $booking->created_at,
                 'confirmed_at' => $booking->confirmed_at,
                 'cancelled_at' => $booking->cancelled_at,
+                'expires_at' => $expiresAt?->toIso8601String(), // ← برای شمارش معکوس
                 'is_past' => $isPast,
-                'can_cancel' => $canCancel,
-                'can_review' => $booking->status === 'completed' && !$review,
+                'is_expired' => $isExpired,
 
+                // ============ دسترسی‌ها ============
+                'can_cancel' => $canCancel,
+                'can_pay' => $canPay,       // ← جدید
+                'can_review' => $canReview,
+
+                // ============ اطلاعات آرایشگر ============
                 'barber' => $booking->barber ? [
                     'id' => $booking->barber->id,
                     'name' => $booking->barber->name,
@@ -263,6 +368,7 @@ class BookingController extends Controller
                     'address' => $booking->barber->address,
                 ] : null,
 
+                // ============ اطلاعات خدمت ============
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
                     'name' => $booking->service->name,
@@ -274,10 +380,12 @@ class BookingController extends Controller
                     'price' => (float) $booking->service->price,
                 ] : null,
 
+                // ============ اطلاعات زمان ============
                 'date' => $booking->timeSlot?->date,
                 'start_time' => $booking->timeSlot?->start_time,
                 'end_time' => $booking->timeSlot?->end_time,
 
+                // ============ اطلاعات پرداخت ============
                 'payment' => $booking->payment ? [
                     'gateway' => $booking->payment->gateway,
                     'gateway_label' => $this->getGatewayLabel($booking->payment->gateway),
@@ -287,6 +395,7 @@ class BookingController extends Controller
                     'amount' => (float) $booking->payment->amount,
                 ] : null,
 
+                // ============ اطلاعات نظر ============
                 'review' => $review ? [
                     'id' => $review->id,
                     'rating' => (int) $review->rating,
@@ -295,6 +404,118 @@ class BookingController extends Controller
                 ] : null,
             ],
         ]);
+    }
+
+    /**
+     * لغو رزرو توسط مشتری
+     */
+
+    /**
+     * برگشت مبلغ پرداخت شده
+     */
+    private function refundPayment(Payment $payment): void
+    {
+        try {
+            $accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNmMwNWFjYmQ1N2I4NzA1OGJjYTI1MzVkNTRhNzE4YzJkYjUxMTY4Y2I0MjNiN2Y3ZDk3YThlZmZmYzI5MDUwOTc3NDc4ZjgyNTg3MjAxNzYiLCJpYXQiOjE3MDg3NjAwOTIuNzMyODY3LCJuYmYiOjE3MDg3NjAwOTIuNzMyODcxLCJleHAiOjE4NjY2MTI4OTIuNjk3MjQzLCJzdWIiOiI0NTYwOTgiLCJzY29wZXMiOltdfQ.bEATYg8_-BWwa6MJIL1_qP-Crs8vcmay0oEFLgzEjyYlfm431XzhaU7Aa_0dnjT1Ahpv74NtWi-slMbI2X8lzrf4hm8TEwl95eG-Eb5mqmYNk61jYFbE3FG9tVPo6EVFfJYMXJFzL64Mh8jI4SeUnUieqECCc_riBs0KD_IjSmnc_JblmY_xBaeqTJ3M6zwpLkmNPsjADAiC1fxcO5tGscWKBcSNkbXq_44-7fZqlKSyy7zmXZTYPIJp0YUHpUX-P2ifY20KBhjNBB-dCnascw57ET1yc6YQw-ZWKHKqF6FfYHQSRfWASiQTe1SCRLiKwjKqmGXolQX2DfqeEP-T0qdrFaTO9hWVJuVugAdwgd0h9LOBbx1tFNclLl0tCYttBENjeGgDY03121JtQcXEk-gVc6qSIT9wewACdYup-uiYOYR7ZvibxdvbbZ3n4PGaxDapiqMTRIKmCMYhzNORo1PTfN1AwRbIP4LUIpLJzIqF9KeDlL1Pb_55ccXzvCK5Q_IIZvrU7x-8MPNjwWKfParbihpxMLufpsxc98WuO5ylMLKpnfoOYtQnh8nlz239ag0Ok6SQVk3zKwAv-Kt9nbNo2NzQue-jH6KPlc_xpfL-ii71XwjRZ3lN3YhAj4K-CeFK9MIBXiij0QtKO2rjHXC5B9mV8Ityc0wvebWslOo';
+            $sessionId = intval($payment->transaction_id);
+            // We save Tooman, they accept Rial
+            $amount = intval($payment->amount) * 10;
+            $description = 'Deregistration refund';
+            $reason = 'CUSTOMER_REQUEST';
+            //for refund just Paya method works
+            $method = 'PAYA';
+
+            $query = <<<'GRAPHQL'
+                          mutation AddRefund(
+                            $session_id: ID!
+                            $amount: BigInteger!
+                            $description: String
+                            $method: InstantPayoutActionTypeEnum
+                            $reason: RefundReasonEnum
+                          ) {
+                            resource: AddRefund(
+                             session_id: $session_id
+                              amount: $amount
+                              description: $description
+                              method : $method
+                              reason: $reason
+                            ) {
+                              terminal_id
+                              id
+                              amount
+                              timeline {
+                                refund_amount
+                                refund_time
+                                refund_status
+                              }
+                            }
+                          }
+                        GRAPHQL;
+
+            $variables = [
+                'session_id' => $sessionId,
+                'amount' => $amount,
+                'description' => $description,
+                'reason' => $reason,
+                'method' => $method
+            ];
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $accessToken,
+            ])->post('https://next.zarinpal.com/api/v4/graphql/', [
+                'query' => $query,
+                'variables' => $variables
+            ]);
+            // dd($response->json());
+
+            $payment->update([
+                'status' => PaymentStatus::refunded->value,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Refund failed: ' . $e->getMessage(), [
+                'payment_id' => $payment->id,
+            ]);
+        }
+    }
+
+    /**
+     * برگشت مبلغ در زرین‌پال
+     */
+    private function refundZarinpal(Payment $payment): void
+    {
+        $config = config('payment.gateways.zarinpal');
+
+        $data = [
+            'MerchantID' => $config['merchant_id'],
+            'Amount' => $payment->amount * 10, // ریال
+            'Authority' => $payment->authority,
+        ];
+
+        $ch = curl_init('https://api.zarinpal.com/pg/v4/payment/refund.json');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+
+        if (isset($result['data']['code']) && $result['data']['code'] === 100) {
+            $payment->update([
+                'status' => 'refunded',
+                'gateway_response' => $result,
+            ]);
+        } else {
+            $payment->update([
+                'status' => 'refund_pending',
+                'gateway_response' => $result,
+            ]);
+        }
     }
 
     /**

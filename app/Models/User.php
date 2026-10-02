@@ -56,6 +56,7 @@ class User extends Authenticatable
             'phone_verified_at' => 'datetime',
             'last_activity_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatus::class,
             'is_admin' => 'bool'

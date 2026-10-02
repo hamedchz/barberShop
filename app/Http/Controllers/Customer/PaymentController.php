@@ -30,7 +30,10 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         // ساخت Payment
-        $payment = Payment::create([
+        $payment = Payment::updateOrCreate([
+            'booking_id' => $booking->id,
+
+        ], [
             'booking_id' => $booking->id,
             'user_id' => auth()->id(),
             'amount' => $booking->amount,

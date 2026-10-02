@@ -17,6 +17,9 @@ Route::prefix('/bookings')
 
     Route::get('/{booking}', 'show')
       ->name('show');
+
+    Route::delete('/{booking}/cancel', 'cancel')
+      ->name('destroy');
   });
 
 Route::prefix('/payment')

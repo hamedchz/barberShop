@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
@@ -20,16 +20,16 @@ import {
     AlertCircle,
     Hash,
     CreditCard,
-    Download,
     Printer,
-    MessageCircle,
-    Edit3,
     Award,
     Building2,
     CalendarClock,
     Info,
     FileText,
     Shield,
+    RefreshCw,
+    Hourglass,
+    Ban,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -83,6 +83,8 @@ const formatFullDateTime = (date) => {
     )}:${toPersianNumber(minutes)}`;
 };
 
+// ============ وضعیت‌ها ============
+// ============ وضعیت‌های پرداخت ============
 const statusConfig = {
     pending: {
         label: "در انتظار پرداخت",
@@ -90,33 +92,85 @@ const statusConfig = {
         color: "#92400e",
         bg: "#fffbeb",
         border: "#fde68a",
-        description: "این رزرو در انتظار پرداخت است.",
     },
-    confirmed: {
-        label: "تایید شده",
+    success: {
+        label: "موفق",
         icon: CheckCircle,
         color: "#065f46",
         bg: "#ecfdf5",
         border: "#d1fae5",
-        description: "رزرو شما تایید شده است. در تاریخ مقرر حضور یابید.",
     },
-    completed: {
-        label: "تکمیل شده",
-        icon: CheckCircle,
-        color: "#1e40af",
-        bg: "#eff6ff",
-        border: "#dbeafe",
-        description: "این خدمت با موفقیت انجام شده است.",
-    },
-    cancelled: {
-        label: "لغو شده",
+    failed: {
+        label: "ناموفق",
         icon: XCircle,
         color: "#991b1b",
         bg: "#fef2f2",
         border: "#fee2e2",
-        description: "این رزرو لغو شده است.",
+    },
+    cancelled: {
+        label: "لغو شده",
+        icon: Ban, // ← از lucide-react
+        color: "#6b7280",
+        bg: "#f3f4f6",
+        border: "#e5e7eb",
+    },
+    refunded: {
+        label: "برگشت داده شده",
+        icon: RefreshCw, // ← از lucide-react
+        color: "#5b21b6",
+        bg: "#f5f3ff",
+        border: "#ddd6fe",
     },
 };
+
+// ============ کامپوننت شمارش معکوس ============
+function CountdownTimer({ expiresAt }) {
+    const [timeLeft, setTimeLeft] = useState({
+        minutes: 0,
+        seconds: 0,
+        isExpired: false,
+    });
+
+    useEffect(() => {
+        const calculateTimeLeft = () => {
+            const now = new Date().getTime();
+            const expires = new Date(expiresAt).getTime();
+            const diff = expires - now;
+
+            if (diff <= 0) {
+                setTimeLeft({ minutes: 0, seconds: 0, isExpired: true });
+                return;
+            }
+
+            const minutes = Math.floor(diff / 1000 / 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            setTimeLeft({ minutes, seconds, isExpired: false });
+        };
+
+        calculateTimeLeft();
+        const interval = setInterval(calculateTimeLeft, 1000);
+
+        return () => clearInterval(interval);
+    }, [expiresAt]);
+
+    if (timeLeft.isExpired) {
+        return (
+            <span className="countdown-timer expired">
+                <Hourglass size={14} />
+                منقضی شده
+            </span>
+        );
+    }
+
+    return (
+        <span className="countdown-timer">
+            <Hourglass size={14} />
+            {toPersianNumber(timeLeft.minutes)}:
+            {toPersianNumber(String(timeLeft.seconds).padStart(2, "0"))}
+        </span>
+    );
+}
 
 export default function BookingShow({ auth, booking }) {
     const [cancelModal, setCancelModal] = useState({
@@ -138,6 +192,48 @@ export default function BookingShow({ auth, booking }) {
             onError: () =>
                 setCancelModal((prev) => ({ ...prev, isLoading: false })),
         });
+    };
+
+    // ============ پرداخت مجدد ============
+
+    const handleRetryPayment = () => {
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "/customer/payment/pay";
+        form.target = "_blank";
+
+        // CSRF Token
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "_token";
+        csrfInput.value = csrfToken;
+
+        // Booking ID
+        const bookingInput = document.createElement("input");
+        bookingInput.type = "hidden";
+        bookingInput.name = "booking_id";
+        bookingInput.value = booking.id;
+
+        // Gateway
+        const gatewayInput = document.createElement("input");
+        gatewayInput.type = "hidden";
+        gatewayInput.name = "gateway";
+        gatewayInput.value = booking.payment?.gateway || "zarinpal";
+
+        form.appendChild(csrfInput);
+        form.appendChild(bookingInput);
+        form.appendChild(gatewayInput);
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+        document.body.removeChild(form);
     };
 
     // ============ چاپ ============
@@ -195,6 +291,14 @@ export default function BookingShow({ auth, booking }) {
                                 <Hash size={14} />
                                 رزرو {toPersianNumber(booking.id)}
                             </span>
+
+                            {/* شمارش معکوس برای pending */}
+                            {booking.status === "pending" &&
+                                booking.expires_at && (
+                                    <CountdownTimer
+                                        expiresAt={booking.expires_at}
+                                    />
+                                )}
                         </div>
 
                         <h1 className="booking-show-title">
@@ -279,7 +383,6 @@ export default function BookingShow({ auth, booking }) {
                                     </div>
                                 </div>
                             </div>
-                            {/* توضیحات خدمت */}
                             {booking.service?.description && (
                                 <div className="service-description-box">
                                     <FileText size={14} />
@@ -412,31 +515,36 @@ export default function BookingShow({ auth, booking }) {
                                         </span>
                                     </div>
 
+                                    {/* ============ وضعیت پرداخت ============ */}
                                     <div className="payment-info-item">
                                         <span className="payment-info-label">
                                             وضعیت
                                         </span>
-                                        <span
-                                            className={`payment-status ${
-                                                booking.payment.status ===
-                                                "success"
-                                                    ? "success"
-                                                    : "failed"
-                                            }`}
-                                        >
-                                            {booking.payment.status ===
-                                            "success" ? (
-                                                <>
-                                                    <CheckCircle size={12} />
-                                                    موفق
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <XCircle size={12} />
-                                                    ناموفق
-                                                </>
-                                            )}
-                                        </span>
+
+                                        {(() => {
+                                            const paymentConfig =
+                                                statusConfig[
+                                                    booking.payment.status
+                                                ] || statusConfig.pending;
+                                            const PaymentIcon =
+                                                paymentConfig.icon;
+
+                                            return (
+                                                <span
+                                                    className="payment-status"
+                                                    style={{
+                                                        backgroundColor:
+                                                            paymentConfig.bg,
+                                                        color: paymentConfig.color,
+                                                        borderColor:
+                                                            paymentConfig.border,
+                                                    }}
+                                                >
+                                                    <PaymentIcon size={12} />
+                                                    {paymentConfig.label}
+                                                </span>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 
@@ -455,7 +563,7 @@ export default function BookingShow({ auth, booking }) {
                             </div>
                         )}
 
-                        {/* کارت نظر (اگر ثبت شده) */}
+                        {/* کارت نظر */}
                         {booking.review && (
                             <div className="booking-show-card">
                                 <div className="booking-show-card-header">
@@ -555,7 +663,21 @@ export default function BookingShow({ auth, booking }) {
                             </div>
 
                             <div className="actions-list">
-                                {/* ثبت نظر */}
+                                {/* ============ پرداخت مجدد ============ */}
+                                {booking.can_pay && (
+                                    <button
+                                        onClick={handleRetryPayment}
+                                        className="action-btn pay"
+                                    >
+                                        <CreditCard size={16} />
+                                        <span>تکمیل پرداخت</span>
+                                        <span className="action-badge">
+                                            <Hourglass size={10} />
+                                        </span>
+                                    </button>
+                                )}
+
+                                {/* ============ ثبت نظر ============ */}
                                 {booking.can_review && (
                                     <Link
                                         href={`/customer/bookings/${booking.id}/review`}
@@ -566,7 +688,7 @@ export default function BookingShow({ auth, booking }) {
                                     </Link>
                                 )}
 
-                                {/* چاپ */}
+                                {/* ============ چاپ ============ */}
                                 <button
                                     className="action-btn print"
                                     onClick={handlePrint}
@@ -575,7 +697,7 @@ export default function BookingShow({ auth, booking }) {
                                     <span>چاپ رسید</span>
                                 </button>
 
-                                {/* تماس با آرایشگر */}
+                                {/* ============ تماس با آرایشگر ============ */}
                                 {booking.barber?.phone && (
                                     <a
                                         href={`tel:${booking.barber.phone}`}
@@ -586,7 +708,7 @@ export default function BookingShow({ auth, booking }) {
                                     </a>
                                 )}
 
-                                {/* لغو رزرو */}
+                                {/* ============ لغو رزرو ============ */}
                                 {booking.can_cancel && (
                                     <button
                                         className="action-btn cancel"
@@ -603,23 +725,39 @@ export default function BookingShow({ auth, booking }) {
                                 )}
                             </div>
 
-                            {/* پیام راهنما */}
-                            {booking.can_cancel && (
-                                <div className="info-box warning">
-                                    <AlertCircle size={14} />
-                                    <p>
-                                        لغو رزرو تا ۲ ساعت قبل از زمان نوبت
-                                        امکان‌پذیر است.
-                                    </p>
-                                </div>
-                            )}
+                            {/* ============ پیام‌های راهنما ============ */}
+                            {/* پیام پرداخت برای pending */}
+                            {booking.status === "pending" &&
+                                booking.can_pay && (
+                                    <div className="info-box warning">
+                                        <AlertCircle size={14} />
+                                        <p>
+                                            برای تکمیل رزرو، لطفاً مبلغ را
+                                            پرداخت کنید. در غیر این صورت، رزرو
+                                            به صورت خودکار لغو می‌شود.
+                                        </p>
+                                    </div>
+                                )}
 
-                            {booking.status === "pending" && (
-                                <div className="info-box info">
-                                    <Info size={14} />
+                            {/* پیام لغو برای confirmed */}
+                            {booking.can_cancel &&
+                                booking.status === "confirmed" && (
+                                    <div className="info-box warning">
+                                        <AlertCircle size={14} />
+                                        <p>
+                                            لغو رزرو تا ۲ ساعت قبل از زمان نوبت
+                                            امکان‌پذیر است.
+                                        </p>
+                                    </div>
+                                )}
+
+                            {/* پیام منقضی */}
+                            {booking.is_expired && (
+                                <div className="info-box danger">
+                                    <XCircle size={14} />
                                     <p>
-                                        برای تکمیل رزرو، لطفاً مبلغ را پرداخت
-                                        کنید.
+                                        زمان پرداخت منقضی شده است. لطفاً رزرو
+                                        جدیدی ثبت کنید.
                                     </p>
                                 </div>
                             )}
@@ -635,27 +773,84 @@ export default function BookingShow({ auth, booking }) {
                             </div>
 
                             <ul className="status-guide-list">
-                                <li>
-                                    <CheckCircle size={14} />
-                                    <span>
-                                        رزرو تایید شده به معنی پرداخت موفق و ثبت
-                                        نهایی است.
-                                    </span>
-                                </li>
-                                <li>
-                                    <Clock4 size={14} />
-                                    <span>
-                                        لطفاً ۱۰ دقیقه قبل از زمان نوبت حاضر
-                                        باشید.
-                                    </span>
-                                </li>
-                                <li>
-                                    <XCircle size={14} />
-                                    <span>
-                                        لغو رزرو فقط تا ۲ ساعت قبل امکان‌پذیر
-                                        است.
-                                    </span>
-                                </li>
+                                {booking.status === "pending" ? (
+                                    <>
+                                        <li>
+                                            <CreditCard size={14} />
+                                            <span>
+                                                برای تکمیل رزرو، مبلغ را پرداخت
+                                                کنید.
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <Clock4 size={14} />
+                                            <span>
+                                                مهلت پرداخت ۱۵ دقیقه از زمان ثبت
+                                                رزرو است.
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <XCircle size={14} />
+                                            <span>
+                                                در صورت عدم پرداخت، رزرو به صورت
+                                                خودکار لغو می‌شود.
+                                            </span>
+                                        </li>
+                                    </>
+                                ) : booking.status === "confirmed" ? (
+                                    <>
+                                        <li>
+                                            <CheckCircle size={14} />
+                                            <span>
+                                                رزرو تایید شده به معنی پرداخت
+                                                موفق و ثبت نهایی است.
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <Clock4 size={14} />
+                                            <span>
+                                                لطفاً ۱۰ دقیقه قبل از زمان نوبت
+                                                حاضر باشید.
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <XCircle size={14} />
+                                            <span>
+                                                لغو رزرو فقط تا ۲ ساعت قبل
+                                                امکان‌پذیر است.
+                                            </span>
+                                        </li>
+                                    </>
+                                ) : booking.status === "completed" ? (
+                                    <>
+                                        <li>
+                                            <CheckCircle size={14} />
+                                            <span>
+                                                خدمت با موفقیت انجام شده است.
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <Star size={14} />
+                                            <span>
+                                                می‌توانید نظر خود را ثبت کنید.
+                                            </span>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <>
+                                        <li>
+                                            <XCircle size={14} />
+                                            <span>این رزرو لغو شده است.</span>
+                                        </li>
+                                        <li>
+                                            <Calendar size={14} />
+                                            <span>
+                                                برای رزرو جدید، به صفحه
+                                                آرایشگران مراجعه کنید.
+                                            </span>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </div>
                     </div>

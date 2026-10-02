@@ -10,13 +10,10 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Signature('app:cancel-pending-bookings')]
-#[Description('Command description')]
+#[Description('لغو رزروهای معلق پس از ۱۵ دقیقه')]
 class CancelPendingBookings extends Command
 {
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): int
     {
         $expired = Booking::where('status', BookingStatus::pending->value)
             ->where('created_at', '<', now()->subMinutes(15))
@@ -28,12 +25,16 @@ class CancelPendingBookings extends Command
                 'cancelled_at' => now(),
             ]);
 
-            $booking->timeSlot->update([
-                'status' => TimeSlotStatus::available->value,
-                'booked_by' => null,
-            ]);
+            if ($booking->timeSlot) {
+                $booking->timeSlot->update([
+                    'status' => TimeSlotStatus::available->value,
+                    'booked_by' => null,
+                ]);
+            }
         }
 
         $this->info("{$expired->count()} رزرو معلق لغو شد.");
+
+        return self::SUCCESS;
     }
 }
