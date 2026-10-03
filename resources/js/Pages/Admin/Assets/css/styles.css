@@ -594,7 +594,7 @@ body {
 }
 
 .btn-primary {
-  flex: 1;
+  /* flex: 1; */
   background-color: var(--primary);
   color: var(--white);
   font-weight: 600;
@@ -650,6 +650,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .roles-page-title {
@@ -3824,9 +3826,9 @@ body {
   margin-right: 5rem;
 }
 
-.admin-layout:not(.sidebar-collapsed) .main-content {
+/* .admin-layout:not(.sidebar-collapsed) .main-content {
   margin-right: 16rem;
-}
+} */
 
 /* ============ مدیا کوئری‌ها ============ */
 @media (min-width: 1024px) {

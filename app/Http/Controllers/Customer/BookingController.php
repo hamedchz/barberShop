@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\PaymentStatus;
+use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
@@ -57,10 +58,12 @@ class BookingController extends Controller
 
         // ============ جستجو ============
         if ($search = trim($request->input('search', ''))) {
-            $query->whereHas('barber', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })->orWhereHas('service', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('barber', function ($bq) use ($search) {
+                    $bq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('service', function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%");
+                });
             });
         }
 
@@ -101,25 +104,80 @@ class BookingController extends Controller
             $bookingDate = $timeSlot?->date;
             $isPast = $bookingDate && Carbon::parse($bookingDate)->isPast();
 
-            // بررسی اینکه کاربر قبلاً نظر داده یا نه
-            $hasReview = Review::where('user_id', $booking->user_id)
+            // ============ بررسی وجود نظر ============
+            $review = Review::where('user_id', $booking->user_id)
                 ->where('booking_id', $booking->id)
-                ->exists();
+                ->first();
+
+            $hasReview = (bool) $review;
+
+            // ============ بررسی امکان ثبت نظر ============
+            $canReview = $booking->status->value === BookingStatus::completed->value
+                && !$hasReview;
+
+            // ============ بررسی امکان ویرایش/حذف نظر ============
+            // فقط اگر نظر در وضعیت pending باشد
+            $canEditReview = $hasReview && $review->status === 'pending';
+            $canDeleteReview = $hasReview && $review->status === 'pending';
+
+            // ============ بررسی امکان پرداخت مجدد ============
+            $canPay = false;
+            $expiresAt = null;
+            $isExpired = false;
+
+            if ($booking->status->value === BookingStatus::pending->value) {
+                $expiresAt = $booking->created_at->copy()->addMinutes(15);
+                $isExpired = now()->greaterThan($expiresAt);
+                $canPay = !$isExpired;
+            }
+
+            // ============ بررسی امکان لغو ============
+            $canCancel = false;
+            if (in_array($booking->status->value, [
+                BookingStatus::pending->value,
+                BookingStatus::confirmed->value,
+            ])) {
+                if ($timeSlot) {
+                    $slotDateTime = Carbon::parse(
+                        Carbon::parse($timeSlot->date)->format('Y-m-d') . ' ' . $timeSlot->start_time
+                    );
+                    $canCancel = $slotDateTime->isFuture()
+                        && $slotDateTime->diffInHours(Carbon::now()) >= 2;
+                }
+            }
 
             return [
                 'id' => $booking->id,
-                'status' => $booking->status,
+                'status' => $booking->status->value,
                 'amount' => (float) $booking->amount,
                 'notes' => $booking->notes,
                 'created_at' => $booking->created_at,
                 'confirmed_at' => $booking->confirmed_at,
                 'cancelled_at' => $booking->cancelled_at,
+                'expires_at' => $expiresAt?->timestamp * 1000, // ← میلی‌ثانیه
                 'is_past' => $isPast,
+                'is_expired' => $isExpired,
+
+                // ============ دسترسی‌ها ============
                 'has_review' => $hasReview,
-                'can_review' => $booking->status === 'completed' && !$hasReview,
-                'can_cancel' => in_array($booking->status, [BookingStatus::pending->value, BookingStatus::confirmed->value])
-                    && $bookingDate
-                    && Carbon::parse($bookingDate)->isFuture(),
+                'can_review' => $canReview,
+                'can_edit_review' => $canEditReview,
+                'can_delete_review' => $canDeleteReview,
+                'can_cancel' => $canCancel,
+                'can_pay' => $canPay,
+
+                // ============ اطلاعات نظر ============
+                'review' => $review ? [
+                    'id' => $review->id,
+                    'rating' => (int) $review->rating,
+                    'comment' => $review->comment,
+                    'status' => $review->status,
+                    'created_at' => $review->created_at,
+                    'updated_at' => $review->updated_at,
+                    'is_edited' => $review->updated_at->gt($review->created_at),
+                ] : null,
+
+                // ============ اطلاعات آرایشگر ============
                 'barber' => $booking->barber ? [
                     'id' => $booking->barber->id,
                     'name' => $booking->barber->name,
@@ -128,6 +186,8 @@ class BookingController extends Controller
                     'phone' => $booking->barber->phone,
                     'slug' => $booking->barber->slug,
                 ] : null,
+
+                // ============ اطلاعات خدمت ============
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
                     'name' => $booking->service->name,
@@ -137,6 +197,8 @@ class BookingController extends Controller
                     'duration' => $booking->service->duration,
                     'price' => (float) $booking->service->price,
                 ] : null,
+
+                // ============ اطلاعات زمان ============
                 'date' => $bookingDate,
                 'start_time' => $timeSlot?->start_time,
                 'end_time' => $timeSlot?->end_time,
@@ -279,6 +341,13 @@ class BookingController extends Controller
         $canReview = false;
         $expiresAt = null;
         $isExpired = false;
+        $canEditReview = false;
+        $canDeleteReview = false;
+
+        if ($review && $review->status->value === ReviewStatus::pending->value) {
+            $canEditReview = true;
+            $canDeleteReview = true;
+        }
 
         // ============ وضعیت Pending (در انتظار پرداخت) ============
         if ($booking->status->value === BookingStatus::pending->value) {
@@ -400,7 +469,12 @@ class BookingController extends Controller
                     'id' => $review->id,
                     'rating' => (int) $review->rating,
                     'comment' => $review->comment,
+                    'status' => $review->status->value,
                     'created_at' => $review->created_at,
+                    'updated_at' => $review->updated_at,
+                    'is_edited' => $review->updated_at->gt($review->created_at),
+                    'can_edit' => $canEditReview,
+                    'can_delete' => $canDeleteReview,
                 ] : null,
             ],
         ]);
@@ -467,7 +541,6 @@ class BookingController extends Controller
                 'query' => $query,
                 'variables' => $variables
             ]);
-            // dd($response->json());
 
             $payment->update([
                 'status' => PaymentStatus::refunded->value,

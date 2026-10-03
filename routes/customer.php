@@ -38,12 +38,24 @@ Route::prefix('/payment')
       ->name('failed');
   });
 
-Route::prefix('reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
-  // نظرات
-  Route::post('/{barber}/reviews', 'store')
+Route::prefix('bookings/reviews')->name('reviews.')->controller(ReviewController::class)->group(function () {
+
+
+  // ثبت نظر
+  Route::get('/{booking}',  'create')
+    ->name('create');
+
+  Route::post('/{booking}',  'store')
     ->name('store');
-  Route::put('/{review}', 'update')
+
+  // ویرایش نظر
+  Route::get('/{review}/edit',  'edit')
+    ->name('edit');
+
+  Route::put('/{review}',  'update')
     ->name('update');
-  Route::delete('/{review}', 'destroy')
+
+  // حذف نظر
+  Route::delete('/{review}/delete',  'destroy')
     ->name('destroy');
 });

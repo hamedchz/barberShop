@@ -951,3 +951,853 @@
     transform: rotate(360deg);
   }
 }
+
+/* ============ Review Header ============ */
+.review-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+}
+
+
+
+
+/* ============ Review Header ============ */
+.review-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============ Badge وضعیت نظر ============ */
+.review-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border: 1px solid;
+  width: fit-content;
+}
+
+/* ============ Info Box برای هر وضعیت ============ */
+.review-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.875rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.review-info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.review-info-box p {
+  margin: 0;
+}
+
+.review-info-box strong {
+  font-weight: 800;
+}
+
+.review-info-box.pending {
+  background-color: #fffbeb;
+  border-right: 3px solid #f59e0b;
+  color: #92400e;
+}
+
+.review-info-box.pending svg {
+  color: #f59e0b;
+}
+
+.review-info-box.approved {
+  background-color: #ecfdf5;
+  border-right: 3px solid #10b981;
+  color: #065f46;
+}
+
+.review-info-box.approved svg {
+  color: #10b981;
+}
+
+.review-info-box.rejected {
+  background-color: #fef2f2;
+  border-right: 3px solid #ef4444;
+  color: #991b1b;
+}
+
+.review-info-box.rejected svg {
+  color: #ef4444;
+}
+
+/* ============================================
+   Review Card - Actions & Status
+   ============================================ */
+
+/* ============ هدر کارت نظر ============ */
+.review-card .booking-show-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dashed var(--border-color);
+  margin-bottom: 1.25rem;
+}
+
+.review-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.review-header-info .card-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+
+
+/* ============================================
+   دکمه‌های ویرایش و حذف
+   ============================================ */
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-right: auto;
+}
+
+.review-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border: 1px solid;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-action-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.3),
+      transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.review-action-btn:hover::before {
+  opacity: 1;
+}
+
+.review-action-btn:active {
+  transform: scale(0.96);
+}
+
+.review-action-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.review-action-btn:hover svg {
+  transform: scale(1.15);
+}
+
+/* دکمه ویرایش - آبی */
+.review-action-btn.edit {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+
+.review-action-btn.edit:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+.review-action-btn.edit:hover svg {
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* دکمه حذف - قرمز */
+.review-action-btn.delete {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+
+.review-action-btn.delete:hover {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+.review-action-btn.delete:hover svg {
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* ============================================
+   نمایش نظر
+   ============================================ */
+.review-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.review-display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.review-display-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.review-display-comment {
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.9;
+  margin: 0;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.875rem;
+  border-right: 3px solid #fbbf24;
+}
+
+/* ============ Badge ویرایش شده ============ */
+.review-edited-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  padding: 0.1875rem 0.5rem;
+  margin-right: 0.5rem;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+}
+
+/* ============================================
+   Info Box (راهنمای وضعیت)
+   ============================================ */
+.review-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.875rem;
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.review-info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.review-info-box p {
+  margin: 0;
+}
+
+.review-info-box strong {
+  font-weight: 800;
+}
+
+/* pending - زرد */
+.review-info-box.pending {
+  background-color: #fffbeb;
+  border-right: 3px solid #f59e0b;
+  color: #92400e;
+}
+
+.review-info-box.pending svg {
+  color: #f59e0b;
+}
+
+/* approved - سبز */
+.review-info-box.approved {
+  background-color: #ecfdf5;
+  border-right: 3px solid #10b981;
+  color: #065f46;
+}
+
+.review-info-box.approved svg {
+  color: #10b981;
+}
+
+/* rejected - قرمز */
+.review-info-box.rejected {
+  background-color: #fef2f2;
+  border-right: 3px solid #ef4444;
+  color: #991b1b;
+}
+
+.review-info-box.rejected svg {
+  color: #ef4444;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .review-card .booking-show-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .review-actions {
+    width: 100%;
+    margin-right: 0;
+    justify-content: stretch;
+  }
+
+  .review-action-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .review-display-comment {
+    font-size: 0.8125rem;
+    padding: 0.75rem;
+  }
+
+  .review-info-box {
+    font-size: 0.6875rem;
+    padding: 0.75rem;
+  }
+}
+
+/* ============================================
+   Review Delete Modal
+   ============================================ */
+.review-delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============ Modal Box ============ */
+.review-delete-modal {
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* اسکرول‌بار سفارشی */
+.review-delete-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.review-delete-modal::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 6px;
+}
+
+/* ============ هدر ============ */
+.review-delete-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.review-delete-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid #fecaca;
+  animation: deleteIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes deleteIconPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+}
+
+.review-delete-close {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.review-delete-close:hover:not(:disabled) {
+  background-color: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+  transform: rotate(90deg);
+}
+
+.review-delete-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ محتوا ============ */
+.review-delete-body {
+  margin-bottom: 1.5rem;
+}
+
+.review-delete-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.625rem;
+  line-height: 1.3;
+}
+
+.review-delete-message {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.8;
+  margin: 0 0 1.25rem;
+}
+
+/* ============ پیش‌نمایش نظر ============ */
+.review-delete-preview {
+  padding: 1rem;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+  margin-bottom: 1.25rem;
+  border-right: 3px solid #fbbf24;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.preview-date {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.preview-comment {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============ هشدار ============ */
+.review-delete-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.75rem;
+  border-right: 3px solid #f59e0b;
+}
+
+.review-delete-warning svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.review-delete-warning p {
+  font-size: 0.75rem;
+  color: #92400e;
+  line-height: 1.7;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ============ دکمه‌های عملیات ============ */
+.review-delete-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.625rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+@media (min-width: 640px) {
+  .review-delete-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.review-delete-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .review-delete-cancel-btn {
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+.review-delete-cancel-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #1f2937;
+}
+
+.review-delete-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.review-delete-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+  white-space: nowrap;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .review-delete-confirm-btn {
+    width: auto;
+    min-width: 160px;
+  }
+}
+
+.review-delete-confirm-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
+}
+
+.review-delete-confirm-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============ Spinner ============ */
+.review-delete-confirm-btn .spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .review-delete-modal {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+  }
+
+  .review-delete-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .review-delete-title {
+    font-size: 1.125rem;
+  }
+
+  .review-delete-message {
+    font-size: 0.8125rem;
+  }
+
+  .preview-comment {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================
+   Booking Review Status Badge
+   ============================================ */
+
+/* ============ کانتینر Badge نظر ============ */
+.booking-review-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px dashed #e5e7eb;
+  width: 100%;
+}
+
+/* ============ Badge وضعیت نظر ============ */
+.booking-review-status .review-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: "Vazirmatn", inherit;
+  border: 1px solid;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* افکت Shimmer */
+.booking-review-status .review-status-badge::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
+  animation: shimmerBadge 3s ease-in-out infinite;
+}
+
+@keyframes shimmerBadge {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+.booking-review-status .review-status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.booking-review-status .review-status-badge svg {
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+
+.booking-review-status .review-status-badge:hover svg {
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* ============================================
+   رنگ‌بندی خاص هر وضعیت نظر
+   ============================================ */
+
+/* pending - زرد (با Pulse) */
+.booking-review-status .review-status-badge.pending {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #92400e;
+  border-color: #fde68a;
+  animation: pulsePendingBadge 2s ease-in-out infinite;
+}
+
+.booking-review-status .review-status-badge.pending svg {
+  color: #f59e0b;
+}
+
+@keyframes pulsePendingBadge {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 2px 20px rgba(251, 191, 36, 0.6);
+  }
+}
+
+/* approved - سبز */
+.booking-review-status .review-status-badge.approved {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.booking-review-status .review-status-badge.approved svg {
+  color: #10b981;
+}
+
+/* rejected - قرمز */
+.booking-review-status .review-status-badge.rejected {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.booking-review-status .review-status-badge.rejected svg {
+  color: #ef4444;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+  .booking-review-status {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .booking-review-status {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .booking-review-status .review-status-badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  .booking-review-status .review-status-badge svg {
+    width: 11px;
+    height: 11px;
+  }
+}

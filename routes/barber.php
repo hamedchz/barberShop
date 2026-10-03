@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Barber\AvailabilityController;
+use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
 
@@ -35,3 +36,10 @@ Route::prefix('/time-slots')
     Route::patch('/{timeSlot}',  'update')->name('update');
     Route::delete('/{timeSlot}', 'destroy')->name('destroy');
   });
+Route::prefix('/bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
+  Route::get('/',  'index')->name('index');
+  Route::get('/{booking}',  'show')->name('show');
+  Route::patch('/{booking}/confirm',  'confirm')->name('confirm');
+  Route::patch('/{booking}/complete',  'complete')->name('complete');
+  Route::delete('/{booking}/cancel',  'cancel')->name('cancel');
+});

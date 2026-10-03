@@ -30,6 +30,10 @@ import {
     RefreshCw,
     Hourglass,
     Ban,
+    CheckCheck,
+    Edit3,
+    Trash2,
+    X,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -93,12 +97,27 @@ const statusConfig = {
         bg: "#fffbeb",
         border: "#fde68a",
     },
+    confirmed: {
+        label: "رزرو  شده",
+        icon: CheckCircle,
+        color: "#065f46",
+        bg: "#ecfdf5",
+        border: "#212422",
+    },
+    completed: {
+        label: "تکمیل شده",
+        icon: CheckCheck,
+        color: "#065f46",
+        bg: "#ecfdf5",
+        border: "#212422",
+    },
+
     success: {
         label: "موفق",
         icon: CheckCircle,
         color: "#065f46",
         bg: "#ecfdf5",
-        border: "#d1fae5",
+        border: "#212422",
     },
     failed: {
         label: "ناموفق",
@@ -173,11 +192,16 @@ function CountdownTimer({ expiresAt }) {
 }
 
 export default function BookingShow({ auth, booking }) {
+    // ============ State برای Modal حذف نظر ============
+
+    const [deleteReviewModal, setDeleteReviewModal] = useState({
+        isOpen: false,
+        isLoading: false,
+    });
     const [cancelModal, setCancelModal] = useState({
         isOpen: false,
         isLoading: false,
     });
-
     const config = statusConfig[booking.status] || statusConfig.pending;
     const StatusIcon = config.icon;
 
@@ -239,6 +263,29 @@ export default function BookingShow({ auth, booking }) {
     // ============ چاپ ============
     const handlePrint = () => {
         window.print();
+    };
+
+    // ============ حذف نظر ============
+    const handleDeleteReview = () => {
+        if (!booking.review) return;
+
+        setDeleteReviewModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.delete(
+            `/customer/bookings/reviews/${booking.review.id}/delete`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteReviewModal({ isOpen: false, isLoading: false });
+                },
+                onError: () => {
+                    setDeleteReviewModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                    }));
+                },
+            },
+        );
     };
 
     return (
@@ -564,8 +611,10 @@ export default function BookingShow({ auth, booking }) {
                         )}
 
                         {/* کارت نظر */}
+                        {/* ============ کارت نظر ============ */}
+                        {/* ============ کارت نظر ============ */}
                         {booking.review && (
-                            <div className="booking-show-card">
+                            <div className="booking-show-card review-card">
                                 <div className="booking-show-card-header">
                                     <div className="card-icon-box yellow">
                                         <Star
@@ -574,20 +623,109 @@ export default function BookingShow({ auth, booking }) {
                                             color="#fbbf24"
                                         />
                                     </div>
-                                    <h2 className="card-title">نظر شما</h2>
+
+                                    <div className="review-header-info">
+                                        <h2 className="card-title">نظر شما</h2>
+
+                                        {/* ============ Badge وضعیت ============ */}
+                                        {(() => {
+                                            const reviewStatusConfig = {
+                                                pending: {
+                                                    label: "در انتظار تایید",
+                                                    color: "#92400e",
+                                                    bg: "#fffbeb",
+                                                    border: "#fde68a",
+                                                    icon: Clock4,
+                                                },
+                                                approved: {
+                                                    label: "تایید شده",
+                                                    color: "#065f46",
+                                                    bg: "#ecfdf5",
+                                                    border: "#d1fae5",
+                                                    icon: CheckCircle,
+                                                },
+                                                rejected: {
+                                                    label: "رد شده",
+                                                    color: "#991b1b",
+                                                    bg: "#fef2f2",
+                                                    border: "#fee2e2",
+                                                    icon: XCircle,
+                                                },
+                                            };
+
+                                            const cfg =
+                                                reviewStatusConfig[
+                                                    booking.review.status
+                                                ] || reviewStatusConfig.pending;
+                                            const Icon = cfg.icon;
+
+                                            return (
+                                                <span
+                                                    className="review-status-badge"
+                                                    style={{
+                                                        backgroundColor: cfg.bg,
+                                                        color: cfg.color,
+                                                        borderColor: cfg.border,
+                                                    }}
+                                                >
+                                                    <Icon size={12} />
+                                                    {cfg.label}
+                                                </span>
+                                            );
+                                        })()}
+                                    </div>
+
+                                    {/* ============ دکمه‌های ویرایش و حذف ============ */}
+                                    {booking.review.status === "pending" && (
+                                        <div className="review-actions">
+                                            {booking.review.can_edit && (
+                                                <Link
+                                                    href={`/customer/bookings/reviews/${booking.review.id}/edit`}
+                                                    className="review-action-btn edit"
+                                                    title="ویرایش نظر"
+                                                >
+                                                    <Edit3 size={14} />
+                                                    <span>ویرایش</span>
+                                                </Link>
+                                            )}
+
+                                            {booking.review.can_delete && (
+                                                <button
+                                                    type="button"
+                                                    className="review-action-btn delete"
+                                                    onClick={() =>
+                                                        setDeleteReviewModal({
+                                                            isOpen: true,
+                                                            isLoading: false,
+                                                        })
+                                                    }
+                                                    title="حذف نظر"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    <span>حذف</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
+                                {/* ============ نمایش نظر ============ */}
                                 <div className="review-display">
                                     <div className="review-display-header">
                                         <RatingStars
                                             rating={booking.review.rating}
-                                            size={16}
+                                            size={18}
                                             showNumber={false}
                                             showTotal={false}
                                         />
                                         <span className="review-display-date">
                                             {formatFullDateTime(
                                                 booking.review.created_at,
+                                            )}
+                                            {booking.review.is_edited && (
+                                                <span className="review-edited-badge">
+                                                    ویرایش شده
+                                                </span>
                                             )}
                                         </span>
                                     </div>
@@ -598,6 +736,41 @@ export default function BookingShow({ auth, booking }) {
                                         </p>
                                     )}
                                 </div>
+
+                                {/* ============ پیام راهنما ============ */}
+                                {booking.review.status === "pending" && (
+                                    <div className="review-info-box pending">
+                                        <Clock4 size={14} />
+                                        <p>
+                                            <strong>در انتظار تایید:</strong>{" "}
+                                            نظر شما پس از تایید ادمین، در
+                                            پروفایل آرایشگر نمایش داده می‌شود.
+                                            تا آن زمان می‌توانید آن را ویرایش یا
+                                            حذف کنید.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {booking.review.status === "approved" && (
+                                    <div className="review-info-box approved">
+                                        <CheckCircle size={14} />
+                                        <p>
+                                            <strong>تایید شده:</strong> نظر شما
+                                            در پروفایل آرایشگر نمایش داده
+                                            می‌شود.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {booking.review.status === "rejected" && (
+                                    <div className="review-info-box rejected">
+                                        <XCircle size={14} />
+                                        <p>
+                                            <strong>رد شده:</strong> نظر شما به
+                                            دلیل عدم رعایت قوانین رد شده است.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -680,7 +853,7 @@ export default function BookingShow({ auth, booking }) {
                                 {/* ============ ثبت نظر ============ */}
                                 {booking.can_review && (
                                     <Link
-                                        href={`/customer/bookings/${booking.id}/review`}
+                                        href={`/customer/bookings/reviews/${booking.id}`}
                                         className="action-btn review"
                                     >
                                         <Star size={16} />
@@ -857,23 +1030,26 @@ export default function BookingShow({ auth, booking }) {
                 </div>
             </div>
 
-            {/* ============ Modal لغو رزرو ============ */}
+            {/* ============ Modal حذف نظر ============ */}
             <ConfirmModal
-                isOpen={cancelModal.isOpen}
+                isOpen={deleteReviewModal.isOpen}
                 onClose={() =>
-                    setCancelModal({ isOpen: false, isLoading: false })
+                    !deleteReviewModal.isLoading &&
+                    setDeleteReviewModal({ isOpen: false, isLoading: false })
                 }
-                onConfirm={handleConfirmCancel}
-                title="لغو رزرو"
-                message={`آیا از لغو رزرو خود در تاریخ ${formatJalaliDate(
-                    booking.date,
-                )} از ساعت ${toPersianTime(
-                    booking.start_time,
-                )} مطمئن هستید؟ در صورت لغو، مبلغ پرداخت شده به حساب شما بازگردانده می‌شود.`}
-                confirmText="بله، لغو کن"
+                onConfirm={handleDeleteReview}
+                title="حذف نظر"
+                message={`آیا از حذف نظر خود مطمئن هستید؟ این عملیات قابل بازگشت نیست و امتیاز آرایشگر مجدداً محاسبه می‌شود.${
+                    booking.review?.comment
+                        ? `\n\nنظر شما: "${booking.review.comment.substring(0, 100)}${
+                              booking.review.comment.length > 100 ? "..." : ""
+                          }"`
+                        : ""
+                }`}
+                confirmText="بله، حذف کن"
                 cancelText="انصراف"
                 type="danger"
-                isLoading={cancelModal.isLoading}
+                isLoading={deleteReviewModal.isLoading}
             />
         </PublicLayout>
     );

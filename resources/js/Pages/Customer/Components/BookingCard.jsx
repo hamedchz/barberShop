@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, router } from "@inertiajs/react";
 import {
     Calendar,
     Clock,
     Scissors,
     DollarSign,
-    User,
-    Phone,
     CheckCircle,
     XCircle,
     Clock4,
     Star,
-    AlertCircle,
-    MoreVertical,
     Eye,
     X,
     Hash,
     MessageCircle,
+    CreditCard,
+    Edit3,
+    Trash2,
+    Hourglass,
+    Sparkles,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -56,6 +57,32 @@ const statusConfig = {
     },
 };
 
+// ============ وضعیت‌های نظر ============
+const reviewStatusConfig = {
+    pending: {
+        label: "نظر در انتظار",
+        icon: Clock4,
+        color: "#92400e",
+        bg: "#fffbeb",
+        border: "#fde68a",
+    },
+    approved: {
+        label: "نظر تایید شده",
+        icon: CheckCircle,
+        color: "#065f46",
+        bg: "#ecfdf5",
+        border: "#d1fae5",
+    },
+    rejected: {
+        label: "نظر رد شده",
+        icon: XCircle,
+        color: "#991b1b",
+        bg: "#fef2f2",
+        border: "#fee2e2",
+    },
+};
+
+// ============ توابع کمکی ============
 const formatJalaliDate = (date) => {
     if (!date) return "-";
     const d = new Date(date);
@@ -83,12 +110,117 @@ const getDayName = (date) => {
     return days[new Date(date).getDay()];
 };
 
-export default function BookingCard({ booking, onCancelClick, onReviewClick }) {
+// ============ کامپوننت شمارش معکوس ============
+function CountdownTimer({ expiresAt }) {
+    const [timeLeft, setTimeLeft] = useState({
+        minutes: 0,
+        seconds: 0,
+        isExpired: false,
+    });
+
+    useEffect(() => {
+        if (!expiresAt) return;
+
+        const calculateTimeLeft = () => {
+            const now = Date.now();
+            const expires = Number(expiresAt);
+            const diff = expires - now;
+
+            if (diff <= 0) {
+                setTimeLeft({ minutes: 0, seconds: 0, isExpired: true });
+                return;
+            }
+
+            const minutes = Math.floor(diff / 1000 / 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            setTimeLeft({ minutes, seconds, isExpired: false });
+        };
+
+        calculateTimeLeft();
+        const interval = setInterval(calculateTimeLeft, 1000);
+
+        return () => clearInterval(interval);
+    }, [expiresAt]);
+
+    if (timeLeft.isExpired) {
+        return (
+            <span className="countdown-timer expired">
+                <Hourglass size={12} />
+                منقضی شده
+            </span>
+        );
+    }
+
+    return (
+        <span className="countdown-timer">
+            <Hourglass size={12} />
+            {toPersianNumber(timeLeft.minutes)}:
+            {toPersianNumber(String(timeLeft.seconds).padStart(2, "0"))}
+        </span>
+    );
+}
+
+export default function BookingCard({
+    booking,
+    onCancelClick,
+    onDeleteReviewClick,
+}) {
     const config = statusConfig[booking.status] || statusConfig.pending;
     const StatusIcon = config.icon;
 
+    const handleReviewClick = (booking) => {
+        // هدایت به صفحه ثبت نظر
+        router.get(`/customer/bookings/reviews/${booking.id}`);
+    };
+    // ============ پرداخت مجدد ============
+
+    const handleRetryPayment = () => {
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = "/customer/payment/pay";
+        form.target = "_blank";
+
+        // CSRF Token
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "_token";
+        csrfInput.value = csrfToken;
+
+        // Booking ID
+        const bookingInput = document.createElement("input");
+        bookingInput.type = "hidden";
+        bookingInput.name = "booking_id";
+        bookingInput.value = booking.id;
+
+        // Gateway
+        const gatewayInput = document.createElement("input");
+        gatewayInput.type = "hidden";
+        gatewayInput.name = "gateway";
+        gatewayInput.value = booking.payment?.gateway || "zarinpal";
+
+        form.appendChild(csrfInput);
+        form.appendChild(bookingInput);
+        form.appendChild(gatewayInput);
+
+        document.body.appendChild(form);
+
+        form.submit();
+
+        document.body.removeChild(form);
+    };
+
     return (
-        <div className={`booking-card status-${booking.status}`}>
+        <div
+            className={`booking-card status-${booking.status} ${
+                booking.status === "pending" && booking.can_pay ? "urgent" : ""
+            }`}
+        >
             {/* ============ نوار رنگی بالا ============ */}
             <div
                 className="booking-card-stripe"
@@ -163,66 +295,165 @@ export default function BookingCard({ booking, onCancelClick, onReviewClick }) {
 
                 {/* ============ ستون ۳: وضعیت + دکمه‌ها ============ */}
                 <div className="booking-card-actions">
-                    {/* Badge وضعیت */}
-                    <span
-                        className="booking-status-badge"
-                        style={{
-                            backgroundColor: config.bg,
-                            color: config.color,
-                            borderColor: config.border,
-                        }}
-                    >
-                        <StatusIcon size={14} />
-                        {config.label}
-                    </span>
+                    {/* ============ ردیف وضعیت ============ */}
+                    <div className="booking-status-row">
+                        {/* Badge وضعیت رزرو */}
+                        <span
+                            className="booking-status-badge"
+                            style={{
+                                backgroundColor: config.bg,
+                                color: config.color,
+                                borderColor: config.border,
+                            }}
+                        >
+                            <StatusIcon size={14} />
+                            {config.label}
+                        </span>
 
-                    {/* کد رزرو */}
-                    <span className="booking-code">
-                        <Hash size={12} />
-                        {toPersianNumber(booking.id)}
-                    </span>
+                        {/* کد رزرو */}
+                        {/* <span className="booking-code">
+                            <Hash size={12} />
+                            {toPersianNumber(booking.id)}
+                        </span> */}
 
-                    {/* دکمه‌های عملیات */}
+                        {/* شمارش معکوس برای pending */}
+                        {booking.status === "pending" &&
+                            booking.can_pay &&
+                            booking.expires_at && (
+                                <CountdownTimer
+                                    expiresAt={booking.expires_at}
+                                />
+                            )}
+                    </div>
+
+                    {/* ============ Badge وضعیت نظر ============ */}
+                    {/* ============ Badge وضعیت نظر ============ */}
+                    {/* {booking.has_review && booking.review && (
+                        <div className="booking-review-status">
+                            {(() => {
+                                const rCfg =
+                                    reviewStatusConfig[booking.review.status] ||
+                                    reviewStatusConfig.pending;
+                                const RIcon = rCfg.icon;
+
+                                return (
+                                    <span
+                                        className={`review-status-badge ${booking.review.status}`} // ← اضافه کردن کلاس وضعیت
+                                        style={{
+                                            backgroundColor: rCfg.bg,
+                                            color: rCfg.color,
+                                            borderColor: rCfg.border,
+                                        }}
+                                    >
+                                        <RIcon size={12} />
+                                        {rCfg.label}
+                                    </span>
+                                );
+                            })()}
+                        </div>
+                    )} */}
+
+                    {/* ============ دکمه‌های عملیات ============ */}
                     <div className="booking-buttons">
-                        {/* مشاهده جزئیات */}
+                        {/* ۱. پرداخت مجدد (pending + can_pay) */}
+                        {booking.can_pay && (
+                            <button
+                                type="button"
+                                onClick={handleRetryPayment}
+                                className="booking-btn pay"
+                                title="تکمیل پرداخت"
+                            >
+                                <CreditCard size={14} />
+                                <span>تکمیل پرداخت</span>
+                                <span className="booking-btn-badge">
+                                    <Hourglass size={10} />
+                                </span>
+                            </button>
+                        )}
+
+                        {/* ۲. مشاهده جزئیات */}
                         <Link
                             href={`/customer/bookings/${booking.id}`}
                             className="booking-btn view"
+                            title="مشاهده جزئیات"
                         >
                             <Eye size={14} />
-                            جزئیات
+                            <span>جزئیات</span>
                         </Link>
 
-                        {/* ثبت نظر (اگر تکمیل شده و نظر نداده) */}
+                        {/* ۳. ثبت نظر (completed + no review) */}
                         {booking.can_review && (
                             <button
+                                type="button"
                                 className="booking-btn review"
-                                onClick={() => onReviewClick(booking)}
+                                onClick={() => handleReviewClick(booking)}
+                                title="ثبت نظر"
                             >
                                 <Star size={14} />
-                                ثبت نظر
+                                <span>ثبت نظر</span>
                             </button>
                         )}
 
-                        {/* مشاهده نظر (اگر قبلاً داده) */}
-                        {booking.has_review && (
-                            <button className="booking-btn reviewed" disabled>
-                                <MessageCircle size={14} />
-                                نظر داده شده
-                            </button>
-                        )}
+                        {/* ۴. ویرایش نظر (has_review + pending) */}
+                        {/* {booking.can_edit_review && (
+                            <Link
+                                href={`/customer/bookings/reviews/${booking.id}/edit`}
+                                className="booking-btn review-edit"
+                                title="ویرایش نظر"
+                            >
+                                <Edit3 size={14} />
+                                <span>ویرایش نظر</span>
+                            </Link>
+                        )} */}
 
-                        {/* لغو رزرو */}
-                        {booking.can_cancel && (
+                        {/* ۵. حذف نظر (has_review + pending) */}
+                        {/* {booking.can_delete_review && (
                             <button
+                                type="button"
+                                className="booking-btn review-delete"
+                                onClick={() => onDeleteReviewClick(booking)}
+                                title="حذف نظر"
+                            >
+                                <Trash2 size={14} />
+                                <span>حذف نظر</span>
+                            </button>
+                        )} */}
+
+                        {/* ۶. مشاهده نظر (approved/rejected) */}
+                        {booking.has_review &&
+                            booking.review?.status !== "pending" && (
+                                <span
+                                    className="booking-btn reviewed"
+                                    title="نظر شما ثبت شده است"
+                                >
+                                    <MessageCircle size={14} />
+                                    <span>نظر ثبت شده</span>
+                                </span>
+                            )}
+
+                        {/* ۷. لغو رزرو */}
+                        {/* {booking.can_cancel && (
+                            <button
+                                type="button"
                                 className="booking-btn cancel"
                                 onClick={() => onCancelClick(booking)}
+                                title="لغو رزرو"
                             >
                                 <X size={14} />
-                                لغو
+                                <span>لغو</span>
                             </button>
-                        )}
+                        )} */}
                     </div>
+
+                    {/* ============ پیام منقضی ============ */}
+                    {booking.status === "pending" &&
+                        booking.is_expired &&
+                        !booking.can_pay && (
+                            <div className="booking-expired-notice">
+                                <XCircle size={12} />
+                                <span>مهلت پرداخت منقضی شده است</span>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>

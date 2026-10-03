@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\ReviewStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\User;
+use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -84,57 +86,190 @@ class ReviewController extends Controller
         ]);
     }
     /**
-     * ثبت نظر جدید
+     * نمایش فرم ثبت نظر
      */
-    public function store(Request $request, User $barber)
+    public function create(Booking $booking)
     {
-        $validated = $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:1000',
-        ]);
-
-        // بررسی مالکیت رزرو
-        $booking = Booking::findOrFail($validated['booking_id']);
-
+        // ============ بررسی مالکیت ============
         if ($booking->user_id !== auth()->id()) {
             abort(403, 'این رزرو متعلق به شما نیست.');
         }
 
-        if ($booking->barber_id !== $barber->id) {
-            abort(403, 'این رزرو برای این آرایشگر نیست.');
+        // ============ بررسی وضعیت ============
+        if ($booking->status->value !== BookingStatus::completed->value) {
+            return redirect()
+                ->route('customer.bookings.show', $booking->id)
+                ->with('error', 'فقط می‌توانید برای رزروهای تکمیل شده نظر ثبت کنید.');
         }
 
-        if ($booking->status !== 'completed') {
-            return back()->with('error', 'فقط می‌توانید برای رزروهای تکمیل شده نظر ثبت کنید.');
-        }
-
-        // بررسی نظر تکراری
-        $existing = Review::where('user_id', auth()->id())
+        // ============ بررسی نظر تکراری ============
+        $existingReview = Review::where('user_id', auth()->id())
             ->where('booking_id', $booking->id)
             ->first();
 
-        if ($existing) {
+        if ($existingReview) {
+            return redirect()
+                ->route('customer.bookings.show', $booking->id)
+                ->with('error', 'قبلاً برای این رزرو نظر ثبت کرده‌اید.');
+        }
+
+        // ============ بارگذاری روابط ============
+        $booking->load([
+            'barber:id,name,avatar,slug,specialty',
+            'service:id,name,image,duration,price',
+            'timeSlot:id,date,start_time,end_time',
+        ]);
+
+        return Inertia::render('Customer/Bookings/Review', [
+            'booking' => [
+                'id' => $booking->id,
+                'date' => $booking->timeSlot?->date,
+                'start_time' => $booking->timeSlot?->start_time,
+                'end_time' => $booking->timeSlot?->end_time,
+
+                'barber' => $booking->barber ? [
+                    'id' => $booking->barber->id,
+                    'name' => $booking->barber->name,
+                    'avatar' => $booking->barber->avatar,
+                    'thumbnail' => $booking->barber->avatar(),
+                    'slug' => $booking->barber->slug,
+                    'specialty' => $booking->barber->specialty,
+                ] : null,
+
+                'service' => $booking->service ? [
+                    'id' => $booking->service->id,
+                    'name' => $booking->service->name,
+                    'image' => $booking->service->image
+                        ? asset('storage/' . $booking->service->image)
+                        : null,
+                    'duration' => $booking->service->duration,
+                ] : null,
+            ],
+        ]);
+    }
+
+    /**
+     * ذخیره نظر
+     */
+    public function store(Request $request, Booking $booking)
+    {
+        // ============ بررسی مالکیت ============
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // ============ بررسی وضعیت ============
+        if ($booking->status->value !== BookingStatus::completed->value) {
+            return back()->with('error', 'این رزرو قابل ثبت نظر نیست.');
+        }
+
+        // ============ بررسی نظر تکراری ============
+        $existingReview = Review::where('user_id', auth()->id())
+            ->where('booking_id', $booking->id)
+            ->first();
+
+        if ($existingReview) {
             return back()->with('error', 'قبلاً برای این رزرو نظر ثبت کرده‌اید.');
         }
 
-        // ثبت نظر
-        $review = Review::create([
+        // ============ اعتبارسنجی ============
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ], [
+            'rating.required' => 'لطفاً امتیاز خود را انتخاب کنید.',
+            'rating.min' => 'امتیاز باید بین ۱ تا ۵ باشد.',
+            'rating.max' => 'امتیاز باید بین ۱ تا ۵ باشد.',
+            'comment.max' => 'متن نظر نباید بیشتر از ۱۰۰۰ کاراکتر باشد.',
+        ]);
+
+        // ============ ثبت نظر ============
+        Review::create([
             'user_id' => auth()->id(),
-            'barber_id' => $barber->id,
+            'barber_id' => $booking->barber_id,
             'booking_id' => $booking->id,
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
         ]);
 
-        // پاک کردن کش
-        $barber->clearReviewsCache();
+        // ============ پاک کردن کش امتیازات ============
+        $booking->barber->clearReviewsCache();
 
-        return back()->with('success', 'نظر شما با موفقیت ثبت شد.');
+        return redirect()
+            ->route('customer.bookings.show', $booking->id)
+            ->with('success', 'نظر شما با موفقیت ثبت شد. متشکریم!');
     }
 
     /**
      * ویرایش نظر
+     */
+    public function edit(Review $review)
+    {
+
+        if ($review->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $review = Review::where('user_id', auth()->id())
+            ->where('booking_id', $review->booking->id)
+            ->first();
+
+        if (!$review) {
+            return redirect()
+                ->route('customer.bookings.show', $review->booking->id)
+                ->with('error', 'نظری برای این رزرو یافت نشد.');
+        }
+
+        // ============ بررسی وضعیت ============
+        if ($review->status->value !== ReviewStatus::pending->value) {
+            return redirect()
+                ->route('customer.bookings.show', $review->booking->id)
+                ->with('error', 'فقط نظرات در انتظار تایید قابل ویرایش هستند.');
+        }
+
+        $review->booking->load([
+            'barber:id,name,avatar,slug,specialty',
+            'service:id,name,image,duration,price',
+            'timeSlot:id,date,start_time,end_time',
+        ]);
+
+
+        return Inertia::render('Customer/Bookings/Review', [
+            'booking' => [
+                'id' => $review->booking->id,
+                'date' => $review->booking->timeSlot?->date,
+                'start_time' => $review->booking->timeSlot?->start_time,
+                'end_time' => $review->booking->timeSlot?->end_time,
+                'barber' => $review->booking->barber ? [
+                    'id' => $review->booking->barber->id,
+                    'name' => $review->booking->barber->name,
+                    'avatar' => $review->booking->barber->avatar,
+                    'thumbnail' => $review->booking->barber->avatar(),
+                    'slug' => $review->booking->barber->slug,
+                    'specialty' => $review->booking->barber->specialty,
+                ] : null,
+                'service' => $review->booking->service ? [
+                    'id' => $review->booking->service->id,
+                    'name' => $review->booking->service->name,
+                    'image' => $review->booking->service->image
+                        ? asset('storage/' . $review->booking->service->image)
+                        : null,
+                    'duration' => $review->booking->service->duration,
+                ] : null,
+            ],
+            'review' => [
+                'id' => $review->id,
+                'rating' => (int) $review->rating,
+                'comment' => $review->comment,
+            ],
+        ]);
+    }
+
+
+
+
+    /**
+     * بروزرسانی نظر
      */
     public function update(Request $request, Review $review)
     {
@@ -142,19 +277,32 @@ class ReviewController extends Controller
             abort(403);
         }
 
+        // ============ بررسی وضعیت ============
+        if ($review->status->value !== ReviewStatus::pending->value) {
+            return redirect()
+                ->route('customer.bookings.show', $review->booking_id)
+                ->with('error', 'فقط نظرات در انتظار تایید قابل ویرایش هستند.');
+        }
+
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
+        ], [
+            'rating.required' => 'لطفاً امتیاز خود را انتخاب کنید.',
+            'comment.max' => 'متن نظر نباید بیشتر از ۱۰۰۰ کاراکتر باشد.',
         ]);
 
         $review->update([
             'rating' => $validated['rating'],
             'comment' => $validated['comment'],
+            'status' => ReviewStatus::pending->value,
         ]);
 
         $review->barber->clearReviewsCache();
 
-        return back()->with('success', 'نظر شما بروزرسانی شد.');
+        return redirect()
+            ->route('customer.bookings.show', $review->booking_id)
+            ->with('success', 'نظر شما بروزرسانی شد و در انتظار تایید ادمین است.');
     }
 
     /**
@@ -167,9 +315,15 @@ class ReviewController extends Controller
         }
 
         $barber = $review->barber;
+        $bookingId = $review->booking_id;
+
         $review->delete();
+
         $barber->clearReviewsCache();
 
-        return back()->with('success', 'نظر شما حذف شد.');
+        StickyAlert::alert("نظر شما با موفقیت حذف شد", 'success');
+
+        return redirect()
+            ->route('customer.bookings.show', $bookingId);
     }
 }
