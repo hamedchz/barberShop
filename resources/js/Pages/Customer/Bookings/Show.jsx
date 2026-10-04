@@ -192,6 +192,10 @@ function CountdownTimer({ expiresAt }) {
 }
 
 export default function BookingShow({ auth, booking }) {
+    const [completeModal, setCompleteModal] = useState({
+        isOpen: false,
+        isLoading: false,
+    });
     // ============ State برای Modal حذف نظر ============
 
     const [deleteReviewModal, setDeleteReviewModal] = useState({
@@ -258,6 +262,26 @@ export default function BookingShow({ auth, booking }) {
         form.submit();
 
         document.body.removeChild(form);
+    };
+    // ============ تایید دریافت خدمت============
+
+    const handleCustomerComplete = () => {
+        setCompleteModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.patch(
+            `/customer/bookings/${booking.id}/complete`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () =>
+                    setCompleteModal({ isOpen: false, isLoading: false }),
+                onError: () =>
+                    setCompleteModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                    })),
+            },
+        );
     };
 
     // ============ چاپ ============
@@ -483,7 +507,9 @@ export default function BookingShow({ auth, booking }) {
                                             >
                                                 <Phone size={14} />
                                                 <span dir="ltr">
-                                                    {booking.barber.phone}
+                                                    {toPersianNumber(
+                                                        booking.barber.phone,
+                                                    )}
                                                 </span>
                                             </a>
                                         )}
@@ -850,6 +876,19 @@ export default function BookingShow({ auth, booking }) {
                                     </button>
                                 )}
 
+                                {booking.can_customer_complete && (
+                                    <button
+                                        type="button"
+                                        className="action-btn complete-customer"
+                                        onClick={() =>
+                                            setCompleteModal({ isOpen: true })
+                                        }
+                                    >
+                                        <CheckCircle size={16} />
+                                        <span>تایید دریافت سرویس</span>
+                                    </button>
+                                )}
+
                                 {/* ============ ثبت نظر ============ */}
                                 {booking.can_review && (
                                     <Link
@@ -1029,6 +1068,21 @@ export default function BookingShow({ auth, booking }) {
                     </div>
                 </div>
             </div>
+            {/* ============ Modal تایید دریافت خدمت ============ */}
+
+            <ConfirmModal
+                isOpen={completeModal.isOpen}
+                onClose={() =>
+                    setCompleteModal({ isOpen: false, isLoading: false })
+                }
+                onConfirm={handleCustomerComplete}
+                title="تایید دریافت خدمت"
+                message="آیا خدمت مورد نظر را از آرایشگر دریافت کرده‌اید؟ با تایید، رزرو به وضعیت «تکمیل شده» تغییر می‌کند و می‌توانید نظر خود را ثبت کنید."
+                confirmText="بله، دریافت کردم"
+                cancelText="انصراف"
+                type="success"
+                isLoading={completeModal.isLoading}
+            />
 
             {/* ============ Modal حذف نظر ============ */}
             <ConfirmModal

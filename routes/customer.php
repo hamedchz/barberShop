@@ -20,6 +20,9 @@ Route::prefix('/bookings')
 
     Route::delete('/{booking}/cancel', 'cancel')
       ->name('destroy');
+
+    Route::patch('/{booking}/complete', 'complete')
+      ->name('complete');
   });
 
 Route::prefix('/payment')

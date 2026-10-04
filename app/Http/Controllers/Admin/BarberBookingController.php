@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
@@ -283,7 +284,7 @@ class BarberBookingController extends Controller
                     'price' => (float) $booking->service->price,
                 ] : null,
 
-                'date' => $booking->timeSlot?->date,
+                'date' => Carbon::parse($booking->timeSlot?->date)->format('Y-m-d'),
                 'start_time' => $booking->timeSlot?->start_time,
                 'end_time' => $booking->timeSlot?->end_time,
 
@@ -344,12 +345,11 @@ class BarberBookingController extends Controller
         ]);
 
         // ============ بررسی گذشت ۲۴ ساعت ============
-        // $hoursSinceSlot = $slotDateTime->diffInHours(Carbon::now());
-        // if ($hoursSinceSlot < 24) {
-        // هنوز ۲۴ ساعت نگذشته — معمولاً نباید تکمیل شود
-        // اما اگر ادمین دلیل موجه دارد، می‌تواند
-        // اینجا می‌توانید اجبار کنید که ۲۴ ساعت بگذرد
-        // }
+        $hoursSinceSlot = $slotDateTime->diffInHours(Carbon::now());
+        if ($hoursSinceSlot < 24) {
+            StickyAlert::alert('ادمین فقط میتواند بعد از ۲۴ ساعت سرویس را تکمیل کند ', 'warning');
+            return redirect()->back();
+        }
 
         DB::beginTransaction();
 
@@ -358,7 +358,7 @@ class BarberBookingController extends Controller
             $booking->update([
                 'status' => BookingStatus::completed->value,
                 'completed_at' => now(),
-                'completed_by' => 'admin',
+                'completed_by' => BookingCompletedBy::admin->value,
                 'admin_completion_reason' => $validated['reason'],
             ]);
 
@@ -380,6 +380,7 @@ class BarberBookingController extends Controller
 
     public function cancel(User $barber, Booking $booking)
     {
+
         if ($booking->barber_id !== $barber->id) {
             abort(404);
         }
@@ -388,7 +389,8 @@ class BarberBookingController extends Controller
             BookingStatus::pending->value,
             BookingStatus::confirmed->value,
         ])) {
-            return back()->with('error', 'این رزرو قابل لغو نیست.');
+            StickyAlert::alert('این رزرو قابل لغو نیست', 'error');
+            return redirect()->back();
         }
 
         DB::beginTransaction();
@@ -398,7 +400,7 @@ class BarberBookingController extends Controller
             $booking->update([
                 'status' => BookingStatus::cancelled->value,
                 'cancelled_at' => now(),
-                'cancelled_by' => 'admin',
+                'cancelled_by' => BookingCompletedBy::admin->value,
                 'notes' => ($booking->notes ? $booking->notes . "\n" : '') .
                     'لغو شده توسط ادمین در ' . now()->format('Y/m/d H:i'),
             ]);

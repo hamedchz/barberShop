@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
-import ConfirmModal from "../Components/ConfirmModal";
+import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../../Customer/Components/RatingStars";
-import "../Assets/css/AdminBookingShow.css";
+import "../Assets/css/BarberBookingShow.css";
 import {
     ArrowRight,
     Calendar,
@@ -19,8 +19,6 @@ import {
     Star,
     Hash,
     CreditCard,
-    Award,
-    Building2,
     CalendarClock,
     Info,
     FileText,
@@ -28,16 +26,15 @@ import {
     Ban,
     Check,
     Printer,
-    MessageSquare,
-    Edit3,
-    TrendingUp,
     AlertCircle,
+    AlertTriangle,
+    Bot,
+    MessageSquare,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
     toPersianNumber,
     toPersianTimeRange,
-    toPersianTime,
 } from "../../../utils/persianNumbers";
 
 // ============ توابع کمکی ============
@@ -93,7 +90,7 @@ const statusConfig = {
         color: "#92400e",
         bg: "#fffbeb",
         border: "#fde68a",
-        description: "این رزرو در انتظار تایید آرایشگر است.",
+        description: "این رزرو در انتظار تایید شماست.",
     },
     confirmed: {
         label: "تایید شده",
@@ -101,7 +98,7 @@ const statusConfig = {
         color: "#065f46",
         bg: "#ecfdf5",
         border: "#d1fae5",
-        description: "رزرو تایید شده است.",
+        description: "این رزرو تایید شده است.",
     },
     completed: {
         label: "تکمیل شده",
@@ -109,7 +106,7 @@ const statusConfig = {
         color: "#1e40af",
         bg: "#eff6ff",
         border: "#dbeafe",
-        description: "خدمت با موفقیت انجام شده است.",
+        description: "این خدمت با موفقیت انجام شده است.",
     },
     cancelled: {
         label: "لغو شده",
@@ -121,32 +118,56 @@ const statusConfig = {
     },
 };
 
+// ============ چه کسی تکمیل کرده ============
+const completedByConfig = {
+    barber: {
+        label: "تکمیل توسط شما",
+        icon: Scissors,
+        color: "#065f46",
+        bg: "#ecfdf5",
+    },
+    customer: {
+        label: "تکمیل توسط مشتری",
+        icon: User,
+        color: "#1e40af",
+        bg: "#eff6ff",
+    },
+    system: {
+        label: "تکمیل خودکار",
+        icon: Bot,
+        color: "#92400e",
+        bg: "#fffbeb",
+    },
+    admin: {
+        label: "تکمیل توسط ادمین",
+        icon: Shield,
+        color: "#5b21b6",
+        bg: "#f5f3ff",
+    },
+};
+
 // ============ وضعیت پرداخت ============
 const paymentStatusConfig = {
     pending: {
         label: "در انتظار پرداخت",
-        icon: Clock4,
         color: "#92400e",
         bg: "#fffbeb",
         border: "#fde68a",
     },
     success: {
         label: "پرداخت موفق",
-        icon: CheckCircle,
         color: "#065f46",
         bg: "#ecfdf5",
         border: "#d1fae5",
     },
     failed: {
         label: "پرداخت ناموفق",
-        icon: XCircle,
         color: "#991b1b",
         bg: "#fef2f2",
         border: "#fee2e2",
     },
     refunded: {
         label: "برگشت داده شده",
-        icon: TrendingUp,
         color: "#5b21b6",
         bg: "#f5f3ff",
         border: "#ddd6fe",
@@ -160,14 +181,19 @@ const gatewayLabels = {
     nextpay: "نکست‌پی",
 };
 
-export default function BarberBookingShow({ auth, barber, booking }) {
+export default function BarberBookingShow({ auth, booking }) {
     // ============ Modal states ============
+    const [completeModal, setCompleteModal] = useState({
+        isOpen: false,
+        isLoading: false,
+    });
+
     const [cancelModal, setCancelModal] = useState({
         isOpen: false,
         isLoading: false,
     });
 
-    const [completeModal, setCompleteModal] = useState({
+    const [disputeModal, setDisputeModal] = useState({
         isOpen: false,
         isLoading: false,
         reason: "",
@@ -178,76 +204,76 @@ export default function BarberBookingShow({ auth, barber, booking }) {
     const StatusIcon = config.icon;
 
     const paymentConfig = booking.payment
-        ? paymentStatusConfig[booking.payment.status] ||
-          paymentStatusConfig.pending
+        ? paymentStatusConfig[booking.payment.status]
         : null;
-    const PaymentIcon = paymentConfig?.icon;
-
-    // ============ بررسی امکان تکمیل توسط ادمین ============
-    const canAdminComplete = (() => {
-        if (booking.status !== "confirmed") return false;
-        if (!booking.date) return false;
-
-        const slotDate = new Date(booking.date);
-        const now = new Date();
-
-        // باید گذشته باشد
-        if (slotDate >= now) return false;
-
-        // باید بیش از ۲۴ ساعت از نوبت گذشته باشد
-        const hoursSince = (now - slotDate) / 1000 / 60 / 60;
-        return hoursSince >= 24;
-    })();
 
     // ============ چاپ ============
     const handlePrint = () => {
         window.print();
     };
 
-    // ============ لغو توسط ادمین ============
-    const handleCancelBooking = () => {
-        setCancelModal((prev) => ({ ...prev, isLoading: true }));
+    // ============ تایید تکمیل ============
+    const handleComplete = () => {
+        setCompleteModal((prev) => ({ ...prev, isLoading: true }));
 
-        router.delete(
-            `/admin/bookings/barber/${barber.id}/cancel/${booking.id}`,
+        router.patch(
+            `/barber/bookings/${booking.id}/complete`,
+            {},
             {
                 preserveScroll: true,
                 onSuccess: () =>
-                    setCancelModal({ isOpen: false, isLoading: false }),
+                    setCompleteModal({ isOpen: false, isLoading: false }),
                 onError: () =>
-                    setCancelModal((prev) => ({
+                    setCompleteModal((prev) => ({
                         ...prev,
                         isLoading: false,
                     })),
             },
         );
     };
-    // ============ تکمیل خدمت ============
-    const handleCompleteBooking = () => {
-        if (completeModal.reason.length < 10) {
-            setCompleteModal((prev) => ({
+
+    // ============ لغو رزرو ============
+    const handleCancel = () => {
+        setCancelModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.delete(`/barber/bookings/${booking.id}/cancel`, {
+            preserveScroll: true,
+            onSuccess: () =>
+                setCancelModal({ isOpen: false, isLoading: false }),
+            onError: () =>
+                setCancelModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                })),
+        });
+    };
+
+    // ============ اعتراض به تکمیل توسط مشتری ============
+    const handleDispute = () => {
+        if (disputeModal.reason.length < 10) {
+            setDisputeModal((prev) => ({
                 ...prev,
                 errors: { reason: "دلیل باید حداقل ۱۰ کاراکتر باشد." },
             }));
             return;
         }
 
-        setCompleteModal((prev) => ({ ...prev, isLoading: true }));
+        setDisputeModal((prev) => ({ ...prev, isLoading: true }));
 
-        router.patch(
-            `/admin/bookings/${barber.id}/barbers/${booking.id}/complete`,
-            { reason: completeModal.reason },
+        router.post(
+            `/barber/bookings/${booking.id}/dispute`,
+            { reason: disputeModal.reason },
             {
                 preserveScroll: true,
                 onSuccess: () =>
-                    setCompleteModal({
+                    setDisputeModal({
                         isOpen: false,
                         isLoading: false,
                         reason: "",
                         errors: {},
                     }),
                 onError: (errors) =>
-                    setCompleteModal((prev) => ({
+                    setDisputeModal((prev) => ({
                         ...prev,
                         isLoading: false,
                         errors,
@@ -256,32 +282,34 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         );
     };
 
+    // ============ کامپوننت تکمیل شده ============
+    const completedByCfg = booking.completed_by
+        ? completedByConfig[booking.completed_by]
+        : null;
+
     return (
         <Layout>
-            <Head title={`رزرو #${booking.id} - ${barber.name}`} />
+            <Head title={`رزرو #${booking.id}`} />
 
-            <div className="admin-booking-show-page">
+            <div className="barber-booking-show-page">
                 {/* ============ دکمه بازگشت ============ */}
-                <div className="admin-booking-show-back">
-                    <Link
-                        href={`/admin/bookings/barber/${barber.slug}`}
-                        className="back-btn"
-                    >
+                <div className="barber-booking-show-back">
+                    <Link href="/barber/bookings" className="back-btn">
                         <ArrowRight size={20} />
-                        <span>بازگشت به رزروهای {barber.name}</span>
+                        <span>بازگشت به رزروها</span>
                     </Link>
                 </div>
 
-                {/* ============ هدر با وضعیت ============ */}
+                {/* ============ هدر ============ */}
                 <div
-                    className="admin-booking-show-header"
+                    className="barber-booking-show-header"
                     style={{
                         background: `linear-gradient(135deg, ${config.bg} 0%, #ffffff 100%)`,
                         borderColor: config.border,
                     }}
                 >
                     <div
-                        className="admin-booking-show-header-icon"
+                        className="barber-booking-show-header-icon"
                         style={{
                             backgroundColor: config.bg,
                             color: config.color,
@@ -291,10 +319,10 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                         <StatusIcon size={28} />
                     </div>
 
-                    <div className="admin-booking-show-header-content">
-                        <div className="admin-booking-show-header-top">
+                    <div className="barber-booking-show-header-content">
+                        <div className="barber-booking-show-header-top">
                             <span
-                                className="admin-booking-show-status-badge"
+                                className="barber-booking-show-status-badge"
                                 style={{
                                     backgroundColor: config.bg,
                                     color: config.color,
@@ -305,44 +333,64 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                 {config.label}
                             </span>
 
-                            <span className="admin-booking-show-code">
+                            <span className="barber-booking-show-code">
                                 <Hash size={14} />
                                 رزرو {toPersianNumber(booking.id)}
                             </span>
 
-                            {/* Badge پرداخت */}
-                            {paymentConfig && (
-                                <span
-                                    className="admin-booking-show-payment-badge"
-                                    style={{
-                                        backgroundColor: paymentConfig.bg,
-                                        color: paymentConfig.color,
-                                        borderColor: paymentConfig.border,
-                                    }}
-                                >
-                                    <PaymentIcon size={12} />
-                                    {paymentConfig.label}
-                                </span>
-                            )}
+                            {/* Badge چه کسی تکمیل کرده */}
+                            {booking.status === "completed" &&
+                                completedByCfg && (
+                                    <span
+                                        className="barber-booking-show-completed-by"
+                                        style={{
+                                            backgroundColor: completedByCfg.bg,
+                                            color: completedByCfg.color,
+                                        }}
+                                    >
+                                        <completedByCfg.icon size={12} />
+                                        {completedByCfg.label}
+                                    </span>
+                                )}
                         </div>
 
-                        <h1 className="admin-booking-show-title">
+                        <h1 className="barber-booking-show-title">
                             {config.description}
                         </h1>
 
-                        <p className="admin-booking-show-subtitle">
+                        <p className="barber-booking-show-subtitle">
                             ثبت شده در {formatFullDateTime(booking.created_at)}
                         </p>
                     </div>
                 </div>
 
+                {/* ============ هشدار شکایت ============ */}
+                {booking.is_disputed && (
+                    <div className="barber-dispute-alert">
+                        <AlertTriangle size={20} />
+                        <div>
+                            <h4>اعتراض ثبت شده است</h4>
+                            <p>
+                                شما به تکمیل این رزرو توسط مشتری اعتراض
+                                کرده‌اید. ادمین در حال بررسی است.
+                            </p>
+                            {booking.dispute_reason && (
+                                <p className="dispute-reason">
+                                    <strong>دلیل شما:</strong>{" "}
+                                    {booking.dispute_reason}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {/* ============ گرید اصلی ============ */}
-                <div className="admin-booking-show-grid">
-                    {/* ============ ستون راست: جزئیات ============ */}
-                    <div className="admin-booking-show-main">
-                        {/* کارت اطلاعات مشتری */}
-                        <div className="admin-booking-show-card">
-                            <div className="admin-booking-show-card-header">
+                <div className="barber-booking-show-grid">
+                    {/* ============ ستون راست ============ */}
+                    <div className="barber-booking-show-main">
+                        {/* کارت مشتری */}
+                        <div className="barber-booking-show-card">
+                            <div className="barber-booking-show-card-header">
                                 <div className="card-icon-box blue">
                                     <User size={20} />
                                 </div>
@@ -400,14 +448,6 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                             )}
                                         </div>
                                     </div>
-
-                                    <Link
-                                        href={`/admin/users/${booking.customer.id}`}
-                                        className="view-customer-btn"
-                                    >
-                                        <User size={14} />
-                                        پروفایل مشتری
-                                    </Link>
                                 </div>
                             ) : (
                                 <p className="empty-text">
@@ -417,8 +457,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                         </div>
 
                         {/* کارت زمان و خدمت */}
-                        <div className="admin-booking-show-card">
-                            <div className="admin-booking-show-card-header">
+                        <div className="barber-booking-show-card">
+                            <div className="barber-booking-show-card-header">
                                 <div className="card-icon-box green">
                                     <CalendarClock size={20} />
                                 </div>
@@ -496,8 +536,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
                         {/* کارت پرداخت */}
                         {booking.payment && (
-                            <div className="admin-booking-show-card">
-                                <div className="admin-booking-show-card-header">
+                            <div className="barber-booking-show-card">
+                                <div className="barber-booking-show-card-header">
                                     <div className="card-icon-box purple">
                                         <CreditCard size={20} />
                                     </div>
@@ -556,7 +596,6 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                                     paymentConfig.border,
                                             }}
                                         >
-                                            <PaymentIcon size={12} />
                                             {paymentConfig.label}
                                         </span>
                                     </div>
@@ -579,8 +618,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
                         {/* کارت نظر */}
                         {booking.review && (
-                            <div className="admin-booking-show-card">
-                                <div className="admin-booking-show-card-header">
+                            <div className="barber-booking-show-card">
+                                <div className="barber-booking-show-card-header">
                                     <div className="card-icon-box yellow">
                                         <Star
                                             size={20}
@@ -616,11 +655,11 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                         )}
                     </div>
 
-                    {/* ============ ستون چپ: عملیات ============ */}
-                    <div className="admin-booking-show-sidebar">
+                    {/* ============ ستون چپ ============ */}
+                    <div className="barber-booking-show-sidebar">
                         {/* خلاصه */}
-                        <div className="admin-booking-show-card summary-card">
-                            <div className="admin-booking-show-card-header">
+                        <div className="barber-booking-show-card summary-card">
+                            <div className="barber-booking-show-card-header">
                                 <div className="card-icon-box green">
                                     <DollarSign size={20} />
                                 </div>
@@ -658,47 +697,9 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                             </div>
                         </div>
 
-                        {/* اطلاعات آرایشگر */}
-                        <div className="admin-booking-show-card">
-                            <div className="admin-booking-show-card-header">
-                                <div className="card-icon-box blue">
-                                    <Award size={20} />
-                                </div>
-                                <h2 className="card-title">آرایشگر</h2>
-                            </div>
-
-                            <Link
-                                href={`/admin/barbers/${barber.slug}/detail`}
-                                className="barber-mini-card"
-                            >
-                                <div className="barber-mini-avatar">
-                                    {barber.thumbnail ? (
-                                        <img
-                                            src={barber.thumbnail}
-                                            alt={barber.name}
-                                        />
-                                    ) : (
-                                        <span>
-                                            {barber.name
-                                                ?.charAt(0)
-                                                .toUpperCase()}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="barber-mini-info">
-                                    <span className="barber-mini-name">
-                                        {barber.name}
-                                    </span>
-                                    <span className="barber-mini-label">
-                                        مشاهده پروفایل
-                                    </span>
-                                </div>
-                            </Link>
-                        </div>
-
                         {/* دکمه‌های عملیات */}
-                        <div className="admin-booking-show-card actions-card">
-                            <div className="admin-booking-show-card-header">
+                        <div className="barber-booking-show-card actions-card">
+                            <div className="barber-booking-show-card-header">
                                 <div className="card-icon-box gray">
                                     <Info size={20} />
                                 </div>
@@ -706,6 +707,42 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                             </div>
 
                             <div className="actions-list">
+                                {/* تایید تکمیل */}
+                                {booking.can_complete && (
+                                    <button
+                                        type="button"
+                                        className="action-btn complete"
+                                        onClick={() =>
+                                            setCompleteModal({
+                                                isOpen: true,
+                                                isLoading: false,
+                                            })
+                                        }
+                                    >
+                                        <Check size={16} />
+                                        <span>تایید تکمیل خدمت</span>
+                                    </button>
+                                )}
+
+                                {/* اعتراض */}
+                                {booking.can_dispute && (
+                                    <button
+                                        type="button"
+                                        className="action-btn dispute"
+                                        onClick={() =>
+                                            setDisputeModal({
+                                                isOpen: true,
+                                                isLoading: false,
+                                                reason: "",
+                                                errors: {},
+                                            })
+                                        }
+                                    >
+                                        <AlertTriangle size={16} />
+                                        <span>اعتراض به تکمیل</span>
+                                    </button>
+                                )}
+
                                 {/* چاپ */}
                                 <button
                                     type="button"
@@ -726,26 +763,9 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                         <span>تماس با مشتری</span>
                                     </a>
                                 )}
-                                {canAdminComplete && (
-                                    <button
-                                        type="button"
-                                        className="action-btn complete-admin"
-                                        onClick={() =>
-                                            setCompleteModal({
-                                                isOpen: true,
-                                                isLoading: false,
-                                                reason: "",
-                                                errors: {},
-                                            })
-                                        }
-                                    >
-                                        <CheckCircle size={16} />
-                                        <span>تکمیل خدمت (ادمین)</span>
-                                    </button>
-                                )}
 
-                                {/* لغو رزرو */}
-                                {["pending"].includes(booking.status) && (
+                                {/* لغو */}
+                                {booking.can_cancel && (
                                     <button
                                         type="button"
                                         className="action-btn cancel"
@@ -762,18 +782,53 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                 )}
                             </div>
 
-                            {/* هشدار */}
+                            {/* پیام‌های راهنما */}
+                            {booking.can_complete && (
+                                <div className="info-box info">
+                                    <Info size={14} />
+                                    <p>
+                                        زمان نوبت گذشته است. لطفاً پس از انجام
+                                        خدمت، تکمیل آن را تایید کنید.
+                                    </p>
+                                </div>
+                            )}
+
+                            {booking.can_dispute && (
+                                <div className="info-box warning">
+                                    <AlertTriangle size={14} />
+                                    <p>
+                                        مشتری تکمیل خدمت را اعلام کرده است. اگر
+                                        خدمت را انجام نداده‌اید، تا ۲۴ ساعت فرصت
+                                        اعتراض دارید.
+                                    </p>
+                                </div>
+                            )}
+
                             {booking.status === "pending" && (
                                 <div className="info-box warning">
-                                    <AlertCircle size={14} />
-                                    <p>این رزرو در انتظار تایید آرایشگر است.</p>
+                                    <Clock4 size={14} />
+                                    <p>
+                                        این رزرو در انتظار تایید است. برای
+                                        تایید، از صفحه رزروهای در انتظار استفاده
+                                        کنید.
+                                    </p>
+                                </div>
+                            )}
+
+                            {booking.completed_by === "system" && (
+                                <div className="info-box info">
+                                    <Bot size={14} />
+                                    <p>
+                                        این رزرو به صورت خودکار تکمیل شده است
+                                        چون شما در ۲۴ ساعت تایید نکردید.
+                                    </p>
                                 </div>
                             )}
                         </div>
 
                         {/* راهنما */}
-                        <div className="admin-booking-show-card">
-                            <div className="admin-booking-show-card-header">
+                        <div className="barber-booking-show-card">
+                            <div className="barber-booking-show-card-header">
                                 <div className="card-icon-box gray">
                                     <Shield size={20} />
                                 </div>
@@ -782,22 +837,24 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
                             <ul className="status-guide-list">
                                 <li>
-                                    <CheckCircle size={14} />
+                                    <Check size={14} />
                                     <span>
-                                        این صفحه فقط برای مشاهده توسط ادمین است.
+                                        برای تکمیل خدمت، دکمه «تایید تکمیل خدمت»
+                                        را بزنید.
                                     </span>
                                 </li>
                                 <li>
-                                    <AlertCircle size={14} />
+                                    <AlertTriangle size={14} />
                                     <span>
-                                        برای تغییر وضعیت، از پنل آرایشگر استفاده
-                                        کنید.
+                                        اگر مشتری تکمیل را اعلام کرد اما خدمت
+                                        انجام نشده، اعتراض کنید.
                                     </span>
                                 </li>
                                 <li>
                                     <Ban size={14} />
                                     <span>
-                                        لغو رزرو باید با دلیل انجام شود.
+                                        لغو رزرو فقط قبل از زمان نوبت امکان‌پذیر
+                                        است.
                                     </span>
                                 </li>
                             </ul>
@@ -805,40 +862,73 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                     </div>
                 </div>
             </div>
-            {/* ============ Modal تکمیل خدمت ============ */}
-            {completeModal.isOpen && (
+
+            {/* ============ Modal تایید تکمیل ============ */}
+            <ConfirmModal
+                isOpen={completeModal.isOpen}
+                onClose={() =>
+                    setCompleteModal({ isOpen: false, isLoading: false })
+                }
+                onConfirm={handleComplete}
+                title="تایید تکمیل خدمت"
+                message={`آیا خدمت «${booking.service?.name}» برای مشتری "${booking.customer?.name}" را انجام داده‌اید؟ با تایید، رزرو به وضعیت «تکمیل شده» تغییر می‌کند و درآمد آن آزاد می‌شود.`}
+                confirmText="بله، تایید می‌کنم"
+                cancelText="انصراف"
+                type="success"
+                isLoading={completeModal.isLoading}
+            />
+
+            {/* ============ Modal لغو رزرو ============ */}
+            <ConfirmModal
+                isOpen={cancelModal.isOpen}
+                onClose={() =>
+                    setCancelModal({ isOpen: false, isLoading: false })
+                }
+                onConfirm={handleCancel}
+                title="لغو رزرو"
+                message={`آیا از لغو رزرو #${booking.id} برای مشتری "${booking.customer?.name}" مطمئن هستید؟ در صورت لغو، مبلغ به مشتری بازگردانده می‌شود و ۱۵٪ جریمه کسر می‌شود.`}
+                confirmText="بله، لغو کن"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={cancelModal.isLoading}
+            />
+
+            {/* ============ Modal اعتراض ============ */}
+            {disputeModal.isOpen && (
                 <div
-                    className="complete-admin-modal-overlay"
+                    className="dispute-modal-overlay"
                     onClick={() =>
-                        !completeModal.isLoading &&
-                        setCompleteModal((prev) => ({ ...prev, isOpen: false }))
+                        !disputeModal.isLoading &&
+                        setDisputeModal((prev) => ({
+                            ...prev,
+                            isOpen: false,
+                        }))
                     }
                 >
                     <div
-                        className="complete-admin-modal"
+                        className="dispute-modal"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* هدر */}
-                        <div className="complete-admin-modal-header">
-                            <div className="complete-admin-icon">
-                                <AlertCircle size={28} />
+                        <div className="dispute-modal-header">
+                            <div className="dispute-modal-icon">
+                                <AlertTriangle size={28} />
                             </div>
-                            <h3>تکمیل خدمت توسط ادمین</h3>
+                            <h3>اعتراض به تکمیل خدمت</h3>
                         </div>
 
                         {/* هشدار */}
-                        <div className="complete-admin-warning">
+                        <div className="dispute-modal-warning">
                             <AlertCircle size={16} />
                             <p>
-                                <strong>توجه:</strong> این عملیات معمولاً توسط
-                                آرایشگر انجام می‌شود. با تایید، رزرو به وضعیت
-                                "تکمیل شده" تغییر می‌کند و این اقدام در لاگ
-                                سیستم ثبت می‌شود.
+                                <strong>توجه:</strong> مشتری اعلام کرده خدمت
+                                انجام شده است. اگر شما این را قبول ندارید، دلیل
+                                خود را بنویسید. ادمین بررسی خواهد کرد.
                             </p>
                         </div>
 
                         {/* اطلاعات رزرو */}
-                        <div className="complete-admin-info">
+                        <div className="dispute-modal-info">
                             <div className="info-row">
                                 <span>مشتری:</span>
                                 <strong>{booking.customer?.name}</strong>
@@ -865,70 +955,70 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                         </div>
 
                         {/* فیلد دلیل */}
-                        <div className="complete-admin-form-group">
+                        <div className="dispute-form-group">
                             <label className="form-label">
-                                دلیل تکمیل توسط ادمین
+                                دلیل اعتراض
                                 <span className="required">*</span>
                             </label>
                             <textarea
                                 className={`form-textarea ${
-                                    completeModal.errors.reason ? "error" : ""
+                                    disputeModal.errors.reason ? "error" : ""
                                 }`}
-                                value={completeModal.reason}
+                                value={disputeModal.reason}
                                 onChange={(e) =>
-                                    setCompleteModal((prev) => ({
+                                    setDisputeModal((prev) => ({
                                         ...prev,
                                         reason: e.target.value,
                                         errors: {},
                                     }))
                                 }
-                                placeholder="مثلاً: آرایشگر فراموش کرده بود تایید کند و مشتری تایید انجام خدمت را ارسال کرده است..."
+                                placeholder="مثلاً: مشتری در زمان نوبت حاضر نشد و خدمت انجام نشد. یا: خدمت را نیمه‌کاره رها کردم..."
                                 rows={4}
                                 maxLength={500}
-                                disabled={completeModal.isLoading}
+                                disabled={disputeModal.isLoading}
                             />
                             <div className="char-counter">
-                                {toPersianNumber(completeModal.reason.length)} /{" "}
+                                {toPersianNumber(disputeModal.reason.length)} /{" "}
                                 {toPersianNumber(500)}
                             </div>
-                            {completeModal.errors.reason && (
+                            {disputeModal.errors.reason && (
                                 <div className="form-error">
                                     <AlertCircle size={14} />
-                                    <span>{completeModal.errors.reason}</span>
+                                    <span>{disputeModal.errors.reason}</span>
                                 </div>
                             )}
                         </div>
 
                         {/* دکمه‌ها */}
-                        <div className="complete-admin-actions">
+                        <div className="dispute-modal-actions">
                             <button
                                 type="button"
                                 className="btn-cancel"
                                 onClick={() =>
-                                    setCompleteModal((prev) => ({
+                                    setDisputeModal((prev) => ({
                                         ...prev,
                                         isOpen: false,
                                     }))
                                 }
-                                disabled={completeModal.isLoading}
+                                disabled={disputeModal.isLoading}
                             >
                                 انصراف
                             </button>
                             <button
                                 type="button"
                                 className="btn-confirm"
-                                onClick={handleCompleteBooking}
-                                disabled={completeModal.isLoading}
+                                onClick={handleDispute}
+                                disabled={disputeModal.isLoading}
                             >
-                                {completeModal.isLoading ? (
+                                {disputeModal.isLoading ? (
                                     <>
                                         <span className="spinner"></span>
-                                        در حال تکمیل...
+                                        در حال ارسال...
                                     </>
                                 ) : (
                                     <>
-                                        <CheckCircle size={16} />
-                                        بله، تکمیل کن
+                                        <AlertTriangle size={16} />
+                                        ثبت اعتراض
                                     </>
                                 )}
                             </button>
@@ -936,21 +1026,6 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                     </div>
                 </div>
             )}
-
-            {/* ============ Modal لغو رزرو ============ */}
-            <ConfirmModal
-                isOpen={cancelModal.isOpen}
-                onClose={() =>
-                    setCancelModal({ isOpen: false, isLoading: false })
-                }
-                onConfirm={handleCancelBooking}
-                title="لغو رزرو توسط ادمین"
-                message={`آیا از لغو رزرو #${booking.id} برای مشتری "${booking.customer?.name}" مطمئن هستید؟ `}
-                confirmText="بله، لغو کن"
-                cancelText="انصراف"
-                type="danger"
-                isLoading={cancelModal.isLoading}
-            />
         </Layout>
     );
 }

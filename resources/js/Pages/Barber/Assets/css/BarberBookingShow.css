@@ -1,18 +1,21 @@
 /* ============================================
-   Admin Booking Show Page
+   Barber Booking Show Page
    ============================================ */
-.admin-booking-show-page {
+
+.barber-booking-show-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
 
-.admin-booking-show-back {
+.barber-booking-show-back {
   margin-bottom: 1.5rem;
 }
 
-/* ============ هدر ============ */
-.admin-booking-show-header {
+/* ============================================
+   1. Header
+   ============================================ */
+.barber-booking-show-header {
   display: flex;
   align-items: flex-start;
   gap: 1.25rem;
@@ -24,7 +27,7 @@
   overflow: hidden;
 }
 
-.admin-booking-show-header::before {
+.barber-booking-show-header::before {
   content: "";
   position: absolute;
   top: -50%;
@@ -35,7 +38,7 @@
   pointer-events: none;
 }
 
-.admin-booking-show-header-icon {
+.barber-booking-show-header-icon {
   width: 4rem;
   height: 4rem;
   border-radius: 1rem;
@@ -48,23 +51,23 @@
   z-index: 1;
 }
 
-.admin-booking-show-header-content {
+.barber-booking-show-header-content {
   flex: 1;
   min-width: 0;
   position: relative;
   z-index: 1;
 }
 
-.admin-booking-show-header-top {
+.barber-booking-show-header-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   margin-bottom: 0.75rem;
 }
 
-.admin-booking-show-status-badge,
-.admin-booking-show-payment-badge {
+.barber-booking-show-status-badge,
+.barber-booking-show-completed-by {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -76,7 +79,11 @@
   white-space: nowrap;
 }
 
-.admin-booking-show-code {
+.barber-booking-show-completed-by {
+  border: none;
+}
+
+.barber-booking-show-code {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -89,7 +96,7 @@
   border-radius: 9999px;
 }
 
-.admin-booking-show-title {
+.barber-booking-show-title {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--text-main);
@@ -97,47 +104,116 @@
   line-height: 1.5;
 }
 
-.admin-booking-show-subtitle {
+.barber-booking-show-subtitle {
   font-size: 0.8125rem;
   color: var(--text-muted);
   margin: 0;
 }
 
-/* ============ گرید ============ */
-.admin-booking-show-grid {
+/* ============================================
+   2. Dispute Alert
+   ============================================ */
+.barber-dispute-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  border-radius: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-right: 4px solid #ef4444;
+  animation: shakeAlert 0.5s ease;
+}
+
+@keyframes shakeAlert {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-3px);
+  }
+
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+.barber-dispute-alert svg {
+  color: #ef4444;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.barber-dispute-alert h4 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #991b1b;
+  margin: 0 0 0.375rem;
+}
+
+.barber-dispute-alert p {
+  font-size: 0.8125rem;
+  color: #b91c1c;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.barber-dispute-alert .dispute-reason {
+  margin-top: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 0.5rem;
+  font-style: italic;
+}
+
+/* ============================================
+   3. Grid Layout
+   ============================================ */
+.barber-booking-show-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
 @media (min-width: 1024px) {
-  .admin-booking-show-grid {
+  .barber-booking-show-grid {
     grid-template-columns: 1fr 380px;
   }
 }
 
-.admin-booking-show-main {
+.barber-booking-show-main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.admin-booking-show-sidebar {
+.barber-booking-show-sidebar {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* ============ کارت‌ها ============ */
-.admin-booking-show-card {
+/* ============================================
+   4. Cards
+   ============================================ */
+.barber-booking-show-card {
   background-color: white;
   border: 1px solid var(--border-color);
   border-radius: 1.25rem;
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s;
 }
 
-.admin-booking-show-card-header {
+.barber-booking-show-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.barber-booking-show-card-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -146,7 +222,9 @@
   border-bottom: 1px dashed var(--border-color);
 }
 
-/* ============ اطلاعات مشتری ============ */
+/* ============================================
+   5. Customer Info Card
+   ============================================ */
 .customer-info-card {
   display: flex;
   align-items: center;
@@ -217,91 +295,12 @@
   background-color: #f0fdf4;
   border-color: #10b981;
   color: #10b981;
-}
-
-.view-customer-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  background-color: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #dbeafe;
-  border-radius: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.view-customer-btn:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
   transform: translateY(-1px);
 }
 
-/* ============ اطلاعات آرایشگر (کارت کوچک) ============ */
-.barber-mini-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem;
-  background-color: #f9fafb;
-  border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.barber-mini-card:hover {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
-  transform: translateY(-1px);
-}
-
-.barber-mini-avatar {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.125rem;
-  flex-shrink: 0;
-}
-
-.barber-mini-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.barber-mini-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1875rem;
-  min-width: 0;
-}
-
-.barber-mini-name {
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: #065f46;
-}
-
-.barber-mini-label {
-  font-size: 0.6875rem;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-/* ============ Grid اطلاعات ============ */
+/* ============================================
+   6. Booking Info Grid
+   ============================================ */
 .booking-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -329,6 +328,7 @@
   background-color: #f0fdf4;
   border-color: #d1fae5;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.06);
 }
 
 .info-icon {
@@ -341,6 +341,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1px solid #f3f4f6;
 }
 
 .info-content {
@@ -364,7 +365,9 @@
   color: var(--text-main);
 }
 
-/* ============ توضیحات خدمت ============ */
+/* ============================================
+   7. Service Description
+   ============================================ */
 .service-description-box {
   display: flex;
   align-items: flex-start;
@@ -389,7 +392,9 @@
   margin: 0;
 }
 
-/* ============ اطلاعات پرداخت ============ */
+/* ============================================
+   8. Payment Info
+   ============================================ */
 .payment-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -473,7 +478,9 @@
   color: #047857;
 }
 
-/* ============ نمایش نظر ============ */
+/* ============================================
+   9. Review Display
+   ============================================ */
 .review-display {
   display: flex;
   flex-direction: column;
@@ -505,7 +512,9 @@
   border-right: 3px solid #fbbf24;
 }
 
-/* ============ خلاصه ============ */
+/* ============================================
+   10. Summary Card
+   ============================================ */
 .summary-card {
   background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
   border-color: #d1fae5;
@@ -558,7 +567,9 @@
   color: #047857;
 }
 
-/* ============ دکمه‌های عملیات ============ */
+/* ============================================
+   11. Actions
+   ============================================ */
 .actions-list {
   display: flex;
   flex-direction: column;
@@ -588,6 +599,35 @@
   flex-shrink: 0;
 }
 
+/* دکمه تکمیل - سبز */
+.action-btn.complete {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.action-btn.complete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* دکمه اعتراض - نارنجی */
+.action-btn.dispute {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.action-btn.dispute:hover {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+}
+
+/* دکمه چاپ - آبی */
 .action-btn.print {
   background-color: #eff6ff;
   color: #1e40af;
@@ -599,8 +639,10 @@
   color: white;
   border-color: #3b82f6;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
+/* دکمه تماس - سبز روشن */
 .action-btn.contact {
   background-color: #ecfdf5;
   color: #065f46;
@@ -612,8 +654,10 @@
   color: white;
   border-color: #10b981;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
+/* دکمه لغو - قرمز */
 .action-btn.cancel {
   background-color: #fef2f2;
   color: #991b1b;
@@ -625,9 +669,12 @@
   color: white;
   border-color: #ef4444;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
-/* ============ Info Box ============ */
+/* ============================================
+   12. Info Box
+   ============================================ */
 .info-box {
   display: flex;
   align-items: flex-start;
@@ -639,14 +686,7 @@
   line-height: 1.6;
 }
 
-.info-box.warning {
-  background-color: #fffbeb;
-  border-right: 3px solid #f59e0b;
-  color: #92400e;
-}
-
-.info-box.warning svg {
-  color: #f59e0b;
+.info-box svg {
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -656,7 +696,39 @@
   font-weight: 500;
 }
 
-/* ============ راهنما ============ */
+.info-box.info {
+  background-color: #eff6ff;
+  border-right: 3px solid #3b82f6;
+  color: #1e40af;
+}
+
+.info-box.info svg {
+  color: #3b82f6;
+}
+
+.info-box.warning {
+  background-color: #fffbeb;
+  border-right: 3px solid #f59e0b;
+  color: #92400e;
+}
+
+.info-box.warning svg {
+  color: #f59e0b;
+}
+
+.info-box.success {
+  background-color: #ecfdf5;
+  border-right: 3px solid #10b981;
+  color: #065f46;
+}
+
+.info-box.success svg {
+  color: #10b981;
+}
+
+/* ============================================
+   13. Status Guide List
+   ============================================ */
 .status-guide-list {
   list-style: none;
   padding: 0;
@@ -681,100 +753,15 @@
   margin-top: 3px;
 }
 
-/* ============ Empty Text ============ */
-.empty-text {
-  font-size: 0.8125rem;
-  color: var(--text-light);
-  font-style: italic;
-  text-align: center;
-  padding: 1.5rem;
-}
-
-/* ============ چاپ ============ */
-@media print {
-
-  .admin-booking-show-back,
-  .admin-booking-show-sidebar .actions-card,
-  .admin-booking-show-sidebar .status-guide-card,
-  .public-navbar,
-  .sidebar {
-    display: none !important;
-  }
-
-  .admin-booking-show-page {
-    max-width: 100%;
-    padding: 0;
-  }
-
-  .admin-booking-show-card {
-    box-shadow: none;
-    border: 1px solid #e5e7eb;
-    page-break-inside: avoid;
-  }
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
-  .admin-booking-show-page {
-    padding: 1.5rem 1rem 3rem;
-  }
-
-  .admin-booking-show-header {
-    flex-direction: column;
-    padding: 1.25rem;
-  }
-
-  .admin-booking-show-header-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-
-  .admin-booking-show-title {
-    font-size: 1.0625rem;
-  }
-
-  .customer-info-card {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .customer-info-contact {
-    justify-content: center;
-  }
-
-  .view-customer-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .payment-total {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
-}
-
-/* ============ دکمه تکمیل ادمین ============ */
-.action-btn.complete-admin {
-  background-color: #fef3c7;
-  color: #92400e;
-  border-color: #fde68a;
-}
-
-.action-btn.complete-admin:hover {
-  background-color: #f59e0b;
-  color: white;
-  border-color: #f59e0b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
-}
-
-/* ============ Modal تکمیل ادمین ============ */
-.complete-admin-modal-overlay {
+/* ============================================
+   14. Dispute Modal
+   ============================================ */
+.dispute-modal-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -783,7 +770,7 @@
   animation: fadeIn 0.2s ease;
 }
 
-.complete-admin-modal {
+.dispute-modal {
   background-color: white;
   border-radius: 1.5rem;
   padding: 1.75rem;
@@ -795,7 +782,7 @@
   overflow-y: auto;
 }
 
-.complete-admin-modal-header {
+.dispute-modal-header {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -804,39 +791,39 @@
   text-align: center;
 }
 
-.complete-admin-icon {
+.dispute-modal-icon {
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #ef4444;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fcd34d;
-  animation: iconPulse 2s ease-in-out infinite;
+  border: 2px solid #fecaca;
+  animation: iconPulseRed 2s ease-in-out infinite;
 }
 
-@keyframes iconPulse {
+@keyframes iconPulseRed {
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
   }
 
   50% {
-    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
   }
 }
 
-.complete-admin-modal-header h3 {
+.dispute-modal-header h3 {
   font-size: 1.125rem;
   font-weight: 800;
   color: #1f2937;
   margin: 0;
 }
 
-.complete-admin-warning {
+.dispute-modal-warning {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -848,24 +835,24 @@
   margin-bottom: 1.25rem;
 }
 
-.complete-admin-warning svg {
+.dispute-modal-warning svg {
   color: #f59e0b;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.complete-admin-warning p {
+.dispute-modal-warning p {
   font-size: 0.75rem;
   color: #92400e;
   line-height: 1.7;
   margin: 0;
 }
 
-.complete-admin-warning strong {
+.dispute-modal-warning strong {
   font-weight: 800;
 }
 
-.complete-admin-info {
+.dispute-modal-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -876,7 +863,7 @@
   margin-bottom: 1.25rem;
 }
 
-.complete-admin-info .info-row {
+.dispute-modal-info .info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -884,17 +871,17 @@
   font-size: 0.8125rem;
 }
 
-.complete-admin-info .info-row span {
+.dispute-modal-info .info-row span {
   color: var(--text-muted);
   font-weight: 600;
 }
 
-.complete-admin-info .info-row strong {
+.dispute-modal-info .info-row strong {
   color: var(--text-main);
   font-weight: 800;
 }
 
-.complete-admin-form-group {
+.dispute-form-group {
   margin-bottom: 1.25rem;
 }
 
@@ -950,7 +937,21 @@
   margin-top: 0.375rem;
 }
 
-.complete-admin-actions {
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+.form-error svg {
+  color: #ef4444;
+}
+
+.dispute-modal-actions {
   display: flex;
   flex-direction: column-reverse;
   gap: 0.625rem;
@@ -959,7 +960,7 @@
 }
 
 @media (min-width: 640px) {
-  .complete-admin-actions {
+  .dispute-modal-actions {
     flex-direction: row;
     justify-content: flex-end;
   }
@@ -995,14 +996,14 @@
 }
 
 .btn-confirm {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
 }
 
 .btn-confirm:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.4);
 }
 
 .btn-confirm:disabled,
@@ -1011,20 +1012,9 @@
   cursor: not-allowed;
 }
 
-.form-error {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: #991b1b;
-  font-weight: 600;
-}
-
-.form-error svg {
-  color: #ef4444;
-}
-
+/* ============================================
+   15. Spinner
+   ============================================ */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -1041,6 +1031,9 @@
   }
 }
 
+/* ============================================
+   16. Animations
+   ============================================ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1063,13 +1056,119 @@
   }
 }
 
-@media (max-width: 640px) {
-  .complete-admin-modal {
-    padding: 1.5rem;
+/* ============================================
+   17. Print
+   ============================================ */
+@media print {
+
+  .barber-booking-show-back,
+  .barber-booking-show-sidebar .actions-card,
+  .barber-booking-show-sidebar .status-guide-card,
+  .public-navbar,
+  .sidebar,
+  .mobile-menu-btn {
+    display: none !important;
+  }
+
+  .barber-booking-show-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .barber-booking-show-card {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    page-break-inside: avoid;
+  }
+
+  .barber-booking-show-header {
+    background: white !important;
+  }
+}
+
+/* ============================================
+   18. Responsive
+   ============================================ */
+@media (max-width: 767px) {
+  .barber-booking-show-header {
+    flex-direction: column;
+    padding: 1.25rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .barber-booking-show-header-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .barber-booking-show-header-top {
+    justify-content: center;
+  }
+
+  .barber-booking-show-title {
+    font-size: 1.0625rem;
+  }
+
+  .customer-info-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .customer-info-contact {
+    justify-content: center;
+  }
+
+  .payment-total {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .payment-total-value {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .barber-booking-show-page {
+    padding: 1rem 0.75rem 2.5rem;
+  }
+
+  .barber-booking-show-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .customer-info-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.25rem;
+  }
+
+  .customer-info-name {
+    font-size: 1rem;
+  }
+
+  .info-block {
+    padding: 0.625rem;
+  }
+
+  .info-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .info-value {
+    font-size: 0.8125rem;
+  }
+
+  .dispute-modal {
+    padding: 1.25rem;
     border-radius: 1.25rem;
   }
 
-  .complete-admin-icon {
+  .dispute-modal-icon {
     width: 3.5rem;
     height: 3.5rem;
   }

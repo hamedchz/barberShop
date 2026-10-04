@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\PaymentStatus;
 use App\Enums\Casts\ReviewStatus;
@@ -11,6 +12,9 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Review;
 use App\Models\TimeSlot;
+use App\Notifications\BookingCompletedByCustomer;
+use App\Notifications\BookingCompletedByCustomerForAdmin;
+use App\Notifications\BookingDisputeByCustomer;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -311,6 +315,7 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
+
         // ============ بررسی مالکیت ============
         if ($booking->user_id !== auth()->id()) {
             abort(403);
@@ -343,11 +348,15 @@ class BookingController extends Controller
         $isExpired = false;
         $canEditReview = false;
         $canDeleteReview = false;
+        $canCustomerComplete = false;
+
 
         if ($review && $review->status->value === ReviewStatus::pending->value) {
             $canEditReview = true;
             $canDeleteReview = true;
         }
+
+
 
         // ============ وضعیت Pending (در انتظار پرداخت) ============
         if ($booking->status->value === BookingStatus::pending->value) {
@@ -389,10 +398,14 @@ class BookingController extends Controller
                 $slotDateTime = Carbon::parse(
                     $timSlotDate . ' ' . $booking->timeSlot->start_time
                 );
-
+                $now = Carbon::now();
                 // امکان لغو: نوبت در آینده باشد و حداقل ۲ ساعت فاصله داشته باشد
-                $canCancel = $slotDateTime->isFuture() &&
-                    Carbon::now()->diffInHours($slotDateTime) >= 2;
+                $canCancel = $slotDateTime->isFuture()
+                    && $now->diffInHours($slotDateTime) >= 2;
+
+                // امکان تکمیل: حداقل ۲ ساعت از زمان نوبت گذشته باشد
+                $canCustomerComplete = $slotDateTime->isPast()
+                    && $slotDateTime->diffInHours($now) >= 2;
             }
         }
 
@@ -421,8 +434,9 @@ class BookingController extends Controller
 
                 // ============ دسترسی‌ها ============
                 'can_cancel' => $canCancel,
-                'can_pay' => $canPay,       // ← جدید
+                'can_pay' => $canPay,
                 'can_review' => $canReview,
+                'can_customer_complete' => $canCustomerComplete,
 
                 // ============ اطلاعات آرایشگر ============
                 'barber' => $booking->barber ? [
@@ -453,6 +467,7 @@ class BookingController extends Controller
                 'date' => $booking->timeSlot?->date,
                 'start_time' => $booking->timeSlot?->start_time,
                 'end_time' => $booking->timeSlot?->end_time,
+
 
                 // ============ اطلاعات پرداخت ============
                 'payment' => $booking->payment ? [
@@ -687,5 +702,136 @@ class BookingController extends Controller
             ],
             'gateways' => $gateways,
         ]);
+    }
+
+
+
+
+    public function dispute(Request $request, Booking $booking)
+    {
+        if ($booking->barber_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // فقط برای رزروهای completed_by=customer
+        if ($booking->completed_by !== BookingCompletedBy::customer->value) {
+            StickyAlert::alert('این رزرو قابل اعتراض نیست.', 'error');
+            return redirect()->back();
+        }
+
+        // فقط تا ۲۴ ساعت بعد از تکمیل
+        if ($booking->completed_at->diffInHours(now()) > 24) {
+            StickyAlert::alert('مهلت اعتراض گذشته است.', 'error');
+            return redirect()->back();
+        }
+
+        $validated = $request->validate([
+            'reason' => 'required|string|min:10|max:500',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $booking->update([
+                'is_disputed' => true,
+                'disputed_at' => now(),
+                'dispute_reason' => $validated['reason'],
+            ]);
+
+            \App\Models\User::role(['سوپر ادمین'])->get()
+                ->each(function ($admin) use ($booking) {
+                    $admin->notify(
+                        new BookingDisputeByCustomer($booking)
+                    );
+                });
+
+            DB::commit();
+
+            StickyAlert::alert('اعتراض شما ثبت شد. ادمین بررسی خواهد کرد.', 'error');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            StickyAlert::alert('خطا در ثبت اعتراض.', 'error');
+            return redirect()->back();
+        }
+    }
+
+    public function complete(Booking $booking)
+    {
+        // بررسی مالکیت
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // بررسی وضعیت
+        if ($booking->status->value !== BookingStatus::confirmed->value) {
+            StickyAlert::alert('این رزرو قابل تکمیل نیست.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ بررسی زمان ============
+        $timeSlot = $booking->timeSlot;
+        if (!$timeSlot) {
+            StickyAlert::alert('اطلاعات زمان یافت نشد.', 'error');
+            return redirect()->back();
+        }
+
+        $slotDateTime = Carbon::parse(
+            Carbon::parse($timeSlot->date)->format('Y-m-d') . ' ' . $timeSlot->start_time
+        );
+
+        // زمان نوبت باید گذشته باشد
+        if (!$slotDateTime->isPast()) {
+            StickyAlert::alert('زمان نوبت هنوز نرسیده است.', 'error');
+            return redirect()->back();
+        }
+
+        // حداقل ۲ ساعت از زمان نوبت گذشته باشد
+        $hoursSinceSlot = $slotDateTime->diffInHours(Carbon::now());
+        if ($hoursSinceSlot < 2) {
+            StickyAlert::alert('حداقل ۲ ساعت بعد از زمان نوبت می‌توانید تکمیل را اعلام کنید.', 'error');
+            return redirect()->back();
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+
+            // تکمیل توسط مشتری
+            $booking->update([
+                'status' => BookingStatus::completed->value,
+                'completed_at' => now(),
+                'completed_by' => BookingCompletedBy::customer->value,
+            ]);
+
+            // ============ اطلاع‌رسانی به آرایشگر ============
+            $booking->barber->notify(
+                new BookingCompletedByCustomer($booking)
+            );
+
+            // ============ اطلاع‌رسانی به ادمین ============
+            \App\Models\User::role(['سوپر ادمین'])->get()
+                ->each(function ($admin) use ($booking) {
+                    $admin->notify(
+                        new BookingCompletedByCustomerForAdmin($booking)
+                    );
+                });
+
+            // ============ لاگ ============
+
+            (new \App\Models\Log())->storeLog($booking->id,  'customer_complete_booking', "تکمیل رزرو #{$booking->id} توسط مشتری",);
+
+
+            DB::commit();
+            StickyAlert::alert('تکمیل خدمت تایید شد. حالا می‌توانید نظر بدهید.', 'error');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Customer complete failed: ' . $e->getMessage());
+            StickyAlert::alert('خطا در تایید تکمیل.', 'error');
+            return redirect()->back();
+        }
     }
 }

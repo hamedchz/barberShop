@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Barber;
 
+use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
+use App\Notifications\BookingAutoCompletedForCustomer;
+use App\Notifications\BookingCompletedForAdmin;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -20,6 +23,7 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
+
         $barberId = auth()->id();
 
         $query = Booking::where('barber_id', $barberId)
@@ -238,20 +242,107 @@ class BookingController extends Controller
      */
     public function complete(Booking $booking)
     {
+        // ============ بررسی مالکیت ============
         if ($booking->barber_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'این رزرو متعلق به شما نیست.');
         }
 
+        // ============ بررسی وضعیت ============
         if ($booking->status->value !== BookingStatus::confirmed->value) {
-            return back()->with('error', 'این رزرو قابل تکمیل نیست.');
+            StickyAlert::alert('فقط رزروهای تایید شده قابل تکمیل هستند.', 'error');
+            return redirect()->back();
         }
 
-        $booking->update([
-            'status' => BookingStatus::completed->value,
-        ]);
+        // ============ بررسی وجود TimeSlot ============
+        if (!$booking->timeSlot) {
+            StickyAlert::alert('اطلاعات زمان این رزرو یافت نشد.', 'error');
+            return redirect()->back();
+        }
 
-        return back()->with('success', 'رزرو با موفقیت تکمیل شد.');
+        // ============ بررسی زمان ============
+        $slotDateTime = Carbon::parse(
+            Carbon::parse($booking->timeSlot->date)->format('Y-m-d') . ' ' . $booking->timeSlot->start_time
+        );
+
+        // نوبت باید گذشته باشد
+        if ($slotDateTime->isFuture()) {
+            StickyAlert::alert('زمان این نوبت هنوز نرسیده است.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ بررسی عدم اعتراض ============
+        if ($booking->is_disputed) {
+            StickyAlert::alert('این رزرو در حال بررسی اعتراض است و قابل تکمیل نیست.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ شروع تراکنش ============
+        DB::beginTransaction();
+
+        try {
+            // ۱. بروزرسانی رزرو
+            $booking->update([
+                'status' => BookingStatus::completed->value,
+                'completed_at' => now(),
+                'completed_by' => BookingCompletedBy::barber->value,
+            ]);
+
+            // ۲. ثبت لاگ
+
+
+            (new \App\Models\Log())->storeLog($booking->id,  'barber_complete_booking', "تکمیل رزرو #{$booking->id} توسط آرایشگر",);
+
+
+            // ۳. Notification به مشتری
+            try {
+                if ($booking->user) {
+                    $booking->user->notify(
+                        new BookingAutoCompletedForCustomer($booking)
+                    );
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Notification to customer failed', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ۴. Notification به ادمین (اختیاری)
+            try {
+                \App\Models\User::role(['سوپر ادمین'])
+                    ->get()
+                    ->each(function ($admin) use ($booking) {
+                        $admin->notify(
+                            new BookingCompletedForAdmin($booking)
+                        );
+                    });
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Notification to admins failed', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ۵. آزادسازی درآمد (اگر کیف پول دارید)
+            // $this->releaseEarnings($booking);
+
+            DB::commit();
+            StickyAlert::alert('تکمیل خدمت با موفقیت تایید شد. درآمد آن به کیف پول شما اضافه شد.', 'success');
+            return to_route('barber.bookings.show', $booking->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Illuminate\Support\Facades\Log::error('Barber complete booking failed', [
+                'booking_id' => $booking->id,
+                'barber_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            StickyAlert::alert('خطا در تکمیل خدمت. لطفاً دوباره تلاش کنید.', 'error');
+            return redirect()->back();
+        }
     }
+
 
     /**
      * لغو رزرو توسط آرایشگر
@@ -316,18 +407,57 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
+
+        // ============ بررسی مالکیت ============
         if ($booking->barber_id !== auth()->id()) {
             abort(403);
         }
 
         $booking->load([
-            'user:id,name,avatar,phone',
+            'user:id,name,avatar,phone,slug',
             'service:id,name,description,image,duration,price',
             'timeSlot:id,date,start_time,end_time',
             'payment',
+            'review',
         ]);
 
-        $review = Review::where('booking_id', $booking->id)->first();
+        // ============ بررسی زمان ============
+        $timeSlot = $booking->timeSlot;
+        $slotDateTime = $timeSlot
+            ? Carbon::parse(Carbon::parse($timeSlot->date)->format('Y-m-d') . ' ' . $timeSlot->start_time)
+            : null;
+
+        $isPast = $slotDateTime && $slotDateTime->isPast();
+
+        // ============ بررسی امکان تایید تکمیل ============
+        $canComplete = false;
+        if ($booking->status->value === BookingStatus::confirmed->value && $slotDateTime) {
+            $canComplete = $slotDateTime->isPast();
+        }
+
+        // ============ بررسی امکان لغو ============
+        $canCancel = false;
+        if (in_array($booking->status->value, [
+            BookingStatus::pending->value,
+            BookingStatus::confirmed->value,
+        ]) && $slotDateTime) {
+            $canCancel = $slotDateTime->isFuture();
+        }
+
+        // ============ بررسی امکان اعتراض ============
+        $canDispute = false;
+        if (
+            $booking->status->value === BookingStatus::completed->value
+            && $booking->completed_by === BookingCompletedBy::customer->value
+            && $booking->completed_at
+            && !$booking->is_disputed
+            && $booking->completed_at->diffInHours(now()) <= 24
+        ) {
+            $canDispute = true;
+        }
+
+        // ============ بررسی وجود شکایت ============
+        $isDisputed = (bool) $booking->is_disputed;
 
         return Inertia::render('Barber/Bookings/Show', [
             'booking' => [
@@ -338,7 +468,20 @@ class BookingController extends Controller
                 'created_at' => $booking->created_at,
                 'confirmed_at' => $booking->confirmed_at,
                 'cancelled_at' => $booking->cancelled_at,
+                'cancelled_by' => $booking->cancelled_by,
+                'completed_at' => $booking->completed_at,
+                'completed_by' => $booking->completed_by,
+                'auto_completed' => (bool) $booking->auto_completed,
+                'is_past' => $isPast,
 
+                // ============ دسترسی‌ها ============
+                'can_complete' => $canComplete,
+                'can_cancel' => $canCancel,
+                'can_dispute' => $canDispute,
+                'is_disputed' => $isDisputed,
+                'dispute_reason' => $booking->dispute_reason,
+
+                // ============ اطلاعات مشتری ============
                 'customer' => $booking->user ? [
                     'id' => $booking->user->id,
                     'name' => $booking->user->name,
@@ -348,6 +491,7 @@ class BookingController extends Controller
                     'email' => $booking->user->email,
                 ] : null,
 
+                // ============ اطلاعات خدمت ============
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
                     'name' => $booking->service->name,
@@ -359,10 +503,12 @@ class BookingController extends Controller
                     'price' => (float) $booking->service->price,
                 ] : null,
 
-                'date' => $booking->timeSlot?->date,
-                'start_time' => $booking->timeSlot?->start_time,
-                'end_time' => $booking->timeSlot?->end_time,
+                // ============ اطلاعات زمان ============
+                'date' => $timeSlot?->date,
+                'start_time' => $timeSlot?->start_time,
+                'end_time' => $timeSlot?->end_time,
 
+                // ============ اطلاعات پرداخت ============
                 'payment' => $booking->payment ? [
                     'gateway' => $booking->payment->gateway,
                     'status' => $booking->payment->status,
@@ -371,11 +517,13 @@ class BookingController extends Controller
                     'paid_at' => $booking->payment->paid_at,
                 ] : null,
 
-                'review' => $review ? [
-                    'id' => $review->id,
-                    'rating' => (int) $review->rating,
-                    'comment' => $review->comment,
-                    'created_at' => $review->created_at,
+                // ============ اطلاعات نظر ============
+                'review' => $booking->review ? [
+                    'id' => $booking->review->id,
+                    'rating' => (int) $booking->review->rating,
+                    'comment' => $booking->review->comment,
+                    'status' => $booking->review->status,
+                    'created_at' => $booking->review->created_at,
                 ] : null,
             ],
         ]);

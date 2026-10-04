@@ -32,9 +32,23 @@ class HandleInertiaRequests extends Middleware
                             ->getAllPermissions()
                             ->pluck('name')
                             ->toArray(),
+                        'notifications' => $request->user()->notifications()
+                            ->latest()
+                            ->limit(10)
+                            ->get()
+                            ->map(fn($n) => [
+                                'id' => $n->id,
+                                'data' => $n->data,
+                                'read_at' => $n->read_at,
+                                'created_at' => $n->created_at->toIso8601String(),
+                            ]),
+                        'unread_notifications_count' => $request->user()
+                            ->unreadNotifications()
+                            ->count(),
                     ]
                     : null,
             ],
+
 
             'flash' => [
                 'success' => fn() => $request->session()->get('success'),
