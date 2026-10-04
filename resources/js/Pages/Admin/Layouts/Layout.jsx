@@ -3,6 +3,8 @@ import Sidebar from "../Components/Sidebar";
 import { Menu } from "lucide-react";
 import "../Assets/css/styles.css";
 import { useAlert } from "../../../Components/AlertProvider";
+import { usePage } from "@inertiajs/react";
+import Swal from "sweetalert2";
 
 export default function Layout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,6 +23,24 @@ export default function Layout({ children }) {
     // ============ بستن خودکار در موبایل ============
     const closeSidebar = () => setIsSidebarOpen(false);
     const toggleCollapse = () => setIsCollapsed((prev) => !prev);
+
+    // Alert
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash?.alert) {
+            Swal.fire({
+                icon: flash.alert["type"],
+                title: flash.alert["title"],
+                confirmButtonText: "باشه",
+                toast: flash.alert["toast"],
+                position: flash.alert["position"],
+                timer: flash.alert["timer"],
+                customClass: {
+                    popup: "rtl-alert",
+                },
+            });
+        }
+    }, [flash]);
     const { toast } = useAlert();
     return (
         <div

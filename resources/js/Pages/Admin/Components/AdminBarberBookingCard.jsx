@@ -11,17 +11,15 @@ import {
     Clock4,
     Hash,
     Eye,
-    Check,
-    Ban,
     User,
-    MessageCircle,
-    Sparkles,
+    Mail,
+    CreditCard,
+    Ban,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
     toPersianNumber,
     toPersianTimeRange,
-    toPersianTime,
 } from "../../../utils/persianNumbers";
 
 // ============ وضعیت‌ها ============
@@ -60,6 +58,13 @@ const statusConfig = {
     },
 };
 
+const paymentStatusConfig = {
+    pending: { label: "در انتظار پرداخت", color: "#92400e", bg: "#fffbeb" },
+    success: { label: "موفق", color: "#065f46", bg: "#ecfdf5" },
+    failed: { label: "ناموفق", color: "#991b1b", bg: "#fef2f2" },
+    refunded: { label: "برگشت داده شده", color: "#5b21b6", bg: "#f5f3ff" },
+};
+
 // ============ توابع کمکی ============
 const formatJalaliDate = (date) => {
     if (!date) return "-";
@@ -90,7 +95,6 @@ const getDayName = (date) => {
 
 const getRelativeTime = (date) => {
     if (!date) return { label: "", color: "" };
-
     const now = new Date();
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
@@ -113,12 +117,7 @@ const getRelativeTime = (date) => {
     };
 };
 
-export default function BarberBookingCard({
-    booking,
-    onConfirmClick,
-    onCompleteClick,
-    onCancelClick,
-}) {
+export default function AdminBarberBookingCard({ booking, barberId }) {
     const config = statusConfig[booking.status] || statusConfig.pending;
     const StatusIcon = config.icon;
     const relativeTime = getRelativeTime(booking.date);
@@ -127,31 +126,35 @@ export default function BarberBookingCard({
         booking.date &&
         new Date(booking.date).toDateString() === new Date().toDateString();
 
+    const paymentCfg = booking.payment_status
+        ? paymentStatusConfig[booking.payment_status]
+        : null;
+
     return (
         <div
-            className={`barber-booking-card status-${booking.status} ${
+            className={`admin-booking-card status-${booking.status} ${
                 isToday ? "today" : ""
             }`}
         >
-            {/* ============ نوار رنگی بالا ============ */}
+            {/* نوار رنگی بالا */}
             <div
-                className="barber-booking-card-stripe"
+                className="admin-booking-card-stripe"
                 style={{ background: config.gradient }}
             ></div>
 
-            {/* ============ نشانگر امروز ============ */}
+            {/* نشانگر امروز */}
             {isToday && (
-                <div className="today-badge">
-                    <Sparkles size={12} />
+                <div className="admin-today-badge">
+                    <Clock4 size={12} />
                     امروز
                 </div>
             )}
 
-            <div className="barber-booking-content">
+            <div className="admin-booking-content">
                 {/* ============ ستون ۱: مشتری ============ */}
-                <div className="barber-booking-customer">
-                    <div className="customer-avatar-wrapper">
-                        <div className="customer-avatar">
+                <div className="admin-booking-customer">
+                    <div className="admin-customer-avatar-wrapper">
+                        <div className="admin-customer-avatar">
                             {booking.customer?.thumbnail ? (
                                 <img
                                     src={booking.customer.thumbnail}
@@ -165,63 +168,67 @@ export default function BarberBookingCard({
                                 </span>
                             )}
                         </div>
-
-                        {/* نشانگر وضعیت کوچک روی آواتار */}
                         <span
-                            className="customer-avatar-status"
+                            className="admin-customer-avatar-status"
                             style={{ background: config.gradient }}
                         ></span>
                     </div>
 
-                    <div className="customer-info">
-                        <span className="customer-label">
+                    <div className="admin-customer-info">
+                        <span className="admin-customer-label">
                             <User size={10} />
                             مشتری
                         </span>
-                        <span className="customer-name">
+                        <span className="admin-customer-name">
                             {booking.customer?.name}
                         </span>
 
                         {booking.customer?.phone && (
                             <a
                                 href={`tel:${booking.customer.phone}`}
-                                className="customer-phone"
-                                title="تماس با مشتری"
+                                className="admin-customer-phone"
                             >
                                 <Phone size={12} />
                                 <span dir="ltr">{booking.customer.phone}</span>
                             </a>
                         )}
+
+                        {booking.customer?.email && (
+                            <span className="admin-customer-email">
+                                <Mail size={10} />
+                                <span dir="ltr">{booking.customer.email}</span>
+                            </span>
+                        )}
                     </div>
                 </div>
 
                 {/* ============ ستون ۲: جزئیات ============ */}
-                <div className="barber-booking-details">
-                    <div className="booking-detail-row service">
-                        <div className="detail-icon-box">
+                <div className="admin-booking-details">
+                    <div className="admin-detail-row service">
+                        <div className="admin-detail-icon-box">
                             <Scissors size={14} />
                         </div>
-                        <div className="detail-content">
-                            <span className="detail-label">خدمت</span>
-                            <span className="detail-value">
+                        <div className="admin-detail-content">
+                            <span className="admin-detail-label">خدمت</span>
+                            <span className="admin-detail-value">
                                 {booking.service?.name}
                             </span>
                         </div>
                     </div>
 
-                    <div className="booking-detail-row date">
-                        <div className="detail-icon-box">
+                    <div className="admin-detail-row date">
+                        <div className="admin-detail-icon-box">
                             <Calendar size={14} />
                         </div>
-                        <div className="detail-content">
-                            <span className="detail-label">تاریخ</span>
-                            <span className="detail-value">
+                        <div className="admin-detail-content">
+                            <span className="admin-detail-label">تاریخ</span>
+                            <span className="admin-detail-value">
                                 {getDayName(booking.date)}{" "}
                                 {formatJalaliDate(booking.date)}
                             </span>
                             {relativeTime.label && (
                                 <span
-                                    className="relative-time"
+                                    className="admin-relative-time"
                                     style={{ color: relativeTime.color }}
                                 >
                                     {relativeTime.label}
@@ -230,13 +237,13 @@ export default function BarberBookingCard({
                         </div>
                     </div>
 
-                    <div className="booking-detail-row time">
-                        <div className="detail-icon-box">
+                    <div className="admin-detail-row time">
+                        <div className="admin-detail-icon-box">
                             <Clock size={14} />
                         </div>
-                        <div className="detail-content">
-                            <span className="detail-label">ساعت</span>
-                            <span className="detail-value time-value">
+                        <div className="admin-detail-content">
+                            <span className="admin-detail-label">ساعت</span>
+                            <span className="admin-detail-value time-value">
                                 {toPersianTimeRange(
                                     booking.start_time,
                                     booking.end_time,
@@ -245,13 +252,13 @@ export default function BarberBookingCard({
                         </div>
                     </div>
 
-                    <div className="booking-detail-row price">
-                        <div className="detail-icon-box">
+                    <div className="admin-detail-row price">
+                        <div className="admin-detail-icon-box">
                             <DollarSign size={14} />
                         </div>
-                        <div className="detail-content">
-                            <span className="detail-label">مبلغ</span>
-                            <span className="detail-value price-value">
+                        <div className="admin-detail-content">
+                            <span className="admin-detail-label">مبلغ</span>
+                            <span className="admin-detail-value price-value">
                                 {toPersianNumber(
                                     booking.amount.toLocaleString(),
                                 )}{" "}
@@ -262,10 +269,11 @@ export default function BarberBookingCard({
                 </div>
 
                 {/* ============ ستون ۳: وضعیت و عملیات ============ */}
-                <div className="barber-booking-actions">
-                    <div className="booking-status-row">
+                <div className="admin-booking-actions">
+                    <div className="admin-status-row">
+                        {/* Badge وضعیت */}
                         <span
-                            className="booking-status-badge"
+                            className="admin-status-badge"
                             style={{
                                 backgroundColor: config.bg,
                                 color: config.color,
@@ -276,56 +284,35 @@ export default function BarberBookingCard({
                             {config.label}
                         </span>
 
-                        {/* <span className="booking-code">
+                        {/* Badge وضعیت پرداخت */}
+                        {paymentCfg && (
+                            <span
+                                className="admin-payment-badge"
+                                style={{
+                                    backgroundColor: paymentCfg.bg,
+                                    color: paymentCfg.color,
+                                }}
+                            >
+                                <CreditCard size={10} />
+                                {paymentCfg.label}
+                            </span>
+                        )}
+
+                        {/* کد رزرو */}
+                        <span className="admin-booking-code">
                             <Hash size={10} />
                             {toPersianNumber(booking.id)}
-                        </span> */}
+                        </span>
                     </div>
 
-                    {/* دکمه‌های عملیات */}
-                    <div className="booking-buttons-group">
-                        {/* {booking.can_confirm && (
-                            <button
-                                className="booking-action-btn confirm"
-                                onClick={() => onConfirmClick(booking)}
-                                title="تایید رزرو"
-                            >
-                                <Check size={14} />
-                                <span>تایید</span>
-                            </button>
-                        )} */}
-
-                        {booking.can_complete && (
-                            <button
-                                className="booking-action-btn complete"
-                                onClick={() => onCompleteClick(booking)}
-                                title="تکمیل رزرو"
-                            >
-                                <CheckCircle size={14} />
-                                <span>تکمیل</span>
-                            </button>
-                        )}
-
-                        <Link
-                            href={`/barber/bookings/${booking.id}`}
-                            className="booking-action-btn view"
-                            title="مشاهده جزئیات"
-                        >
-                            <Eye size={14} />
-                            <span>جزئیات</span>
-                        </Link>
-
-                        {booking.can_cancel && (
-                            <button
-                                className="booking-action-btn cancel"
-                                onClick={() => onCancelClick(booking)}
-                                title="لغو رزرو"
-                            >
-                                <Ban size={14} />
-                                <span>لغو</span>
-                            </button>
-                        )}
-                    </div>
+                    {/* دکمه مشاهده جزئیات */}
+                    <Link
+                        href={`/admin/bookings/${barberId}/barber/${booking.id}`}
+                        className="admin-booking-view-btn"
+                    >
+                        <Eye size={14} />
+                        مشاهده جزئیات
+                    </Link>
                 </div>
             </div>
         </div>

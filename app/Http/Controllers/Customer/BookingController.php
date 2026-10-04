@@ -292,7 +292,7 @@ class BookingController extends Controller
 
             DB::commit();
 
-            StickyAlert::alert('نوبت شما با موفقیت لغو شد.', 'error');
+            StickyAlert::alert('نوبت شما با موفقیت لغو شد.', 'success');
             return redirect()
                 ->back();
         } catch (\Exception $e) {

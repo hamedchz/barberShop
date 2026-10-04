@@ -252,7 +252,7 @@ export default function BookingsIndex({ auth, bookings, stats, filters }) {
             },
             cancel: {
                 title: "لغو رزرو",
-                message: `آیا از لغو رزرو مشتری "${booking.customer?.name}" مطمئن هستید؟ مبلغ پرداختی به مشتری بازگردانده می‌شود.`,
+                message: `آیا از لغو رزرو مشتری "${booking.customer?.name}" مطمئن هستید؟ `,
                 confirmText: "بله، لغو کن",
                 type: "danger",
             },

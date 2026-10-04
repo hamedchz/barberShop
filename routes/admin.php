@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\RolesController;
@@ -43,8 +44,24 @@ Route::prefix('/barbers')
     Route::put('/{user:slug}/update',  'update')->name('update');
     Route::delete('/{barber}/destroy',  'destroy')->name('destroy');
 
-    Route::get('/online-status', [BarberController::class, 'onlineStatus'])
+    Route::get('/online-status', 'onlineStatus')
       ->name('online-status');
+  });
+
+Route::prefix('/bookings')
+  ->name('bookings.')->controller(BarberBookingController::class)
+  ->group(function () {
+
+    // رزروهای آرایشگر
+    Route::get('/barber/{barber:slug}',  'index')
+      ->name('.bookings.index');
+    Route::get('/{barber}/barber/{booking}',  'show')
+      ->name('show');
+
+    Route::delete('/barber/{barber}/cancel/{booking}',  'cancel')
+      ->name('cancel');
+
+    Route::patch('/{barber}/barbers/{booking}/complete', 'complete')->name('complete');
   });
 
 // });

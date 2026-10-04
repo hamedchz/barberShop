@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,13 +18,17 @@ class Booking extends Model
         'notes',
         'confirmed_at',
         'cancelled_at',
+        'completed_at',
+        'completed_by',
+        'admin_completion_reason'
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'confirmed_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'status' => BookingStatus::class
+        'status' => BookingStatus::class,
+        'completed_by' => BookingCompletedBy::class,
     ];
 
     public function user()
@@ -49,5 +54,9 @@ class Booking extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+    public function review()
+    {
+        return $this->belongsTo(Review::class);
     }
 }

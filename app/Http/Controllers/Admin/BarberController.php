@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\LogsStatus;
 use App\Enums\Casts\Permissions;
 use App\Enums\Casts\TimeSlotStatus;
@@ -10,6 +11,7 @@ use App\Facades\GenerateUtf8Slug;
 use App\Helpers\Thumbnail;
 use App\Http\Controllers\Controller;
 use App\Models\Availability;
+use App\Models\Booking;
 use App\Models\Service;
 use App\Models\TimeSlot;
 use Illuminate\Http\Request;
@@ -32,7 +34,7 @@ class BarberController extends Controller
     {
         $query = User::query()
             ->with('roles')
-            ->where('is_admin', false)
+            // ->where('is_admin', false)
             ->whereHas('roles', function ($q) {
                 $q->where('roles.id', 8);
             });
@@ -405,6 +407,8 @@ class BarberController extends Controller
                 'name' => $role->name,
                 'label' => $this->translateRoleName($role->name),
             ]),
+            'bookings_count' => Booking::where('barber_id', $barber->id)->count()
+
         ];
 
         // ============ خدمات ============
@@ -447,12 +451,14 @@ class BarberController extends Controller
                 ->where('status', TimeSlotStatus::blocked->value)->count(),
             'total_bookings' => TimeSlot::where('user_id', $barber->id)
                 ->where('status', TimeSlotStatus::booked->value)->count(),
-            'total_revenue' => TimeSlot::where('user_id', $barber->id)
-                ->where('status', TimeSlotStatus::booked->value)
-                ->whereHas('service')
-                ->with('service')
-                ->get()
-                ->sum(fn($slot) => $slot->service?->price ?? 0),
+            'total_revenue' => Booking::where('barber_id', $barber->id)
+                ->where('status', BookingStatus::completed->value)
+                ->whereHas('timeSlot', function ($q) {
+                    $q->whereMonth('date', Carbon::now()->month)
+                        ->whereYear('date', Carbon::now()->year);
+                })
+                ->sum('amount'),
+
         ];
 
         // ============ بازه‌های پیش رو (۷ روز آینده) ============

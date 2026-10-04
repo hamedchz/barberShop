@@ -291,6 +291,7 @@ class BarberController extends Controller
             'availabilities' => $availabilities,
             'slotsByDate' => $slotsByDate,
             'reviews' => $reviews,
+
         ]);
     }
     /**

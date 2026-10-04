@@ -2803,6 +2803,47 @@ body {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
+.barber-success-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.barber-success-btn:hover {
+  background-color: #22c55e;
+  color: white;
+  border-color: #22c55e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+}
+
+.barber-profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.barber-profile-actions .barber-edit-btn,
+.barber-profile-actions .barber-bookings-btn {
+  flex: 1;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
 /* آمار سریع */
 .barber-quick-stats {
   display: grid;

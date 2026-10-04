@@ -7,6 +7,7 @@ use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
+use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -150,10 +151,8 @@ class BookingController extends Controller
                 && $slotDateTime
                 && $slotDateTime->isPast();
 
-            $canCancel = in_array($booking->status->value, [
-                BookingStatus::pending->value,
-                BookingStatus::confirmed->value,
-            ])
+            $canCancel = $booking->status->value == BookingStatus::pending->value
+
                 && $slotDateTime
                 && $slotDateTime->isFuture();
 
@@ -263,11 +262,14 @@ class BookingController extends Controller
             abort(403);
         }
 
-        if (!in_array($booking->status->value, [
-            BookingStatus::pending->value,
-            BookingStatus::confirmed->value,
-        ])) {
-            return back()->with('error', 'این رزرو قابل لغو نیست.');
+        if (
+            $booking->status->value !==
+            BookingStatus::pending->value
+
+        ) {
+            StickyAlert::alert('این رزرو قابل لغو نیست.', 'error');
+            return redirect()
+                ->back();
         }
 
         DB::beginTransaction();
@@ -289,20 +291,25 @@ class BookingController extends Controller
             }
 
             // برگشت مبلغ (اگر پرداخت موفق بوده)
-            if ($booking->payment && $booking->payment->status === 'success') {
-                // TODO: refund
-                $booking->payment->update(['status' => 'refund_pending']);
-            }
+            // if ($booking->payment && $booking->payment->status === 'success') {
+            //     // TODO: refund
+            //     $booking->payment->update(['status' => 'refund_pending']);
+            // }
 
             DB::commit();
-
-            return back()->with('success', 'رزرو لغو شد.');
+            StickyAlert::alert('رزرو لغو شد.', 'success');
+            return redirect()
+                ->back();
         } catch (\Exception $e) {
             DB::rollBack();
             // \Log::error('Barber cancel booking failed: ' . $e->getMessage());
-            return back()->with('error', 'خطا در لغو رزرو.');
+            StickyAlert::alert('خطا در لغو رزرو.', 'success');
+            return redirect()
+                ->back();
         }
     }
+
+
 
     /**
      * نمایش جزئیات رزرو
@@ -314,7 +321,7 @@ class BookingController extends Controller
         }
 
         $booking->load([
-            'user:id,name,avatar,phone,email',
+            'user:id,name,avatar,phone',
             'service:id,name,description,image,duration,price',
             'timeSlot:id,date,start_time,end_time',
             'payment',

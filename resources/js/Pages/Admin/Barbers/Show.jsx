@@ -36,6 +36,8 @@ import {
     toPersianTimeRange,
 } from "../../../utils/persianNumbers";
 
+import "../Assets/css/AdminBarbers.css";
+
 // ============ توابع کمکی ============
 const formatJalaliDate = (date) => {
     if (!date) return "-";
@@ -290,6 +292,15 @@ export default function BarbersShow({
                         >
                             <Edit size={16} />
                             ویرایش
+                        </Link>
+                        {/* TODO:کلید ها در موبایل هم اندازه نیستند */}
+                        <Link
+                            href={`/admin/bookings/barber/${barber.slug}`}
+                            className="barber-success-btn"
+                        >
+                            <Calendar size={16} />
+                            مشاهده رزروها (
+                            {toPersianNumber(barber.bookings_count)})
                         </Link>
                     </div>
 
