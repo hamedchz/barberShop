@@ -11,19 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->boolean('auto_completed')->default(false)->after('completed_by');
-            $table->timestamp('auto_complete_at')->nullable()->after('auto_completed');
+        Schema::table('disputes', function (Blueprint $table) {
+            $table->string('status')
+                ->nullable()
+                ->change();
+            $table->string('disputed_by')
+                ->nullable()
+                ->change();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
+        Schema::table('disputes', function (Blueprint $table) {
             //
         });
     }

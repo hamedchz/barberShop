@@ -9,4 +9,5 @@ enum DisputedStatus: string
   case investigating = 'investigating';
   case resolved = 'resolved';
   case rejected = 'rejected';
+  case awaitingResponse = 'awaiting_response';
 }

@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->boolean('auto_completed')->default(false)->after('completed_by');
-            $table->timestamp('auto_complete_at')->nullable()->after('auto_completed');
+        Schema::table('disputes', function (Blueprint $table) {
+            $table->timestamp('edited_at')->nullable()->after('updated_at');
+            $table->integer('edit_count')->default(0)->after('edited_at');
+            $table->boolean('can_be_edited')->default(true)->after('edit_count');
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('bookings', function (Blueprint $table) {
+        Schema::table('disputes', function (Blueprint $table) {
             //
         });
     }

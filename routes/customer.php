@@ -23,6 +23,9 @@ Route::prefix('/bookings')
 
     Route::patch('/{booking}/complete', 'complete')
       ->name('complete');
+
+    Route::post('/{booking}/dispute', 'dispute')
+      ->name('dispute');
   });
 
 Route::prefix('/payment')

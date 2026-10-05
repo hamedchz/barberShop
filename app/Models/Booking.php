@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\DisputedBy;
 use App\Enums\Casts\DisputedStatus;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,16 +26,10 @@ class Booking extends Model
         'cancelled_by',
         'auto_completed',
         'auto_complete_at',
-        'is_disputed',
-        'disputed_at',
-        'dispute_reason',
         'completion_reminder_sent_at',
-        'disputed_by',
-        'dispute_status',
-        'dispute_resolved_at',
-        'dispute_resolution',
-        'dispute_resolved_by'
     ];
+
+
 
     protected $casts = [
         'amount' => 'decimal:2',
@@ -42,14 +37,11 @@ class Booking extends Model
         'cancelled_at' => 'datetime',
         'auto_complete_at' => 'datetime',
         'completion_reminder_sent_at' => 'datetime',
-        'disputed_at' => 'datetime',
         'status' => BookingStatus::class,
         'completed_by' => BookingCompletedBy::class,
         'cancelled_by' => BookingCompletedBy::class,
         'auto_completed' => 'bool',
-        'is_disputed' => 'bool',
-        'dispute_status' => DisputedStatus::class,
-        'dispute_resolved_at' => 'datetime'
+        'completed_at' => 'datetime'
     ];
     protected $attributes = [
         'completed_by' => BookingCompletedBy::barber->value,
@@ -85,5 +77,35 @@ class Booking extends Model
     public function review()
     {
         return $this->belongsTo(Review::class);
+    }
+
+
+    public function disputes()
+    {
+        return $this->hasMany(Dispute::class);
+    }
+
+    public function activeDispute()
+    {
+        return $this->hasOne(Dispute::class)
+            ->whereIn('status', [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value])
+            ->latest();
+    }
+
+    public function latestDispute()
+    {
+        return $this->hasOne(Dispute::class)->latest();
+    }
+
+    public function customerDisputes()
+    {
+        return $this->hasMany(Dispute::class)
+            ->where('disputed_by', DisputedBy::customer->value);
+    }
+
+    public function barberDisputes()
+    {
+        return $this->hasMany(Dispute::class)
+            ->where('disputed_by', DisputedBy::barber->value);
     }
 }

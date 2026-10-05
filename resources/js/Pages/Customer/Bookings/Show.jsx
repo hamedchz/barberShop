@@ -34,6 +34,11 @@ import {
     Edit3,
     Trash2,
     X,
+    AlertTriangle,
+    MoreHorizontal,
+    Paperclip,
+    Upload,
+    Eye,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -140,6 +145,18 @@ const statusConfig = {
         bg: "#f5f3ff",
         border: "#ddd6fe",
     },
+};
+
+// dispute badge coors
+const getDisputeTypeLabel = (type) => {
+    const labels = {
+        not_done: "خدمت انجام نشد",
+        incomplete: "خدمت ناقص بود",
+        poor_quality: "کیفیت پایین بود",
+        bad_behavior: "رفتار نامناسب",
+        other: "سایر",
+    };
+    return labels[type] || type;
 };
 
 // ============ کامپوننت شمارش معکوس ============
@@ -312,6 +329,171 @@ export default function BookingShow({ auth, booking }) {
         );
     };
 
+    // dispute
+    const [disputeModal, setDisputeModal] = useState({
+        isOpen: false,
+        isLoading: false,
+        reason: "",
+        disputeType: "",
+        attachments: [],
+        errors: {},
+    });
+
+    // const openDisputeModal = () => {
+    //     setDisputeModal({
+    //         isOpen: true,
+    //         isLoading: false,
+    //         reason: "",
+    //         disputeType: "",
+    //         attachments: [],
+    //         errors: {},
+    //     });
+    // };
+
+    const closeDisputeModal = () => {
+        disputeModal.attachments?.forEach((att) => {
+            if (att.preview) URL.revokeObjectURL(att.preview);
+        });
+
+        setDisputeModal({
+            isOpen: false,
+            isLoading: false,
+            reason: "",
+            disputeType: "",
+            attachments: [],
+            errors: {},
+        });
+    };
+
+    // ============ ثبت اعتراض ============
+    const handleDispute = () => {
+        // ... اعتبارسنجی
+        setDisputeModal((prev) => ({ ...prev, isLoading: true }));
+
+        const formData = new FormData();
+        formData.append("reason", disputeModal.reason);
+        formData.append("dispute_type", disputeModal.disputeType);
+
+        disputeModal.attachments.forEach((att, index) => {
+            formData.append(`attachments[${index}]`, att.file);
+        });
+
+        router.post(`/customer/bookings/${booking.id}/dispute`, formData, {
+            preserveScroll: true,
+            forceFormData: true,
+            onSuccess: () => {
+                disputeModal.attachments.forEach((att) => {
+                    if (att.preview) URL.revokeObjectURL(att.preview);
+                });
+
+                setDisputeModal({
+                    isOpen: false,
+                    isLoading: false,
+                    reason: "",
+                    disputeType: "",
+                    attachments: [],
+                    errors: {},
+                });
+            },
+            onError: (errors) => {
+                setDisputeModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                    errors,
+                }));
+            },
+        });
+    };
+
+    // ============================================
+    // هندل انتخاب فایل
+    // ============================================
+    const handleAttachmentChange = (e) => {
+        const files = Array.from(e.target.files);
+
+        // ============ بررسی تعداد کل ============
+        const totalFiles = disputeModal.attachments.length + files.length;
+        if (totalFiles > 5) {
+            setDisputeModal((prev) => ({
+                ...prev,
+                errors: {
+                    ...prev.errors,
+                    attachments: "حداکثر ۵ فایل می‌توانید آپلود کنید.",
+                },
+            }));
+            e.target.value = "";
+            return;
+        }
+
+        // ============ بررسی حجم و نوع ============
+        const validFiles = [];
+        const fileErrors = [];
+
+        for (const file of files) {
+            // حجم بیش از ۲ مگابایت
+            if (file.size > 2 * 1024 * 1024) {
+                fileErrors.push(`فایل «${file.name}» بیش از ۲ مگابایت است.`);
+                continue;
+            }
+
+            // غیر تصویری
+            if (!file.type.startsWith("image/")) {
+                fileErrors.push(`فایل «${file.name}» تصویر نیست.`);
+                continue;
+            }
+
+            validFiles.push(file);
+        }
+
+        // ============ ساخت پیش‌نمایش ============
+        const newAttachments = validFiles.map((file) => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+
+        // ============ بروزرسانی State ============
+        setDisputeModal((prev) => {
+            // اگر خطایی وجود داشت، آن را نمایش بده
+            // اگر خطایی نبود، خطای قبلی را پاک کن
+            const newErrors = { ...prev.errors };
+
+            if (fileErrors.length > 0) {
+                newErrors.attachments = fileErrors.join(" | ");
+            } else {
+                newErrors.attachments = null;
+            }
+
+            return {
+                ...prev,
+                attachments: [...prev.attachments, ...newAttachments],
+                errors: newErrors,
+            };
+        });
+
+        // پاک کردن input
+        e.target.value = "";
+    };
+
+    // ============================================
+    // حذف پیوست
+    // ============================================
+    const handleRemoveAttachment = (index) => {
+        setDisputeModal((prev) => {
+            const newAttachments = [...prev.attachments];
+
+            // آزاد کردن URL
+            if (newAttachments[index]?.preview) {
+                URL.revokeObjectURL(newAttachments[index].preview);
+            }
+
+            newAttachments.splice(index, 1);
+
+            return {
+                ...prev,
+                attachments: newAttachments,
+            };
+        });
+    };
     return (
         <PublicLayout>
             <Head title={`جزئیات رزرو #${booking.id}`} />
@@ -358,6 +540,27 @@ export default function BookingShow({ auth, booking }) {
                                 {config.label}
                             </span>
 
+                            {/* ============ نشانگر اعتراض ============ */}
+                            {booking.has_disputes && booking.latest_dispute && (
+                                <span
+                                    className={`dispute-mini-badge status-${booking.latest_dispute.status}`}
+                                >
+                                    <AlertTriangle size={12} />
+                                    {booking.latest_dispute.status ===
+                                        "pending" && "اعتراض در بررسی"}
+                                    {booking.latest_dispute.status ===
+                                        "investigating" && "در حال بررسی"}
+                                    {booking.latest_dispute.status ===
+                                        "resolved" && "اعتراض تایید شد"}
+                                    {booking.latest_dispute.status ===
+                                        "rejected" && "اعتراض رد شد"}
+                                    {booking.latest_dispute.status ===
+                                        "awaiting_response" && "در انتظار پاسخ"}
+                                    {booking.latest_dispute.status ===
+                                        "cancelled" && "اعتراض لغو شد"}
+                                </span>
+                            )}
+
                             <span className="booking-show-code">
                                 <Hash size={14} />
                                 رزرو {toPersianNumber(booking.id)}
@@ -381,7 +584,234 @@ export default function BookingShow({ auth, booking }) {
                         </p>
                     </div>
                 </div>
+                {/* ============ بنر وضعیت اعتراض ============ */}
+                {booking.has_disputes &&
+                    booking.latest_dispute &&
+                    booking.latest_dispute.disputed_by === "customer" && (
+                        <div
+                            className={`customer-dispute-banner status-${booking.latest_dispute.status}`}
+                        >
+                            <div className="dispute-banner-icon">
+                                {booking.latest_dispute.status ===
+                                    "pending" && <Clock4 size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "investigating" && <Search size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "awaiting_response" && (
+                                    <MessageSquare size={24} />
+                                )}
+                                {booking.latest_dispute.status ===
+                                    "resolved" && <CheckCircle size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "rejected" && <XCircle size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "cancelled" && <Ban size={24} />}
+                            </div>
 
+                            <div className="dispute-banner-content">
+                                <div className="dispute-banner-header">
+                                    <h3>
+                                        {booking.latest_dispute.status ===
+                                            "pending" &&
+                                            "اعتراض شما در صف بررسی"}
+                                        {booking.latest_dispute.status ===
+                                            "investigating" &&
+                                            "اعتراض شما در حال بررسی"}
+                                        {booking.latest_dispute.status ===
+                                            "awaiting_response" &&
+                                            "در انتظار پاسخ شما"}
+                                        {booking.latest_dispute.status ===
+                                            "resolved" && "اعتراض شما تایید شد"}
+                                        {booking.latest_dispute.status ===
+                                            "rejected" && "اعتراض شما رد شد"}
+                                        {booking.latest_dispute.status ===
+                                            "cancelled" && "اعتراض شما لغو شد"}
+                                    </h3>
+
+                                    <span className="dispute-banner-date">
+                                        ثبت:{" "}
+                                        {formatFullDateTime(
+                                            booking.latest_dispute.created_at,
+                                        )}
+                                    </span>
+                                </div>
+
+                                <p className="dispute-banner-message">
+                                    {booking.latest_dispute.status ===
+                                        "pending" &&
+                                        "اعتراض شما ثبت شده و در انتظار بررسی ادمین است. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد."}
+                                    {booking.latest_dispute.status ===
+                                        "investigating" &&
+                                        "ادمین در حال بررسی اعتراض شماست. لطفاً منتظر بمانید."}
+                                    {booking.latest_dispute.status ===
+                                        "awaiting_response" &&
+                                        "ادمین نیاز به اطلاعات بیشتری دارد. لطفاً پاسخ خود را ثبت کنید."}
+                                    {booking.latest_dispute.status ===
+                                        "resolved" &&
+                                        "اعتراض شما تایید شد. مبلغ پرداختی به کیف پول شما بازگردانده شد."}
+                                    {booking.latest_dispute.status ===
+                                        "rejected" &&
+                                        "پس از بررسی، اعتراض شما رد شد. برای اطلاعات بیشتر با پشتیبانی تماس بگیرید."}
+                                    {booking.latest_dispute.status ===
+                                        "cancelled" &&
+                                        "اعتراض شما لغو شده است."}
+                                </p>
+
+                                {/* ============ جزئیات اعتراض ============ */}
+                                <div className="dispute-banner-details">
+                                    <div className="detail-item">
+                                        <span className="detail-label">
+                                            نوع اعتراض:
+                                        </span>
+                                        <span className="detail-value">
+                                            {getDisputeTypeLabel(
+                                                booking.latest_dispute
+                                                    .dispute_type,
+                                            )}
+                                        </span>
+                                    </div>
+
+                                    {booking.latest_dispute.refund_amount >
+                                        0 && (
+                                        <div className="detail-item success">
+                                            <span className="detail-label">
+                                                مبلغ بازگشتی:
+                                            </span>
+                                            <span className="detail-value">
+                                                {toPersianNumber(
+                                                    booking.latest_dispute.refund_amount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {booking.latest_dispute.penalty_amount >
+                                        0 && (
+                                        <div className="detail-item penalty">
+                                            <span className="detail-label">
+                                                جریمه آرایشگر:
+                                            </span>
+                                            <span className="detail-value">
+                                                {toPersianNumber(
+                                                    booking.latest_dispute.penalty_amount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {booking.latest_dispute.resolution && (
+                                        <div className="detail-item resolution">
+                                            <span className="detail-label">
+                                                پاسخ ادمین:
+                                            </span>
+                                            <span className="detail-value">
+                                                {
+                                                    booking.latest_dispute
+                                                        .resolution
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {booking.latest_dispute.response && (
+                                        <div className="detail-item response">
+                                            <span className="detail-label">
+                                                پاسخ شما:
+                                            </span>
+                                            <span className="detail-value">
+                                                {
+                                                    booking.latest_dispute
+                                                        .response
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* ============ پیوست‌ها ============ */}
+                                    {booking.latest_dispute.attachments &&
+                                        booking.latest_dispute.attachments
+                                            .length > 0 && (
+                                            <div className="detail-item attachments">
+                                                <span className="detail-label">
+                                                    <Paperclip size={12} />
+                                                    پیوست‌ها:
+                                                </span>
+                                                <div className="dispute-attachments-mini-grid">
+                                                    {booking.latest_dispute.attachments.map(
+                                                        (att, index) => (
+                                                            <a
+                                                                key={index}
+                                                                href={att.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="dispute-attachment-mini"
+                                                                title={att.name}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        att.url
+                                                                    }
+                                                                    alt={`پیوست ${
+                                                                        index +
+                                                                        1
+                                                                    }`}
+                                                                />
+                                                                <div className="attachment-mini-overlay">
+                                                                    <Eye
+                                                                        size={
+                                                                            14
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            </a>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                </div>
+
+                                {/* ============ اطلاعات اضافی ============ */}
+                                {booking.latest_dispute.status ===
+                                    "pending" && (
+                                    <div className="dispute-banner-info">
+                                        <Info size={14} />
+                                        <span>
+                                            می‌توانید تا زمان بررسی، اطلاعات
+                                            بیشتری ارسال کنید.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {booking.latest_dispute.status ===
+                                    "awaiting_response" && (
+                                    <div className="dispute-banner-warning">
+                                        <AlertCircle size={14} />
+                                        <span>
+                                            لطفاً پاسخ خود را در اسرع وقت ثبت
+                                            کنید.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* ============ نمایش تعداد اعتراضات ============ */}
+                                {booking.disputes_count > 1 && (
+                                    <div className="dispute-banner-info">
+                                        <Info size={14} />
+                                        <span>
+                                            این رزرو{" "}
+                                            {toPersianNumber(
+                                                booking.disputes_count,
+                                            )}{" "}
+                                            اعتراض دارد.
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 {/* ============ گرید اصلی ============ */}
                 <div className="booking-show-grid">
                     {/* ============ ستون راست: جزئیات رزرو ============ */}
@@ -803,6 +1233,44 @@ export default function BookingShow({ auth, booking }) {
 
                     {/* ============ ستون چپ: عملیات ============ */}
                     <div className="booking-show-sidebar">
+                        {/* در ستون عملیات (سمت چپ صفحه) */}
+                        {booking.has_disputes &&
+                            booking.latest_dispute &&
+                            booking.latest_dispute.disputed_by ===
+                                "customer" && (
+                                <div
+                                    className={`action-dispute-info status-${booking.latest_dispute.status}`}
+                                >
+                                    <AlertTriangle size={16} />
+                                    <div>
+                                        <strong>اعتراض شما</strong>
+                                        <span>
+                                            {booking.latest_dispute.status ===
+                                                "pending" && "در صف بررسی"}
+                                            {booking.latest_dispute.status ===
+                                                "investigating" &&
+                                                "در حال بررسی"}
+                                            {booking.latest_dispute.status ===
+                                                "awaiting_response" &&
+                                                "در انتظار پاسخ"}
+                                            {booking.latest_dispute.status ===
+                                                "resolved" && "تایید شده"}
+                                            {booking.latest_dispute.status ===
+                                                "rejected" && "رد شده"}
+                                            {booking.latest_dispute.status ===
+                                                "cancelled" && "لغو شده"}
+                                        </span>
+                                        {booking.disputes_count > 1 && (
+                                            <span className="disputes-count">
+                                                {toPersianNumber(
+                                                    booking.disputes_count,
+                                                )}{" "}
+                                                اعتراض
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         {/* خلاصه پرداخت */}
                         <div className="booking-show-card summary-card">
                             <div className="booking-show-card-header">
@@ -886,6 +1354,26 @@ export default function BookingShow({ auth, booking }) {
                                     >
                                         <CheckCircle size={16} />
                                         <span>تایید دریافت سرویس</span>
+                                    </button>
+                                )}
+
+                                {booking.can_dispute && (
+                                    <button
+                                        type="button"
+                                        className="action-btn dispute"
+                                        onClick={() =>
+                                            setDisputeModal({
+                                                isOpen: true,
+                                                isLoading: false,
+                                                reason: "",
+                                                disputeType: "",
+                                                errors: {},
+                                                attachments: [],
+                                            })
+                                        }
+                                    >
+                                        <AlertTriangle size={16} />
+                                        <span>اعتراض به تکمیل خدمت</span>
                                     </button>
                                 )}
 
@@ -1105,6 +1593,310 @@ export default function BookingShow({ auth, booking }) {
                 type="danger"
                 isLoading={deleteReviewModal.isLoading}
             />
+            {/* disoute modal */}
+            {disputeModal.isOpen && (
+                <div
+                    className="dispute-modal-overlay"
+                    onClick={() =>
+                        !disputeModal.isLoading && closeDisputeModal()
+                    }
+                >
+                    <div
+                        className="dispute-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* ============ هدر ============ */}
+                        <div className="dispute-modal-header">
+                            <div className="dispute-modal-icon">
+                                <AlertTriangle size={28} />
+                            </div>
+                            <h3>اعتراض به تکمیل خدمت</h3>
+                            <button
+                                type="button"
+                                className="dispute-modal-close"
+                                onClick={closeDisputeModal}
+                                disabled={disputeModal.isLoading}
+                                aria-label="بستن"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* ============ هشدار ============ */}
+                        <div className="dispute-modal-warning">
+                            <AlertCircle size={16} />
+                            <p>
+                                <strong>توجه:</strong> با ثبت اعتراض، ادمین
+                                بررسی خواهد کرد. لطفاً اطلاعات دقیق و صحیح وارد
+                                کنید. اعتراضات نادرست ممکن است منجر به محدودیت
+                                حساب شود.
+                            </p>
+                        </div>
+
+                        {/* ============ انتخاب نوع اعتراض ============ */}
+                        {/* ============ انتخاب نوع اعتراض ============ */}
+                        <div className="dispute-form-group">
+                            <label className="form-label">
+                                نوع اعتراض
+                                <span className="required">*</span>
+                            </label>
+                            <div className="dispute-type-options">
+                                {[
+                                    {
+                                        value: "not_done",
+                                        label: "خدمت انجام نشد",
+                                        icon: XCircle,
+                                    },
+                                    {
+                                        value: "incomplete",
+                                        label: "خدمت ناقص بود",
+                                        icon: Clock4,
+                                    },
+                                    {
+                                        value: "poor_quality",
+                                        label: "کیفیت پایین بود",
+                                        icon: Star,
+                                    },
+                                    {
+                                        value: "bad_behavior",
+                                        label: "رفتار نامناسب",
+                                        icon: User,
+                                    },
+                                    {
+                                        value: "other",
+                                        label: "سایر",
+                                        icon: MoreHorizontal,
+                                    },
+                                ].map((type) => {
+                                    const Icon = type.icon;
+                                    const isSelected =
+                                        disputeModal.disputeType === type.value;
+
+                                    return (
+                                        <button
+                                            key={type.value}
+                                            type="button"
+                                            className={`dispute-type-btn ${
+                                                isSelected ? "selected" : ""
+                                            }`}
+                                            onClick={() =>
+                                                setDisputeModal((prev) => ({
+                                                    ...prev,
+                                                    disputeType: type.value,
+                                                    errors: {
+                                                        ...prev.errors,
+                                                        dispute_type: null,
+                                                    },
+                                                }))
+                                            }
+                                            disabled={disputeModal.isLoading}
+                                        >
+                                            <Icon size={16} />
+                                            <span>{type.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            {disputeModal.errors.dispute_type && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>
+                                        {disputeModal.errors.dispute_type}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ توضیحات ============ */}
+                        <div className="dispute-form-group">
+                            <label className="form-label">
+                                توضیحات
+                                <span className="required">*</span>
+                            </label>
+                            <textarea
+                                className={`form-textarea ${
+                                    disputeModal.errors.reason ? "error" : ""
+                                }`}
+                                value={disputeModal.reason}
+                                onChange={(e) =>
+                                    setDisputeModal((prev) => ({
+                                        ...prev,
+                                        reason: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            reason: null,
+                                        },
+                                    }))
+                                }
+                                placeholder="لطفاً توضیح دهید چه اتفاقی افتاده است..."
+                                rows={5}
+                                maxLength={1000}
+                                disabled={disputeModal.isLoading}
+                            />
+                            <div className="char-counter">
+                                {toPersianNumber(disputeModal.reason.length)} /{" "}
+                                {toPersianNumber(1000)}
+                            </div>
+                            {disputeModal.errors.reason && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>{disputeModal.errors.reason}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ آپلود پیوست ============ */}
+                        <div className="dispute-form-group">
+                            <label className="form-label">
+                                <Paperclip size={14} />
+                                پیوست (اختیاری)
+                                <span className="form-hint">
+                                    حداکثر ۵ فایل - هر فایل تا ۲ مگابایت
+                                </span>
+                            </label>
+
+                            <div className="dispute-attachments">
+                                {/* پیش‌نمایش فایل‌های انتخاب شده */}
+                                {disputeModal.attachments &&
+                                    disputeModal.attachments.length > 0 && (
+                                        <div className="attachments-preview">
+                                            {disputeModal.attachments.map(
+                                                (attachment, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="attachment-item"
+                                                    >
+                                                        {attachment.preview ? (
+                                                            <img
+                                                                src={
+                                                                    attachment.preview
+                                                                }
+                                                                alt={`پیوست ${
+                                                                    index + 1
+                                                                }`}
+                                                                className="attachment-image"
+                                                            />
+                                                        ) : (
+                                                            <div className="attachment-icon">
+                                                                <FileText
+                                                                    size={24}
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                        <div className="attachment-info">
+                                                            <span className="attachment-name">
+                                                                {
+                                                                    attachment
+                                                                        .file
+                                                                        .name
+                                                                }
+                                                            </span>
+                                                            <span className="attachment-size">
+                                                                {(
+                                                                    attachment
+                                                                        .file
+                                                                        .size /
+                                                                    1024
+                                                                ).toFixed(
+                                                                    1,
+                                                                )}{" "}
+                                                                KB
+                                                            </span>
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            className="attachment-remove"
+                                                            onClick={() =>
+                                                                handleRemoveAttachment(
+                                                                    index,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                disputeModal.isLoading
+                                                            }
+                                                            title="حذف"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+
+                                {/* دکمه آپلود */}
+                                {disputeModal.attachments &&
+                                    disputeModal.attachments.length < 5 && (
+                                        <label className="attachment-upload-btn">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                onChange={
+                                                    handleAttachmentChange
+                                                }
+                                                disabled={
+                                                    disputeModal.isLoading
+                                                }
+                                                style={{ display: "none" }}
+                                            />
+                                            <Upload size={18} />
+                                            <span>افزودن عکس</span>
+                                            <span className="upload-count">
+                                                {toPersianNumber(
+                                                    disputeModal.attachments
+                                                        .length,
+                                                )}{" "}
+                                                / ۵
+                                            </span>
+                                        </label>
+                                    )}
+                            </div>
+
+                            {disputeModal.errors.attachments && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>
+                                        {disputeModal.errors.attachments}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ دکمه‌ها ============ */}
+                        <div className="dispute-modal-actions">
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                onClick={closeDisputeModal}
+                                disabled={disputeModal.isLoading}
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-confirm"
+                                onClick={handleDispute}
+                                disabled={disputeModal.isLoading}
+                            >
+                                {disputeModal.isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال ارسال...
+                                    </>
+                                ) : (
+                                    <>
+                                        <AlertTriangle size={16} />
+                                        ثبت اعتراض
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </PublicLayout>
     );
 }

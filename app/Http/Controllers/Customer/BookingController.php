@@ -4,17 +4,22 @@ namespace App\Http\Controllers\Customer;
 
 use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\DisputedBy;
+use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\PaymentStatus;
 use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Dispute;
 use App\Models\Payment;
 use App\Models\Review;
 use App\Models\TimeSlot;
+use App\Models\User;
 use App\Notifications\BookingCompletedByCustomer;
 use App\Notifications\BookingCompletedByCustomerForAdmin;
 use App\Notifications\BookingDisputeByCustomer;
+use App\Notifications\BookingDisputedByCustomer;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -316,12 +321,16 @@ class BookingController extends Controller
     public function show(Booking $booking)
     {
 
-        // ============ بررسی مالکیت ============
+        // ============================================
+        // ۱. بررسی مالکیت
+        // ============================================
         if ($booking->user_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'این رزرو متعلق به شما نیست.');
         }
 
-        // ============ بارگذاری روابط ============
+        // ============================================
+        // ۲. بارگذاری روابط
+        // ============================================
         $booking->load([
             'barber' => function ($q) {
                 $q->select('id', 'name', 'avatar', 'phone', 'slug', 'specialty', 'city', 'address');
@@ -333,110 +342,197 @@ class BookingController extends Controller
                 $q->select('id', 'date', 'start_time', 'end_time');
             },
             'payment',
+            'review',
+            // ============ بارگذاری اعتراضات ============
+            'disputes' => function ($q) {
+                $q->with('disputedByUser:id,name,avatar')
+                    ->latest();
+            },
         ]);
 
-        // ============ بررسی نظر ============
-        $review = Review::where('user_id', $booking->user_id)
-            ->where('booking_id', $booking->id)
-            ->first();
+        // ============================================
+        // ۳. بررسی نظر
+        // ============================================
+        $review = $booking->review;
 
-        // ============ محاسبه دسترسی‌ها ============
+        // ============================================
+        // ۴. بررسی TimeSlot
+        // ============================================
+        $timeSlot = $booking->timeSlot;
+        $bookingDate = $timeSlot?->date;
+        $slotDateTime = $timeSlot
+            ? Carbon::parse(
+                Carbon::parse($timeSlot->date)->format('Y-m-d') . ' ' . $timeSlot->start_time
+            )
+            : null;
+
+        $isPast = $slotDateTime && $slotDateTime->isPast();
+
+        // ============================================
+        // ۵. محاسبه دسترسی‌ها
+        // ============================================
         $canCancel = false;
         $canPay = false;
         $canReview = false;
-        $expiresAt = null;
-        $isExpired = false;
+        $canDispute = false;
         $canEditReview = false;
         $canDeleteReview = false;
-        $canCustomerComplete = false;
+        $expiresAt = null;
+        $isExpired = false;
+        $disputeDaysRemaining = null;
 
-
-        if ($review && $review->status->value === ReviewStatus::pending->value) {
-            $canEditReview = true;
-            $canDeleteReview = true;
-        }
-
-
-
-        // ============ وضعیت Pending (در انتظار پرداخت) ============
+        // ============ وضعیت Pending ============
         if ($booking->status->value === BookingStatus::pending->value) {
-            $expiresAt = $booking->created_at->addMinutes(15);
+            $expiresAt = $booking->created_at->copy()->addMinutes(15);
             $isExpired = now()->greaterThan($expiresAt);
 
-
-
             if (!$isExpired) {
-                // هنوز زمان دارد: می‌تواند پرداخت کند و لغو کند
                 $canPay = true;
                 $canCancel = true;
             } else {
-                // منقضی شده: لغو خودکار
+                // لغو خودکار
                 $booking->update([
                     'status' => BookingStatus::cancelled->value,
                     'cancelled_at' => now(),
+                    'cancelled_by' => BookingCompletedBy::system->value,
                     'notes' => ($booking->notes ? $booking->notes . "\n" : '') .
                         'لغو خودکار به دلیل عدم پرداخت در ۱۵ دقیقه',
                 ]);
 
-                if ($booking->timeSlot) {
-                    $booking->timeSlot->update([
+                if ($timeSlot) {
+                    $timeSlot->update([
                         'status' => TimeSlotStatus::available->value,
                         'booked_by' => null,
                     ]);
                 }
 
-                // Refresh برای اعمال تغییرات
                 $booking->refresh();
                 $booking->load(['timeSlot', 'payment']);
             }
         }
 
-        // ============ وضعیت Confirmed (تایید شده) ============
+        // ============ وضعیت Confirmed ============
         if ($booking->status->value === BookingStatus::confirmed->value) {
-            if ($booking->timeSlot) {
-                $timSlotDate = Carbon::parse($booking->timeSlot->date)->format('Y-m-d');
-                $slotDateTime = Carbon::parse(
-                    $timSlotDate . ' ' . $booking->timeSlot->start_time
-                );
-                $now = Carbon::now();
-                // امکان لغو: نوبت در آینده باشد و حداقل ۲ ساعت فاصله داشته باشد
+            if ($slotDateTime) {
                 $canCancel = $slotDateTime->isFuture()
-                    && $now->diffInHours($slotDateTime) >= 2;
-
-                // امکان تکمیل: حداقل ۲ ساعت از زمان نوبت گذشته باشد
-                $canCustomerComplete = $slotDateTime->isPast()
-                    && $slotDateTime->diffInHours($now) >= 2;
+                    && $slotDateTime->diffInHours(now()) >= 2;
             }
         }
 
-        // ============ وضعیت Completed (تکمیل شده) ============
-        if ($booking->status->value === BookingStatus::completed->value && !$review) {
-            $canReview = true;
+        // ============ وضعیت Completed ============
+        if ($booking->status->value === BookingStatus::completed->value) {
+            // ============ امکان ثبت نظر ============
+            if (!$review) {
+                $canReview = true;
+            }
+
+            // ============ امکان ویرایش/حذف نظر ============
+            if ($review && $review->status->value === ReviewStatus::pending->value) {
+                $canEditReview = true;
+                $canDeleteReview = true;
+            }
+
+            // ============ امکان اعتراض ============
+            if (
+                $booking->completed_by?->value !== BookingCompletedBy::customer->value
+                && $booking->completed_at
+            ) {
+
+                $daysSinceCompletion = $booking->completed_at->diffInDays(now());
+                $daysRemaining = 7 - $daysSinceCompletion;
+
+                // ============ بررسی اعتراض فعال مشتری ============
+                $activeCustomerDispute = $booking->disputes()
+                    ->where('disputed_by_user_id', auth()->id())
+                    ->whereIn('status', [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value])
+                    ->exists();
+
+                if (!$activeCustomerDispute && $daysRemaining > 0) {
+                    $canDispute = true;
+                    $disputeDaysRemaining = $daysRemaining;
+                }
+            }
         }
 
-        // ============ بررسی گذشته بودن ============
-        $isPast = $booking->timeSlot &&
-            Carbon::parse($booking->timeSlot->date)->isPast();
+        // ============================================
+        // ۶. آماده‌سازی اطلاعات اعتراضات
+        // ============================================
+        $disputes = $booking->disputes->map(function ($dispute) {
+            return [
+                'id' => $dispute->id,
+                'disputed_by' => $dispute->disputed_by,
+                'disputed_by_user' => $dispute->disputedByUser ? [
+                    'id' => $dispute->disputedByUser->id,
+                    'name' => $dispute->disputedByUser->name,
+                    'avatar' => $dispute->disputedByUser->avatar,
+                    'thumbnail' => $dispute->disputedByUser->avatar(),
+                ] : null,
+                'dispute_type' => $dispute->dispute_type,
+                'reason' => $dispute->reason,
+                'status' => $dispute->status,
+                'response' => $dispute->response,
+                'responded_at' => $dispute->responded_at,
+                'resolution' => $dispute->resolution,
+                'resolved_at' => $dispute->resolved_at,
+                'refund_amount' => (float) $dispute->refund_amount,
+                'penalty_amount' => (float) $dispute->penalty_amount,
 
-        // ============ ارسال به React ============
+                // ============ پیوست‌ها (بخش جدید) ============
+                'attachments' => collect($dispute->attachments ?? [])
+                    ->map(function ($path) {
+                        return [
+                            'path' => $path,
+                            'url' => asset('storage/' . $path),
+                            'name' => basename($path),
+                        ];
+                    })
+                    ->toArray(),
+
+                'created_at' => $dispute->created_at,
+                'updated_at' => $dispute->updated_at,
+            ];
+        })->toArray();
+
+        // ============ آخرین اعتراض (برای نمایش) ============
+        $latestDispute = !empty($disputes) ? $disputes[0] : null;
+
+        // ============================================
+        // ۷. ارسال به React
+        // ============================================
         return Inertia::render('Customer/Bookings/Show', [
             'booking' => [
+                // ============ اطلاعات پایه ============
                 'id' => $booking->id,
-                'status' => $booking->status,
+                'status' => $booking->status->value,
                 'amount' => (float) $booking->amount,
                 'notes' => $booking->notes,
                 'created_at' => $booking->created_at,
                 'confirmed_at' => $booking->confirmed_at,
                 'cancelled_at' => $booking->cancelled_at,
-                'expires_at' => $expiresAt?->toIso8601String(), // ← برای شمارش معکوس
+                'cancelled_by' => $booking->cancelled_by?->value,
+                'completed_at' => $booking->completed_at,
+                'completed_by' => $booking->completed_by?->value,
+                'auto_completed' => (bool) $booking->auto_completed,
+                'expires_at' => $expiresAt?->timestamp * 1000,
                 'is_past' => $isPast,
                 'is_expired' => $isExpired,
 
                 // ============ دسترسی‌ها ============
-                'can_cancel' => $canCancel,
                 'can_pay' => $canPay,
+                'can_cancel' => $canCancel,
                 'can_review' => $canReview,
-                'can_customer_complete' => $canCustomerComplete,
+                'can_edit_review' => $canEditReview,
+                'can_delete_review' => $canDeleteReview,
+                'can_dispute' => $canDispute,
+                'dispute_days_remaining' => $disputeDaysRemaining,
+
+                // ============================================
+                // اطلاعات اعتراض (بخش جدید)
+                // ============================================
+                'has_disputes' => count($disputes) > 0,
+                'disputes_count' => count($disputes),
+                'disputes' => $disputes, // ← آرایه‌ای از تمام اعتراضات
+                'latest_dispute' => $latestDispute, // ← آخرین اعتراض
 
                 // ============ اطلاعات آرایشگر ============
                 'barber' => $booking->barber ? [
@@ -464,10 +560,9 @@ class BookingController extends Controller
                 ] : null,
 
                 // ============ اطلاعات زمان ============
-                'date' => $booking->timeSlot?->date,
-                'start_time' => $booking->timeSlot?->start_time,
-                'end_time' => $booking->timeSlot?->end_time,
-
+                'date' => $bookingDate,
+                'start_time' => $timeSlot?->start_time,
+                'end_time' => $timeSlot?->end_time,
 
                 // ============ اطلاعات پرداخت ============
                 'payment' => $booking->payment ? [
@@ -488,13 +583,10 @@ class BookingController extends Controller
                     'created_at' => $review->created_at,
                     'updated_at' => $review->updated_at,
                     'is_edited' => $review->updated_at->gt($review->created_at),
-                    'can_edit' => $canEditReview,
-                    'can_delete' => $canDeleteReview,
                 ] : null,
             ],
         ]);
     }
-
     /**
      * لغو رزرو توسط مشتری
      */
@@ -707,52 +799,128 @@ class BookingController extends Controller
 
 
 
+
+
     public function dispute(Request $request, Booking $booking)
     {
-        if ($booking->barber_id !== auth()->id()) {
+
+        // بررسی مالکیت
+        if ($booking->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // فقط برای رزروهای completed_by=customer
-        if ($booking->completed_by !== BookingCompletedBy::customer->value) {
-            StickyAlert::alert('این رزرو قابل اعتراض نیست.', 'error');
+        // بررسی وضعیت
+        if ($booking->status->value !== BookingStatus::completed->value) {
+            StickyAlert::alert('فقط رزروهای تکمیل شده قابل اعتراض هستند.', 'error');
             return redirect()->back();
         }
 
-        // فقط تا ۲۴ ساعت بعد از تکمیل
-        if ($booking->completed_at->diffInHours(now()) > 24) {
-            StickyAlert::alert('مهلت اعتراض گذشته است.', 'error');
+        // بررسی عدم تکمیل توسط خود مشتری
+        if ($booking->completed_by->value === BookingCompletedBy::customer->value) {
+            StickyAlert::alert('شما خودتان این رزرو را تکمیل کرده‌اید.', 'error');
             return redirect()->back();
         }
 
+        // ============ بررسی اعتراض فعال ============
+        $activeDispute = $booking->activeDispute()
+            ->where('disputed_by_user_id', auth()->id())
+            ->first();
+
+        if ($activeDispute) {
+            StickyAlert::alert('شما یک اعتراض فعال برای این رزرو دارید.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ بررسی مهلت ============
+        if (!$booking->completed_at) {
+            StickyAlert::alert('اطلاعات تکمیل یافت نشد.', 'error');
+            return redirect()->back();
+        }
+
+        $daysSinceCompletion = $booking->completed_at->diffInDays(now());
+        if ($daysSinceCompletion > 7) {
+            StickyAlert::alert('مهلت اعتراض (۷ روز) گذشته است.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ اعتبارسنجی ============
         $validated = $request->validate([
-            'reason' => 'required|string|min:10|max:500',
+            'reason' => 'required|string|min:10|max:1000',
+            'dispute_type' => 'required|in:not_done,incomplete,poor_quality,bad_behavior,other',
+            'attachments' => 'nullable|array|max:5',
+            'attachments.*' => 'image|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $booking->update([
-                'is_disputed' => true,
-                'disputed_at' => now(),
-                'dispute_reason' => $validated['reason'],
+
+            // ============ آپلود پیوست‌ها ============
+            $attachmentPaths = [];
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $attachmentPaths[] = $file->store('disputes', 'public');
+                }
+            }
+
+            // ============ ثبت اعتراض در جدول جدید ============
+            $dispute = Dispute::create([
+                'booking_id' => $booking->id,
+                'disputed_by_user_id' => auth()->id(),
+                'disputed_by' => DisputedBy::customer->value,
+                'dispute_type' => $validated['dispute_type'],
+                'reason' => $validated['reason'],
+                // 'status' => 'pending',
+                'attachments' => $attachmentPaths,
+                'ip_address' => request()->ip(),
             ]);
 
-            \App\Models\User::role(['سوپر ادمین'])->get()
-                ->each(function ($admin) use ($booking) {
-                    $admin->notify(
-                        new BookingDisputeByCustomer($booking)
-                    );
-                });
+            // ============ Notification ها ============
+            // به ادمین
+            try {
+                User::role(['سوپر ادمین'])
+                    ->get()
+                    ->each(function ($admin) use ($dispute) {
+                        $admin->notify(new BookingDisputeByCustomer($dispute->booking));
+                    });
+            } catch (\Exception $e) {
+                Log::warning('Dispute notification failed', [
+                    'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+
+            // به آرایشگر
+            try {
+                $booking->barber?->notify(
+                    new BookingDisputedByCustomer($dispute->booking)
+                );
+            } catch (\Exception $e) {
+                Log::warning('Barber notification failed', [
+                    'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ============ لاگ ============
+            (new \App\Models\Log())->storeLog(
+                $booking->id,
+                'customer_dispute_booking',
+                "اعتراض مشتری به رزرو #{$booking->id} - نوع: {$validated['dispute_type']}"
+            );
 
             DB::commit();
 
-            StickyAlert::alert('اعتراض شما ثبت شد. ادمین بررسی خواهد کرد.', 'error');
+            StickyAlert::alert('اعتراض شما ثبت شد. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد.', 'success');
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-
-            StickyAlert::alert('خطا در ثبت اعتراض.', 'error');
+            Log::error('Dispute failed', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+            ]);
+            StickyAlert::alert('خطا در ثبت اعتراض.', 'success');
             return redirect()->back();
         }
     }
