@@ -39,6 +39,7 @@ import {
     Paperclip,
     Upload,
     Eye,
+    MessageSquare,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -209,6 +210,13 @@ function CountdownTimer({ expiresAt }) {
 }
 
 export default function BookingShow({ auth, booking }) {
+    // ============ State حذف اعتراض ============
+    const [deleteDisputeModal, setDeleteDisputeModal] = useState({
+        isOpen: false,
+        isLoading: false,
+        dispute: null,
+    });
+    //
     const [completeModal, setCompleteModal] = useState({
         isOpen: false,
         isLoading: false,
@@ -494,6 +502,35 @@ export default function BookingShow({ auth, booking }) {
             };
         });
     };
+
+    // ============================================
+    // حذف اعتراض
+    // ============================================
+    const handleDeleteDispute = () => {
+        if (!deleteDisputeModal.dispute) return;
+
+        setDeleteDisputeModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.delete(
+            `/customer/disputes/${deleteDisputeModal.dispute.id}/destroy`,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDisputeModal({
+                        isOpen: false,
+                        isLoading: false,
+                        dispute: null,
+                    });
+                },
+                onError: () => {
+                    setDeleteDisputeModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                    }));
+                },
+            },
+        );
+    };
     return (
         <PublicLayout>
             <Head title={`جزئیات رزرو #${booking.id}`} />
@@ -661,6 +698,14 @@ export default function BookingShow({ auth, booking }) {
                                 <div className="dispute-banner-details">
                                     <div className="detail-item">
                                         <span className="detail-label">
+                                            متن اعتراض:
+                                        </span>
+                                        <span className="detail-value">
+                                            {booking.latest_dispute.reason}
+                                        </span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <span className="detail-label">
                                             نوع اعتراض:
                                         </span>
                                         <span className="detail-value">
@@ -809,6 +854,87 @@ export default function BookingShow({ auth, booking }) {
                                         </span>
                                     </div>
                                 )}
+
+                                {/* ============ دکمه‌های عملیات اعتراض ============ */}
+                                <div className="dispute-banner-actions">
+                                    {/* ویرایش */}
+                                    {booking.latest_dispute.can_edit && (
+                                        <Link
+                                            href={`/customer/disputes/${booking.latest_dispute.id}/edit`}
+                                            className="dispute-action-btn edit"
+                                            title="ویرایش اعتراض"
+                                        >
+                                            <Edit3 size={14} />
+                                            <span>ویرایش</span>
+                                            {/* {booking.latest_dispute
+                                                .edit_hours_remaining && (
+                                                <span className="time-remaining">
+                                                    {toPersianNumber(
+                                                        booking.latest_dispute
+                                                            .edit_hours_remaining,
+                                                    )}{" "}
+                                                    ساعت
+                                                </span>
+                                            )} */}
+                                        </Link>
+                                    )}
+
+                                    {/* حذف */}
+                                    {booking.latest_dispute.can_delete && (
+                                        <button
+                                            type="button"
+                                            className="dispute-action-btn delete"
+                                            onClick={() =>
+                                                setDeleteDisputeModal({
+                                                    isOpen: true,
+                                                    isLoading: false,
+                                                    dispute:
+                                                        booking.latest_dispute,
+                                                })
+                                            }
+                                            title="حذف اعتراض"
+                                        >
+                                            <Trash2 size={14} />
+                                            <span>حذف</span>
+                                        </button>
+                                    )}
+
+                                    {/* پاسخ */}
+                                    {booking.latest_dispute.can_respond && (
+                                        <button
+                                            type="button"
+                                            className="dispute-action-btn respond"
+                                            onClick={() =>
+                                                setResponseModal({
+                                                    isOpen: true,
+                                                    isLoading: false,
+                                                    dispute:
+                                                        booking.latest_dispute,
+                                                })
+                                            }
+                                            title="ثبت پاسخ"
+                                        >
+                                            <MessageSquare size={14} />
+                                            <span>ثبت پاسخ</span>
+                                        </button>
+                                    )}
+
+                                    {/* مشاهده جزئیات */}
+                                    {/* <button
+                                        type="button"
+                                        className="dispute-action-btn view"
+                                        onClick={() =>
+                                            setDetailsModal({
+                                                isOpen: true,
+                                                dispute: booking.latest_dispute,
+                                            })
+                                        }
+                                        title="مشاهده جزئیات"
+                                    >
+                                        <Eye size={14} />
+                                        <span>جزئیات</span>
+                                    </button> */}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -1082,6 +1208,18 @@ export default function BookingShow({ auth, booking }) {
 
                                     <div className="review-header-info">
                                         <h2 className="card-title">نظر شما</h2>
+
+                                        {/* ============ برچسب اعتراض ============ */}
+                                        {booking.review.has_dispute && (
+                                            <div className="review-dispute-label">
+                                                <AlertTriangle size={14} />
+                                                <span>
+                                                    این نظر توسط مشتری‌ای ثبت
+                                                    شده که به این رزرو اعتراض
+                                                    دارد.
+                                                </span>
+                                            </div>
+                                        )}
 
                                         {/* ============ Badge وضعیت ============ */}
                                         {(() => {
@@ -1897,6 +2035,42 @@ export default function BookingShow({ auth, booking }) {
                     </div>
                 </div>
             )}
+
+            {/* ============ Modal حذف اعتراض ============ */}
+            <ConfirmModal
+                isOpen={deleteDisputeModal.isOpen}
+                onClose={() =>
+                    !deleteDisputeModal.isLoading &&
+                    setDeleteDisputeModal({
+                        isOpen: false,
+                        isLoading: false,
+                        dispute: null,
+                    })
+                }
+                onConfirm={handleDeleteDispute}
+                title="حذف اعتراض"
+                message={
+                    deleteDisputeModal.dispute
+                        ? `آیا از حذف اعتراض خود مطمئن هستید؟ این عملیات قابل بازگشت نیست و اعتراض شما به طور کامل از سیستم حذف می‌شود.${
+                              deleteDisputeModal.dispute.reason
+                                  ? `\n\nمتن اعتراض: "${deleteDisputeModal.dispute.reason.substring(
+                                        0,
+                                        100,
+                                    )}${
+                                        deleteDisputeModal.dispute.reason
+                                            .length > 100
+                                            ? "..."
+                                            : ""
+                                    }"`
+                                  : ""
+                          }`
+                        : ""
+                }
+                confirmText="بله، حذف کن"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={deleteDisputeModal.isLoading}
+            />
         </PublicLayout>
     );
 }

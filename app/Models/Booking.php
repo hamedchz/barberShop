@@ -76,7 +76,7 @@ class Booking extends Model
     }
     public function review()
     {
-        return $this->belongsTo(Review::class);
+        return $this->hasOne(Review::class, 'booking_id');
     }
 
 
@@ -107,5 +107,44 @@ class Booking extends Model
     {
         return $this->hasMany(Dispute::class)
             ->where('disputed_by', DisputedBy::barber->value);
+    }
+
+     // ============================================
+    // Accessors
+    // ============================================
+
+    /**
+     * بررسی وجود اعتراض
+     */
+    public function getHasDisputesAttribute(): bool
+    {
+        return $this->disputes_count > 0
+            ?? $this->disputes()->exists();
+    }
+
+    /**
+     * تعداد اعتراضات
+     */
+    public function getDisputesCountAttribute(): int
+    {
+        return $this->disputes()->count();
+    }
+
+    /**
+     * آخرین اعتراض
+     */
+    public function getLatestDisputeAttribute()
+    {
+        return $this->disputes()->latest()->first();
+    }
+
+    /**
+     * بررسی وجود اعتراض فعال
+     */
+    public function getHasActiveDisputeAttribute(): bool
+    {
+        return $this->disputes()
+            ->whereIn('status', ['pending', 'investigating', 'awaiting_response'])
+            ->exists();
     }
 }

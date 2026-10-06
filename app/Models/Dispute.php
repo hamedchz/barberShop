@@ -29,6 +29,9 @@ class Dispute extends Model
         'attachments',
         'ip_address',
         'admin_notes',
+        'edited_at',
+        'edit_count',
+        'can_be_edited'
     ];
 
     protected $casts = [
@@ -41,7 +44,9 @@ class Dispute extends Model
         'updated_at' => 'datetime',
         'status' => DisputedStatus::class,
         'dispute_type' => DisputeTypes::class,
-
+        'edited_at' => 'datetime',
+        'edit_count' => 'integer',
+        'can_be_edited' => 'bool'
         // 'is_disputed' => 'bool',
         // 'dispute_status' => DisputedStatus::class,
         // 'dispute_resolved_at' => 'datetime',

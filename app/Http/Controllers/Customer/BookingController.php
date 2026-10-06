@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -381,6 +382,8 @@ class BookingController extends Controller
         $isExpired = false;
         $disputeDaysRemaining = null;
 
+
+
         // ============ وضعیت Pending ============
         if ($booking->status->value === BookingStatus::pending->value) {
             $expiresAt = $booking->created_at->copy()->addMinutes(15);
@@ -416,6 +419,14 @@ class BookingController extends Controller
             if ($slotDateTime) {
                 $canCancel = $slotDateTime->isFuture()
                     && $slotDateTime->diffInHours(now()) >= 2;
+            }
+        }
+
+        $reviewHasDispute = false;
+        if ($review && $booking->has_disputes) {
+            // اگر نظر بعد از اعتراض ثبت شده باشد
+            if ($review->created_at->gt($booking->latest_dispute->created_at)) {
+                $reviewHasDispute = true;
             }
         }
 
@@ -458,38 +469,58 @@ class BookingController extends Controller
         // ۶. آماده‌سازی اطلاعات اعتراضات
         // ============================================
         $disputes = $booking->disputes->map(function ($dispute) {
+            // ============ بررسی امکان ویرایش ============
+            $canEditDispute = false;
+            $canDeleteDispute = false;
+            $canRespondDispute = false;
+            $editHoursRemaining = null;
+            if ($dispute->disputed_by_user_id === auth()->id()) {
+                // ویرایش/حذف فقط در وضعیت pending و تا ۲ ساعت
+                if ($dispute->status->value === DisputedStatus::pending->value) {
+                    $hoursSinceCreation = $dispute->created_at->diffInHours(now());
+                    $hoursRemaining = 2 - $hoursSinceCreation;
+
+                    if ($hoursRemaining > 0) {
+                        $canEditDispute = true;
+                        $canDeleteDispute = true;
+                        $editHoursRemaining = $hoursRemaining;
+                    }
+                }
+
+                // پاسخ فقط در وضعیت awaiting_response
+                if ($dispute->status->value === DisputedStatus::awaitingResponse->value) {
+                    $canRespondDispute = true;
+                }
+            }
             return [
                 'id' => $dispute->id,
                 'disputed_by' => $dispute->disputed_by,
-                'disputed_by_user' => $dispute->disputedByUser ? [
-                    'id' => $dispute->disputedByUser->id,
-                    'name' => $dispute->disputedByUser->name,
-                    'avatar' => $dispute->disputedByUser->avatar,
-                    'thumbnail' => $dispute->disputedByUser->avatar(),
-                ] : null,
                 'dispute_type' => $dispute->dispute_type,
                 'reason' => $dispute->reason,
-                'status' => $dispute->status,
+                'status' => $dispute->status->value,
                 'response' => $dispute->response,
                 'responded_at' => $dispute->responded_at,
                 'resolution' => $dispute->resolution,
                 'resolved_at' => $dispute->resolved_at,
                 'refund_amount' => (float) $dispute->refund_amount,
                 'penalty_amount' => (float) $dispute->penalty_amount,
-
-                // ============ پیوست‌ها (بخش جدید) ============
-                'attachments' => collect($dispute->attachments ?? [])
-                    ->map(function ($path) {
-                        return [
-                            'path' => $path,
-                            'url' => asset('storage/' . $path),
-                            'name' => basename($path),
-                        ];
-                    })
-                    ->toArray(),
-
+                'edited_at' => $dispute->edited_at,
+                'edit_count' => $dispute->edit_count,
+                'attachments' => collect($dispute->attachments ?? [])->map(
+                    fn($path) => [
+                        'path' => $path,
+                        'url' => asset('storage/' . $path),
+                        'name' => basename($path),
+                    ]
+                )->toArray(),
                 'created_at' => $dispute->created_at,
                 'updated_at' => $dispute->updated_at,
+
+                // ============ دسترسی‌ها ============
+                'can_edit' => $canEditDispute,
+                'can_delete' => $canDeleteDispute,
+                'can_respond' => $canRespondDispute,
+                'edit_hours_remaining' => $editHoursRemaining,
             ];
         })->toArray();
 
@@ -583,10 +614,14 @@ class BookingController extends Controller
                     'created_at' => $review->created_at,
                     'updated_at' => $review->updated_at,
                     'is_edited' => $review->updated_at->gt($review->created_at),
+                    'has_dispute' => $reviewHasDispute,
+                    'dispute_id' => $reviewHasDispute ? $booking->latest_dispute->id : null,
                 ] : null,
             ],
         ]);
     }
+
+
     /**
      * لغو رزرو توسط مشتری
      */
