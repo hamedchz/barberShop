@@ -1,25 +1,232 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Barber;
 
+use App\Enums\Casts\BookingCompletedBy;
+use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\DisputedBy;
-use App\Http\Controllers\Controller;
-use App\Notifications\DisputeEditedByCustomer;
-use Illuminate\Http\Request;
 use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\DisputeTypes;
+use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Dispute;
+use App\Models\Log;
 use App\Models\User;
-use App\Notifications\DisputeRespondedByCustomer;
+use App\Notifications\BookingDisputeByBarber;
+use App\Notifications\BookingDisputedByBarber;
+use App\Notifications\DisputeEditedByBarber;
+use App\Notifications\DisputeRespondedByBarber;
+use App\Notifications\DisputeRespondedForCustomer;
 use App\Supports\StickyAlert;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class DisputeController extends Controller
 {
+    /**
+     * ثبت اعتراض آرایشگر
+     */
+    public function store(Request $request, Booking $booking)
+    {
+        // ============================================
+        // ۱. بررسی مالکیت
+        // ============================================
+        if ($booking->barber_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // ============================================
+        // ۲. بررسی وضعیت رزرو
+        // ============================================
+        if ($booking->status->value !== BookingStatus::completed->value) {
+            StickyAlert::alert(
+                'فقط برای رزروهای تکمیل شده می‌توانید اعتراض کنید.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============================================
+        // ۳. بررسی عدم تکمیل توسط خود آرایشگر
+        // ============================================
+        if ($booking->completed_by?->value === BookingCompletedBy::barber->value) {
+            StickyAlert::alert(
+                'شما خودتان این رزرو را تکمیل کرده‌اید.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============================================
+        // ۴. بررسی اعتراض فعال قبلی
+        // ============================================
+        $activeDispute = $booking->disputes()
+            ->where('disputed_by_user_id', auth()->id())
+            ->whereIn('status', [
+                DisputedStatus::pending->value,
+                DisputedStatus::investigating->value,
+                DisputedStatus::awaitingResponse->value,
+            ])
+            ->exists();
+
+        if ($activeDispute) {
+            StickyAlert::alert(
+                'شما یک اعتراض فعال برای این رزرو دارید.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============================================
+        // ۵. بررسی مهلت (۲۴ ساعت)
+        // ============================================
+        $completedAt = $booking->completed_at ?? $booking->updated_at;
+        $deadline = $completedAt->copy()->addHours(24);
+
+        if (now()->greaterThan($deadline)) {
+            StickyAlert::alert(
+                'مهلت اعتراض آرایشگر (۲۴ ساعت) گذشته است.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============================================
+        // ۶. لیست مجاز برای آرایشگر
+        // ============================================
+        $allowedTypes = [
+            'customer_not_present',
+            'customer_rude',
+            'false_review',
+            'customer_left_early',
+            'customer_damaged',
+            'other',
+        ];
+
+        // ============================================
+        // ۷. اعتبارسنجی
+        // ============================================
+        $validated = $request->validate([
+            'dispute_type' => [
+                'required',
+                'string',
+                Rule::in($allowedTypes),
+            ],
+            'reason' => 'required|string|min:10|max:1000',
+            'attachments' => 'nullable|array|max:5',
+            'attachments.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+        ], [
+            'dispute_type.required' => 'لطفاً نوع اعتراض را انتخاب کنید.',
+            'dispute_type.in' => 'نوع اعتراض معتبر نیست.',
+            'reason.required' => 'لطفاً دلیل اعتراض را وارد کنید.',
+            'reason.min' => 'دلیل باید حداقل ۱۰ کاراکتر باشد.',
+            'reason.max' => 'دلیل نباید بیشتر از ۱۰۰۰ کاراکتر باشد.',
+            'attachments.max' => 'حداکثر ۵ فایل می‌توانید آپلود کنید.',
+            'attachments.*.image' => 'فایل باید تصویر باشد.',
+            'attachments.*.max' => 'حجم هر تصویر نباید بیشتر از ۲ مگابایت باشد.',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // ============================================
+            // ۸. آپلود پیوست‌ها
+            // ============================================
+
+            $attachmentPaths = [];
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $attachmentPaths[] = $file->store('disputes', 'public');
+                }
+            }
+
+            // ============================================
+            // ۹. ثبت اعتراض
+            // ============================================
+            $dispute = Dispute::create([
+                'booking_id' => $booking->id,
+                'disputed_by_user_id' => auth()->id(),
+                'disputed_by' => DisputedBy::barber->value,
+                'dispute_type' => $validated['dispute_type'],
+                'reason' => $validated['reason'],
+                'status' => 'pending',
+                'attachments' => $attachmentPaths,
+                'ip_address' => request()->ip(),
+            ]);
+
+            // ============================================
+            // ۱۰. Notification به ادمین
+            // ============================================
+            try {
+                User::role(['سوپر ادمین'])
+                    ->get()
+                    ->each(function ($admin) use ($dispute) {
+                        $admin->notify(
+                            new BookingDisputeByBarber($dispute->booking)
+                        );
+                    });
+            } catch (\Exception $e) {
+                Log::warning('Dispute notification to admin failed', [
+                    'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ============================================
+            // ۱۱. Notification به آرایشگر
+            // ============================================
+            try {
+                $booking->user?->notify(
+                    new BookingDisputedByBarber($dispute)
+                );
+            } catch (\Exception $e) {
+                Log::warning('Dispute notification to barber failed', [
+                    'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ============================================
+            // ۱۲. لاگ
+            // ============================================
+            (new Log())->storeLog(
+                $booking->id,
+                'barber_dispute_booking',
+                "اعتراض آرایشگر به رزرو #{$booking->id} - نوع: {$validated['dispute_type']}"
+            );
+
+            DB::commit();
+
+            StickyAlert::alert(
+                'اعتراض شما ثبت شد. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد.',
+                'success'
+            );
+
+            return redirect()->route('barber.bookings.show', $booking->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            FacadesLog::error('Barber dispute failed', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            StickyAlert::alert(
+                'خطا در ثبت اعتراض. لطفاً دوباره تلاش کنید.',
+                'error'
+            );
+            return back();
+        }
+    }
+
+    /**
+     * ویرایش اعتراض آرایشگر
+     */
     public function edit(Dispute $dispute)
     {
 
@@ -52,7 +259,7 @@ class DisputeController extends Controller
         $dispute->load([
             'booking' => function ($q) {
                 $q->with([
-                    'barber:id,name,avatar,slug,specialty',
+                    'user:id,name,avatar,slug',
                     'service:id,name,image,duration,price',
                     'timeSlot:id,date,start_time,end_time',
                 ]);
@@ -61,11 +268,12 @@ class DisputeController extends Controller
 
         $booking = $dispute->booking;
 
-        return Inertia::render('Customer/Disputes/Edit', [
+        return Inertia::render('Barber/Disputes/Edit', [
             'dispute' => [
                 'id' => $dispute->id,
                 'booking_id' => $dispute->booking_id,
-                'dispute_type' => $dispute->dispute_type,
+                'dispute_type' => $dispute->dispute_type->value,
+                'disputed_by' => $dispute->disputed_by->value,
                 'reason' => $dispute->reason,
                 'status' => $dispute->status->value,
                 'edit_count' => $dispute->edit_count,
@@ -89,13 +297,12 @@ class DisputeController extends Controller
                 'end_time' => $booking->timeSlot?->end_time,
                 'amount' => (float) $booking->amount,
 
-                'barber' => $booking->barber ? [
-                    'id' => $booking->barber->id,
-                    'name' => $booking->barber->name,
-                    'avatar' => $booking->barber->avatar,
-                    'thumbnail' => $booking->barber->avatar(),
-                    'slug' => $booking->barber->slug,
-                    'specialty' => $booking->barber->specialty,
+                'customer' => $booking->user ? [
+                    'id' => $booking->user->id,
+                    'name' => $booking->user->name,
+                    'avatar' => $booking->user->avatar,
+                    'thumbnail' => $booking->user->avatar(),
+                    'slug' => $booking->user->slug,
                 ] : null,
 
                 'service' => $booking->service ? [
@@ -111,6 +318,9 @@ class DisputeController extends Controller
         ]);
     }
 
+    /**
+     * بروزرسانی اعتراض
+     */
     public function update(Request $request, Dispute $dispute)
     {
         // ============ بررسی مالکیت ============
@@ -186,7 +396,7 @@ class DisputeController extends Controller
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(
-                            new DisputeEditedByCustomer($dispute)
+                            new DisputeEditedByBarber($dispute)
                         );
                     });
             } catch (\Exception $e) {
@@ -197,15 +407,15 @@ class DisputeController extends Controller
             }
 
             // ============ لاگ ============
-            (new \App\Models\Log())->storeLog(
+            (new Log())->storeLog(
                 $dispute->booking_id,
-                'customer_edited_dispute',
-                "ویرایش اعتراض #{$dispute->id} توسط مشتری"
+                'barber_edited_dispute',
+                "ویرایش اعتراض #{$dispute->id} توسط آرایشگر"
             );
 
             DB::commit();
             StickyAlert::alert('اعتراض شما با موفقیت بروزرسانی شد', 'success');
-            return to_route('customer.bookings.show', $dispute->booking_id);
+            return to_route('barber.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Dispute edit failed', [
@@ -216,6 +426,9 @@ class DisputeController extends Controller
             return redirect()->back();
         }
     }
+    /**
+     * حذف اعتراض آرایشگر
+     */
     public function destroy(Dispute $dispute)
     {
         // ============ بررسی مالکیت ============
@@ -251,21 +464,25 @@ class DisputeController extends Controller
             $dispute->delete();
 
             // ============ لاگ ============
-            (new \App\Models\Log())->storeLog(
+            (new Log())->storeLog(
                 $dispute->booking_id,
-                'customer_deleted_dispute',
-                "حذف اعتراض #{$dispute->id} توسط مشتری"
+                'barber_deleted_dispute',
+                "حذف اعتراض #{$dispute->id} توسط آرایشگر"
             );
 
             DB::commit();
             StickyAlert::alert('اعتراض شما حذف شد', 'success');
-            return to_route('customer.bookings.show', $dispute->booking_id);
+            return to_route('barber.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();
             StickyAlert::alert('خطا در حذف اعتراض', 'error');
             return redirect()->back();
         }
     }
+
+    /**
+     * پاسخ به درخواست ادمین
+     */
     public function respond(Request $request, Dispute $dispute)
     {
         // ============ بررسی مالکیت ============
@@ -306,26 +523,44 @@ class DisputeController extends Controller
                 'status' => DisputedStatus::investigating->value
             ]);
 
-            // ============ Notification ============
+
+            // ============ Notification به ادمین ============
             try {
                 User::role(['سوپر ادمین'])
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(
-                            new DisputeRespondedByCustomer($dispute)
+                            new DisputeRespondedByBarber($dispute)
                         );
                     });
             } catch (\Exception $e) {
-                Log::warning('Response notification failed', [
+                Log::warning('Response notification to admin failed', [
                     'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            // ============ Notification به آرایشگر ============
+            try {
+                $dispute->booking->user?->notify(
+                    new DisputeRespondedForCustomer($dispute)
+                );
+            } catch (\Exception $e) {
+                Log::warning('Response notification to barber failed', [
+                    'dispute_id' => $dispute->id,
+                    'error' => $e->getMessage(),
                 ]);
             }
 
             DB::commit();
             StickyAlert::alert('پاسخ شما ثبت شد', 'errsuccessor');
-            return to_route('customer.bookings.show', $dispute->booking_id);
+            return to_route('barber.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Dispute response failed', [
+                'dispute_id' => $dispute->id,
+                'error' => $e->getMessage(),
+            ]);
             StickyAlert::alert('خطا در ثبت پاسخ', 'error');
             return redirect()->back();
         }

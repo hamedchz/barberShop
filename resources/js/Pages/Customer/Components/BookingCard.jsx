@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import {
     Calendar,
     Clock,
@@ -18,6 +18,10 @@ import {
     Trash2,
     Hourglass,
     Sparkles,
+    Search,
+    MessageSquare,
+    Ban,
+    AlertTriangle,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -166,6 +170,7 @@ export default function BookingCard({
     onCancelClick,
     onDeleteReviewClick,
 }) {
+    const { auth } = usePage().props;
     const config = statusConfig[booking.status] || statusConfig.pending;
     const StatusIcon = config.icon;
 
@@ -214,7 +219,58 @@ export default function BookingCard({
 
         document.body.removeChild(form);
     };
+    // ============ اطلاعات اعتراض ============
+    const disputeStatusConfig = {
+        pending: {
+            label: "اعتراض در انتظار بررسی",
+            icon: Clock4,
+            color: "#92400e",
+            bg: "#fffbeb",
+            border: "#fde68a",
+        },
+        investigating: {
+            label: "اعتراض در حال بررسی",
+            icon: Search,
+            color: "#1e40af",
+            bg: "#eff6ff",
+            border: "#dbeafe",
+        },
+        awaiting_response: {
+            label: "در انتظار پاسخ",
+            icon: MessageSquare,
+            color: "#9a3412",
+            bg: "#fff7ed",
+            border: "#ffedd5",
+        },
+        resolved: {
+            label: "اعتراض تایید شد",
+            icon: CheckCircle,
+            color: "#065f46",
+            bg: "#ecfdf5",
+            border: "#d1fae5",
+        },
+        rejected: {
+            label: "اعتراض رد شد",
+            icon: XCircle,
+            color: "#991b1b",
+            bg: "#fef2f2",
+            border: "#fee2e2",
+        },
+        cancelled: {
+            label: "اعتراض لغو شد",
+            icon: Ban,
+            color: "#6b7280",
+            bg: "#f3f4f6",
+            border: "#e5e7eb",
+        },
+    };
 
+    const latestDispute = booking.latest_dispute;
+    const disputeConfig = latestDispute
+        ? disputeStatusConfig[latestDispute.status] ||
+          disputeStatusConfig.pending
+        : null;
+    const DisputeIcon = disputeConfig?.icon;
     return (
         <div
             className={`booking-card status-${booking.status} ${
@@ -226,6 +282,40 @@ export default function BookingCard({
                 className="booking-card-stripe"
                 style={{ backgroundColor: config.color }}
             ></div>
+
+            {/* ============================================ */}
+            {/* Badge اعتراض - بالای کارت */}
+            {/* ============================================ */}
+            {booking.has_disputes && latestDispute && (
+                <div
+                    className={`booking-dispute-badge status-${latestDispute.status}`}
+                    style={{
+                        backgroundColor: disputeConfig.bg,
+                        color: disputeConfig.color,
+                        borderColor: disputeConfig.border,
+                    }}
+                >
+                    <DisputeIcon size={12} />
+                    <span>
+                        {latestDispute && (
+                            <>
+                                {latestDispute.status === "awaiting_response"
+                                    ? latestDispute.disputed_by_user_id ===
+                                      auth.id
+                                        ? disputeConfig.label
+                                        : disputeStatusConfig.investigating
+                                              .label
+                                    : disputeConfig.label}
+                            </>
+                        )}
+                    </span>
+                    {booking.disputes_count > 1 && (
+                        <span className="dispute-count">
+                            {toPersianNumber(booking.disputes_count)}
+                        </span>
+                    )}
+                </div>
+            )}
 
             <div className="booking-card-content">
                 {/* ============ ستون ۱: آواتار + اطلاعات باربر ============ */}
@@ -242,6 +332,15 @@ export default function BookingCard({
                             </span>
                         )}
                     </div>
+                    {/* نشانگر اعتراض روی آواتار */}
+                    {/* {booking.has_disputes && (
+                        <span
+                            className={`barber-avatar-dispute-indicator status-${latestDispute.status}`}
+                            title={disputeConfig.label}
+                        >
+                            <AlertTriangle size={10} />
+                        </span>
+                    )} */}
                     <div className="booking-barber-info">
                         <span className="booking-barber-label">آرایشگر</span>
                         <span className="booking-barber-name">
@@ -309,6 +408,30 @@ export default function BookingCard({
                             <StatusIcon size={14} />
                             {config.label}
                         </span>
+
+                        {/* ============================================ */}
+                        {/* Badge اعتراض - کنار وضعیت */}
+                        {/* ============================================ */}
+                        {/* {booking.has_disputes && latestDispute && (
+                            <span
+                                className={`booking-dispute-badge status-${latestDispute.status}`}
+                                style={{
+                                    backgroundColor: disputeConfig.bg,
+                                    color: disputeConfig.color,
+                                    borderColor: disputeConfig.border,
+                                }}
+                            >
+                                <DisputeIcon size={12} />
+                                {disputeConfig.label}
+                                {booking.disputes_count > 1 && (
+                                    <span className="dispute-count">
+                                        {toPersianNumber(
+                                            booking.disputes_count,
+                                        )}
+                                    </span>
+                                )}
+                            </span>
+                        )} */}
 
                         {/* کد رزرو */}
                         {/* <span className="booking-code">

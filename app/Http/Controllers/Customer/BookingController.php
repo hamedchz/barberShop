@@ -43,7 +43,10 @@ class BookingController extends Controller
                 'barber:id,name,avatar,phone,slug',
                 'service:id,name,image,duration,price',
                 'timeSlot:id,date,start_time,end_time',
-            ]);
+                'disputes' => function ($q) {
+                    $q->latest();
+                },
+            ])->withCount('disputes');;
 
         // ============ فیلتر وضعیت ============
         if ($status = $request->input('status')) {
@@ -121,6 +124,8 @@ class BookingController extends Controller
 
             $hasReview = (bool) $review;
 
+
+
             // ============ بررسی امکان ثبت نظر ============
             $canReview = $booking->status->value === BookingStatus::completed->value
                 && !$hasReview;
@@ -156,6 +161,13 @@ class BookingController extends Controller
                 }
             }
 
+            // ============================================
+            // اطلاعات اعتراض
+            // ============================================
+            $latestDispute = $booking->disputes()->latest()->first();
+
+
+
             return [
                 'id' => $booking->id,
                 'status' => $booking->status->value,
@@ -167,6 +179,21 @@ class BookingController extends Controller
                 'expires_at' => $expiresAt?->timestamp * 1000, // ← میلی‌ثانیه
                 'is_past' => $isPast,
                 'is_expired' => $isExpired,
+
+                // ============================================
+                // اطلاعات اعتراض 
+                // ============================================
+                'has_disputes' => $booking->disputes()->exists(),
+                'disputes_count' => $booking->disputes()->count(),
+                'latest_dispute' => $latestDispute ? [
+                    'id' => $latestDispute->id,
+                    'status' => $latestDispute->status->value,
+                    'dispute_type' => $latestDispute->dispute_type->value,
+                    'disputed_by' => $latestDispute->disputed_by->value,
+                    'created_at' => $latestDispute->created_at,
+                    'disputed_by_user_id' => $latestDispute->disputed_by_user_id,
+                ] : null,
+
 
                 // ============ دسترسی‌ها ============
                 'has_review' => $hasReview,
@@ -496,6 +523,7 @@ class BookingController extends Controller
                 'id' => $dispute->id,
                 'disputed_by' => $dispute->disputed_by,
                 'dispute_type' => $dispute->dispute_type,
+                'disputed_by_user_id' => $dispute->disputed_by_user_id,
                 'reason' => $dispute->reason,
                 'status' => $dispute->status->value,
                 'response' => $dispute->response,

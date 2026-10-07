@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Barber;
 
 use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
@@ -163,6 +164,11 @@ class BookingController extends Controller
             // بررسی نظر
             $hasReview = Review::where('booking_id', $booking->id)->exists();
 
+            // ============================================
+            // اطلاعات اعتراض
+            // ============================================
+            $latestDispute = $booking->disputes()->latest()->first();
+
             return [
                 'id' => $booking->id,
                 'status' => $booking->status->value,
@@ -171,6 +177,19 @@ class BookingController extends Controller
                 'created_at' => $booking->created_at,
                 'confirmed_at' => $booking->confirmed_at,
                 'cancelled_at' => $booking->cancelled_at,
+
+                // ============================================
+                // اطلاعات اعتراض 
+                // ============================================
+                'has_disputes' => $booking->disputes()->exists(),
+                'disputes_count' => $booking->disputes()->count(),
+                'latest_dispute' => $latestDispute ? [
+                    'id' => $latestDispute->id,
+                    'status' => $latestDispute->status->value,
+                    'dispute_type' => $latestDispute->dispute_type->value,
+                    'disputed_by' => $latestDispute->disputed_by->value,
+                    'created_at' => $latestDispute->created_at,
+                ] : null,
 
                 'can_confirm' => $canConfirm,
                 'can_complete' => $canComplete,
@@ -419,6 +438,7 @@ class BookingController extends Controller
             'timeSlot:id,date,start_time,end_time',
             'payment',
             'review',
+            'disputes' => fn($q) => $q->latest(),
         ]);
 
         // ============ بررسی زمان ============
@@ -444,20 +464,66 @@ class BookingController extends Controller
             $canCancel = $slotDateTime->isFuture();
         }
 
-        // ============ بررسی امکان اعتراض ============
-        $canDispute = false;
+        // ============================================
+        // بررسی امکان اعتراض آرایشگر
+        // ============================================
+        $canBarberDispute = false;
+        $disputeHoursRemaining = null;
+
         if (
             $booking->status->value === BookingStatus::completed->value
-            && $booking->completed_by === BookingCompletedBy::customer->value
+            && $booking->completed_by?->value !== BookingCompletedBy::barber->value
             && $booking->completed_at
-            && !$booking->is_disputed
-            && $booking->completed_at->diffInHours(now()) <= 24
         ) {
-            $canDispute = true;
+
+            $deadline = $booking->completed_at->copy()->addHours(24);
+            $hoursRemaining = now()->diffInHours($deadline, false);
+
+            $activeDispute = $booking->disputes()
+                ->where('disputed_by_user_id', auth()->id())
+                ->whereIn('status', [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value])
+                ->exists();
+
+            if (!$activeDispute && $hoursRemaining > 0) {
+                $canBarberDispute = true;
+                $disputeHoursRemaining = $hoursRemaining;
+            }
         }
 
-        // ============ بررسی وجود شکایت ============
-        $isDisputed = (bool) $booking->is_disputed;
+        // ============================================
+        // اطلاعات اعتراضات
+        // ============================================
+        $disputes = $booking->disputes->map(function ($dispute) {
+            return [
+                'id' => $dispute->id,
+                'disputed_by' => $dispute->disputed_by,
+                'dispute_type' => $dispute->dispute_type->value,
+                'disputed_by_user_id' => $dispute->disputed_by_user_id,
+                'reason' => $dispute->reason,
+                'status' => $dispute->status->value,
+                'response' => $dispute->response,
+                'resolution' => $dispute->resolution,
+                'attachments' => collect($dispute->attachments ?? [])
+                    ->map(fn($path) => [
+                        'path' => $path,
+                        'url' => asset('storage/' . $path),
+                        'name' => basename($path),
+                    ])->toArray(),
+                'created_at' => $dispute->created_at,
+
+                // ============================================
+                // دسترسی‌ها
+                // ============================================
+                'can_edit' => $dispute->disputed_by_user_id === auth()->id()
+                    && $dispute->status->value === DisputedStatus::pending->value
+                    && $dispute->created_at->diffInHours(now()) <= 2,
+                'can_delete' => $dispute->disputed_by_user_id === auth()->id()
+                    && $dispute->status->value === DisputedStatus::pending->value
+                    && $dispute->created_at->diffInHours(now()) <= 2,
+                'can_respond' => $dispute->disputed_by_user_id === auth()->id()
+                    && $dispute->status->value === DisputedStatus::awaitingResponse->value,
+            ];
+        })->toArray();
 
         return Inertia::render('Barber/Bookings/Show', [
             'booking' => [
@@ -477,9 +543,21 @@ class BookingController extends Controller
                 // ============ دسترسی‌ها ============
                 'can_complete' => $canComplete,
                 'can_cancel' => $canCancel,
-                'can_dispute' => $canDispute,
-                'is_disputed' => $isDisputed,
                 'dispute_reason' => $booking->dispute_reason,
+
+                // ============================================
+                // دسترسی‌های اعتراض
+                // ============================================
+                'can_barber_dispute' => $canBarberDispute,
+                'dispute_hours_remaining' => $disputeHoursRemaining,
+
+                // ============================================
+                // اطلاعات اعتراضات
+                // ============================================
+                'has_disputes' => count($disputes) > 0,
+                'disputes_count' => count($disputes),
+                'disputes' => $disputes,
+                'latest_dispute' => !empty($disputes) ? $disputes[0] : null,
 
                 // ============ اطلاعات مشتری ============
                 'customer' => $booking->user ? [

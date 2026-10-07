@@ -53,8 +53,8 @@ export default function DisputeCountdown({ createdAt, status }) {
     };
 
     const getMessage = () => {
-        if (isCritical) return "🚨 زمان بسیار کمی باقی مانده!";
-        if (isWarning) return "⚠️ زمان کمی باقی مانده!";
+        if (isCritical) return "زمان بسیار کمی باقی مانده!";
+        if (isWarning) return "زمان کمی باقی مانده!";
         return "زمان باقی‌مانده برای ویرایش:";
     };
 

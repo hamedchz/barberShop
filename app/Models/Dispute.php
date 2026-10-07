@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Casts\DisputedBy;
 use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\DisputeTypes;
 use Illuminate\Database\Eloquent\Model;
@@ -44,6 +45,7 @@ class Dispute extends Model
         'updated_at' => 'datetime',
         'status' => DisputedStatus::class,
         'dispute_type' => DisputeTypes::class,
+        'disputed_by' => DisputedBy::class,
         'edited_at' => 'datetime',
         'edit_count' => 'integer',
         'can_be_edited' => 'bool'

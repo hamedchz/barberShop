@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Barber\AvailabilityController;
 use App\Http\Controllers\Barber\BookingController;
+use App\Http\Controllers\Barber\DisputeController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
 
@@ -43,3 +44,24 @@ Route::prefix('/bookings')->name('bookings.')->controller(BookingController::cla
   Route::patch('/{booking}/complete',  'complete')->name('complete');
   Route::delete('/{booking}/cancel',  'cancel')->name('cancel');
 });
+
+// dispute
+Route::prefix('disputes')
+  ->name('disputes.')->controller(DisputeController::class)
+  ->group(function () {
+    // اعتراض آرایشگر
+    Route::post('/bookings/{booking}',  'store')
+      ->name('store');
+
+    Route::get('/{dispute}/edit',  'edit')
+      ->name('edit');
+
+    Route::put('/{dispute}',  'update')
+      ->name('update');
+
+    Route::delete('/{dispute}/destroy',  'destroy')
+      ->name('destroy');
+
+    Route::post('/{dispute}/respond',  'respond')
+      ->name('respond');
+  });

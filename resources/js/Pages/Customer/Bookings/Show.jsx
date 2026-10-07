@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../Components/RatingStars";
@@ -40,6 +40,7 @@ import {
     Upload,
     Eye,
     MessageSquare,
+    Search,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -48,6 +49,11 @@ import {
     toPersianTime,
 } from "../../../utils/persianNumbers";
 
+import DisputeStatusCard from "../../../Components/Disputes/DisputeStatusCard";
+import {
+    getDisputeTypesByRole,
+    getDisputeTypeConfig,
+} from "../../../Constants/disputeTypes";
 // ============ توابع کمکی ============
 const formatJalaliDate = (date) => {
     if (!date) return "-";
@@ -210,6 +216,9 @@ function CountdownTimer({ expiresAt }) {
 }
 
 export default function BookingShow({ auth, booking }) {
+    const latestDispute = booking.latest_dispute;
+    const isMyDispute = latestDispute?.disputed_by_user_id === auth.user.id;
+
     // ============ State حذف اعتراض ============
     const [deleteDisputeModal, setDeleteDisputeModal] = useState({
         isOpen: false,
@@ -543,7 +552,6 @@ export default function BookingShow({ auth, booking }) {
                         <span>بازگشت به نوبت‌های من</span>
                     </Link>
                 </div>
-
                 {/* ============ هدر با وضعیت ============ */}
                 <div
                     className="booking-show-header"
@@ -583,18 +591,34 @@ export default function BookingShow({ auth, booking }) {
                                     className={`dispute-mini-badge status-${booking.latest_dispute.status}`}
                                 >
                                     <AlertTriangle size={12} />
-                                    {booking.latest_dispute.status ===
-                                        "pending" && "اعتراض در بررسی"}
-                                    {booking.latest_dispute.status ===
-                                        "investigating" && "در حال بررسی"}
-                                    {booking.latest_dispute.status ===
-                                        "resolved" && "اعتراض تایید شد"}
-                                    {booking.latest_dispute.status ===
-                                        "rejected" && "اعتراض رد شد"}
-                                    {booking.latest_dispute.status ===
-                                        "awaiting_response" && "در انتظار پاسخ"}
-                                    {booking.latest_dispute.status ===
-                                        "cancelled" && "اعتراض لغو شد"}
+                                    {booking.latest_dispute && (
+                                        <>
+                                            {booking.latest_dispute.status ===
+                                                "pending" &&
+                                                "اعتراض در انتظار بررسی"}
+
+                                            {booking.latest_dispute.status ===
+                                                "investigating" &&
+                                                "اعتراض در حال بررسی"}
+
+                                            {booking.latest_dispute.status ===
+                                                "resolved" && "اعتراض تایید شد"}
+
+                                            {booking.latest_dispute.status ===
+                                                "rejected" && "اعتراض رد شد"}
+
+                                            {booking.latest_dispute.status ===
+                                                "cancelled" && "اعتراض لغو شد"}
+
+                                            {booking.latest_dispute.status ===
+                                                "awaiting_response" &&
+                                                (booking.latest_dispute
+                                                    .disputed_by_user_id ==
+                                                auth.user.id
+                                                    ? "در انتظار پاسخ"
+                                                    : "اعتراض در حال بررسی")}
+                                        </>
+                                    )}
                                 </span>
                             )}
 
@@ -621,6 +645,17 @@ export default function BookingShow({ auth, booking }) {
                         </p>
                     </div>
                 </div>
+                {booking.has_disputes &&
+                    booking.latest_dispute &&
+                    !isMyDispute && (
+                        <DisputeStatusCard
+                            dispute={booking.latest_dispute}
+                            viewerRole="customer"
+                            scrollTargetSelector=".customer-dispute-banner"
+                            showScrollButton
+                        />
+                    )}
+
                 {/* ============ بنر وضعیت اعتراض ============ */}
                 {booking.has_disputes &&
                     booking.latest_dispute &&
@@ -709,10 +744,12 @@ export default function BookingShow({ auth, booking }) {
                                             نوع اعتراض:
                                         </span>
                                         <span className="detail-value">
-                                            {getDisputeTypeLabel(
-                                                booking.latest_dispute
-                                                    .dispute_type,
-                                            )}
+                                            {
+                                                getDisputeTypeConfig(
+                                                    booking.latest_dispute
+                                                        .dispute_type,
+                                                )["label"]
+                                            }
                                         </span>
                                     </div>
 
@@ -1372,7 +1409,7 @@ export default function BookingShow({ auth, booking }) {
                     {/* ============ ستون چپ: عملیات ============ */}
                     <div className="booking-show-sidebar">
                         {/* در ستون عملیات (سمت چپ صفحه) */}
-                        {booking.has_disputes &&
+                        {/* {booking.has_disputes &&
                             booking.latest_dispute &&
                             booking.latest_dispute.disputed_by ===
                                 "customer" && (
@@ -1408,7 +1445,7 @@ export default function BookingShow({ auth, booking }) {
                                         )}
                                     </div>
                                 </div>
-                            )}
+                            )} */}
                         {/* خلاصه پرداخت */}
                         <div className="booking-show-card summary-card">
                             <div className="booking-show-card-header">
@@ -1771,7 +1808,6 @@ export default function BookingShow({ auth, booking }) {
                             </p>
                         </div>
 
-                        {/* ============ انتخاب نوع اعتراض ============ */}
                         {/* ============ انتخاب نوع اعتراض ============ */}
                         <div className="dispute-form-group">
                             <label className="form-label">

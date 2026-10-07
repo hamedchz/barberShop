@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Calendar,
     Clock,
@@ -16,6 +16,8 @@ import {
     User,
     MessageCircle,
     Sparkles,
+    Search,
+    MessageSquare,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -119,6 +121,59 @@ export default function BarberBookingCard({
     onCompleteClick,
     onCancelClick,
 }) {
+    const { auth } = usePage().props;
+    // ============ اطلاعات اعتراض ============
+    const disputeStatusConfig = {
+        pending: {
+            label: "اعتراض در بررسی",
+            icon: Clock4,
+            color: "#92400e",
+            bg: "#fffbeb",
+            border: "#fde68a",
+        },
+        investigating: {
+            label: "اعتراض در بررسی",
+            icon: Search,
+            color: "#1e40af",
+            bg: "#eff6ff",
+            border: "#dbeafe",
+        },
+        awaiting_response: {
+            label: "در انتظار پاسخ",
+            icon: MessageSquare,
+            color: "#9a3412",
+            bg: "#fff7ed",
+            border: "#ffedd5",
+        },
+        resolved: {
+            label: "اعتراض تایید شد",
+            icon: CheckCircle,
+            color: "#065f46",
+            bg: "#ecfdf5",
+            border: "#d1fae5",
+        },
+        rejected: {
+            label: "اعتراض رد شد",
+            icon: XCircle,
+            color: "#991b1b",
+            bg: "#fef2f2",
+            border: "#fee2e2",
+        },
+        cancelled: {
+            label: "اعتراض لغو شد",
+            icon: Ban,
+            color: "#6b7280",
+            bg: "#f3f4f6",
+            border: "#e5e7eb",
+        },
+    };
+
+    const latestDispute = booking.latest_dispute;
+    const disputeConfig = latestDispute
+        ? disputeStatusConfig[latestDispute.status] ||
+          disputeStatusConfig.pending
+        : null;
+    const DisputeIcon = disputeConfig?.icon;
     const config = statusConfig[booking.status] || statusConfig.pending;
     const StatusIcon = config.icon;
     const relativeTime = getRelativeTime(booking.date);
@@ -138,6 +193,40 @@ export default function BarberBookingCard({
                 className="barber-booking-card-stripe"
                 style={{ background: config.gradient }}
             ></div>
+            {/* ============================================ */}
+            {/* Badge اعتراض - بالای کارت */}
+            {/* ============================================ */}
+            {booking.has_disputes && latestDispute && (
+                <div
+                    className={`booking-dispute-badge status-${latestDispute.status}`}
+                    style={{
+                        backgroundColor: disputeConfig.bg,
+                        color: disputeConfig.color,
+                        borderColor: disputeConfig.border,
+                    }}
+                >
+                    <DisputeIcon size={12} />
+                    <span>
+                        {" "}
+                        {latestDispute && (
+                            <>
+                                {latestDispute.status === "awaiting_response"
+                                    ? latestDispute.disputed_by_user_id ===
+                                      auth.id
+                                        ? disputeConfig.label
+                                        : disputeStatusConfig.investigating
+                                              .label
+                                    : disputeConfig.label}
+                            </>
+                        )}
+                    </span>
+                    {booking.disputes_count > 1 && (
+                        <span className="dispute-count">
+                            {toPersianNumber(booking.disputes_count)}
+                        </span>
+                    )}
+                </div>
+            )}
 
             {/* ============ نشانگر امروز ============ */}
             {isToday && (

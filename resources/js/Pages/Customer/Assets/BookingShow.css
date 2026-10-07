@@ -1978,7 +1978,7 @@
   color: #4b5563;
 }
 
-/* ============ Details ============ */
+/* ============ Details disputes ============ */
 .dispute-banner-details {
   display: flex;
   flex-direction: column;
@@ -2331,7 +2331,7 @@
 }
 
 /* ============ دکمه اعتراض - نارنجی ============ */
-.action-btn.dispute {
+/* .action-btn.dispute {
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
   color: #92400e !important;
   border: 1.5px solid #fde68a !important;
@@ -2339,6 +2339,21 @@
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15) !important;
   position: relative !important;
   overflow: hidden !important;
+} */
+
+/* دکمه اعتراض - نارنجی */
+.action-btn.dispute {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.action-btn.dispute:hover {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
 }
 
 /* افکت Shimmer */
@@ -2357,9 +2372,9 @@
   z-index: 1;
 }
 
-.action-btn.dispute:hover::before {
+/* .action-btn.dispute:hover::before {
   left: 100%;
-}
+} */
 
 .action-btn.dispute svg {
   color: #f59e0b !important;
@@ -2372,21 +2387,21 @@
   z-index: 2;
 }
 
-.action-btn.dispute:hover {
+/* .action-btn.dispute:hover {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
   color: #ffffff !important;
   border-color: #f59e0b !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4) !important;
-}
+} */
 
-.action-btn.dispute:hover svg {
+/* .action-btn.dispute:hover svg {
   color: #ffffff !important;
   transform: scale(1.15) rotate(-10deg) !important;
-}
+} */
 
 /* ============ Badge روزهای باقی‌مانده ============ */
-.action-btn.dispute .days-remaining {
+/* .action-btn.dispute .days-remaining {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2401,12 +2416,12 @@
   transition: all 0.2s;
   position: relative;
   z-index: 2;
-}
+} */
 
-.action-btn.dispute:hover .days-remaining {
+/* .action-btn.dispute:hover .days-remaining {
   background-color: rgba(255, 255, 255, 0.25);
   color: #ffffff;
-}
+} */
 
 /* ============================================
    Responsive

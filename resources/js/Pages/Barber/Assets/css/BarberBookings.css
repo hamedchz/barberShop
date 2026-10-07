@@ -1145,3 +1145,57 @@
     font-size: 0.6875rem;
   }
 }
+
+/* ============================================
+   Booking Dispute Badge
+   ============================================ */
+
+/* ============ Badge بالای کارت ============ */
+.booking-dispute-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  margin: 0.75rem 0.75rem 0;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border: 1.5px solid;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  animation: disputeBadgeSlideIn 0.4s ease;
+  width: fit-content;
+}
+
+@keyframes disputeBadgeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.booking-dispute-badge svg {
+  flex-shrink: 0;
+  animation: pulseDisputeBadgeIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseDisputeBadgeIcon {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}

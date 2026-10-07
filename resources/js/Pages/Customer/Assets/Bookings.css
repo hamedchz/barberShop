@@ -758,3 +758,228 @@
     height: 10px;
   }
 }
+
+/* ============================================
+   Booking Dispute Badge
+   ============================================ */
+
+/* ============ Badge بالای کارت ============ */
+.booking-dispute-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  margin: 0.75rem 0.75rem 0;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border: 1.5px solid;
+  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  animation: disputeBadgeSlideIn 0.4s ease;
+  width: fit-content;
+}
+
+@keyframes disputeBadgeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.booking-dispute-badge svg {
+  flex-shrink: 0;
+  animation: pulseDisputeBadgeIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseDisputeBadgeIcon {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}
+
+/* ============ شمارنده اعتراضات ============ */
+.booking-dispute-badge .dispute-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.3125rem;
+  margin-right: 0.1875rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  direction: ltr;
+}
+
+/* ============ رنگ‌بندی ============ */
+
+/* pending - زرد */
+.booking-dispute-badge.status-pending {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  color: #92400e;
+  border-color: #fcd34d;
+  animation:
+    disputeBadgeSlideIn 0.4s ease,
+    pulsePendingDispute 2s ease-in-out infinite;
+}
+
+@keyframes pulsePendingDispute {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 2px 20px rgba(245, 158, 11, 0.5);
+  }
+}
+
+/* investigating - آبی */
+.booking-dispute-badge.status-investigating {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #1e40af;
+  border-color: #93c5fd;
+}
+
+/* awaiting_response - نارنجی */
+.booking-dispute-badge.status-awaiting_response {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  color: #9a3412;
+  border-color: #fdba74;
+}
+
+/* resolved - سبز */
+.booking-dispute-badge.status-resolved {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+/* rejected - قرمز */
+.booking-dispute-badge.status-rejected {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+/* cancelled - خاکستری */
+.booking-dispute-badge.status-cancelled {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+/* ============================================
+   Dispute Indicator روی آواتار
+   ============================================ */
+.booking-barber-avatar {
+  position: relative;
+}
+
+.barber-avatar-dispute-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: pulseAvatarIndicator 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes pulseAvatarIndicator {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.barber-avatar-dispute-indicator.status-pending {
+  background-color: #f59e0b;
+}
+
+.barber-avatar-dispute-indicator.status-investigating {
+  background-color: #3b82f6;
+}
+
+.barber-avatar-dispute-indicator.status-awaiting_response {
+  background-color: #f97316;
+}
+
+.barber-avatar-dispute-indicator.status-resolved {
+  background-color: #10b981;
+}
+
+.barber-avatar-dispute-indicator.status-rejected {
+  background-color: #ef4444;
+}
+
+.barber-avatar-dispute-indicator.status-cancelled {
+  background-color: #6b7280;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .booking-dispute-badge {
+    padding: 0.3125rem 0.625rem;
+    font-size: 0.625rem;
+    gap: 0.25rem;
+    margin: 0.625rem 0.625rem 0;
+  }
+
+  .booking-dispute-badge svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .booking-dispute-badge .dispute-count {
+    min-width: 1rem;
+    height: 1rem;
+    font-size: 0.5rem;
+  }
+
+  .barber-avatar-dispute-indicator {
+    width: 1rem;
+    height: 1rem;
+    top: -3px;
+    right: -3px;
+  }
+
+  .barber-avatar-dispute-indicator svg {
+    width: 8px;
+    height: 8px;
+  }
+}

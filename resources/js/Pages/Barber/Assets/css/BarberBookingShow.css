@@ -1178,3 +1178,1420 @@
     width: 100%;
   }
 }
+
+/* ============================================
+   Dispute Attachments - Full Styles
+   ============================================ */
+
+.dispute-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* ============================================
+   پیش‌نمایش فایل‌ها
+   ============================================ */
+.attachments-preview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.625rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .attachments-preview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============ هر آیتم پیوست ============ */
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: attachmentFadeIn 0.3s ease;
+}
+
+@keyframes attachmentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.attachment-item:hover {
+  background-color: #f0fdf4;
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+/* ============ تصویر پیوست ============ */
+.attachment-image {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.625rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #e5e7eb;
+  background-color: #ffffff;
+  transition: all 0.2s;
+}
+
+.attachment-item:hover .attachment-image {
+  border-color: #10b981;
+  transform: scale(1.05);
+}
+
+/* ============ آیکون فایل (اگر تصویر نبود) ============ */
+.attachment-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.625rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1.5px solid #dbeafe;
+}
+
+/* ============ اطلاعات فایل ============ */
+.attachment-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.attachment-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.attachment-size {
+  font-size: 0.625rem;
+  color: #6b7280;
+  font-weight: 700;
+  direction: ltr;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.attachment-size::before {
+  content: "";
+  display: inline-block;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background-color: #10b981;
+  flex-shrink: 0;
+}
+
+/* ============ دکمه حذف ============ */
+.attachment-remove {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #fef2f2;
+  color: #ef4444;
+  border: 1.5px solid #fee2e2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+}
+
+.attachment-remove:hover:not(:disabled) {
+  background-color: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.attachment-remove:active:not(:disabled) {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.attachment-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.attachment-remove svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   دکمه آپلود
+   ============================================ */
+.attachment-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #6b7280;
+  font-family: inherit;
+  width: 100%;
+  text-align: right;
+  position: relative;
+  overflow: hidden;
+}
+
+.attachment-upload-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(16, 185, 129, 0.1),
+      transparent);
+  transition: left 0.5s;
+}
+
+.attachment-upload-btn:hover {
+  background-color: #f0fdf4;
+  border-color: #10b981;
+  color: #065f46;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+}
+
+.attachment-upload-btn:hover::before {
+  left: 100%;
+}
+
+.attachment-upload-btn svg {
+  flex-shrink: 0;
+  color: #10b981;
+  transition: transform 0.3s;
+}
+
+.attachment-upload-btn:hover svg {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.attachment-upload-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ شمارنده فایل‌ها ============ */
+.attachment-upload-btn .upload-count {
+  margin-right: auto;
+  padding: 0.25rem 0.625rem;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  direction: ltr;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.attachment-upload-btn:hover .upload-count {
+  background-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================
+   نمایش پیوست‌ها در صفحه (بعد از ارسال)
+   ============================================ */
+.dispute-attachments-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+  margin-top: 1rem;
+}
+
+.dispute-attachments-display h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.dispute-attachments-display h4 svg {
+  color: #10b981;
+}
+
+.attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .attachments-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.attachment-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.25s;
+  background-color: #ffffff;
+}
+
+.attachment-preview-item:hover {
+  transform: scale(1.05);
+  border-color: #10b981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+  z-index: 1;
+}
+
+.attachment-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.attachment-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(16, 185, 129, 0.9) 0%,
+      rgba(5, 150, 105, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.25s;
+  backdrop-filter: blur(2px);
+}
+
+.attachment-preview-item:hover .attachment-overlay {
+  opacity: 1;
+}
+
+/* ============================================
+   Form Hint
+   ============================================ */
+.form-hint {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-right: 0.375rem;
+  line-height: 1.5;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .attachment-item {
+    padding: 0.625rem;
+    gap: 0.5rem;
+  }
+
+  .attachment-image,
+  .attachment-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .attachment-name {
+    font-size: 0.6875rem;
+  }
+
+  .attachment-size {
+    font-size: 0.5625rem;
+  }
+
+  .attachment-remove {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .attachment-upload-btn {
+    padding: 0.875rem 1rem;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .attachment-upload-btn .upload-count {
+    font-size: 0.625rem;
+    padding: 0.1875rem 0.5rem;
+  }
+
+  .attachments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .attachments-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-image,
+  .attachment-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+/* ============ Dispute Type Options ============ */
+.dispute-type-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .dispute-type-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dispute-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  background-color: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: right;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.dispute-type-btn:hover {
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.15);
+}
+
+.dispute-type-btn.selected {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+.dispute-type-btn svg {
+  flex-shrink: 0;
+}
+
+.dispute-type-btn.selected svg {
+  color: #ffffff;
+}
+
+/* ============ Form Textarea ============ */
+.form-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background-color: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-family: "Vazirmatn", inherit;
+  color: #1f2937;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 100px;
+  outline: none;
+  transition: all 0.2s;
+  direction: rtl;
+}
+
+.form-textarea:hover {
+  border-color: #d1d5db;
+  background-color: #ffffff;
+}
+
+.form-textarea:focus {
+  background-color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-textarea.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.form-textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.form-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============ Char Counter ============ */
+.char-counter {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 700;
+  text-align: left;
+  direction: ltr;
+  margin-top: 0.375rem;
+  padding: 0 0.25rem;
+}
+
+/* ============ Form Error ============ */
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 600;
+  animation: errorShake 0.3s ease;
+}
+
+@keyframes errorShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.form-error svg {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+/* ============ Modal Actions ============ */
+.dispute-modal-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.625rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+@media (min-width: 640px) {
+  .dispute-modal-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.btn-cancel,
+.btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  white-space: nowrap;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+
+  .btn-cancel,
+  .btn-confirm {
+    width: auto;
+    min-width: 140px;
+  }
+}
+
+.btn-cancel {
+  background-color: #ffffff;
+  color: #6b7280;
+  border: 1.5px solid #e5e7eb;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #1f2937;
+  transform: translateY(-1px);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+.btn-confirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.45);
+}
+
+.btn-confirm:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============ Spinner ============ */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .dispute-modal {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    max-height: 95vh;
+  }
+
+  .dispute-modal-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .dispute-modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .dispute-modal-warning p {
+    font-size: 0.6875rem;
+  }
+
+  .dispute-type-btn {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ============================================
+   Dispute Mini Badge (کنار وضعیت)
+   ============================================ */
+.dispute-mini-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.dispute-mini-badge.status-pending {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+  animation: pulseMiniBadge 2s ease-in-out infinite;
+}
+
+.dispute-mini-badge.status-investigating {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+
+.dispute-mini-badge.status-resolved {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-color: #d1fae5;
+}
+
+.dispute-mini-badge.status-rejected {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+
+@keyframes pulseMiniBadge {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+  }
+}
+
+/* ============================================
+   Customer Dispute Banner (Barber Panel)
+   ============================================ */
+
+.customer-dispute-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid;
+  direction: rtl;
+  animation: disputeBannerSlideIn 0.4s ease;
+}
+
+@keyframes disputeBannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   حالت‌های مختلف وضعیت
+   ============================================ */
+
+/* pending - زرد */
+.customer-dispute-banner.status-pending {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fcd34d;
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-icon {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+  animation: pulsePendingIcon 2s ease-in-out infinite;
+}
+
+/* investigating - آبی */
+.customer-dispute-banner.status-investigating {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: #93c5fd;
+}
+
+.customer-dispute-banner.status-investigating .dispute-banner-icon {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: white;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+}
+
+/* awaiting_response - نارنجی */
+.customer-dispute-banner.status-awaiting_response {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border-color: #fdba74;
+}
+
+.customer-dispute-banner.status-awaiting_response .dispute-banner-icon {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: white;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
+  animation: pulsePendingIcon 1.5s ease-in-out infinite;
+}
+
+/* resolved - سبز */
+.customer-dispute-banner.status-resolved {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #6ee7b7;
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-icon {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  color: white;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+/* rejected - قرمز */
+.customer-dispute-banner.status-rejected {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fca5a5;
+}
+
+.customer-dispute-banner.status-rejected .dispute-banner-icon {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  color: white;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+
+/* cancelled - خاکستری */
+.customer-dispute-banner.status-cancelled {
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-color: #d1d5db;
+}
+
+.customer-dispute-banner.status-cancelled .dispute-banner-icon {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+}
+
+@keyframes pulsePendingIcon {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.55);
+  }
+}
+
+/* ============================================
+   آیکون بنر
+   ============================================ */
+.dispute-banner-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.dispute-banner-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* ============================================
+   محتوای بنر
+   ============================================ */
+.dispute-banner-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ============ هدر ============ */
+.dispute-banner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.dispute-banner-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-header h3 {
+  color: #92400e;
+}
+
+.customer-dispute-banner.status-investigating .dispute-banner-header h3 {
+  color: #1e40af;
+}
+
+.customer-dispute-banner.status-awaiting_response .dispute-banner-header h3 {
+  color: #9a3412;
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-header h3 {
+  color: #065f46;
+}
+
+.customer-dispute-banner.status-rejected .dispute-banner-header h3 {
+  color: #991b1b;
+}
+
+/* ============ تاریخ ============ */
+.dispute-banner-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6b7280;
+  white-space: nowrap;
+  direction: ltr;
+  backdrop-filter: blur(8px);
+}
+
+/* ============================================
+   پیام اصلی
+   ============================================ */
+.dispute-banner-message {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  margin: 0;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-message {
+  color: #78350f;
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-message {
+  color: #065f46;
+}
+
+/* ============================================
+   جزئیات اعتراض (کارت داخلی)
+   ============================================ */
+.dispute-banner-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* ============ ردیف جزئیات ============ */
+.dispute-banner-details .detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+}
+
+.dispute-banner-details .detail-label {
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.dispute-banner-details .detail-value {
+  color: #1f2937;
+  font-weight: 700;
+  text-align: left;
+  line-height: 1.6;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============ حالت Success ============ */
+.dispute-banner-details .detail-item.success {
+  padding: 0.75rem;
+  background-color: #ecfdf5;
+  border-radius: 0.625rem;
+  border: 1px solid #d1fae5;
+}
+
+.dispute-banner-details .detail-item.success .detail-label {
+  color: #065f46;
+}
+
+.dispute-banner-details .detail-item.success .detail-value {
+  color: #10b981;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+/* ============ حالت Penalty ============ */
+.dispute-banner-details .detail-item.penalty {
+  padding: 0.75rem;
+  background-color: #fef2f2;
+  border-radius: 0.625rem;
+  border: 1px solid #fee2e2;
+}
+
+.dispute-banner-details .detail-item.penalty .detail-label {
+  color: #991b1b;
+}
+
+.dispute-banner-details .detail-item.penalty .detail-value {
+  color: #ef4444;
+  font-weight: 800;
+}
+
+/* ============ حالت Resolution (پاسخ ادمین) ============ */
+.dispute-banner-details .detail-item.resolution {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.dispute-banner-details .detail-item.resolution .detail-value {
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border-right: 3px solid #10b981;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.8;
+  color: #1f2937;
+  width: 100%;
+  text-align: right;
+}
+
+/* ============ حالت Response (پاسخ مشتری) ============ */
+.dispute-banner-details .detail-item.response {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.dispute-banner-details .detail-item.response .detail-value {
+  padding: 0.75rem 1rem;
+  background-color: #eff6ff;
+  border-right: 3px solid #3b82f6;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.8;
+  color: #1e40af;
+  width: 100%;
+  text-align: right;
+}
+
+/* ============================================
+   پیوست‌ها
+   ============================================ */
+.dispute-banner-details .detail-item.attachments {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.dispute-banner-details .detail-item.attachments .detail-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #1f2937;
+}
+
+.dispute-banner-details .detail-item.attachments .detail-label svg {
+  color: #10b981;
+}
+
+/* گرید پیوست‌ها */
+.dispute-attachments-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+}
+
+@media (min-width: 480px) {
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 640px) {
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* آیتم پیوست */
+.dispute-attachment-mini {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: #f9fafb;
+  text-decoration: none;
+}
+
+.dispute-attachment-mini:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: #10b981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+  z-index: 2;
+}
+
+.dispute-attachment-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay روی آیتم */
+.attachment-mini-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(16, 185, 129, 0.85) 0%,
+      rgba(5, 150, 105, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.25s;
+  backdrop-filter: blur(2px);
+}
+
+.dispute-attachment-mini:hover .attachment-mini-overlay {
+  opacity: 1;
+}
+
+/* ============================================
+   Info Box پایین بنر
+   ============================================ */
+.dispute-banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  backdrop-filter: blur(8px);
+  margin-top: 0.25rem;
+}
+
+.dispute-banner-info svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   هشدار (Warning Box)
+   ============================================ */
+.dispute-banner-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid #fdba74;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9a3412;
+  margin-top: 0.25rem;
+}
+
+.dispute-banner-warning svg {
+  color: #f97316;
+  flex-shrink: 0;
+  animation: pulseWarningIcon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseWarningIcon {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}
+
+/* ============================================
+   دکمه‌های عملیات بنر
+   ============================================ */
+.dispute-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.875rem;
+  margin-top: 0.875rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.dispute-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border: 1.5px solid;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* ویرایش - آبی */
+.dispute-action-btn.edit {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+}
+
+.dispute-action-btn.edit:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+/* حذف - قرمز */
+.dispute-action-btn.delete {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fee2e2;
+}
+
+.dispute-action-btn.delete:hover {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+/* پاسخ - نارنجی */
+.dispute-action-btn.respond {
+  background-color: #fff7ed;
+  color: #9a3412;
+  border-color: #ffedd5;
+}
+
+.dispute-action-btn.respond:hover {
+  background-color: #f97316;
+  color: white;
+  border-color: #f97316;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
+}
+
+/* مشاهده - خاکستری */
+.dispute-action-btn.view {
+  background-color: #f9fafb;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.dispute-action-btn.view:hover {
+  background-color: #6b7280;
+  color: white;
+  border-color: #6b7280;
+  transform: translateY(-2px);
+}
+
+/* Badge زمان باقی‌مانده روی دکمه */
+.dispute-action-btn .time-remaining {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.4375rem;
+  margin-right: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: inherit;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  direction: ltr;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .customer-dispute-banner {
+    padding: 1.25rem;
+    gap: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dispute-banner-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .dispute-banner-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .dispute-banner-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+
+  .dispute-banner-header h3 {
+    font-size: 1rem;
+  }
+
+  .dispute-banner-date {
+    font-size: 0.625rem;
+    padding: 0.3125rem 0.75rem;
+  }
+
+  .dispute-banner-message {
+    font-size: 0.8125rem;
+  }
+
+  .dispute-banner-details {
+    padding: 1rem;
+  }
+
+  .dispute-banner-details .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+  }
+
+  .dispute-banner-details .detail-value {
+    text-align: right;
+  }
+
+  .dispute-banner-actions {
+    gap: 0.375rem;
+  }
+
+  .dispute-action-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
