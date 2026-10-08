@@ -27,6 +27,7 @@ import {
     ThumbsDown,
     Info,
     Search,
+    X,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import { toPersianNumber } from "../../../utils/persianNumbers";
@@ -65,11 +66,21 @@ const formatFullDateTime = (date) => {
     );
 };
 
-export default function DisputeShow({ auth, dispute, otherDisputes }) {
+export default function DisputeShow({
+    auth,
+    dispute,
+    otherDisputes,
+    suggestedAmounts,
+}) {
     const [decisionModal, setDecisionModal] = useState({
         isOpen: false,
-        decision: null,
+        decision: null, // "approve" | "reject"
         isLoading: false,
+        resolution: "",
+        refundAmount: 0,
+        penaltyAmount: 0,
+        compensationAmount: 0,
+        errors: {},
     });
 
     const [requestModal, setRequestModal] = useState({
@@ -93,36 +104,74 @@ export default function DisputeShow({ auth, dispute, otherDisputes }) {
 
     // ============ باز کردن Modal تصمیم ============
     const openDecisionModal = (decision) => {
-        setDecisionModal({ isOpen: true, decision, isLoading: false });
+        // مقادیر پیشنهادی رو از suggestedAmounts بگیر
+        setDecisionModal({
+            isOpen: true,
+            decision,
+            isLoading: false,
+            resolution: "",
+            refundAmount: suggestedAmounts?.suggested_refund ?? 0,
+            penaltyAmount: suggestedAmounts?.suggested_penalty ?? 0,
+            compensationAmount: suggestedAmounts?.suggested_compensation ?? 0,
+            errors: {},
+        });
     };
 
-    // ============ تایید تصمیم ============
-    const handleConfirmDecision = () => {
-        const { decision } = decisionModal;
-        setDecisionModal((prev) => ({ ...prev, isLoading: true }));
+    const closeDecisionModal = () => {
+        setDecisionModal({
+            isOpen: false,
+            decision: null,
+            isLoading: false,
+            resolution: "",
+            refundAmount: 0,
+            penaltyAmount: 0,
+            compensationAmount: 0,
+            errors: {},
+        });
+    };
 
+    const handleConfirmDecision = () => {
+        const {
+            decision,
+            resolution,
+            refundAmount,
+            penaltyAmount,
+            compensationAmount,
+        } = decisionModal;
+
+        // ============ Validation سمت کلاینت ============
+        const errors = {};
+        if (!resolution || resolution.trim().length < 10) {
+            errors.resolution = "پاسخ باید حداقل ۱۰ کاراکتر باشد.";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setDecisionModal((prev) => ({ ...prev, errors }));
+            return;
+        }
+
+        setDecisionModal((prev) => ({ ...prev, isLoading: true, errors: {} }));
+
+        // ============ ارسال ============
         router.post(
             `/admin/disputes/${dispute.id}/resolve`,
             {
                 decision,
-                resolution:
-                    decision === "approve"
-                        ? "پس از بررسی شواهد، اعتراض تایید شد."
-                        : "پس از بررسی شواهد، اعتراض رد شد.",
-                refund_amount: decision === "approve" ? booking.amount : 0,
-                penalty_amount:
-                    decision === "approve" ? booking.amount * 0.2 : 0,
+                resolution,
+                refund_amount: decision === "approve" ? refundAmount : 0,
+                penalty_amount: decision === "approve" ? penaltyAmount : 0,
+                compensation_amount:
+                    decision === "approve" ? compensationAmount : 0,
             },
             {
                 preserveScroll: true,
-                onSuccess: () =>
-                    setDecisionModal({
-                        isOpen: false,
-                        decision: null,
+                onSuccess: () => closeDecisionModal(),
+                onError: (errors) =>
+                    setDecisionModal((prev) => ({
+                        ...prev,
                         isLoading: false,
-                    }),
-                onError: () =>
-                    setDecisionModal((prev) => ({ ...prev, isLoading: false })),
+                        errors,
+                    })),
             },
         );
     };
@@ -310,7 +359,33 @@ export default function DisputeShow({ auth, dispute, otherDisputes }) {
                             <div className="dispute-reason-full">
                                 <p>{dispute.reason}</p>
                             </div>
+                            {dispute.admin_notes && (
+                                <div className="dispute-conversation">
+                                    <div className="conversation-block">
+                                        <h2 className="card-title">
+                                            <span className="card-icon-box blue">
+                                                <MessageSquare size={14} />
+                                            </span>
+                                            پیام شما
+                                        </h2>
+                                        <div className="dispute-reason-full">
+                                            <p>{dispute.admin_notes}</p>
+                                        </div>
+                                    </div>
 
+                                    <div className="conversation-block">
+                                        <h2 className="card-title">
+                                            <span className="card-icon-box purple">
+                                                <MessageSquare size={14} />
+                                            </span>
+                                            پاسخ معترض
+                                        </h2>
+                                        <div className="dispute-reason-full">
+                                            <p>{dispute.response}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             {/* پیوست‌ها */}
                             {dispute.attachments?.length > 0 && (
                                 <div className="dispute-attachments-full">
@@ -668,37 +743,332 @@ export default function DisputeShow({ auth, dispute, otherDisputes }) {
             </div>
 
             {/* ============ Modal تصمیم ============ */}
-            <ConfirmModal
-                isOpen={decisionModal.isOpen}
-                onClose={() =>
-                    setDecisionModal({
-                        isOpen: false,
-                        decision: null,
-                        isLoading: false,
-                    })
-                }
-                onConfirm={handleConfirmDecision}
-                title={
-                    decisionModal.decision === "approve"
-                        ? "تایید اعتراض"
-                        : "رد اعتراض"
-                }
-                message={
-                    decisionModal.decision === "approve"
-                        ? `آیا از تایید این اعتراض مطمئن هستید؟ رزرو لغو می‌شود، مبلغ ${toPersianNumber(booking.amount.toLocaleString())} تومان به مشتری بازگردانده می‌شود و جریمه ${toPersianNumber((booking.amount * 0.2).toLocaleString())} تومان از آرایشگر کسر می‌شود.`
-                        : "آیا از رد این اعتراض مطمئن هستید؟ رزرو در وضعیت تکمیل شده باقی می‌ماند و مبلغی بازگردانده نمی‌شود."
-                }
-                confirmText={
-                    decisionModal.decision === "approve"
-                        ? "بله، تایید کن"
-                        : "بله، رد کن"
-                }
-                cancelText="انصراف"
-                type={
-                    decisionModal.decision === "approve" ? "success" : "danger"
-                }
-                isLoading={decisionModal.isLoading}
-            />
+            {decisionModal.isOpen && (
+                <div
+                    className="decision-modal-overlay"
+                    onClick={() =>
+                        !decisionModal.isLoading && closeDecisionModal()
+                    }
+                >
+                    <div
+                        className="decision-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* ============ هدر ============ */}
+                        <div className="decision-modal-header">
+                            <div
+                                className={`decision-modal-icon ${
+                                    decisionModal.decision === "approve"
+                                        ? "approve"
+                                        : "reject"
+                                }`}
+                            >
+                                {decisionModal.decision === "approve" ? (
+                                    <ThumbsUp size={24} />
+                                ) : (
+                                    <ThumbsDown size={24} />
+                                )}
+                            </div>
+                            <h3>
+                                {decisionModal.decision === "approve"
+                                    ? "تایید اعتراض"
+                                    : "رد اعتراض"}
+                            </h3>
+                            <button
+                                type="button"
+                                className="decision-modal-close"
+                                onClick={closeDecisionModal}
+                                disabled={decisionModal.isLoading}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* ============ خلاصه اعتراض ============ */}
+                        <div className="decision-modal-summary">
+                            <div className="summary-row">
+                                <span>نوع اعتراض:</span>
+                                <strong>
+                                    {suggestedAmounts.dispute_type_label}
+                                </strong>
+                            </div>
+                            <div className="summary-row">
+                                <span>اعتراض‌کننده:</span>
+                                <strong>
+                                    {suggestedAmounts.disputed_by === "customer"
+                                        ? "مشتری"
+                                        : "آرایشگر"}
+                                </strong>
+                            </div>
+                            <div className="summary-row">
+                                <span>مبلغ رزرو:</span>
+                                <strong>
+                                    {toPersianNumber(
+                                        suggestedAmounts.booking_amount.toLocaleString(),
+                                    )}{" "}
+                                    تومان
+                                </strong>
+                            </div>
+                        </div>
+
+                        {/* ============ ✅ اینجاست: فیلدهای داینامیک ============ */}
+                        {decisionModal.decision === "approve" && (
+                            <>
+                                {/* فیلد refund — فقط اگه نوع اعتراض refund داره */}
+                                {suggestedAmounts.has_refund && (
+                                    <div className="form-group">
+                                        <label>بازگشت به مشتری (تومان)</label>
+                                        <input
+                                            type="number"
+                                            className="form-input"
+                                            value={decisionModal.refundAmount}
+                                            onChange={(e) =>
+                                                setDecisionModal((prev) => ({
+                                                    ...prev,
+                                                    refundAmount:
+                                                        e.target.value,
+                                                }))
+                                            }
+                                            max={
+                                                suggestedAmounts.booking_amount
+                                            }
+                                            min={0}
+                                            disabled={decisionModal.isLoading}
+                                        />
+                                        <span className="form-hint">
+                                            پیشنهاد سیستم:{" "}
+                                            {toPersianNumber(
+                                                suggestedAmounts.suggested_refund.toLocaleString(),
+                                            )}{" "}
+                                            تومان
+                                            {suggestedAmounts.suggested_refund_rate >
+                                                0 && (
+                                                <>
+                                                    {" "}
+                                                    (
+                                                    {toPersianNumber(
+                                                        suggestedAmounts.suggested_refund_rate *
+                                                            100,
+                                                    )}
+                                                    ٪)
+                                                </>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* فیلد penalty — فقط اگه نوع اعتراض penalty داره */}
+                                {suggestedAmounts.has_penalty && (
+                                    <div className="form-group">
+                                        <label>جریمه آرایشگر (تومان)</label>
+                                        <input
+                                            type="number"
+                                            className="form-input"
+                                            value={decisionModal.penaltyAmount}
+                                            onChange={(e) =>
+                                                setDecisionModal((prev) => ({
+                                                    ...prev,
+                                                    penaltyAmount:
+                                                        e.target.value,
+                                                }))
+                                            }
+                                            min={0}
+                                            disabled={decisionModal.isLoading}
+                                        />
+                                        <span className="form-hint">
+                                            پیشنهاد سیستم:{" "}
+                                            {toPersianNumber(
+                                                suggestedAmounts.suggested_penalty.toLocaleString(),
+                                            )}{" "}
+                                            تومان
+                                            {suggestedAmounts.suggested_penalty_rate >
+                                                0 && (
+                                                <>
+                                                    {" "}
+                                                    (
+                                                    {toPersianNumber(
+                                                        suggestedAmounts.suggested_penalty_rate *
+                                                            100,
+                                                    )}
+                                                    ٪)
+                                                </>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* فیلد compensation — فقط اگه نوع اعتراض compensation داره */}
+                                {suggestedAmounts.has_compensation && (
+                                    <div className="form-group">
+                                        <label>غرامت به آرایشگر (تومان)</label>
+                                        <input
+                                            type="number"
+                                            className="form-input"
+                                            value={
+                                                decisionModal.compensationAmount
+                                            }
+                                            onChange={(e) =>
+                                                setDecisionModal((prev) => ({
+                                                    ...prev,
+                                                    compensationAmount:
+                                                        e.target.value,
+                                                }))
+                                            }
+                                            max={
+                                                suggestedAmounts.booking_amount
+                                            }
+                                            min={0}
+                                            disabled={decisionModal.isLoading}
+                                        />
+                                        <span className="form-hint">
+                                            پیشنهاد سیستم:{" "}
+                                            {toPersianNumber(
+                                                suggestedAmounts.suggested_compensation.toLocaleString(),
+                                            )}{" "}
+                                            تومان
+                                            {suggestedAmounts.suggested_compensation_rate >
+                                                0 && (
+                                                <>
+                                                    {" "}
+                                                    (
+                                                    {toPersianNumber(
+                                                        suggestedAmounts.suggested_compensation_rate *
+                                                            100,
+                                                    )}
+                                                    ٪)
+                                                </>
+                                            )}
+                                            <br />
+                                            این مبلغ از کیف پول مشتری کسر و به
+                                            آرایشگر واریز می‌شود.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* اگه هیچکدوم نبود، پیام راهنما */}
+                                {!suggestedAmounts.has_refund &&
+                                    !suggestedAmounts.has_penalty &&
+                                    !suggestedAmounts.has_compensation && (
+                                        <div className="info-box info">
+                                            <Info size={14} />
+                                            <p>
+                                                این نوع اعتراض اثر مالی ندارد.
+                                                با تایید، فقط وضعیت اعتراض به
+                                                «تایید شده» تغییر می‌کند.
+                                            </p>
+                                        </div>
+                                    )}
+                            </>
+                        )}
+
+                        {/* ============ متن پاسخ (اجباری در هر دو حالت) ============ */}
+                        <div className="form-group">
+                            <label>
+                                متن پاسخ ادمین
+                                <span className="required">*</span>
+                            </label>
+                            <textarea
+                                className={`form-textarea ${
+                                    decisionModal.errors?.resolution
+                                        ? "error"
+                                        : ""
+                                }`}
+                                value={decisionModal.resolution}
+                                onChange={(e) =>
+                                    setDecisionModal((prev) => ({
+                                        ...prev,
+                                        resolution: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            resolution: undefined,
+                                        },
+                                    }))
+                                }
+                                placeholder="توضیح تصمیم خود را بنویسید..."
+                                rows={4}
+                                maxLength={2000}
+                                disabled={decisionModal.isLoading}
+                            />
+                            <div className="form-footer">
+                                {decisionModal.errors?.resolution ? (
+                                    <span className="form-error">
+                                        <AlertCircle size={12} />
+                                        {decisionModal.errors.resolution}
+                                    </span>
+                                ) : (
+                                    <span className="form-hint">
+                                        حداقل ۱۰ و حداکثر ۲۰۰۰ کاراکتر
+                                    </span>
+                                )}
+                                <span className="form-counter" dir="ltr">
+                                    {toPersianNumber(
+                                        decisionModal.resolution.length,
+                                    )}{" "}
+                                    / ۲۰۰۰
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* ============ هشدار برای تصمیم نهایی ============ */}
+                        {decisionModal.decision === "approve" &&
+                            (suggestedAmounts.has_refund ||
+                                suggestedAmounts.has_penalty ||
+                                suggestedAmounts.has_compensation) && (
+                                <div className="decision-modal-warning">
+                                    <AlertTriangle size={14} />
+                                    <p>
+                                        با تایید این اعتراض، تراکنش‌های مالی زیر
+                                        اعمال می‌شوند و قابل بازگشت نیستند.
+                                    </p>
+                                </div>
+                            )}
+
+                        {/* ============ دکمه‌ها ============ */}
+                        <div className="decision-modal-actions">
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                onClick={closeDecisionModal}
+                                disabled={decisionModal.isLoading}
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="button"
+                                className={`btn-confirm ${
+                                    decisionModal.decision === "approve"
+                                        ? "success"
+                                        : "danger"
+                                }`}
+                                onClick={handleConfirmDecision}
+                                disabled={
+                                    decisionModal.isLoading ||
+                                    decisionModal.resolution.trim().length < 10
+                                }
+                            >
+                                {decisionModal.isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال ثبت...
+                                    </>
+                                ) : (
+                                    <>
+                                        {decisionModal.decision ===
+                                        "approve" ? (
+                                            <ThumbsUp size={16} />
+                                        ) : (
+                                            <ThumbsDown size={16} />
+                                        )}
+                                        {decisionModal.decision === "approve"
+                                            ? "تایید و اعمال"
+                                            : "رد اعتراض"}
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* ============ Modal درخواست پاسخ ============ */}
             {requestModal.isOpen && (

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\TimeSlotStatus;
+use App\Exceptions\WalletException;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Dispute;
@@ -13,6 +14,8 @@ use App\Models\User;
 use App\Notifications\DisputeResolvedForBarber;
 use App\Notifications\DisputeResolvedForCustomer;
 use App\Notifications\DisputeResponseRequested;
+use App\Services\DisputeResolutionService;
+use App\Services\WalletService;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,6 +27,10 @@ use Inertia\Inertia;
 
 class DisputeController extends Controller
 {
+
+    public function __construct(
+        private DisputeResolutionService $resolutionService,
+    ) {}
     // ============================================
     // لیست اعتراضات
     // ============================================
@@ -181,8 +188,9 @@ class DisputeController extends Controller
     // ============================================
     // جزئیات اعتراض
     // ============================================
-    public function show(Dispute $dispute)
+    public function show(Dispute $dispute, DisputeResolutionService $service)
     {
+
         $dispute->load([
             'booking' => function ($q) {
                 $q->with([
@@ -207,9 +215,11 @@ class DisputeController extends Controller
             ->map(function ($d) {
                 return [
                     'id' => $d->id,
-                    'disputed_by' => $d->disputed_by,
-                    'dispute_type' => $d->dispute_type,
-                    'status' => $d->status,
+                    'disputed_by' => $d->disputed_by->value,
+                    'dispute_type' => $d->dispute_type->value,
+                    'status' => $d->status->value,
+                    'admin_notes' => $d->admin_notes,
+                    'response' => $d->response,
                     'created_at' => $d->created_at,
                 ];
             });
@@ -217,10 +227,11 @@ class DisputeController extends Controller
         return Inertia::render('Admin/Disputes/Show', [
             'dispute' => [
                 'id' => $dispute->id,
-                'disputed_by' => $dispute->disputed_by,
-                'dispute_type' => $dispute->dispute_type,
+                'disputed_by' => $dispute->disputed_by->value,
+                'dispute_type' => $dispute->dispute_type->value,
                 'reason' => $dispute->reason,
-                'status' => $dispute->status,
+                'admin_notes' => $dispute->admin_notes,
+                'status' => $dispute->status->value,
                 'response' => $dispute->response,
                 'responded_at' => $dispute->responded_at,
                 'resolution' => $dispute->resolution,
@@ -320,17 +331,23 @@ class DisputeController extends Controller
                 ],
             ],
             'other_disputes' => $otherDisputes,
+            'suggestedAmounts' => $service->previewAmounts($dispute),
         ]);
     }
+
 
     // ============================================
     // تصمیم‌گیری (تایید یا رد اعتراض)
     // ============================================
-    public function resolve(Request $request, Dispute $dispute)
-    {
+    public function resolve(
+        Request $request,
+        Dispute $dispute,
+    ) {
+
         // ============ بررسی وضعیت ============
-        if (!in_array($dispute->status, ['pending', 'investigating', 'awaiting_response'])) {
-            return back()->with('error', 'این اعتراض قبلاً بررسی شده است.');
+        if (!in_array($dispute->status->value, [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value])) {
+            StickyAlert::alert('این اعتراض قبلاً بررسی شده است.', 'error');
+            return redirect()->back();
         }
 
         // ============ اعتبارسنجی ============
@@ -338,7 +355,8 @@ class DisputeController extends Controller
             'decision' => 'required|in:approve,reject',
             'resolution' => 'required|string|min:10|max:1000',
             'refund_amount' => 'nullable|numeric|min:0',
-            'penalty_amount' => 'nullable|numeric|min:0',
+            'penalty_amount'        => 'nullable|numeric|min:0',
+            'compensation_amount'   => 'nullable|numeric|min:0',
             'admin_notes' => 'nullable|string|max:1000',
         ], [
             'decision.required' => 'لطفاً تصمیم خود را انتخاب کنید.',
@@ -346,151 +364,52 @@ class DisputeController extends Controller
             'resolution.min' => 'توضیحات باید حداقل ۱۰ کاراکتر باشد.',
         ]);
 
-        // ============ بررسی مبلغ بازگشتی ============
-        $bookingAmount = (float) $dispute->booking->amount;
-        if (
-            $validated['decision'] === 'approve'
-            && isset($validated['refund_amount'])
-            && $validated['refund_amount'] > $bookingAmount
-        ) {
-            return back()->with('error', 'مبلغ بازگشتی نمی‌تواند بیشتر از مبلغ رزرو باشد.');
+        // ============ بررسی وضعیت اعتراض ============
+        if (!in_array($dispute->status->value, [
+            DisputedStatus::pending->value,
+            DisputedStatus::investigating->value,
+            DisputedStatus::awaitingResponse->value,
+        ])) {
+
+            StickyAlert::alert('این اعتراض قبلاً بررسی شده است.', 'error');
+            return redirect()->back();
         }
 
-        DB::beginTransaction();
-
+        // ============ اجرا ============
         try {
-            if ($validated['decision'] === 'approve') {
-                // ============================================
-                // تایید اعتراض
-                // ============================================
-                $refundAmount = $validated['refund_amount'] ?? $bookingAmount;
-                $penaltyAmount = $validated['penalty_amount'] ?? $refundAmount * 0.2;
-
-                $dispute->update([
-                    'status' => 'resolved',
-                    'resolution' => $validated['resolution'],
-                    'resolved_at' => now(),
-                    'resolved_by_user_id' => auth()->id(),
-                    'refund_amount' => $refundAmount,
-                    'penalty_amount' => $penaltyAmount,
-                    'admin_notes' => $validated['admin_notes'] ?? null,
-                ]);
-
-                // لغو رزرو
-                $dispute->booking->update([
-                    'status' => BookingStatus::cancelled->value,
-                    'cancelled_at' => now(),
-                    'cancelled_by' => 'admin',
-                ]);
-
-                // آزاد کردن بازه
-                if ($dispute->booking->timeSlot) {
-                    $dispute->booking->timeSlot->update([
-                        'status' => TimeSlotStatus::available->value,
-                        'booked_by' => null,
-                    ]);
-                }
-
-                // ============================================
-                // بازگشت مبلغ به مشتری
-                // ============================================
-                if ($refundAmount > 0 && $dispute->booking->user) {
-                    $this->refundToCustomer(
-                        $dispute->booking->user,
-                        $refundAmount,
-                        $dispute
-                    );
-                }
-
-                // ============================================
-                // جریمه آرایشگر
-                // ============================================
-                if (
-                    $penaltyAmount > 0
-                    && $dispute->booking->barber
-                    && $dispute->disputed_by === 'customer'
-                ) {
-                    $this->penalizeBarber(
-                        $dispute->booking->barber,
-                        $penaltyAmount,
-                        $dispute
-                    );
-                }
-
-                // ============================================
-                // جریمه مشتری (اگر آرایشگر اعتراض کرده)
-                // ============================================
-                if (
-                    $penaltyAmount > 0
-                    && $dispute->booking->user
-                    && $dispute->disputed_by === 'barber'
-                ) {
-                    $this->penalizeCustomer(
-                        $dispute->booking->user,
-                        $penaltyAmount,
-                        $dispute
-                    );
-                }
-            } else {
-                // ============================================
-                // رد اعتراض
-                // ============================================
-                $dispute->update([
-                    'status' => 'rejected',
-                    'resolution' => $validated['resolution'],
-                    'resolved_at' => now(),
-                    'resolved_by_user_id' => auth()->id(),
-                    'admin_notes' => $validated['admin_notes'] ?? null,
-                ]);
-            }
-
-            // ============================================
-            // Notification به هر دو طرف
-            // ============================================
-            try {
-                $dispute->booking->user?->notify(
-                    new DisputeResolvedForCustomer($dispute, $validated['decision'])
-                );
-
-                $dispute->booking->barber?->notify(
-                    new DisputeResolvedForBarber($dispute, $validated['decision'])
-                );
-            } catch (\Exception $e) {
-                Log::warning('Resolution notification failed', [
-                    'dispute_id' => $dispute->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-
-            // ============================================
-            // لاگ امنیتی
-            // ============================================
-            (new Log())->storeLog(
-                $dispute->booking_id,
-                'admin_resolved_dispute',
-                "بررسی اعتراض #{$dispute->id} توسط ادمین - تصمیم: {$validated['decision']}"
+            $this->resolutionService->resolve(
+                dispute: $dispute,
+                decision: $validated['decision'],
+                resolution: $validated['resolution'],
+                admin: auth()->user(),
+                adminRefundAmount: $validated['refund_amount'] ?? null,
+                adminPenaltyAmount: $validated['penalty_amount'] ?? null,
+                adminCompensationAmount: $validated['compensation_amount'] ?? null,
             );
 
-            DB::commit();
+            $message = $validated['decision'] === 'approve'
+                ? 'اعتراض با موفقیت تایید شد.'
+                : 'اعتراض با موفقیت رد شد.';
 
-            StickyAlert::toast(
-                $validated['decision'] === 'approve'
-                    ? 'اعتراض تایید شد.'
-                    : 'اعتراض رد شد.',
-                'success'
-            );
-
-            return redirect()
-                ->route('admin.disputes.show', $dispute->id);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Dispute resolution failed', [
+            StickyAlert::alert($message, 'success');
+            return redirect()->back();
+        } catch (WalletException $e) {
+            // خطای مربوط به کیف پول (مثلاً موجودی کافی نیست)
+            Log::warning('Dispute resolution wallet error', [
                 'dispute_id' => $dispute->id,
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
 
-            return back()->with('error', 'خطا در بررسی اعتراض.');
+            return back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            // خطای غیرمنتظره
+            FacadesLog::error('Dispute resolution failed', [
+                'dispute_id' => $dispute->id,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+            StickyAlert::alert('خطایی در انجام عملیات رخ داد.', 'error');
+            return redirect()->back();
         }
     }
 

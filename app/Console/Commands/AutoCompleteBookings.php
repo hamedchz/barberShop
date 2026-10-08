@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\DisputedStatus;
 use App\Models\Booking;
 use App\Models\Log;
 use App\Models\User;
@@ -15,15 +16,24 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Support\Facades\DB;
 
-#[Signature('app:auto-complete-bookings')]
-#[Description('تکمیل خودکار رزروهای confirmed که بیش از ۲۴ ساعت از زمان آنها گذشته')]
-
+#[Signature('app:auto-complete-bookings {--hours=24} {--dry-run}')]
+#[Description('تکمیل خودکار رزروهای confirmed که بیش از ۲۴ ساعت از زمان آنها گذشته و اعتراض فعال/حل‌شده ندارند')]
 class AutoCompleteBookings extends Command
-
 {
-
-    // protected $signature = 'bookings:auto-complete';
-    // protected $description = 'تکمیل خودکار رزروهای confirmed که بیش از ۲۴ ساعت از زمان آنها گذشته';
+    /**
+     * وضعیت‌های اعتراضی که مانع تکمیل خودکار رزرو می‌شن.
+     *
+     * - pending / investigating / awaiting_response → اعتراض در جریانه
+     * - resolved → اعتراض به نفع مشتری حل شده، رزرو باید توسط ادمین تعیین تکلیف بشه
+     *
+     * rejected و cancelled مانع نیستن.
+     */
+    private const BLOCKING_DISPUTE_STATUSES = [
+        DisputedStatus::pending->value,
+        DisputedStatus::investigating->value,
+        DisputedStatus::awaitingResponse->value,
+        DisputedStatus::resolved->value,
+    ];
 
     public function handle()
     {
@@ -32,10 +42,18 @@ class AutoCompleteBookings extends Command
         $now = Carbon::now();
 
         $this->info("شروع جستجو (بیش از {$hours} ساعت)...");
+        $this->info(
+            'اعتراض‌های مانع تکمیل: ' . implode(', ', self::BLOCKING_DISPUTE_STATUSES)
+        );
 
         // ============ پیدا کردن رزروهای واجد شرایط ============
         $bookings = Booking::where('status', BookingStatus::confirmed->value)
-            ->where('is_disputed', false)
+            // رزروهایی که اعتراض فعال یا حل‌شده ندارن
+            // (SoftDeletes روی Dispute باعث میشه اعتراض‌های حذف‌شده نادیده گرفته بشن)
+            ->whereDoesntHave('disputes', function ($q) {
+                $q->whereIn('status', self::BLOCKING_DISPUTE_STATUSES);
+            })
+            // شرط زمان گذشته
             ->whereHas('timeSlot', function ($q) use ($now, $hours) {
                 $q->whereRaw(
                     "CONCAT(date, ' ', start_time) <= ?",
@@ -49,7 +67,9 @@ class AutoCompleteBookings extends Command
 
         if ($isDryRun) {
             foreach ($bookings as $booking) {
-                $this->line("  - رزرو #{$booking->id} | آرایشگر: {$booking->barber->name} | مشتری: {$booking->user->name}");
+                $this->line(
+                    "  - رزرو #{$booking->id} | آرایشگر: {$booking->barber->name} | مشتری: {$booking->user->name}"
+                );
             }
             $this->warn('حالت Dry-Run — هیچ تغییری اعمال نشد.');
             return Command::SUCCESS;
@@ -64,24 +84,24 @@ class AutoCompleteBookings extends Command
             try {
                 // ============ تکمیل خودکار ============
                 $booking->update([
-                    'status' => BookingStatus::completed->value,
-                    'completed_at' => now(),
-                    'completed_by' => 'system',
-                    'auto_completed' => true,
+                    'status'           => BookingStatus::completed->value,
+                    'completed_at'     => now(),
+                    'completed_by'     => 'system',
+                    'auto_completed'   => true,
                     'auto_complete_at' => now(),
                 ]);
 
                 // ============ ثبت لاگ ============
-                Log::create([
-                    'user_id' => null,
-                    'action' => 'auto_complete_booking',
-                    'model_type' => Booking::class,
-                    'model_id' => $booking->id,
-                    'description' => "تکمیل خودکار رزرو #{$booking->id} — آرایشگر تایید نکرد",
-                    'old_values' => ['status' => 'confirmed'],
-                    'new_values' => ['status' => 'completed'],
-                    'ip_address' => request()->ip() ?? '127.0.0.1',
-                ]);
+                // Log::create([
+                //     'user_id'     => null,
+                //     'action'      => 'auto_complete_booking',
+                //     'model_type'  => Booking::class,
+                //     'model_id'    => $booking->id,
+                //     'description' => "تکمیل خودکار رزرو #{$booking->id} — آرایشگر تایید نکرد (بدون اعتراض فعال)",
+                //     'old_values'  => ['status' => 'confirmed'],
+                //     'new_values'  => ['status' => 'completed'],
+                //     'ip_address'  => request()->ip() ?? '127.0.0.1',
+                // ]);
 
                 // ============ Notification برای آرایشگر ============
                 try {
@@ -93,7 +113,7 @@ class AutoCompleteBookings extends Command
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::warning('Notification to barber failed', [
                         'booking_id' => $booking->id,
-                        'error' => $e->getMessage(),
+                        'error'      => $e->getMessage(),
                     ]);
                 }
 
@@ -107,11 +127,11 @@ class AutoCompleteBookings extends Command
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::warning('Notification to customer failed', [
                         'booking_id' => $booking->id,
-                        'error' => $e->getMessage(),
+                        'error'      => $e->getMessage(),
                     ]);
                 }
 
-                // ============ Notification برای ادمین (اختیاری) ============
+                // ============ Notification برای ادمین ============
                 try {
                     $admins = User::role(['سوپر ادمین'])->get();
                     foreach ($admins as $admin) {
@@ -122,7 +142,7 @@ class AutoCompleteBookings extends Command
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::warning('Notification to admins failed', [
                         'booking_id' => $booking->id,
-                        'error' => $e->getMessage(),
+                        'error'      => $e->getMessage(),
                     ]);
                 }
 
@@ -136,7 +156,7 @@ class AutoCompleteBookings extends Command
 
                 \Illuminate\Support\Facades\Log::error('Auto-complete booking failed', [
                     'booking_id' => $booking->id,
-                    'error' => $e->getMessage(),
+                    'error'      => $e->getMessage(),
                 ]);
 
                 $this->error("  ✗ رزرو #{$booking->id} — خطا: {$e->getMessage()}");

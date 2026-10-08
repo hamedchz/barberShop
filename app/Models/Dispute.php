@@ -32,33 +32,31 @@ class Dispute extends Model
         'admin_notes',
         'edited_at',
         'edit_count',
-        'can_be_edited'
+        'can_be_edited',
+        'compensation_amount'
+        // اگه این فیلدها رو داری:
+        // 'admin_request_message',
+        // 'admin_request_at',
     ];
 
     protected $casts = [
-        'attachments' => 'array',
-        'refund_amount' => 'decimal:2',
-        'penalty_amount' => 'decimal:2',
-        'resolved_at' => 'datetime',
-        'responded_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'status' => DisputedStatus::class,
-        'dispute_type' => DisputeTypes::class,
-        'disputed_by' => DisputedBy::class,
-        'edited_at' => 'datetime',
-        'edit_count' => 'integer',
-        'can_be_edited' => 'bool'
-        // 'is_disputed' => 'bool',
-        // 'dispute_status' => DisputedStatus::class,
-        // 'dispute_resolved_at' => 'datetime',
+        'attachments'     => 'array',
+        'refund_amount'   => 'decimal:2',
+        'penalty_amount'  => 'decimal:2',
+        'resolved_at'     => 'datetime',
+        'responded_at'    => 'datetime',
+        'created_at'      => 'datetime',
+        'updated_at'      => 'datetime',
+        'status'          => DisputedStatus::class,
+        'dispute_type'    => DisputeTypes::class,
+        'disputed_by'     => DisputedBy::class,
+        'edited_at'       => 'datetime',
+        'edit_count'      => 'integer',
+        'can_be_edited'   => 'bool',
     ];
-
-
 
     protected $attributes = [
         'status' => DisputedStatus::pending->value,
-
     ];
 
     // ============ روابط ============
@@ -93,6 +91,15 @@ class Dispute extends Model
         return $query->where('status', DisputedStatus::resolved->value);
     }
 
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', [
+            DisputedStatus::pending->value,
+            DisputedStatus::investigating->value,
+            DisputedStatus::awaitingResponse->value,
+        ]);
+    }
+
     public function scopeForBarber($query, $barberId)
     {
         return $query->whereHas('booking', function ($q) use ($barberId) {
@@ -123,8 +130,85 @@ class Dispute extends Model
         return $this->status->value === DisputedStatus::rejected->value;
     }
 
+    public function isCancelled(): bool
+    {
+        return $this->status->value === DisputedStatus::cancelled->value;
+    }
+
+    public function isAwaitingResponse(): bool
+    {
+        return $this->status->value === DisputedStatus::awaitingResponse->value;
+    }
+
     public function canBeResponded(): bool
     {
-        return in_array($this->status->value, [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value]);
+        return in_array($this->status->value, [
+            DisputedStatus::pending->value,
+            DisputedStatus::investigating->value,
+            DisputedStatus::awaitingResponse->value,
+        ]);
+    }
+
+    // ============ Accessors (برای فرانت) ============
+
+    /**
+     * آیا کاربر فعلی می‌تونه پاسخ بده؟
+     * فقط وقتی که وضعیت awaiting_response باشه و کاربر طرف مقابل معترض باشه
+     */
+    public function getCanRespondAttribute(): bool
+    {
+        if ($this->status->value !== DisputedStatus::awaitingResponse->value) {
+            return false;
+        }
+
+        $authId = auth()->id();
+        if (!$authId) {
+            return false;
+        }
+
+        // کسی که معترض نبوده باید پاسخ بده
+        return $this->disputed_by_user_id !== $authId;
+    }
+
+    /**
+     * آیا کاربر فعلی می‌تونه اعتراض رو ویرایش کنه؟
+     * فقط معترض، توی وضعیت pending، و اگه can_be_edited true باشه
+     */
+    public function getCanEditAttribute(): bool
+    {
+        if (!$this->can_be_edited) {
+            return false;
+        }
+
+        if ($this->status->value !== DisputedStatus::pending->value) {
+            return false;
+        }
+
+        $authId = auth()->id();
+        return $authId && $this->disputed_by_user_id === $authId;
+    }
+
+    /**
+     * آیا کاربر فعلی می‌تونه اعتراض رو حذف کنه؟
+     * فقط معترض، توی وضعیت pending
+     */
+    public function getCanDeleteAttribute(): bool
+    {
+        if ($this->status->value !== DisputedStatus::pending->value) {
+            return false;
+        }
+
+        $authId = auth()->id();
+        return $authId && $this->disputed_by_user_id === $authId;
+    }
+
+    /**
+     * نقش معترض به فارسی
+     */
+    public function getDisputerRoleLabelAttribute(): string
+    {
+        return $this->disputed_by?->value === DisputedBy::customer->value
+            ? 'مشتری'
+            : 'آرایشگر';
     }
 }

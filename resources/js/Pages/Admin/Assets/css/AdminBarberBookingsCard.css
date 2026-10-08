@@ -1,0 +1,161 @@
+/* ============================================
+   نشانگر اعتراض بالای کارت رزرو (پنل ادمین)
+   ============================================ */
+.admin-booking-dispute-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  margin: 0.75rem 0.75rem 0;
+  border: 1.5px solid;
+  border-radius: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.admin-booking-dispute-indicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-booking-dispute-indicator.is-finalized {
+  opacity: 0.85;
+}
+
+/* نوار رنگی کنار */
+.admin-booking-dispute-indicator .dispute-indicator-accent {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+/* آیکون */
+.admin-booking-dispute-indicator .dispute-indicator-icon {
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}
+
+/* محتوا */
+.admin-booking-dispute-indicator .dispute-indicator-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  direction: ltr;
+}
+
+/* نقطه ضربان برای اعتراض فعال */
+.admin-booking-dispute-indicator .dispute-indicator-active-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: disputePulse 2s infinite;
+}
+
+@keyframes disputePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* متادیتا */
+.admin-booking-dispute-indicator .dispute-indicator-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-type {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-separator {
+  color: #d1d5db;
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-status {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* دکمه مشاهده */
+.admin-booking-dispute-indicator .dispute-indicator-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  color: #6b7280;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.admin-booking-dispute-indicator:hover .dispute-indicator-action {
+  background: #ffffff;
+  color: #1f2937;
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .admin-booking-dispute-indicator {
+    margin: 0.625rem 0.625rem 0;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .admin-booking-dispute-indicator .dispute-indicator-meta {
+    font-size: 0.625rem;
+  }
+}

@@ -15,6 +15,10 @@ import {
     Mail,
     CreditCard,
     Ban,
+    AlertTriangle,
+    Search,
+    MessageSquare,
+    Shield,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -22,6 +26,8 @@ import {
     toPersianTimeRange,
 } from "../../../utils/persianNumbers";
 
+import { getDisputeTypeConfig } from "../../../Constants/disputeTypes";
+import "../Assets/css/AdminBarberBookingsCard.css";
 // ============ وضعیت‌ها ============
 const statusConfig = {
     pending: {
@@ -57,7 +63,57 @@ const statusConfig = {
         gradient: "linear-gradient(135deg, #ef4444, #dc2626)",
     },
 };
-
+// ============ وضعیت اعتراض (برای نشانگر بالای کارت) ============
+const disputeStatusConfig = {
+    pending: {
+        label: "در انتظار بررسی",
+        icon: Clock4,
+        color: "#92400e",
+        bg: "#fffbeb",
+        border: "#fde68a",
+        accent: "#f59e0b",
+    },
+    investigating: {
+        label: "در حال بررسی",
+        icon: Search,
+        color: "#1e40af",
+        bg: "#eff6ff",
+        border: "#dbeafe",
+        accent: "#3b82f6",
+    },
+    awaiting_response: {
+        label: "در انتظار پاسخ",
+        icon: MessageSquare,
+        color: "#9a3412",
+        bg: "#fff7ed",
+        border: "#ffedd5",
+        accent: "#f97316",
+    },
+    resolved: {
+        label: "تایید شده",
+        icon: CheckCircle,
+        color: "#065f46",
+        bg: "#ecfdf5",
+        border: "#d1fae5",
+        accent: "#10b981",
+    },
+    rejected: {
+        label: "رد شده",
+        icon: XCircle,
+        color: "#991b1b",
+        bg: "#fef2f2",
+        border: "#fee2e2",
+        accent: "#ef4444",
+    },
+    cancelled: {
+        label: "لغو شده",
+        icon: Ban,
+        color: "#4b5563",
+        bg: "#f9fafb",
+        border: "#e5e7eb",
+        accent: "#9ca3af",
+    },
+};
 const paymentStatusConfig = {
     pending: { label: "در انتظار پرداخت", color: "#92400e", bg: "#fffbeb" },
     success: { label: "موفق", color: "#065f46", bg: "#ecfdf5" },
@@ -129,7 +185,18 @@ export default function AdminBarberBookingCard({ booking, barberId }) {
     const paymentCfg = booking.payment_status
         ? paymentStatusConfig[booking.payment_status]
         : null;
-
+    // ============ اطلاعات اعتراض ============
+    const latestDispute = booking.latest_dispute;
+    const hasDisputes = booking.has_disputes && latestDispute;
+    const disputeCfg = hasDisputes
+        ? disputeStatusConfig[latestDispute.status] ||
+          disputeStatusConfig.pending
+        : null;
+    const DisputeIcon = disputeCfg?.icon;
+    const disputeTypeLabel = hasDisputes
+        ? getDisputeTypeConfig(latestDispute.dispute_type)?.label
+        : null;
+    const isMyDispute = latestDispute?.disputed_by === "barber";
     return (
         <div
             className={`admin-booking-card status-${booking.status} ${
@@ -149,7 +216,88 @@ export default function AdminBarberBookingCard({ booking, barberId }) {
                     امروز
                 </div>
             )}
+            {/* ============ نشانگر اعتراض ============ */}
+            {hasDisputes && (
+                <Link
+                    href={`/admin/disputes/${latestDispute.id}`}
+                    className={`admin-booking-dispute-indicator status-${latestDispute.status}`}
+                    style={{
+                        background: `linear-gradient(135deg, ${disputeCfg.bg} 0%, #ffffff 100%)`,
+                        borderColor: disputeCfg.border,
+                    }}
+                >
+                    {/* نوار رنگی کنار */}
+                    <div
+                        className="dispute-indicator-accent"
+                        style={{ background: disputeCfg.accent }}
+                    />
 
+                    {/* آیکون */}
+                    <div
+                        className="dispute-indicator-icon"
+                        style={{
+                            backgroundColor: disputeCfg.bg,
+                            color: disputeCfg.color,
+                            borderColor: disputeCfg.border,
+                        }}
+                    >
+                        {DisputeIcon && <DisputeIcon size={14} />}
+                    </div>
+
+                    {/* محتوا */}
+                    <div className="dispute-indicator-content">
+                        <div className="dispute-indicator-title">
+                            <span
+                                className="dispute-indicator-label"
+                                style={{ color: disputeCfg.color }}
+                            >
+                                {latestDispute.disputed_by === "customer"
+                                    ? "اعتراض مشتری"
+                                    : "اعتراض آرایشگر"}
+                            </span>
+
+                            {booking.disputes_count > 1 && (
+                                <span
+                                    className="dispute-indicator-count"
+                                    style={{
+                                        backgroundColor: disputeCfg.bg,
+                                        color: disputeCfg.color,
+                                    }}
+                                >
+                                    +
+                                    {toPersianNumber(
+                                        booking.disputes_count - 1,
+                                    )}
+                                </span>
+                            )}
+
+                            {booking.has_active_dispute && (
+                                <span className="dispute-indicator-active-dot" />
+                            )}
+                        </div>
+
+                        <div className="dispute-indicator-meta">
+                            <span className="dispute-indicator-type">
+                                {disputeTypeLabel}
+                            </span>
+                            <span className="dispute-indicator-separator">
+                                •
+                            </span>
+                            <span
+                                className="dispute-indicator-status"
+                                style={{ color: disputeCfg.color }}
+                            >
+                                {disputeCfg.label}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* دکمه مشاهده */}
+                    <div className="dispute-indicator-action">
+                        <Eye size={14} />
+                    </div>
+                </Link>
+            )}
             <div className="admin-booking-content">
                 {/* ============ ستون ۱: مشتری ============ */}
                 <div className="admin-booking-customer">

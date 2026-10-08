@@ -21,6 +21,7 @@ class BarberBookingController extends Controller
      */
     public function index(Request $request, User $barber)
     {
+
         // بررسی آرایشگر بودن
         if (!$barber->hasRole('آرایشگر')) {
             abort(404);
@@ -32,7 +33,16 @@ class BarberBookingController extends Controller
                 'service:id,name,image,duration,price',
                 'timeSlot:id,date,start_time,end_time',
                 'payment:id,booking_id,status,amount,gateway',
-            ]);
+                'latestDispute.disputedByUser:id,name,avatar,phone,slug',
+            ])
+            ->withCount('disputes')
+            ->withCount(['disputes as active_disputes_count' => function ($q) {
+                $q->whereIn('status', [
+                    \App\Enums\Casts\DisputedStatus::pending->value,
+                    \App\Enums\Casts\DisputedStatus::investigating->value,
+                    \App\Enums\Casts\DisputedStatus::awaitingResponse->value,
+                ]);
+            }]);
 
         // ============ فیلتر وضعیت ============
         if ($status = $request->input('status')) {
@@ -189,6 +199,27 @@ class BarberBookingController extends Controller
                 // ============ اطلاعات پرداخت ============
                 'payment_status' => $booking->payment?->status,
                 'payment_gateway' => $booking->payment?->gateway,
+                // ============ ✅ اطلاعات اعتراض ============
+                'has_disputes' => $booking->disputes_count > 0,
+                'disputes_count' => (int) $booking->disputes_count,
+                'has_active_dispute' => $booking->active_disputes_count > 0,
+                'active_disputes_count' => (int) $booking->active_disputes_count,
+
+                'latest_dispute' => $booking->latestDispute ? [
+                    'id' => $booking->latestDispute->id,
+                    'status' => $booking->latestDispute->status->value,
+                    'dispute_type' => $booking->latestDispute->dispute_type->value,
+                    'disputed_by' => $booking->latestDispute->disputed_by->value,
+                    'reason' => $booking->latestDispute->reason,
+                    'created_at' => $booking->latestDispute->created_at,
+                    'resolved_at' => $booking->latestDispute->resolved_at,
+                    'disputed_by_user' => $booking->latestDispute->disputedByUser ? [
+                        'id' => $booking->latestDispute->disputedByUser->id,
+                        'name' => $booking->latestDispute->disputedByUser->name,
+                        'thumbnail' => $booking->latestDispute->disputedByUser->avatar(),
+                        'phone' => $booking->latestDispute->disputedByUser->phone,
+                    ] : null,
+                ] : null,
             ];
         });
 

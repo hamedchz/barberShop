@@ -553,7 +553,7 @@ class DisputeController extends Controller
             }
 
             DB::commit();
-            StickyAlert::alert('پاسخ شما ثبت شد', 'errsuccessor');
+            StickyAlert::alert('پاسخ شما ثبت شد', 'success');
             return to_route('barber.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();

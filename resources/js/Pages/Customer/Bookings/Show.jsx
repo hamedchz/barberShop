@@ -40,7 +40,8 @@ import {
     Upload,
     Eye,
     MessageSquare,
-    Search,
+    LoaderCircle,
+    Send,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -356,16 +357,16 @@ export default function BookingShow({ auth, booking }) {
         errors: {},
     });
 
-    // const openDisputeModal = () => {
-    //     setDisputeModal({
-    //         isOpen: true,
-    //         isLoading: false,
-    //         reason: "",
-    //         disputeType: "",
-    //         attachments: [],
-    //         errors: {},
-    //     });
-    // };
+    const openDisputeModal = () => {
+        setDisputeModal({
+            isOpen: true,
+            isLoading: false,
+            reason: "",
+            disputeType: "",
+            attachments: [],
+            errors: {},
+        });
+    };
 
     const closeDisputeModal = () => {
         disputeModal.attachments?.forEach((att) => {
@@ -540,6 +541,165 @@ export default function BookingShow({ auth, booking }) {
             },
         );
     };
+
+    // جواب به درخواست اطلاعات بیشتر اعتراض
+    const [responseModal, setResponseModal] = useState({
+        isOpen: false,
+        isLoading: false,
+        dispute: null, // اعتراضی که بهش پاسخ میدیم
+        response: "", // متن پاسخ
+        attachments: [], // فایلهای پیوست
+        errors: {},
+    });
+    // ============ باز کردن مدال ============
+    const openResponseModal = (dispute) => {
+        setResponseModal({
+            isOpen: true,
+            isLoading: false,
+            dispute,
+            response: "",
+            attachments: [],
+            errors: {},
+        });
+    };
+
+    // ============ بستن مدال ============
+    const closeResponseModal = () => {
+        // آزادسازی preview ها
+        responseModal.attachments?.forEach((att) => {
+            if (att.preview) URL.revokeObjectURL(att.preview);
+        });
+
+        setResponseModal({
+            isOpen: false,
+            isLoading: false,
+            dispute: null,
+            response: "",
+            attachments: [],
+            errors: {},
+        });
+    };
+
+    // ============ انتخاب فایل ============
+    const handleResponseAttachmentChange = (e) => {
+        const files = Array.from(e.target.files);
+        const totalFiles = responseModal.attachments.length + files.length;
+
+        if (totalFiles > 5) {
+            setResponseModal((prev) => ({
+                ...prev,
+                errors: {
+                    ...prev.errors,
+                    attachments: "حداکثر ۵ فایل می‌توانید آپلود کنید.",
+                },
+            }));
+            e.target.value = "";
+            return;
+        }
+
+        const validFiles = [];
+        const fileErrors = [];
+
+        for (const file of files) {
+            if (file.size > 2 * 1024 * 1024) {
+                fileErrors.push(`«${file.name}» بیش از ۲ مگابایت است`);
+                continue;
+            }
+            if (!file.type.startsWith("image/")) {
+                fileErrors.push(`«${file.name}» تصویر نیست`);
+                continue;
+            }
+            validFiles.push(file);
+        }
+
+        const newAttachments = validFiles.map((file) => ({
+            file,
+            preview: URL.createObjectURL(file),
+        }));
+
+        setResponseModal((prev) => ({
+            ...prev,
+            attachments: [...prev.attachments, ...newAttachments],
+            errors: {
+                ...prev.errors,
+                attachments:
+                    fileErrors.length > 0
+                        ? "⚠️ " + fileErrors.join(" • ")
+                        : null,
+            },
+        }));
+
+        e.target.value = "";
+    };
+
+    // ============ حذف پیوست ============
+    const handleRemoveResponseAttachment = (index) => {
+        setResponseModal((prev) => {
+            const newAttachments = [...prev.attachments];
+            if (newAttachments[index]?.preview) {
+                URL.revokeObjectURL(newAttachments[index].preview);
+            }
+            newAttachments.splice(index, 1);
+            return { ...prev, attachments: newAttachments };
+        });
+    };
+
+    // ============ اعتبارسنجی ============
+    const validateResponse = (response) => {
+        const errors = {};
+        const trimmed = response.trim();
+
+        if (!trimmed) {
+            errors.response = "لطفاً متن پاسخ را وارد کنید.";
+        } else if (trimmed.length < 10) {
+            errors.response = "پاسخ باید حداقل ۱۰ کاراکتر باشد.";
+        } else if (trimmed.length > 1000) {
+            errors.response = "پاسخ نمی‌تواند بیشتر از ۱۰۰۰ کاراکتر باشد.";
+        }
+
+        return errors;
+    };
+
+    // ============ ارسال پاسخ ============
+    const handleSubmitResponse = () => {
+        const response = responseModal.response.trim();
+        const clientErrors = validateResponse(response);
+
+        if (Object.keys(clientErrors).length > 0) {
+            setResponseModal((prev) => ({ ...prev, errors: clientErrors }));
+            return;
+        }
+
+        setResponseModal((prev) => ({ ...prev, isLoading: true, errors: {} }));
+
+        const formData = new FormData();
+        formData.append("response", response);
+        responseModal.attachments.forEach((att, index) => {
+            formData.append(`attachments[${index}]`, att.file);
+        });
+
+        router.post(
+            `/customer/disputes/${responseModal.dispute.id}/respond`,
+            formData,
+            {
+                preserveScroll: true,
+                forceFormData: true,
+                onSuccess: () => {
+                    responseModal.attachments.forEach((att) => {
+                        if (att.preview) URL.revokeObjectURL(att.preview);
+                    });
+                    closeResponseModal();
+                },
+                onError: (errors) => {
+                    setResponseModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                        errors,
+                    }));
+                },
+            },
+        );
+    };
     return (
         <PublicLayout>
             <Head title={`جزئیات رزرو #${booking.id}`} />
@@ -667,7 +827,9 @@ export default function BookingShow({ auth, booking }) {
                                 {booking.latest_dispute.status ===
                                     "pending" && <Clock4 size={24} />}
                                 {booking.latest_dispute.status ===
-                                    "investigating" && <Search size={24} />}
+                                    "investigating" && (
+                                    <LoaderCircle size={24} />
+                                )}
                                 {booking.latest_dispute.status ===
                                     "awaiting_response" && (
                                     <MessageSquare size={24} />
@@ -942,12 +1104,7 @@ export default function BookingShow({ auth, booking }) {
                                             type="button"
                                             className="dispute-action-btn respond"
                                             onClick={() =>
-                                                setResponseModal({
-                                                    isOpen: true,
-                                                    isLoading: false,
-                                                    dispute:
-                                                        booking.latest_dispute,
-                                                })
+                                                openResponseModal(latestDispute)
                                             }
                                             title="ثبت پاسخ"
                                         >
@@ -1537,7 +1694,7 @@ export default function BookingShow({ auth, booking }) {
                                         type="button"
                                         className="action-btn dispute"
                                         onClick={() =>
-                                            setDisputeModal({
+                                            openDisputeModal({
                                                 isOpen: true,
                                                 isLoading: false,
                                                 reason: "",
@@ -2107,6 +2264,265 @@ export default function BookingShow({ auth, booking }) {
                 type="danger"
                 isLoading={deleteDisputeModal.isLoading}
             />
+
+            {/* مدال پاسخ به اعتراض از ادمین */}
+            {responseModal.isOpen && responseModal.dispute && (
+                <div
+                    className="response-modal-overlay"
+                    onClick={() =>
+                        !responseModal.isLoading && closeResponseModal()
+                    }
+                >
+                    <div
+                        className="response-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* ============ هدر ============ */}
+                        <div className="response-modal-header">
+                            <div className="response-modal-icon">
+                                <MessageSquare size={28} />
+                            </div>
+                            <h3>پاسخ به درخواست ادمین</h3>
+                            <button
+                                type="button"
+                                className="response-modal-close"
+                                onClick={closeResponseModal}
+                                disabled={responseModal.isLoading}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* ============ هشدار ============ */}
+                        <div className="response-modal-warning">
+                            <AlertCircle size={16} />
+                            <p>
+                                ادمین برای بررسی دقیق‌تر اعتراض، نیاز به اطلاعات
+                                بیشتری دارد. لطفاً پاسخ خود را کامل و دقیق وارد
+                                کنید.
+                            </p>
+                        </div>
+
+                        {/* ============ پیام ادمین ============ */}
+                        {responseModal.dispute.admin_request_message && (
+                            <div className="admin-request-box">
+                                <div className="admin-request-header">
+                                    <Bot size={16} />
+                                    <span>درخواست ادمین:</span>
+                                </div>
+                                <p>
+                                    {
+                                        responseModal.dispute
+                                            .admin_request_message
+                                    }
+                                </p>
+                                {responseModal.dispute.admin_request_at && (
+                                    <span className="admin-request-date">
+                                        {formatFullDateTime(
+                                            responseModal.dispute
+                                                .admin_request_at,
+                                        )}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ============ متن اعتراض (خلاصه) ============ */}
+                        <div className="response-modal-info">
+                            <div className="info-row">
+                                <span>نوع اعتراض:</span>
+                                <strong>
+                                    {getDisputeTypeConfig(
+                                        responseModal.dispute.dispute_type,
+                                    )?.label || "-"}
+                                </strong>
+                            </div>
+                            <div className="info-row">
+                                <span>اعتراض‌کننده:</span>
+                                <strong>
+                                    {responseModal.dispute.disputed_by ===
+                                    "customer"
+                                        ? "مشتری"
+                                        : "آرایشگر"}
+                                </strong>
+                            </div>
+                            <div className="info-row">
+                                <span>کد اعتراض:</span>
+                                <strong dir="ltr">
+                                    #{toPersianNumber(responseModal.dispute.id)}
+                                </strong>
+                            </div>
+                        </div>
+
+                        {/* ============ فیلد پاسخ ============ */}
+                        <div className="response-form-group">
+                            <label className="form-label">
+                                پاسخ شما
+                                <span className="required">*</span>
+                            </label>
+                            <textarea
+                                className={`form-textarea ${
+                                    responseModal.errors.response ? "error" : ""
+                                }`}
+                                value={responseModal.response}
+                                onChange={(e) =>
+                                    setResponseModal((prev) => ({
+                                        ...prev,
+                                        response: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            response: undefined,
+                                        },
+                                    }))
+                                }
+                                placeholder="لطفاً پاسخ خود را با جزئیات بنویسید..."
+                                rows={5}
+                                maxLength={1000}
+                                disabled={responseModal.isLoading}
+                            />
+                            <div className="form-footer">
+                                {responseModal.errors.response ? (
+                                    <span className="form-error">
+                                        <AlertCircle size={12} />
+                                        {responseModal.errors.response}
+                                    </span>
+                                ) : (
+                                    <span className="form-hint">
+                                        حداقل ۱۰ و حداکثر ۱۰۰۰ کاراکتر
+                                    </span>
+                                )}
+                                <span className="form-counter" dir="ltr">
+                                    {toPersianNumber(
+                                        responseModal.response.length,
+                                    )}{" "}
+                                    / ۱۰۰۰
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* ============ پیوست‌ها ============ */}
+                        <div className="response-form-group">
+                            <label className="form-label">
+                                <Paperclip size={14} />
+                                پیوست (اختیاری)
+                            </label>
+
+                            <div className="response-attachments">
+                                {responseModal.attachments.length > 0 && (
+                                    <div className="attachments-preview">
+                                        {responseModal.attachments.map(
+                                            (att, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="attachment-item"
+                                                >
+                                                    <img
+                                                        src={att.preview}
+                                                        alt={att.file.name}
+                                                        className="attachment-image"
+                                                    />
+                                                    <div className="attachment-info">
+                                                        <span className="attachment-name">
+                                                            {att.file.name}
+                                                        </span>
+                                                        <span className="attachment-size">
+                                                            {(
+                                                                att.file.size /
+                                                                1024
+                                                            ).toFixed(1)}{" "}
+                                                            KB
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="attachment-remove"
+                                                        onClick={() =>
+                                                            handleRemoveResponseAttachment(
+                                                                index,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            responseModal.isLoading
+                                                        }
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ),
+                                        )}
+                                    </div>
+                                )}
+
+                                {responseModal.attachments.length < 5 && (
+                                    <label className="attachment-upload-btn">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={
+                                                handleResponseAttachmentChange
+                                            }
+                                            disabled={responseModal.isLoading}
+                                            style={{ display: "none" }}
+                                        />
+                                        <Upload size={18} />
+                                        <span>افزودن عکس</span>
+                                        <span className="upload-count">
+                                            {toPersianNumber(
+                                                responseModal.attachments
+                                                    .length,
+                                            )}{" "}
+                                            / ۵
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+
+                            {responseModal.errors.attachments && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>
+                                        {responseModal.errors.attachments}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ دکمه‌ها ============ */}
+                        <div className="response-modal-actions">
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                onClick={closeResponseModal}
+                                disabled={responseModal.isLoading}
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-confirm"
+                                onClick={handleSubmitResponse}
+                                disabled={
+                                    responseModal.isLoading ||
+                                    !responseModal.response.trim()
+                                }
+                            >
+                                {responseModal.isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال ارسال...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send size={16} />
+                                        ارسال پاسخ
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </PublicLayout>
     );
 }

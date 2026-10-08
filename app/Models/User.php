@@ -211,4 +211,24 @@ class User extends Authenticatable
             }
         );
     }
+    // app/Models/User.php
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function walletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
+
+    /**
+     * گرفتن کیف پول (یا ساختنش اگه وجود نداره)
+     */
+    public function getOrCreateWallet(): Wallet
+    {
+        return app(\App\Services\WalletService::class)
+            ->getOrCreateWallet($this);
+    }
 }

@@ -496,7 +496,7 @@ class BookingController extends Controller
         $disputes = $booking->disputes->map(function ($dispute) {
             return [
                 'id' => $dispute->id,
-                'disputed_by' => $dispute->disputed_by,
+                'disputed_by' => $dispute->disputed_by->value,
                 'dispute_type' => $dispute->dispute_type->value,
                 'disputed_by_user_id' => $dispute->disputed_by_user_id,
                 'reason' => $dispute->reason,

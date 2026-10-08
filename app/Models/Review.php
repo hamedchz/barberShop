@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Enums\Casts\ReviewStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Review extends Model
 {
+
+    use SoftDeletes;
     protected $fillable = [
         'user_id',
         'barber_id',
