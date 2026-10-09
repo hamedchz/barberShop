@@ -350,4 +350,69 @@ class WalletService
       ]);
     });
   }
+
+  /**
+   * کاهش از locked_balance (برای برگشت پول قفل‌شده)
+   */
+  public function debitLocked(
+    User $user,
+    float $amount,
+    WalletTransactionType $type,
+    ?string $description = null,
+    ?Model $reference = null,
+    array $metadata = [],
+  ): WalletTransaction {
+    if ($amount <= 0) {
+      throw new WalletException('مبلغ تراکنش باید بزرگتر از صفر باشد.');
+    }
+
+    return DB::transaction(function () use (
+      $user,
+      $amount,
+      $type,
+      $description,
+      $reference,
+      $metadata
+    ) {
+      $wallet = Wallet::where('user_id', $user->id)
+        ->lockForUpdate()
+        ->firstOrFail();
+
+      if (!$wallet->is_active) {
+        throw new WalletException('کیف پول کاربر غیرفعال است.');
+      }
+
+      // چک: locked_balance کافیه؟
+      if ((float) $wallet->locked_balance < $amount) {
+        throw new WalletException(
+          "مبلغ قفل‌شده کافی نیست. موجود: {$wallet->locked_balance}"
+        );
+      }
+
+      $balanceBefore = (float) $wallet->balance;
+
+      // کم کردن از locked_balance (نه balance)
+      $wallet->locked_balance -= $amount;
+      $wallet->last_transaction_at = now();
+      $wallet->save();
+
+      // ثبت تراکنش
+      return WalletTransaction::create([
+        'wallet_id'      => $wallet->id,
+        'user_id'        => $user->id,
+        'type'           => $type->value,
+        'direction'      => WalletTransactionDirection::debit->value,
+        'amount'         => $amount,
+        'balance_before' => $balanceBefore,
+        'balance_after'  => $balanceBefore,  // balance تغییر نکرده
+        'status'         => WalletTransactionStatus::completed->value,
+        'reference_type' => $reference ? get_class($reference) : null,
+        'reference_id'   => $reference?->id,
+        'description'    => $description,
+        'metadata'       => array_merge($metadata, [
+          'from_locked' => true,
+        ]),
+      ]);
+    });
+  }
 }

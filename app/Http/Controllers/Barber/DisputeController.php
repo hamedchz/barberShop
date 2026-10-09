@@ -40,6 +40,39 @@ class DisputeController extends Controller
             abort(403);
         }
 
+        // ============ چک: آیا کاربر میتونه اعتراض بزنه؟ ============
+        if (!$booking->can_dispute) {
+            $hoursRemaining = $booking->dispute_retry_hours_remaining;
+
+            if ($hoursRemaining > 0) {
+
+                StickyAlert::alert(
+                    "شما باید حداقل {$hoursRemaining} ساعت دیگر صبر کنید.",
+                    'error'
+                );
+                return back();
+            }
+            StickyAlert::alert(
+                'شما قبلاً به این رزرو اعتراض کردهاید و امکان اعتراض مجدد وجود ندارد.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============ اگه اعتراض قبلی rejected شده، چک کن موضوع متفاوت باشه ============
+        $latestDispute = $booking->disputes()->latest()->first();
+
+        if ($latestDispute?->status->value === DisputedStatus::rejected->value) {
+            // اگه همون dispute_type بود، رد کن
+            if ($latestDispute->dispute_type->value === $request->dispute_type) {
+                StickyAlert::alert(
+                    'شما قبلاً با همین موضوع اعتراض کردهاید و اعتراض شما رد شده است. لطفاً موضوع دیگری انتخاب کنید یا با پشتیبانی تماس بگیرید.',
+                    'error'
+                );
+                return back();
+            }
+        }
+
         // ============================================
         // ۲. بررسی وضعیت رزرو
         // ============================================

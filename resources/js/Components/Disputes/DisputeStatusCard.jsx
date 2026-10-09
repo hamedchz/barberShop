@@ -1,5 +1,14 @@
 import React from "react";
-import { Eye } from "lucide-react";
+import {
+    Eye,
+    Gavel,
+    AlertTriangle,
+    DollarSign,
+    MessageSquare,
+    CheckCircle,
+    XCircle,
+    Clock4,
+} from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import { toPersianNumber } from "../../utils/persianNumbers";
 import {
@@ -44,6 +53,24 @@ export default function DisputeStatusCard({
     const isMyDispute = dispute.disputed_by === viewerRole;
     const otherRoleLabel = viewerRole === "customer" ? "آرایشگر" : "مشتری";
 
+    // ============ بررسی تصمیم ادمین ============
+    const isResolved = dispute.status === "resolved";
+    const isRejected = dispute.status === "rejected";
+    const hasDecision = isResolved || isRejected;
+
+    // ============ مبالغ ============
+    const refundAmount = parseFloat(dispute.refund_amount || 0);
+    const penaltyAmount = parseFloat(dispute.penalty_amount || 0);
+    const compensationAmount = parseFloat(dispute.compensation_amount || 0);
+    const hasFinancialEffect =
+        refundAmount > 0 || penaltyAmount > 0 || compensationAmount > 0;
+
+    // ============ آیا آرایشگر جریمه شده؟ ============
+    const isBarberPenalized = penaltyAmount > 0;
+    const isBarberCompensated =
+        compensationAmount > 0 && viewerRole === "barber";
+    const isCustomerRefunded = refundAmount > 0 && viewerRole === "customer";
+
     const handleScrollToBanner = () => {
         if (!scrollTargetSelector) return;
         document
@@ -64,6 +91,7 @@ export default function DisputeStatusCard({
                 style={{ background: palette.accent }}
             />
 
+            {/* ============ هدر ============ */}
             <div className="dispute-status-card-header">
                 <div
                     className="dispute-status-card-icon"
@@ -96,6 +124,7 @@ export default function DisputeStatusCard({
                 </span>
             </div>
 
+            {/* ============ اطلاعات خلاصه ============ */}
             <div className="dispute-status-card-body">
                 <div className="dispute-status-info-row">
                     <div className="info-cell">
@@ -130,39 +159,213 @@ export default function DisputeStatusCard({
                     </div>
                 </div>
 
+                {/* ============ ✅ تصمیم ادمین ============ */}
+                {hasDecision && (
+                    <div
+                        className={`dispute-decision-box decision-${dispute.status}`}
+                    >
+                        <div className="decision-header">
+                            <div className="decision-icon">
+                                {isResolved ? (
+                                    <CheckCircle size={16} />
+                                ) : (
+                                    <XCircle size={16} />
+                                )}
+                            </div>
+                            <span className="decision-title">
+                                {isResolved
+                                    ? "نتیجه: اعتراض تایید شد"
+                                    : "نتیجه: اعتراض رد شد"}
+                            </span>
+                            {dispute.resolved_at && (
+                                <span className="decision-date">
+                                    {formatFullDateTime(dispute.resolved_at)}
+                                </span>
+                            )}
+                        </div>
+
+                        {dispute.resolution && (
+                            <div className="decision-content">
+                                <MessageSquare size={12} />
+                                <p>{dispute.resolution}</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ============ ✅ اثرات مالی ============ */}
+                {hasDecision && isResolved && hasFinancialEffect && (
+                    <div className="dispute-financial-box">
+                        <div className="financial-header">
+                            <DollarSign size={14} />
+                            <span>تسویه مالی</span>
+                        </div>
+
+                        <div className="financial-rows">
+                            {/* بازگشت به مشتری */}
+                            {refundAmount > 0 && (
+                                <div className="financial-row refund">
+                                    <div className="row-icon">
+                                        <DollarSign size={12} />
+                                    </div>
+                                    <div className="row-content">
+                                        <span className="row-label">
+                                            بازگشت به مشتری
+                                        </span>
+                                        <span className="row-value">
+                                            {toPersianNumber(
+                                                refundAmount.toLocaleString(),
+                                            )}{" "}
+                                            <span className="currency">
+                                                تومان
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* جریمه آرایشگر */}
+                            {penaltyAmount > 0 && (
+                                <div className="financial-row penalty">
+                                    <div className="row-icon">
+                                        <AlertTriangle size={12} />
+                                    </div>
+                                    <div className="row-content">
+                                        <span className="row-label">
+                                            جریمه آرایشگر
+                                            {viewerRole === "barber" && (
+                                                <span className="row-tag">
+                                                    (شما)
+                                                </span>
+                                            )}
+                                        </span>
+                                        <span className="row-value">
+                                            {toPersianNumber(
+                                                penaltyAmount.toLocaleString(),
+                                            )}{" "}
+                                            <span className="currency">
+                                                تومان
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* غرامت به آرایشگر */}
+                            {compensationAmount > 0 && (
+                                <div className="financial-row compensation">
+                                    <div className="row-icon">
+                                        <DollarSign size={12} />
+                                    </div>
+                                    <div className="row-content">
+                                        <span className="row-label">
+                                            غرامت به آرایشگر
+                                            {viewerRole === "barber" && (
+                                                <span className="row-tag success">
+                                                    (به نفع شما)
+                                                </span>
+                                            )}
+                                        </span>
+                                        <span className="row-value">
+                                            {toPersianNumber(
+                                                compensationAmount.toLocaleString(),
+                                            )}{" "}
+                                            <span className="currency">
+                                                تومان
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* جمع‌بندی برای آرایشگر */}
+                        {viewerRole === "barber" &&
+                            (penaltyAmount > 0 || compensationAmount > 0) && (
+                                <div className="financial-summary">
+                                    {penaltyAmount > 0 &&
+                                    compensationAmount > 0 ? (
+                                        <>
+                                            <span className="summary-label">
+                                                تأثیر خالص بر کیف پول شما:
+                                            </span>
+                                            <span
+                                                className={`summary-value ${
+                                                    compensationAmount -
+                                                        penaltyAmount >=
+                                                    0
+                                                        ? "positive"
+                                                        : "negative"
+                                                }`}
+                                            >
+                                                {compensationAmount -
+                                                    penaltyAmount >=
+                                                0
+                                                    ? "+"
+                                                    : "-"}
+                                                {toPersianNumber(
+                                                    Math.abs(
+                                                        compensationAmount -
+                                                            penaltyAmount,
+                                                    ).toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </>
+                                    ) : penaltyAmount > 0 ? (
+                                        <>
+                                            <span className="summary-label">
+                                                کسر شده از کیف پول شما:
+                                            </span>
+                                            <span className="summary-value negative">
+                                                -
+                                                {toPersianNumber(
+                                                    penaltyAmount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="summary-label">
+                                                واریز شده به کیف پول شما:
+                                            </span>
+                                            <span className="summary-value positive">
+                                                +
+                                                {toPersianNumber(
+                                                    compensationAmount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+
+                        {/* جمع‌بندی برای مشتری */}
+                        {viewerRole === "customer" && refundAmount > 0 && (
+                            <div className="financial-summary">
+                                <span className="summary-label">
+                                    واریز شده به کیف پول شما:
+                                </span>
+                                <span className="summary-value positive">
+                                    +
+                                    {toPersianNumber(
+                                        refundAmount.toLocaleString(),
+                                    )}{" "}
+                                    تومان
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ============ راهنما ============ */}
                 <div className="dispute-status-card-reason">
                     <span className="reason-label">توجه:</span>
                     <p>برای این سرویس یک اعتراض ثبت شده است.</p>
                 </div>
-                {/* 
-                {showReason && dispute.reason && (
-                    <div className="dispute-status-card-reason">
-                        <span className="reason-label">متن اعتراض:</span>
-                        <p>
-                            {dispute.reason.length > 160
-                                ? dispute.reason.substring(0, 160) + "..."
-                                : dispute.reason}
-                        </p>
-                    </div>
-                )} */}
             </div>
-
-            {/* {showScrollButton && scrollTargetSelector && (
-                <div className="dispute-status-card-footer">
-                    <button
-                        type="button"
-                        className="scroll-to-banner-btn"
-                        style={{
-                            color: palette.color,
-                            borderColor: palette.border,
-                        }}
-                        onClick={handleScrollToBanner}
-                    >
-                        <Eye size={14} />
-                        <span>مشاهده جزئیات کامل اعتراض</span>
-                    </button>
-                </div>
-            )} */}
         </div>
     );
 }

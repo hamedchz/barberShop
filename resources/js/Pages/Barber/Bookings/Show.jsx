@@ -901,8 +901,8 @@ export default function BarberBookingShow({ auth, booking }) {
                                             {booking.latest_dispute.status ===
                                                 "resolved" &&
                                                 (isMyDispute
-                                                    ? "اعتراض شما تایید شد. مبلغ پرداختی به کیف پول شما بازگردانده شد."
-                                                    : "اعتراض مشتری تایید شد. مبلغ به مشتری بازگردانده شد و جریمه اعمال شد.")}
+                                                    ? "اعتراض شما تایید شد."
+                                                    : "اعتراض مشتری تایید شد.")}
 
                                             {booking.latest_dispute.status ===
                                                 "rejected" &&
@@ -1437,15 +1437,16 @@ export default function BarberBookingShow({ auth, booking }) {
                                 {/* ============================================ */}
                                 {/* دکمه اعتراض آرایشگر */}
                                 {/* ============================================ */}
-                                {booking.can_barber_dispute && (
-                                    <button
-                                        type="button"
-                                        className="action-btn dispute"
-                                        onClick={openDisputeModal}
-                                    >
-                                        <AlertTriangle size={16} />
-                                        <span>اعتراض به تکمیل</span>
-                                        {/* {booking.dispute_hours_remaining && (
+                                {booking.can_barber_dispute &&
+                                    booking.can_dispute && (
+                                        <button
+                                            type="button"
+                                            className="action-btn dispute"
+                                            onClick={openDisputeModal}
+                                        >
+                                            <AlertTriangle size={16} />
+                                            <span>اعتراض به تکمیل</span>
+                                            {/* {booking.dispute_hours_remaining && (
                                             <span className="time-remaining">
                                                 {toPersianNumber(
                                                     booking.dispute_hours_remaining,
@@ -1453,8 +1454,8 @@ export default function BarberBookingShow({ auth, booking }) {
                                                 ساعت
                                             </span>
                                         )} */}
-                                    </button>
-                                )}
+                                        </button>
+                                    )}
 
                                 {/* تایید تکمیل */}
                                 {booking.can_complete && (

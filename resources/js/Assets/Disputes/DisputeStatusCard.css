@@ -188,3 +188,298 @@
     display: none;
   }
 }
+
+/* ============================================
+   Decision Box — نتیجه تصمیم ادمین
+   ============================================ */
+.dispute-decision-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.875rem;
+  border: 1.5px solid;
+  margin-top: 0.75rem;
+}
+
+.dispute-decision-box.decision-resolved {
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  border-color: #a7f3d0;
+}
+
+.dispute-decision-box.decision-rejected {
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+  border-color: #fecaca;
+}
+
+/* ============ هدر تصمیم ============ */
+.dispute-decision-box .decision-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dispute-decision-box .decision-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dispute-decision-box.decision-resolved .decision-icon {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.dispute-decision-box.decision-rejected .decision-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dispute-decision-box .decision-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  flex: 1;
+}
+
+.dispute-decision-box.decision-resolved .decision-title {
+  color: #065f46;
+}
+
+.dispute-decision-box.decision-rejected .decision-title {
+  color: #991b1b;
+}
+
+.dispute-decision-box .decision-date {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ============ محتوای تصمیم ============ */
+.dispute-decision-box .decision-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 0.625rem;
+  border-right: 3px solid;
+}
+
+.dispute-decision-box.decision-resolved .decision-content {
+  border-color: #10b981;
+}
+
+.dispute-decision-box.decision-rejected .decision-content {
+  border-color: #ef4444;
+}
+
+.dispute-decision-box .decision-content svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.dispute-decision-box .decision-content p {
+  font-size: 0.8125rem;
+  color: #374151;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============================================
+   Financial Box — تسویه مالی
+   ============================================ */
+.dispute-financial-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.dispute-financial-box .financial-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #374151;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.dispute-financial-box .financial-header svg {
+  color: #10b981;
+}
+
+/* ============ ردیف‌های مالی ============ */
+.dispute-financial-box .financial-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dispute-financial-box .financial-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+}
+
+.dispute-financial-box .financial-row .row-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dispute-financial-box .financial-row .row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.dispute-financial-box .financial-row .row-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.dispute-financial-box .financial-row .row-tag {
+  display: inline-flex;
+  padding: 0.125rem 0.375rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+}
+
+.dispute-financial-box .financial-row .row-tag.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.dispute-financial-box .financial-row .row-value {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #1f2937;
+  direction: rtl;
+}
+
+.dispute-financial-box .financial-row .row-value .currency {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+/* ============ ردیف refund (سبز) ============ */
+.dispute-financial-box .financial-row.refund {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.dispute-financial-box .financial-row.refund .row-icon {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.dispute-financial-box .financial-row.refund .row-value {
+  color: #065f46;
+}
+
+/* ============ ردیف penalty (قرمز) ============ */
+.dispute-financial-box .financial-row.penalty {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.dispute-financial-box .financial-row.penalty .row-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.dispute-financial-box .financial-row.penalty .row-value {
+  color: #991b1b;
+}
+
+/* ============ ردیف compensation (بنفش) ============ */
+.dispute-financial-box .financial-row.compensation {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+
+.dispute-financial-box .financial-row.compensation .row-icon {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.dispute-financial-box .financial-row.compensation .row-value {
+  color: #5b21b6;
+}
+
+/* ============ جمع‌بندی ============ */
+.dispute-financial-box .financial-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: #ffffff;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 0.75rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.dispute-financial-box .summary-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.dispute-financial-box .summary-value {
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.dispute-financial-box .summary-value.positive {
+  color: #065f46;
+}
+
+.dispute-financial-box .summary-value.negative {
+  color: #991b1b;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .dispute-decision-box .decision-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dispute-financial-box .financial-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -27,13 +27,15 @@ class WalletTransaction extends Model
         'is_settled',
         'settled_at',
         'settlement_reference',
-        'settlement_id'
+        'settlement_id',
+        'release_at'
     ];
 
     protected $casts = [
         'released_at'         => 'datetime',
         'is_locked' => 'bool',
         'settled_at'         => 'datetime',
+        'release_at'         => 'datetime',
         'is_settled' => 'bool',
         'amount'         => 'decimal:2',
         'balance_before' => 'decimal:2',

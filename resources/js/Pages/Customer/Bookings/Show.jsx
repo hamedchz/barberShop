@@ -881,8 +881,7 @@ export default function BookingShow({ auth, booking }) {
                                         "awaiting_response" &&
                                         "ادمین نیاز به اطلاعات بیشتری دارد. لطفاً پاسخ خود را ثبت کنید."}
                                     {booking.latest_dispute.status ===
-                                        "resolved" &&
-                                        "اعتراض شما تایید شد. مبلغ پرداختی به کیف پول شما بازگردانده شد."}
+                                        "resolved" && "اعتراض شما تایید شد."}
                                     {booking.latest_dispute.status ===
                                         "rejected" &&
                                         "پس از بررسی، اعتراض شما رد شد. برای اطلاعات بیشتر با پشتیبانی تماس بگیرید."}
@@ -1689,25 +1688,26 @@ export default function BookingShow({ auth, booking }) {
                                     </button>
                                 )}
 
-                                {booking.can_dispute && (
-                                    <button
-                                        type="button"
-                                        className="action-btn dispute"
-                                        onClick={() =>
-                                            openDisputeModal({
-                                                isOpen: true,
-                                                isLoading: false,
-                                                reason: "",
-                                                disputeType: "",
-                                                errors: {},
-                                                attachments: [],
-                                            })
-                                        }
-                                    >
-                                        <AlertTriangle size={16} />
-                                        <span>اعتراض به تکمیل خدمت</span>
-                                    </button>
-                                )}
+                                {booking.can_dispute &&
+                                    !booking.has_disputes && (
+                                        <button
+                                            type="button"
+                                            className="action-btn dispute"
+                                            onClick={() =>
+                                                openDisputeModal({
+                                                    isOpen: true,
+                                                    isLoading: false,
+                                                    reason: "",
+                                                    disputeType: "",
+                                                    errors: {},
+                                                    attachments: [],
+                                                })
+                                            }
+                                        >
+                                            <AlertTriangle size={16} />
+                                            <span>اعتراض به تکمیل خدمت</span>
+                                        </button>
+                                    )}
 
                                 {/* ============ ثبت نظر ============ */}
                                 {booking.can_review && (

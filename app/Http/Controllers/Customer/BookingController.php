@@ -349,7 +349,6 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-
         // ============================================
         // ۱. بررسی مالکیت
         // ============================================
@@ -372,7 +371,6 @@ class BookingController extends Controller
             },
             'payment',
             'review',
-            // ============ بارگذاری اعتراضات ============
             'disputes' => function ($q) {
                 $q->with('disputedByUser:id,name,avatar')
                     ->latest();
@@ -409,6 +407,10 @@ class BookingController extends Controller
         $expiresAt = null;
         $isExpired = false;
         $disputeDaysRemaining = null;
+        $disputeDeadline = null;
+        $hasResolvedDispute = false;
+        $hasActiveDispute = false;
+        $hasRejectedDispute = false;
 
         // ============ بررسی امکان تایید تکمیل ============
         $canComplete = false;
@@ -427,16 +429,16 @@ class BookingController extends Controller
             } else {
                 // لغو خودکار
                 $booking->update([
-                    'status' => BookingStatus::cancelled->value,
+                    'status'       => BookingStatus::cancelled->value,
                     'cancelled_at' => now(),
                     'cancelled_by' => BookingCompletedBy::system->value,
-                    'notes' => ($booking->notes ? $booking->notes . "\n" : '') .
+                    'notes'        => ($booking->notes ? $booking->notes . "\n" : '') .
                         'لغو خودکار به دلیل عدم پرداخت در ۱۵ دقیقه',
                 ]);
 
                 if ($timeSlot) {
                     $timeSlot->update([
-                        'status' => TimeSlotStatus::available->value,
+                        'status'    => TimeSlotStatus::available->value,
                         'booked_by' => null,
                     ]);
                 }
@@ -454,9 +456,9 @@ class BookingController extends Controller
             }
         }
 
+        // ============ بررسی ارتباط نظر با اعتراض ============
         $reviewHasDispute = false;
-        if ($review && $booking->has_disputes) {
-            // اگر نظر بعد از اعتراض ثبت شده باشد
+        if ($review && $booking->latest_dispute) {
             if ($review->created_at->gt($booking->latest_dispute->created_at)) {
                 $reviewHasDispute = true;
             }
@@ -480,19 +482,56 @@ class BookingController extends Controller
                 $booking->completed_by?->value !== BookingCompletedBy::customer->value
                 && $booking->completed_at
             ) {
+                // ============ مهلت ۷ روزه ============
+                $disputeDeadline = $booking->completed_at->copy()->addDays(7);
+                $daysRemaining = now()->diffInDays($disputeDeadline, false);
 
-                $daysSinceCompletion = $booking->completed_at->diffInDays(now());
-                $daysRemaining = 7 - $daysSinceCompletion;
+                if ($daysRemaining > 0) {
+                    // ============ بررسی اعتراضات قبلی مشتری ============
+                    $customerDisputes = $booking->disputes()
+                        ->where('disputed_by_user_id', auth()->id())
+                        ->get();
 
-                // ============ بررسی اعتراض فعال مشتری ============
-                $activeCustomerDispute = $booking->disputes()
-                    ->where('disputed_by_user_id', auth()->id())
-                    ->whereIn('status', [DisputedStatus::pending->value, DisputedStatus::investigating->value, DisputedStatus::awaitingResponse->value])
-                    ->exists();
+                    $hasActiveDispute = $customerDisputes->contains(function ($d) {
+                        return in_array($d->status->value, [
+                            DisputedStatus::pending->value,
+                            DisputedStatus::investigating->value,
+                            DisputedStatus::awaitingResponse->value,
+                        ]);
+                    });
 
-                if (!$activeCustomerDispute && $daysRemaining > 0) {
-                    $canDispute = true;
-                    $disputeDaysRemaining = $daysRemaining;
+                    $hasResolvedDispute = $customerDisputes->contains(function ($d) {
+                        return $d->status->value === DisputedStatus::resolved->value;
+                    });
+
+                    $hasRejectedDispute = $customerDisputes->contains(function ($d) {
+                        return $d->status->value === DisputedStatus::rejected->value;
+                    });
+
+                    // اگه اعتراض فعال یا تاییدشده نداره → میتونه
+                    // اگه rejected داره → میتونه (با محدودیت زمانی)
+                    if (!$hasActiveDispute && !$hasResolvedDispute) {
+                        // اگه rejected داشته، باید ۲۴ ساعت از تصمیم گذشته باشه
+                        if ($hasRejectedDispute) {
+                            $latestRejected = $customerDisputes
+                                ->filter(function ($d) {
+                                    return $d->status->value === DisputedStatus::rejected->value;
+                                })
+                                ->sortByDesc('resolved_at')
+                                ->first();
+
+                            $minHours = (int) config('disputes.min_hours_between', 24);
+                            $canRetryAt = $latestRejected?->resolved_at?->addHours($minHours);
+
+                            if ($canRetryAt && now()->isAfter($canRetryAt)) {
+                                $canDispute = true;
+                                $disputeDaysRemaining = $daysRemaining;
+                            }
+                        } else {
+                            $canDispute = true;
+                            $disputeDaysRemaining = $daysRemaining;
+                        }
+                    }
                 }
             }
         }
@@ -501,11 +540,12 @@ class BookingController extends Controller
         // ۶. آماده‌سازی اطلاعات اعتراضات
         // ============================================
         $disputes = $booking->disputes->map(function ($dispute) {
-            // ============ بررسی امکان ویرایش ============
+            // ============ بررسی امکان ویرایش/حذف ============
             $canEditDispute = false;
             $canDeleteDispute = false;
             $canRespondDispute = false;
             $editHoursRemaining = null;
+
             if ($dispute->disputed_by_user_id === auth()->id()) {
                 // ویرایش/حذف فقط در وضعیت pending و تا ۲ ساعت
                 if ($dispute->status->value === DisputedStatus::pending->value) {
@@ -524,43 +564,52 @@ class BookingController extends Controller
                     $canRespondDispute = true;
                 }
             }
+
             return [
-                'id' => $dispute->id,
-                'disputed_by' => $dispute->disputed_by,
-                'dispute_type' => $dispute->dispute_type,
-                'disputed_by_user_id' => $dispute->disputed_by_user_id,
-                'reason' => $dispute->reason,
-                'status' => $dispute->status->value,
-                'response' => $dispute->response,
-                'responded_at' => $dispute->responded_at,
-                'resolution' => $dispute->resolution,
-                'resolved_at' => $dispute->resolved_at,
-                'refund_amount' => (float) $dispute->refund_amount,
-                'penalty_amount' => (float) $dispute->penalty_amount,
-                'edited_at' => $dispute->edited_at,
-                'edit_count' => $dispute->edit_count,
-                'attachments' => collect($dispute->attachments ?? [])->map(
+                'id'                   => $dispute->id,
+                'disputed_by'          => $dispute->disputed_by?->value,
+                'dispute_type'         => $dispute->dispute_type?->value,
+                'dispute_type_label'   => $dispute->dispute_type?->label(),
+                'disputed_by_user_id'  => $dispute->disputed_by_user_id,
+                'disputed_by_user'     => $dispute->disputedByUser ? [
+                    'id'        => $dispute->disputedByUser->id,
+                    'name'      => $dispute->disputedByUser->name,
+                    'thumbnail' => $dispute->disputedByUser->avatar(),
+                ] : null,
+                'reason'               => $dispute->reason,
+                'status'               => $dispute->status->value,
+                'status_label'         => $dispute->status->label(),
+                'response'             => $dispute->response,
+                'responded_at'         => $dispute->responded_at,
+                'resolution'           => $dispute->resolution,
+                'resolved_at'          => $dispute->resolved_at,
+                'refund_amount'        => (float) $dispute->refund_amount,
+                'penalty_amount'       => (float) $dispute->penalty_amount,
+                'compensation_amount'  => (float) ($dispute->compensation_amount ?? 0),
+                'edited_at'            => $dispute->edited_at,
+                'edit_count'           => $dispute->edit_count,
+                'attachments'          => collect($dispute->attachments ?? [])->map(
                     fn($path) => [
                         'path' => $path,
-                        'url' => asset('storage/' . $path),
+                        'url'  => asset('storage/' . $path),
                         'name' => basename($path),
                     ]
-                )->toArray(),
-                'created_at' => $dispute->created_at,
-                'updated_at' => $dispute->updated_at,
+                )->values()->toArray(),
+                'created_at'           => $dispute->created_at,
+                'updated_at'           => $dispute->updated_at,
 
                 // ============ دسترسی‌ها ============
-                'can_edit' => $canEditDispute,
-                'can_delete' => $canDeleteDispute,
-                'can_respond' => $canRespondDispute,
+                'can_edit'             => $canEditDispute,
+                'can_delete'           => $canDeleteDispute,
+                'can_respond'          => $canRespondDispute,
                 'edit_hours_remaining' => $editHoursRemaining,
             ];
-        })->toArray();
+        })->values()->toArray();
 
-
-
-        // ============ آخرین اعتراض (برای نمایش) ============
+        // ============ آخرین اعتراض ============
         $latestDispute = !empty($disputes) ? $disputes[0] : null;
+
+
 
         // ============================================
         // ۷. ارسال به React
@@ -568,90 +617,98 @@ class BookingController extends Controller
         return Inertia::render('Customer/Bookings/Show', [
             'booking' => [
                 // ============ اطلاعات پایه ============
-                'id' => $booking->id,
-                'status' => $booking->status->value,
-                'amount' => (float) $booking->amount,
-                'notes' => $booking->notes,
-                'created_at' => $booking->created_at,
-                'confirmed_at' => $booking->confirmed_at,
-                'cancelled_at' => $booking->cancelled_at,
-                'cancelled_by' => $booking->cancelled_by?->value,
-                'completed_at' => $booking->completed_at,
-                'completed_by' => $booking->completed_by?->value,
-                'auto_completed' => (bool) $booking->auto_completed,
-                'expires_at' => $expiresAt?->timestamp * 1000,
-                'is_past' => $isPast,
-                'is_expired' => $isExpired,
+                'id'              => $booking->id,
+                'status'          => $booking->status->value,
+                'amount'          => (float) $booking->amount,
+                'notes'           => $booking->notes,
+                'created_at'      => $booking->created_at,
+                'confirmed_at'    => $booking->confirmed_at,
+                'cancelled_at'    => $booking->cancelled_at,
+                'cancelled_by'    => $booking->cancelled_by?->value,
+                'completed_at'    => $booking->completed_at,
+                'completed_by'    => $booking->completed_by?->value,
+                'auto_completed'  => (bool) $booking->auto_completed,
+                'expires_at'      => $expiresAt?->timestamp * 1000,
+                'is_past'         => $isPast,
+                'is_expired'      => $isExpired,
 
                 // ============ دسترسی‌ها ============
-                'can_pay' => $canPay,
-                'can_cancel' => $canCancel,
-                'can_review' => $canReview,
-                'can_edit_review' => $canEditReview,
-                'can_delete_review' => $canDeleteReview,
-                'can_dispute' => $canDispute,
-                'dispute_days_remaining' => $disputeDaysRemaining,
-                'can_customer_complete' => $canComplete,
+                'can_pay'             => $canPay,
+                'can_cancel'          => $canCancel,
+                'can_review'          => $canReview,
+                'can_edit_review'     => $canEditReview,
+                'can_delete_review'   => $canDeleteReview,
+                'can_dispute'         => $canDispute,
+                'dispute_days_remaining'  => $disputeDaysRemaining,
+                'dispute_deadline'    => $disputeDeadline?->toIso8601String(),
+                'can_customer_complete'   => $canComplete,
 
-                // ============================================
-                // اطلاعات اعتراض (بخش جدید)
-                // ============================================
-                'has_disputes' => count($disputes) > 0,
-                'disputes_count' => count($disputes),
-                'disputes' => $disputes, // ← آرایه‌ای از تمام اعتراضات
-                'latest_dispute' => $latestDispute, // ← آخرین اعتراض
+                // ============ وضعیت اعتراض‌ها ============
+                'has_disputes'        => count($disputes) > 0,
+                'has_active_dispute'  => $hasActiveDispute,
+                'has_resolved_dispute' => $hasResolvedDispute,
+                'has_rejected_dispute' => $hasRejectedDispute,
+                'disputes_count'      => count($disputes),
+                'disputes'            => $disputes,
+                'latest_dispute'      => $latestDispute,
 
                 // ============ اطلاعات آرایشگر ============
                 'barber' => $booking->barber ? [
-                    'id' => $booking->barber->id,
-                    'name' => $booking->barber->name,
-                    'avatar' => $booking->barber->avatar,
+                    'id'        => $booking->barber->id,
+                    'name'      => $booking->barber->name,
+                    'avatar'    => $booking->barber->avatar,
                     'thumbnail' => $booking->barber->avatar(),
-                    'phone' => $booking->barber->phone,
-                    'slug' => $booking->barber->slug,
+                    'phone'     => $booking->barber->phone,
+                    'slug'      => $booking->barber->slug,
                     'specialty' => $booking->barber->specialty,
-                    'city' => $booking->barber->city,
-                    'address' => $booking->barber->address,
+                    'city'      => $booking->barber->city,
+                    'address'   => $booking->barber->address,
                 ] : null,
 
                 // ============ اطلاعات خدمت ============
                 'service' => $booking->service ? [
-                    'id' => $booking->service->id,
-                    'name' => $booking->service->name,
+                    'id'          => $booking->service->id,
+                    'name'        => $booking->service->name,
                     'description' => $booking->service->description,
-                    'image' => $booking->service->image
+                    'image'       => $booking->service->image
                         ? asset('storage/' . $booking->service->image)
                         : null,
-                    'duration' => $booking->service->duration,
-                    'price' => (float) $booking->service->price,
+                    'duration'    => $booking->service->duration,
+                    'price'       => (float) $booking->service->price,
                 ] : null,
 
                 // ============ اطلاعات زمان ============
-                'date' => $bookingDate,
+                'date'       => $bookingDate,
                 'start_time' => $timeSlot?->start_time,
-                'end_time' => $timeSlot?->end_time,
+                'end_time'   => $timeSlot?->end_time,
 
                 // ============ اطلاعات پرداخت ============
                 'payment' => $booking->payment ? [
-                    'gateway' => $booking->payment->gateway,
+                    'gateway'       => $booking->payment->gateway,
                     'gateway_label' => $this->getGatewayLabel($booking->payment->gateway),
                     'transaction_id' => $booking->payment->transaction_id,
-                    'paid_at' => $booking->payment->paid_at,
-                    'status' => $booking->payment->status,
-                    'amount' => (float) $booking->payment->amount,
+                    'paid_at'       => $booking->payment->paid_at,
+                    'status'        => $booking->payment->status,
+                    'amount'        => (float) $booking->payment->amount,
                 ] : null,
 
                 // ============ اطلاعات نظر ============
                 'review' => $review ? [
-                    'id' => $review->id,
-                    'rating' => (int) $review->rating,
-                    'comment' => $review->comment,
-                    'status' => $review->status->value,
-                    'created_at' => $review->created_at,
-                    'updated_at' => $review->updated_at,
-                    'is_edited' => $review->updated_at->gt($review->created_at),
-                    'has_dispute' => $reviewHasDispute,
-                    'dispute_id' => $reviewHasDispute ? $booking->latest_dispute->id : null,
+                    'id'             => $review->id,
+                    'rating'         => (int) $review->rating,
+                    'comment'        => $review->comment,
+                    'status'         => $review->status->value,
+                    'status_label'   => $review->status->label(),
+                    'moderated_at'   => $review->moderated_at,
+                    'moderated_by'   => $review->moderatedBy ? [
+                        'id'   => $review->moderatedBy->id,
+                        'name' => $review->moderatedBy->name,
+                    ] : null,
+                    'created_at'     => $review->created_at,
+                    'updated_at'     => $review->updated_at,
+                    'is_edited'      => $review->updated_at->gt($review->created_at),
+                    'has_dispute'    => $reviewHasDispute,
+                    'dispute_id'     => $reviewHasDispute ? $booking->latest_dispute->id : null,
                 ] : null,
             ],
         ]);
@@ -880,6 +937,38 @@ class BookingController extends Controller
             abort(403);
         }
 
+        // ============ چک: آیا کاربر میتونه اعتراض بزنه؟ ============
+        if (!$booking->can_dispute) {
+            $hoursRemaining = $booking->dispute_retry_hours_remaining;
+
+            if ($hoursRemaining > 0) {
+
+                StickyAlert::alert(
+                    "شما باید حداقل {$hoursRemaining} ساعت دیگر صبر کنید.",
+                    'error'
+                );
+                return back();
+            }
+            StickyAlert::alert(
+                'شما قبلاً به این رزرو اعتراض کردهاید و امکان اعتراض مجدد وجود ندارد.',
+                'error'
+            );
+            return back();
+        }
+
+        // ============ اگه اعتراض قبلی rejected شده، چک کن موضوع متفاوت باشه ============
+        $latestDispute = $booking->disputes()->latest()->first();
+
+        if ($latestDispute?->status->value === DisputedStatus::rejected->value) {
+            // اگه همون dispute_type بود، رد کن
+            if ($latestDispute->dispute_type->value === $request->dispute_type) {
+                StickyAlert::alert(
+                    'شما قبلاً با همین موضوع اعتراض کردهاید و اعتراض شما رد شده است. لطفاً موضوع دیگری انتخاب کنید یا با پشتیبانی تماس بگیرید.',
+                    'error'
+                );
+                return back();
+            }
+        }
         // بررسی وضعیت
         if ($booking->status->value !== BookingStatus::completed->value) {
             StickyAlert::alert('فقط رزروهای تکمیل شده قابل اعتراض هستند.', 'error');

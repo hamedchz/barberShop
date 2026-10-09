@@ -372,18 +372,19 @@ export default function DisputeShow({
                                             <p>{dispute.admin_notes}</p>
                                         </div>
                                     </div>
-
-                                    <div className="conversation-block">
-                                        <h2 className="card-title">
-                                            <span className="card-icon-box purple">
-                                                <MessageSquare size={14} />
-                                            </span>
-                                            پاسخ معترض
-                                        </h2>
-                                        <div className="dispute-reason-full">
-                                            <p>{dispute.response}</p>
+                                    {dispute.response && (
+                                        <div className="conversation-block">
+                                            <h2 className="card-title">
+                                                <span className="card-icon-box purple">
+                                                    <MessageSquare size={14} />
+                                                </span>
+                                                پاسخ معترض
+                                            </h2>
+                                            <div className="dispute-reason-full">
+                                                <p>{dispute.response}</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
                             {/* پیوست‌ها */}
@@ -835,29 +836,59 @@ export default function DisputeShow({
                                             min={0}
                                             disabled={decisionModal.isLoading}
                                         />
-                                        <span className="form-hint">
-                                            پیشنهاد سیستم:{" "}
-                                            {toPersianNumber(
-                                                suggestedAmounts.suggested_refund.toLocaleString(),
-                                            )}{" "}
-                                            تومان
-                                            {suggestedAmounts.suggested_refund_rate >
-                                                0 && (
-                                                <>
-                                                    {" "}
-                                                    (
-                                                    {toPersianNumber(
-                                                        suggestedAmounts.suggested_refund_rate *
-                                                            100,
+
+                                        {/* ✅ نمایش مبلغ + درصد */}
+                                        {decisionModal.refundAmount > 0 && (
+                                            <div className="amount-display">
+                                                <div className="amount-main">
+                                                    <span className="amount-value">
+                                                        {toPersianNumber(
+                                                            Number(
+                                                                decisionModal.refundAmount,
+                                                            ).toLocaleString(),
+                                                        )}
+                                                    </span>
+                                                    <span className="amount-currency">
+                                                        تومان
+                                                    </span>
+                                                </div>
+
+                                                <div className="amount-meta">
+                                                    <span className="amount-percentage">
+                                                        {toPersianNumber(
+                                                            Math.round(
+                                                                (Number(
+                                                                    decisionModal.refundAmount,
+                                                                ) /
+                                                                    suggestedAmounts.booking_amount) *
+                                                                    100,
+                                                            ),
+                                                        )}
+                                                        ٪ از مبلغ رزرو
+                                                    </span>
+
+                                                    {suggestedAmounts.suggested_refund >
+                                                        0 && (
+                                                        <>
+                                                            <span className="meta-separator">
+                                                                •
+                                                            </span>
+                                                            <span className="amount-suggested">
+                                                                پیشنهاد سیستم:{" "}
+                                                                {toPersianNumber(
+                                                                    suggestedAmounts.suggested_refund.toLocaleString(),
+                                                                )}{" "}
+                                                                تومان
+                                                            </span>
+                                                        </>
                                                     )}
-                                                    ٪)
-                                                </>
-                                            )}
-                                        </span>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
-                                {/* فیلد penalty — فقط اگه نوع اعتراض penalty داره */}
+                                {/* ============ فیلد penalty — جریمه آرایشگر ============ */}
                                 {suggestedAmounts.has_penalty && (
                                     <div className="form-group">
                                         <label>جریمه آرایشگر (تومان)</label>
@@ -875,29 +906,67 @@ export default function DisputeShow({
                                             min={0}
                                             disabled={decisionModal.isLoading}
                                         />
-                                        <span className="form-hint">
-                                            پیشنهاد سیستم:{" "}
-                                            {toPersianNumber(
-                                                suggestedAmounts.suggested_penalty.toLocaleString(),
-                                            )}{" "}
-                                            تومان
-                                            {suggestedAmounts.suggested_penalty_rate >
-                                                0 && (
-                                                <>
-                                                    {" "}
-                                                    (
+
+                                        {/* ✅ نمایش مبلغ جریمه */}
+                                        <div
+                                            className={`amount-display penalty ${
+                                                !decisionModal.penaltyAmount
+                                                    ? "empty"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <div className="amount-main">
+                                                <span className="amount-value">
                                                     {toPersianNumber(
-                                                        suggestedAmounts.suggested_penalty_rate *
-                                                            100,
+                                                        Number(
+                                                            decisionModal.penaltyAmount ||
+                                                                0,
+                                                        ).toLocaleString(),
                                                     )}
-                                                    ٪)
-                                                </>
+                                                </span>
+                                                <span className="amount-currency">
+                                                    تومان
+                                                </span>
+                                            </div>
+
+                                            {decisionModal.penaltyAmount >
+                                                0 && (
+                                                <div className="amount-meta">
+                                                    <span className="amount-percentage penalty">
+                                                        {toPersianNumber(
+                                                            Math.round(
+                                                                (Number(
+                                                                    decisionModal.penaltyAmount,
+                                                                ) /
+                                                                    suggestedAmounts.booking_amount) *
+                                                                    100,
+                                                            ),
+                                                        )}
+                                                        ٪ از مبلغ رزرو
+                                                    </span>
+
+                                                    {suggestedAmounts.suggested_penalty >
+                                                        0 && (
+                                                        <>
+                                                            <span className="meta-separator">
+                                                                •
+                                                            </span>
+                                                            <span className="amount-suggested">
+                                                                پیشنهاد سیستم:{" "}
+                                                                {toPersianNumber(
+                                                                    suggestedAmounts.suggested_penalty.toLocaleString(),
+                                                                )}{" "}
+                                                                تومان
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             )}
-                                        </span>
+                                        </div>
                                     </div>
                                 )}
 
-                                {/* فیلد compensation — فقط اگه نوع اعتراض compensation داره */}
+                                {/* ============ فیلد compensation — غرامت به آرایشگر ============ */}
                                 {suggestedAmounts.has_compensation && (
                                     <div className="form-group">
                                         <label>غرامت به آرایشگر (تومان)</label>
@@ -920,28 +989,73 @@ export default function DisputeShow({
                                             min={0}
                                             disabled={decisionModal.isLoading}
                                         />
-                                        <span className="form-hint">
-                                            پیشنهاد سیستم:{" "}
-                                            {toPersianNumber(
-                                                suggestedAmounts.suggested_compensation.toLocaleString(),
-                                            )}{" "}
-                                            تومان
-                                            {suggestedAmounts.suggested_compensation_rate >
-                                                0 && (
-                                                <>
-                                                    {" "}
-                                                    (
+
+                                        {/* ✅ نمایش مبلغ غرامت */}
+                                        <div
+                                            className={`amount-display compensation ${
+                                                !decisionModal.compensationAmount
+                                                    ? "empty"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <div className="amount-main">
+                                                <span className="amount-value">
                                                     {toPersianNumber(
-                                                        suggestedAmounts.suggested_compensation_rate *
-                                                            100,
+                                                        Number(
+                                                            decisionModal.compensationAmount ||
+                                                                0,
+                                                        ).toLocaleString(),
                                                     )}
-                                                    ٪)
-                                                </>
+                                                </span>
+                                                <span className="amount-currency">
+                                                    تومان
+                                                </span>
+                                            </div>
+
+                                            {decisionModal.compensationAmount >
+                                                0 && (
+                                                <div className="amount-meta">
+                                                    <span className="amount-percentage compensation">
+                                                        {toPersianNumber(
+                                                            Math.round(
+                                                                (Number(
+                                                                    decisionModal.compensationAmount,
+                                                                ) /
+                                                                    suggestedAmounts.booking_amount) *
+                                                                    100,
+                                                            ),
+                                                        )}
+                                                        ٪ از مبلغ رزرو
+                                                    </span>
+
+                                                    {suggestedAmounts.suggested_compensation >
+                                                        0 && (
+                                                        <>
+                                                            <span className="meta-separator">
+                                                                •
+                                                            </span>
+                                                            <span className="amount-suggested">
+                                                                پیشنهاد سیستم:{" "}
+                                                                {toPersianNumber(
+                                                                    suggestedAmounts.suggested_compensation.toLocaleString(),
+                                                                )}{" "}
+                                                                تومان
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
                                             )}
-                                            <br />
-                                            این مبلغ از کیف پول مشتری کسر و به
-                                            آرایشگر واریز می‌شود.
-                                        </span>
+
+                                            {/* توضیح اضافی */}
+                                            <div className="amount-note">
+                                                <AlertCircle size={11} />
+                                                <span>
+                                                    این مبلغ از کیف پول مشتری
+                                                    کسر و به آرایشگر واریز
+                                                    می‌شود.
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 

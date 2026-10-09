@@ -5,16 +5,17 @@ namespace App\Services;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\DisputedStatus;
 use App\Enums\Casts\LogsStatus;
-use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\UserStatus;
+use App\Enums\Casts\UserWarningType;
 use App\Enums\Casts\WalletTransactionType;
+use App\Exceptions\WalletException;
 use App\Models\Booking;
 use App\Models\Dispute;
+use App\Models\Log;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\UserWarning;
 use App\Models\WalletTransaction;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DisputeResolutionService
@@ -134,6 +135,7 @@ class DisputeResolutionService
         ],
       );
     }
+
     // ۳.۲) اگه اعتراضی نبود که refund بده، ولی رزرو completed شده → واریز به آرایشگر
     elseif ($booking->status->value === BookingStatus::completed->value) {
       $alreadyCredited = WalletTransaction::where('reference_type', Booking::class)
@@ -144,9 +146,7 @@ class DisputeResolutionService
 
       if (!$alreadyCredited) {
         $releaseHours = (int) config('disputes.release_hours', 48);
-
         $releaseAt = now()->addHours($releaseHours);
-
         $barberEarning = (float) $booking->amount;
 
         $this->walletService->creditLocked(
@@ -166,22 +166,17 @@ class DisputeResolutionService
       }
     }
 
-    // ۳.۳) جریمه آرایشگر
-    if ($penaltyAmount > 0) {
-      $this->walletService->penalize(
-        user: $booking->barber,
-        amount: $penaltyAmount,
-        description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
-        reference: $dispute,
-        metadata: [
-          'booking_id'   => $booking->id,
-          'dispute_id'   => $dispute->id,
-          'dispute_type' => $dispute->dispute_type->value,
-        ],
-      );
+    // ۳.۳) آزادسازی پول قفل‌شده آرایشگر (اگه اعتراض به نفع آرایشگر تموم شد)
+    if ($refundAmount === 0) {
+      $this->releaseBarberEarning($booking);
     }
 
-    // ۳.۴) غرامت به آرایشگر (از مشتری)
+    // ۳.۴) جریمه آرایشگر
+    if ($penaltyAmount > 0) {
+      $this->chargeBarberPenalty($booking, $penaltyAmount, $dispute);
+    }
+
+    // ۳.۵) غرامت به آرایشگر (از مشتری)
     if ($compensationAmount > 0) {
       // کسر از کیف پول مشتری
       $this->walletService->penalize(
@@ -212,7 +207,7 @@ class DisputeResolutionService
     }
 
     // ============ ۴) اثرات غیرمالی ============
-    $this->applyNonFinancialEffects($dispute, $booking);
+    $this->applyNonFinancialEffects($dispute, $booking, $admin);
 
     // ============ ۵) تغییر وضعیت رزرو ============
     if ($refundAmount > 0) {
@@ -241,6 +236,7 @@ class DisputeResolutionService
     string $resolution,
     User $admin,
   ): Dispute {
+    // ============ ۱) آپدیت اعتراض ============
     $dispute->update([
       'status'              => DisputedStatus::rejected->value,
       'resolution'          => $resolution,
@@ -248,8 +244,10 @@ class DisputeResolutionService
       'resolved_at'         => now(),
       'refund_amount'       => 0,
       'penalty_amount'      => 0,
+      'compensation_amount' => 0,
     ]);
-    $this->releaseBarberEarning($booking);
+
+    // ============ ۲) آپدیت رزرو ============
     if ($booking->status->value !== BookingStatus::completed->value) {
       $booking->update([
         'status'       => BookingStatus::completed->value,
@@ -258,8 +256,153 @@ class DisputeResolutionService
       ]);
     }
 
+    // ============ ۳) آزادسازی پول قفل‌شده آرایشگر ============
+    $this->releaseBarberEarning($booking);
+
     return $dispute->fresh();
   }
+
+    // ============================================
+    // عملیات مالی روی آرایشگر
+    // ============================================
+
+  /**
+   * جریمه آرایشگر (با fallback به locked_balance)
+   */
+  private function chargeBarberPenalty(
+    Booking $booking,
+    float $penaltyAmount,
+    Dispute $dispute,
+  ): void {
+    $wallet = $booking->barber->wallet;
+
+    if (!$wallet) {
+      throw new WalletException('کیف پول آرایشگر یافت نشد.');
+    }
+
+    $balance = (float) $wallet->balance;
+    $locked = (float) $wallet->locked_balance;
+
+    // اگه balance کافیه → از balance کم کن
+    if ($balance >= $penaltyAmount) {
+      $this->walletService->penalize(
+        user: $booking->barber,
+        amount: $penaltyAmount,
+        description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
+        reference: $dispute,
+        metadata: [
+          'booking_id'   => $booking->id,
+          'dispute_id'   => $dispute->id,
+          'dispute_type' => $dispute->dispute_type->value,
+          'source'       => 'balance',
+        ],
+      );
+      return;
+    }
+
+    // اگه locked کافیه → از locked_balance کم کن
+    if ($locked >= $penaltyAmount) {
+      $this->walletService->debitLocked(
+        user: $booking->barber,
+        amount: $penaltyAmount,
+        type: WalletTransactionType::penalty,
+        description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
+        reference: $dispute,
+        metadata: [
+          'booking_id'   => $booking->id,
+          'dispute_id'   => $dispute->id,
+          'dispute_type' => $dispute->dispute_type->value,
+          'source'       => 'locked_balance',
+        ],
+      );
+      return;
+    }
+
+    // ترکیبی: از balance + locked
+    if (($balance + $locked) >= $penaltyAmount) {
+      if ($balance > 0) {
+        $this->walletService->penalize(
+          user: $booking->barber,
+          amount: $balance,
+          description: "بخشی از جریمه اعتراض #{$dispute->id} - از balance",
+          reference: $dispute,
+        );
+      }
+
+      $remaining = $penaltyAmount - $balance;
+      $this->walletService->debitLocked(
+        user: $booking->barber,
+        amount: $remaining,
+        type: WalletTransactionType::penalty,
+        description: "بخشی از جریمه اعتراض #{$dispute->id} - از locked",
+        reference: $dispute,
+      );
+      return;
+    }
+
+    // موجودی کافی نیست → خطا
+    throw new WalletException(
+      "موجودی آرایشگر برای جریمه کافی نیست. " .
+        "موجودی قابل استفاده: " . number_format($balance + $locked)
+    );
+  }
+
+  /**
+   * برگرداندن درآمد آرایشگر (وقتی اعتراض مشتری تایید شد)
+   */
+  private function reverseBarberEarning(Booking $booking, float $refundAmount): void
+  {
+    $earningTransaction = WalletTransaction::where('reference_type', Booking::class)
+      ->where('reference_id', $booking->id)
+      ->where('user_id', $booking->barber_id)
+      ->where('type', WalletTransactionType::earning->value)
+      ->first();
+
+    if (!$earningTransaction) {
+      return;
+    }
+
+    // ✅ مبلغ برگشتی محدود به درآمد همون رزرو
+    $amountToReverse = min($refundAmount, (float) $earningTransaction->amount);
+
+    if ($amountToReverse <= 0) {
+      return;
+    }
+
+    if ($earningTransaction->is_locked && !$earningTransaction->released_at) {
+      // از locked_balance کم کن
+      $this->walletService->debitLocked(
+        user: $booking->barber,
+        amount: $amountToReverse,
+        type: WalletTransactionType::refund,
+        description: "برگشت درآمد رزرو #{$booking->id} - اعتراض تایید شد",
+        reference: $booking,
+        metadata: [
+          'booking_id'          => $booking->id,
+          'original_earning_id' => $earningTransaction->id,
+          'source'              => 'locked_balance',
+        ],
+      );
+    } else {
+      // از balance کم کن (پول آزاد شده)
+      $this->walletService->debit(
+        user: $booking->barber,
+        amount: $amountToReverse,
+        type: WalletTransactionType::refund,
+        description: "برگشت درآمد رزرو #{$booking->id} - اعتراض تایید شد (از balance)",
+        reference: $booking,
+        metadata: [
+          'booking_id'          => $booking->id,
+          'original_earning_id' => $earningTransaction->id,
+          'source'              => 'balance',
+        ],
+      );
+    }
+  }
+
+  /**
+   * آزادسازی درآمد قفل‌شده آرایشگر
+   */
   private function releaseBarberEarning(Booking $booking): void
   {
     $transactions = WalletTransaction::where('reference_type', Booking::class)
@@ -274,13 +417,11 @@ class DisputeResolutionService
       $this->walletService->releaseLocked($transaction);
     }
   }
-    // ============================================
-    // محاسبات
-    // ============================================
 
-  /**
-   * محاسبه مبلغ بازگشت به مشتری
-   */
+  // ============================================
+  // محاسبات
+  // ============================================
+
   private function calculateRefundAmount(
     Dispute $dispute,
     Booking $booking,
@@ -301,9 +442,6 @@ class DisputeResolutionService
     return round((float) $booking->amount * $rate);
   }
 
-  /**
-   * محاسبه جریمه آرایشگر
-   */
   private function calculatePenaltyAmount(
     Dispute $dispute,
     Booking $booking,
@@ -324,9 +462,6 @@ class DisputeResolutionService
     return round((float) $booking->amount * $rate);
   }
 
-  /**
-   * محاسبه غرامت به آرایشگر (از مشتری)
-   */
   private function calculateCompensationAmount(
     Dispute $dispute,
     Booking $booking,
@@ -347,13 +482,10 @@ class DisputeResolutionService
     return round((float) $booking->amount * $rate);
   }
 
-    // ============================================
-    // Preview برای فرم ادمین
-    // ============================================
+  // ============================================
+  // Preview برای فرم ادمین
+  // ============================================
 
-  /**
-   * پیشنهاد مبالغ بدون اعمال
-   */
   public function previewAmounts(Dispute $dispute): array
   {
     $booking = $dispute->booking;
@@ -368,9 +500,9 @@ class DisputeResolutionService
       'has_penalty'             => $disputeType->hasPenalty(),
       'has_compensation'        => $disputeType->hasCompensation(),
 
-      'suggested_refund_rate'        => $disputeType->suggestedRefundRate(),
-      'suggested_penalty_rate'       => $disputeType->suggestedPenaltyRate(),
-      'suggested_compensation_rate'  => $disputeType->suggestedCompensationRate(),
+      'suggested_refund_rate'       => $disputeType->suggestedRefundRate(),
+      'suggested_penalty_rate'      => $disputeType->suggestedPenaltyRate(),
+      'suggested_compensation_rate' => $disputeType->suggestedCompensationRate(),
 
       'dispute_type'            => $disputeType->value,
       'dispute_type_label'      => $disputeType->label(),
@@ -379,45 +511,57 @@ class DisputeResolutionService
     ];
   }
 
-  /**
-   * اعمال اثرات غیرمالی بر اساس نوع اعتراض
-   */
+  // ============================================
+  // اثرات غیرمالی
+  // ============================================
+
   private function applyNonFinancialEffects(
     Dispute $dispute,
     Booking $booking,
+    User $admin,
   ): void {
     match ($dispute->dispute_type->value) {
-      'false_review'  => $this->handleFalseReview($booking, $dispute),
-      'customer_rude' => $this->handleCustomerRude($booking->user, $dispute),
+      'false_review'  => $this->handleFalseReview($booking, $dispute, $admin),
+      'customer_rude' => $this->handleCustomerRude($booking->user, $dispute, $admin),
       default         => null,
     };
   }
 
-  private function handleFalseReview(Booking $booking, Dispute $dispute): void
-  {
+  /**
+   * حذف نظر نادرست + بازمحاسبه امتیاز آرایشگر
+   */
+  private function handleFalseReview(
+    Booking $booking,
+    Dispute $dispute,
+    User $admin,
+  ): void {
     $review = $booking->review;
 
     if (!$review) {
       return;
     }
 
-    // ============ ۱) حذف نظر ============
-    // اگه Review از SoftDeletes استفاده میکنه:
-    $review->reject(
-      admin: $dispute->resolvedByUser,  // ادمینی که اعتراض رو تایید کرد
-      reason: 'false_review_dispute_approved',
-      note: "نظر به دلیل تایید اعتراض #{$dispute->id} حذف شد",
-    );
+    // ============ ۱) رد نظر ============
+    $review->update([
+      'status'           => \App\Enums\Casts\ReviewStatus::rejected->value,
+      'moderated_by'     => $admin->id,
+      'moderated_at'     => now(),
+      'rejection_reason' => 'false_review_dispute_approved',
+      'moderation_note'  => "نظر به دلیل تایید اعتراض #{$dispute->id} حذف شد",
+    ]);
 
+    // ============ ۲) Soft delete ============
     $review->delete();
 
-    // ============ ۲) اصلاح امتیاز آرایشگر ============
+    // ============ ۳) بازمحاسبه امتیاز آرایشگر ============
     $this->recalculateBarberRating($booking->barber);
 
-    // ============ ۳) لاگ ============
-
-
-    (new \App\Models\Log())->storeLog($booking->barber_id, LogsStatus::delete->value . 'false_review_removed', "نظر نادرست رزرو #{$booking->id} حذف شد - اعتراض #{$dispute->id}");
+    // ============ ۴) لاگ ============
+    (new Log())->storeLog(
+      $booking->barber_id,
+      LogsStatus::delete->value . 'false_review_removed',
+      "نظر نادرست رزرو #{$booking->id} حذف شد - اعتراض #{$dispute->id}"
+    );
   }
 
   /**
@@ -425,39 +569,47 @@ class DisputeResolutionService
    */
   private function recalculateBarberRating(User $barber): void
   {
-    // فقط نظرهای فعال (غیرحذفشده) رو حساب کن
     $stats = Review::query()
-      ->where('barber_id', $barber->id)
-      ->selectRaw('COUNT(*) as total, SUM(rating) as sum')
+      ->whereHas('booking', function ($q) use ($barber) {
+        $q->where('barber_id', $barber->id);
+      })
+      ->where('status', '!=', \App\Enums\Casts\ReviewStatus::rejected->value)
+      ->selectRaw('COUNT(*) as total, COALESCE(SUM(rating), 0) as sum')
       ->first();
 
     $total = (int) ($stats->total ?? 0);
     $sum   = (int) ($stats->sum ?? 0);
 
     $barber->update([
-      'total_reviews'     => $total,
-      'total_rating_sum'  => $sum,
-      'average_rating'    => $total > 0 ? round($sum / $total, 2) : 0,
+      'total_reviews'    => $total,
+      'total_rating_sum' => $sum,
+      'average_rating'   => $total > 0 ? round($sum / $total, 2) : 0,
     ]);
   }
 
+  /**
+   * ثبت اخطار برای مشتری + بررسی بن
+   */
   private function handleCustomerRude(
     User $customer,
     Dispute $dispute,
+    User $admin,
   ): void {
+
+
     // ============ ۱) ثبت اخطار ============
     $warning = UserWarning::create([
       'user_id'    => $customer->id,
       'dispute_id' => $dispute->id,
-      'issued_by'  => auth()->id(),
-      'type'       => 'rude_behavior',
+      'issued_by'  => $admin->id,
+      'type'       => UserWarningType::rude_behavior->value,
       'reason'     => $dispute->reason,
       'expires_at' => now()->addMonths(6),
     ]);
 
     // ============ ۲) بررسی آستانه بن ============
     $activeWarningsCount = $customer->activeWarnings()->count();
-    $banThreshold = 3;
+    $banThreshold = (int) config('disputes.ban_threshold', 3);
 
     if ($activeWarningsCount >= $banThreshold) {
       $this->banCustomer(
@@ -479,9 +631,11 @@ class DisputeResolutionService
     }
 
     // ============ ۴) لاگ ============
-
-
-    (new \App\Models\Log())->storeLog($warning->id, LogsStatus::store->value . 'customer_warning_issued', "اخطار به مشتری #{$customer->id} - اعتراض #{$dispute->id}");
+    (new Log())->storeLog(
+      $warning->id,
+      LogsStatus::store->value . 'customer_warning_issued',
+      "اخطار به مشتری #{$customer->id} - اعتراض #{$dispute->id}"
+    );
   }
 
   /**
@@ -489,46 +643,24 @@ class DisputeResolutionService
    */
   private function banCustomer(User $customer, string $reason): void
   {
-    // اگه فیلد is_active داری (که توی جدول users داری):
     $customer->update([
       'is_active' => false,
-      'status'    => UserStatus::BANNED->value,   // اگه enum status داری
+      'status'    => UserStatus::BANNED->value,
     ]);
 
-    // لاگ بن
+    (new Log())->storeLog(
+      $customer->id,
+      LogsStatus::store->value . 'customer_banned',
+      "مشتری #{$customer->id} بن شد: {$reason}"
+    );
 
-    (new \App\Models\Log())->storeLog($customer->id, LogsStatus::store->value . 'customer_banned', "مشتری #{$customer->id} بن شد: {$reason}");
-
-    // نوتیفیکیشن بن
     try {
       $customer->notify(new \App\Notifications\CustomerBanned($reason));
     } catch (\Throwable $e) {
-      // ...
+      \Illuminate\Support\Facades\Log::warning(
+        'Failed to send ban notification',
+        ['user_id' => $customer->id, 'error' => $e->getMessage()]
+      );
     }
-  }
-
-  /**
-   * برگرداندن درآمد آرایشگر (وقتی اعتراض مشتری تایید شد)
-   */
-  private function reverseBarberEarning(Booking $booking, float $refundAmount): void
-  {
-    // پیدا کردن تراکنش earning مربوط به این رزرو
-    $earningTransaction = WalletTransaction::where('reference_type', Booking::class)
-      ->where('reference_id', $booking->id)
-      ->where('user_id', $booking->barber_id)
-      ->where('type', WalletTransactionType::earning->value)
-      ->first();
-
-    if (!$earningTransaction) {
-      return; // قبلاً واریز نشده بوده
-    }
-
-    $this->walletService->debit(
-      user: $booking->barber,
-      amount: $refundAmount,
-      type: WalletTransactionType::refund,
-      description: "برگشت درآمد رزرو #{$booking->id} - اعتراض تایید شد",
-      reference: $booking,
-    );
   }
 }

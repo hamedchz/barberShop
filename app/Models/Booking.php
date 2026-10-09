@@ -213,4 +213,95 @@ class Booking extends Model
 
         return max(0, now()->diffInHours($deadline, false));
     }
+
+    // app/Models/Booking.php
+
+    /**
+     * آیا کاربر میتونه اعتراض جدید بزنه؟
+     */
+    public function getCanDisputeAttribute(): bool
+    {
+        // حداکثر تعداد اعتراض
+        $maxDisputes = (int) config('disputes.max_per_booking', 1);
+
+        // تعداد اعتراضات فعلی
+        $disputesCount = $this->disputes()->count();
+
+        if ($disputesCount >= $maxDisputes) {
+            return false;
+        }
+
+        // اگه اعتراض فعال داره → نمیتونه
+        if ($this->has_active_dispute) {
+            return false;
+        }
+
+        // آخرین اعتراض رو بگیر
+        $latestDispute = $this->disputes()->latest()->first();
+
+        if (!$latestDispute) {
+            return true;  // اولین اعتراض
+        }
+
+        // اگه آخرین اعتراض resolved (تایید) → نمیتونه دوباره
+        if ($latestDispute->status->value === DisputedStatus::resolved->value) {
+            return false;
+        }
+
+        // اگه آخرین اعتراض rejected → میتونه (با محدودیت زمانی)
+        if ($latestDispute->status->value === DisputedStatus::rejected->value) {
+            // فاصله زمانی
+            $minHours = (int) config('disputes.min_hours_between', 24);
+            $canRetryAt = $latestDispute->resolved_at?->addHours($minHours);
+
+            if ($canRetryAt && now()->isBefore($canRetryAt)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * ساعت باقی‌مانده تا امکان اعتراض مجدد
+     */
+    public function getDisputeRetryHoursRemainingAttribute(): ?int
+    {
+        $latestDispute = $this->disputes()->latest()->first();
+
+        if (!$latestDispute || $latestDispute->status->value !== DisputedStatus::rejected->value) {
+            return null;
+        }
+
+        $minHours = (int) config('disputes.min_hours_between', 24);
+        $canRetryAt = $latestDispute->resolved_at?->addHours($minHours);
+
+        if (!$canRetryAt) {
+            return null;
+        }
+
+        $remaining = now()->diffInHours($canRetryAt, false);
+
+        return $remaining > 0 ? $remaining : 0;
+    }
+    public function scopeCanBeDisputed($query)
+    {
+        $maxDisputes = (int) config('disputes.max_per_booking', 2);
+
+        return $query
+            ->whereDoesntHave('disputes', function ($q) {
+                // اعتراض فعال نداشته باشه
+                $q->whereIn('status', [
+                    DisputedStatus::pending->value,
+                    DisputedStatus::investigating->value,
+                    DisputedStatus::awaitingResponse->value,
+                ]);
+            })
+            ->whereHas('disputes', function ($q) {
+                // تعداد اعتراضات کمتر از حد مجاز
+            }, '<', $maxDisputes)
+            ->orWhereDoesntHave('disputes');
+    }
 }
