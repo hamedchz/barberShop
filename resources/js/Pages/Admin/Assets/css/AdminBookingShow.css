@@ -1079,3 +1079,706 @@
     width: 100%;
   }
 }
+
+/* ============================================
+   Review Actions — دکمه‌های تایید/رد نظر
+   ============================================ */
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.review-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.review-action-btn svg {
+  flex-shrink: 0;
+}
+
+.review-action-btn span {
+  line-height: 1;
+}
+
+/* ============ تایید نظر ============ */
+.review-action-btn.approve {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+}
+
+.review-action-btn.approve:hover:not(:disabled) {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border-color: #10b981;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.review-action-btn.approve:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+/* ============ رد نظر ============ */
+.review-action-btn.reject {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.08);
+}
+
+.review-action-btn.reject:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+.review-action-btn.reject:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+}
+
+/* ============ حالت غیرفعال ============ */
+.review-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none;
+}
+
+/* ============ حالت در حال بارگذاری ============ */
+.review-action-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.review-action-btn .spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: reviewSpinner 0.7s linear infinite;
+}
+
+@keyframes reviewSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .review-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .review-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Reject Review Modal
+   ============================================ */
+.reject-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: rejectOverlayIn 0.2s ease-out;
+}
+
+@keyframes rejectOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.reject-modal {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: rejectModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rejectModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============ هدر ============ */
+.reject-modal-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.reject-modal-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reject-modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.reject-modal-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280;
+}
+
+.reject-modal-close:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.reject-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ هشدار ============ */
+.reject-modal-warning {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.875rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.875rem;
+  margin-bottom: 1rem;
+  color: #92400e;
+}
+
+.reject-modal-warning svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.reject-modal-warning p {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============ پیش‌نمایش نظر ============ */
+.reject-modal-preview {
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.preview-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview-user img,
+.preview-user>span:first-child {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.preview-user-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.preview-comment {
+  font-size: 0.8125rem;
+  color: #374151;
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============ فرم ============ */
+.reject-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.reject-form-group .form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.reject-form-group .required {
+  color: #ef4444;
+}
+
+/* ============ لیست دلایل ============ */
+.reject-reasons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reject-reason-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  text-align: right;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reject-reason-option:hover:not(:disabled) {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.reject-reason-option.selected {
+  border-color: #ef4444;
+  background: #fef2f2;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.reject-reason-option:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reason-radio {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s;
+  color: #ffffff;
+}
+
+.reject-reason-option.selected .reason-radio {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.reason-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.reason-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.reason-description {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ============ textarea ============ */
+.reject-form-group .form-textarea {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s;
+  background: #f9fafb;
+}
+
+.reject-form-group .form-textarea:focus {
+  outline: none;
+  border-color: #ef4444;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.reject-form-group .form-textarea.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.375rem;
+}
+
+.form-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+}
+
+.form-counter {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* ============ دکمه‌ها ============ */
+.reject-modal-actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+}
+
+.reject-modal-actions .btn-cancel,
+.reject-modal-actions .btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.2s;
+}
+
+.reject-modal-actions .btn-cancel {
+  background: #ffffff;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.reject-modal-actions .btn-cancel:hover:not(:disabled) {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.reject-modal-actions .btn-confirm.reject {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.reject-modal-actions .btn-confirm.reject:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.4);
+}
+
+.reject-modal-actions .btn-cancel:disabled,
+.reject-modal-actions .btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .reject-modal {
+    padding: 1.25rem;
+  }
+
+  .reject-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .reject-modal-actions .btn-cancel,
+  .reject-modal-actions .btn-confirm {
+    width: 100%;
+  }
+}
+
+.review-action-btn.change-decision {
+  background: #f9fafb;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.review-action-btn.change-decision:hover:not(:disabled) {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #dbeafe;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* ============ اطلاعات تصمیم ادمین ============ */
+.review-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.review-moderated-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ============================================
+   Review Status Section
+   ============================================ */
+.review-status-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.review-status-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ============ بج وضعیت نظر ============ */
+.review-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1.5px solid;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.review-status-badge svg {
+  flex-shrink: 0;
+}
+
+.review-status-badge.status-pending {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.review-status-badge.status-approved {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.review-status-badge.status-rejected {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.review-status-badge.status-flagged {
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: #ffedd5;
+}
+
+/* ============ اطلاعات تصمیم ادمین ============ */
+.review-moderated-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1;
+  flex-wrap: wrap;
+}
+
+.review-moderated-info svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.review-moderated-info .moderated-action {
+  color: #374151;
+  font-weight: 700;
+}
+
+.review-moderated-info .moderated-by {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.review-moderated-info .moderated-separator {
+  color: #d1d5db;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.review-moderated-info .moderated-date {
+  color: #9ca3af;
+  font-weight: 600;
+  direction: rtl;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .review-status-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .review-moderated-info {
+    font-size: 0.625rem;
+    padding: 0.3125rem 0.625rem;
+  }
+}
+
+.review-status-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+  border: 1px solid #f3f4f6;
+  border-radius: 1rem;
+}
+
+.review-status-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}

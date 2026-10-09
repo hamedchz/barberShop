@@ -32,6 +32,9 @@ import {
     Edit3,
     TrendingUp,
     AlertCircle,
+    X,
+    RefreshCw,
+    AlertTriangle,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -84,6 +87,43 @@ const formatFullDateTime = (date) => {
         hours,
     )}:${toPersianNumber(minutes)}`;
 };
+const rejectionReasons = [
+    {
+        value: "inappropriate_language",
+        label: "استفاده از الفاظ نامناسب",
+        description: "نظر شامل توهین، فحش یا الفاظ رکیک است.",
+    },
+    {
+        value: "false_information",
+        label: "اطلاعات نادرست",
+        description: "نظر حاوی اطلاعات نادرست یا گمراه‌کننده است.",
+    },
+    {
+        value: "not_related",
+        label: "نامرتبط با خدمت",
+        description: "نظر ربطی به خدمت ارائه‌شده ندارد.",
+    },
+    {
+        value: "spam",
+        label: "اسپم یا تبلیغ",
+        description: "نظر شامل تبلیغ، لینک یا محتوای اسپم است.",
+    },
+    {
+        value: "personal_info",
+        label: "افشای اطلاعات شخصی",
+        description: "نظر شامل شماره تماس، آدرس یا اطلاعات خصوصی است.",
+    },
+    {
+        value: "false_review_dispute",
+        label: "تایید اعتراض آرایشگر",
+        description: "بابت تایید اعتراض آرایشگر به نادرست بودن نظر.",
+    },
+    {
+        value: "other",
+        label: "سایر (نیاز به توضیح)",
+        description: "دلیل دیگری که باید توضیح دهید.",
+    },
+];
 
 // ============ وضعیت رزرو ============
 const statusConfig = {
@@ -160,7 +200,22 @@ const gatewayLabels = {
     nextpay: "نکست‌پی",
 };
 
+const reviewStatusIcons = {
+    pending: Clock4,
+    approved: CheckCircle,
+    rejected: XCircle,
+    flagged: AlertTriangle,
+};
+
 export default function BarberBookingShow({ auth, barber, booking }) {
+    const [rejectModal, setRejectModal] = useState({
+        isOpen: false,
+        review: null,
+        reason: "",
+        note: "",
+        isLoading: false,
+        errors: {},
+    });
     // ============ Modal states ============
     const [cancelModal, setCancelModal] = useState({
         isOpen: false,
@@ -254,6 +309,139 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                     })),
             },
         );
+    };
+    const [loading, setLoading] = useState(null);
+    const handleApprove = (review) => {
+        setLoading("approve");
+        router.patch(
+            `/admin/reviews/${review}/approve`,
+            {},
+            {
+                preserveScroll: true,
+                onFinish: () => setLoading(null),
+            },
+        );
+    };
+    // ============ وضعیت‌های نظر ============
+    const ReviewStatusIcon = reviewStatusIcons[booking.review.status] || Clock4;
+
+    const isPending = booking.review.status === "pending";
+    const isApproved = booking.review.status === "approved";
+    const isRejected = booking.review.status === "rejected";
+    const isFlagged = booking.review.status === "flagged";
+    const isFinalized = isApproved || isRejected;
+    // ============ باز کردن مدال ============
+    const openRejectModal = (review) => {
+        setRejectModal({
+            isOpen: true,
+            review,
+            reason: "",
+            note: "",
+            isLoading: false,
+            errors: {},
+        });
+    };
+
+    // ============ بستن مدال ============
+    const closeRejectModal = () => {
+        setRejectModal({
+            isOpen: false,
+            review: null,
+            reason: "",
+            note: "",
+            isLoading: false,
+            errors: {},
+        });
+    };
+
+    // ============ ارسال ============
+    const handleReject = () => {
+        const { review, reason, note } = rejectModal;
+
+        // ============ Validation سمت کلاینت ============
+        const clientErrors = {};
+        if (!reason) {
+            clientErrors.reason = "لطفاً دلیل رد نظر را انتخاب کنید.";
+        }
+        if (reason === "other" && !note.trim()) {
+            clientErrors.note = "لطفاً توضیح دهید چرا نظر رد می‌شود.";
+        }
+        if (note.length > 500) {
+            clientErrors.note = "توضیحات نمی‌تواند بیشتر از ۵۰۰ کاراکتر باشد.";
+        }
+
+        if (Object.keys(clientErrors).length > 0) {
+            setRejectModal((prev) => ({ ...prev, errors: clientErrors }));
+            return;
+        }
+
+        setRejectModal((prev) => ({ ...prev, isLoading: true, errors: {} }));
+
+        router.patch(
+            `/admin/reviews/${review.id}/reject`,
+            {
+                reason,
+                note: note.trim() || null,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => closeRejectModal(),
+                onError: (errors) =>
+                    setRejectModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                        errors,
+                    })),
+            },
+        );
+    };
+
+    const [changeDecisionModal, setChangeDecisionModal] = useState({
+        isOpen: false,
+        review: null,
+        newDecision: null, // "approve" | "reject"
+        isLoading: false,
+    });
+
+    const handleChangeDecision = (review, newDecision) => {
+        console.log(review);
+        setChangeDecisionModal({
+            isOpen: true,
+            review,
+            newDecision,
+            isLoading: false,
+        });
+    };
+
+    const confirmChangeDecision = () => {
+        const { review, newDecision } = changeDecisionModal;
+        setChangeDecisionModal((prev) => ({ ...prev, isLoading: true }));
+
+        const url =
+            newDecision === "approve"
+                ? `/admin/reviews/${review.id}/approve`
+                : `/admin/reviews/${review.id}/reject`;
+
+        const payload =
+            newDecision === "reject"
+                ? { reason: "changed_decision", note: "تغییر تصمیم ادمین" }
+                : {};
+
+        router.patch(url, payload, {
+            preserveScroll: true,
+            onSuccess: () =>
+                setChangeDecisionModal({
+                    isOpen: false,
+                    review: null,
+                    newDecision: null,
+                    isLoading: false,
+                }),
+            onError: () =>
+                setChangeDecisionModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                })),
+        });
     };
 
     return (
@@ -591,6 +779,60 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                     <h2 className="card-title">نظر مشتری</h2>
                                 </div>
 
+                                {/* ============ وضعیت نظر ============ */}
+                                <div
+                                    className="review-status-section"
+                                    style={{ marginBottom: "10px" }}
+                                >
+                                    <div className="review-status-main">
+                                        <div
+                                            className={`review-status-badge status-${booking.review.status}`}
+                                        >
+                                            <ReviewStatusIcon size={14} />
+                                            <span>
+                                                {booking.review.status_label}
+                                            </span>
+                                        </div>
+
+                                        {isFinalized &&
+                                            booking.review.moderated_at && (
+                                                <div className="review-moderated-info">
+                                                    <Shield size={12} />
+                                                    <span className="moderated-action">
+                                                        {isApproved
+                                                            ? "تایید شده"
+                                                            : "رد شده"}
+                                                    </span>
+                                                    {booking.review.moderated_by
+                                                        ?.name && (
+                                                        <>
+                                                            <span className="moderated-separator">
+                                                                •
+                                                            </span>
+                                                            <span className="moderated-by">
+                                                                {
+                                                                    booking
+                                                                        .review
+                                                                        .moderated_by
+                                                                        .name
+                                                                }
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                    <span className="moderated-separator">
+                                                        •
+                                                    </span>
+                                                    <span className="moderated-date">
+                                                        {formatFullDateTime(
+                                                            booking.review
+                                                                .moderated_at,
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+
                                 <div className="review-display">
                                     <div className="review-display-header">
                                         <RatingStars
@@ -610,6 +852,67 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                         <p className="review-display-comment">
                                             {booking.review.comment}
                                         </p>
+                                    )}
+                                </div>
+                                <div className="review-actions">
+                                    {isPending && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className="review-action-btn approve"
+                                                onClick={() =>
+                                                    handleApprove(
+                                                        booking.review.id,
+                                                    )
+                                                }
+                                            >
+                                                <CheckCircle size={14} />
+                                                <span>تایید نظر</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="review-action-btn reject"
+                                                onClick={() =>
+                                                    openRejectModal(
+                                                        booking.review,
+                                                    )
+                                                }
+                                            >
+                                                <XCircle size={14} />
+                                                <span>رد نظر</span>
+                                            </button>
+                                        </>
+                                    )}
+                                    {isApproved && (
+                                        <button
+                                            type="button"
+                                            className="review-action-btn change-decision"
+                                            onClick={() =>
+                                                handleChangeDecision(
+                                                    booking.review,
+                                                    "reject",
+                                                )
+                                            }
+                                        >
+                                            <RefreshCw size={14} />
+                                            <span>تغییر تصمیم به رد</span>
+                                        </button>
+                                    )}
+
+                                    {isRejected && (
+                                        <button
+                                            type="button"
+                                            className="review-action-btn change-decision"
+                                            onClick={() =>
+                                                handleChangeDecision(
+                                                    booking.review,
+                                                    "approve",
+                                                )
+                                            }
+                                        >
+                                            <RefreshCw size={14} />
+                                            <span>تغییر تصمیم به تایید</span>
+                                        </button>
                                     )}
                                 </div>
                             </div>
@@ -950,6 +1253,256 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 cancelText="انصراف"
                 type="danger"
                 isLoading={cancelModal.isLoading}
+            />
+
+            {rejectModal.isOpen && rejectModal.review && (
+                <div
+                    className="reject-modal-overlay"
+                    onClick={() => !rejectModal.isLoading && closeRejectModal()}
+                >
+                    <div
+                        className="reject-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* ============ هدر ============ */}
+                        <div className="reject-modal-header">
+                            <div className="reject-modal-icon">
+                                <XCircle size={28} />
+                            </div>
+                            <h3>رد نظر</h3>
+                            <button
+                                type="button"
+                                className="reject-modal-close"
+                                onClick={closeRejectModal}
+                                disabled={rejectModal.isLoading}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* ============ هشدار ============ */}
+                        <div className="reject-modal-warning">
+                            <AlertTriangle size={16} />
+                            <p>
+                                با رد این نظر، از دید عمومی مخفی می‌شود و امتیاز
+                                آرایشگر بازمحاسبه خواهد شد. این عملیات قابل
+                                بازگشت است.
+                            </p>
+                        </div>
+
+                        {/* ============ پیش‌نمایش نظر ============ */}
+                        <div className="reject-modal-preview">
+                            <div className="preview-header">
+                                <div className="preview-user">
+                                    {booking.customer?.thumbnail ? (
+                                        <img
+                                            src={booking.customer.thumbnail}
+                                            alt={booking.customer.name}
+                                        />
+                                    ) : (
+                                        <span>
+                                            {booking.customer?.name
+                                                ?.charAt(0)
+                                                .toUpperCase()}
+                                        </span>
+                                    )}
+                                    <span className="preview-user-name">
+                                        {booking.customer?.name}
+                                    </span>
+                                </div>
+
+                                <RatingStars
+                                    rating={rejectModal.review.rating}
+                                    size={14}
+                                    showNumber={false}
+                                    showTotal={false}
+                                />
+                            </div>
+
+                            {rejectModal.review.comment && (
+                                <p className="preview-comment">
+                                    {rejectModal.review.comment.length > 200
+                                        ? rejectModal.review.comment.substring(
+                                              0,
+                                              200,
+                                          ) + "..."
+                                        : rejectModal.review.comment}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* ============ انتخاب دلیل ============ */}
+                        <div className="reject-form-group">
+                            <label className="form-label">
+                                دلیل رد نظر
+                                <span className="required">*</span>
+                            </label>
+
+                            <div className="reject-reasons-list">
+                                {rejectionReasons.map((reasonOption) => {
+                                    const isSelected =
+                                        rejectModal.reason ===
+                                        reasonOption.value;
+
+                                    return (
+                                        <button
+                                            key={reasonOption.value}
+                                            type="button"
+                                            className={`reject-reason-option ${
+                                                isSelected ? "selected" : ""
+                                            }`}
+                                            onClick={() =>
+                                                setRejectModal((prev) => ({
+                                                    ...prev,
+                                                    reason: reasonOption.value,
+                                                    errors: {
+                                                        ...prev.errors,
+                                                        reason: undefined,
+                                                    },
+                                                }))
+                                            }
+                                            disabled={rejectModal.isLoading}
+                                        >
+                                            <span className="reason-radio">
+                                                {isSelected && (
+                                                    <Check size={12} />
+                                                )}
+                                            </span>
+                                            <div className="reason-content">
+                                                <span className="reason-label">
+                                                    {reasonOption.label}
+                                                </span>
+                                                <span className="reason-description">
+                                                    {reasonOption.description}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {rejectModal.errors?.reason && (
+                                <div className="form-error">
+                                    <AlertCircle size={12} />
+                                    <span>{rejectModal.errors.reason}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ توضیحات ============ */}
+                        <div className="reject-form-group">
+                            <label className="form-label">
+                                توضیحات
+                                {rejectModal.reason === "other" && (
+                                    <span className="required">*</span>
+                                )}
+                            </label>
+                            <textarea
+                                className={`form-textarea ${
+                                    rejectModal.errors?.note ? "error" : ""
+                                }`}
+                                value={rejectModal.note}
+                                onChange={(e) =>
+                                    setRejectModal((prev) => ({
+                                        ...prev,
+                                        note: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            note: undefined,
+                                        },
+                                    }))
+                                }
+                                placeholder={
+                                    rejectModal.reason === "other"
+                                        ? "لطفاً دلیل رد نظر را بنویسید..."
+                                        : "توضیحات تکمیلی (اختیاری)..."
+                                }
+                                rows={3}
+                                maxLength={500}
+                                disabled={rejectModal.isLoading}
+                            />
+                            <div className="form-footer">
+                                {rejectModal.errors?.note ? (
+                                    <span className="form-error">
+                                        <AlertCircle size={12} />
+                                        {rejectModal.errors.note}
+                                    </span>
+                                ) : (
+                                    <span className="form-hint">
+                                        حداکثر ۵۰۰ کاراکتر
+                                    </span>
+                                )}
+                                <span className="form-counter" dir="ltr">
+                                    {toPersianNumber(rejectModal.note.length)} /
+                                    ۵۰۰
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* ============ دکمه‌ها ============ */}
+                        <div className="reject-modal-actions">
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                onClick={closeRejectModal}
+                                disabled={rejectModal.isLoading}
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-confirm reject"
+                                onClick={handleReject}
+                                disabled={
+                                    rejectModal.isLoading || !rejectModal.reason
+                                }
+                            >
+                                {rejectModal.isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال رد...
+                                    </>
+                                ) : (
+                                    <>
+                                        <XCircle size={16} />
+                                        رد نظر
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <ConfirmModal
+                isOpen={changeDecisionModal.isOpen}
+                onClose={() =>
+                    setChangeDecisionModal({
+                        isOpen: false,
+                        review: null,
+                        newDecision: null,
+                        isLoading: false,
+                    })
+                }
+                onConfirm={confirmChangeDecision}
+                title={
+                    changeDecisionModal.newDecision === "approve"
+                        ? "تغییر به تایید"
+                        : "تغییر به رد"
+                }
+                message={
+                    changeDecisionModal.newDecision === "approve"
+                        ? "آیا از تغییر تصمیم به «تایید» مطمئن هستید؟ نظر دوباره در دید عمومی نمایش داده میشود و امتیاز آرایشگر بازمحاسبه میشود."
+                        : "آیا از تغییر تصمیم به «رد» مطمئن هستید؟ نظر از دید عمومی مخفی میشود و امتیاز آرایشگر بازمحاسبه میشود."
+                }
+                confirmText="بله، تغییر بده"
+                cancelText="انصراف"
+                type={
+                    changeDecisionModal.newDecision === "approve"
+                        ? "success"
+                        : "danger"
+                }
+                isLoading={changeDecisionModal.isLoading}
             />
         </Layout>
     );

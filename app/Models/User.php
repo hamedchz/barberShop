@@ -231,4 +231,42 @@ class User extends Authenticatable
         return app(\App\Services\WalletService::class)
             ->getOrCreateWallet($this);
     }
+
+
+    public function warnings()
+    {
+        return $this->hasMany(UserWarning::class);
+    }
+
+    public function activeWarnings()
+    {
+        return $this->hasMany(UserWarning::class)->active();
+    }
+
+    public function hasReachedBanThreshold(int $threshold = 3): bool
+    {
+        return $this->activeWarnings()->count() >= $threshold;
+    }
+
+    // app/Models/User.php
+
+    public function settlements()
+    {
+        return $this->hasMany(Settlement::class);
+    }
+
+    public function pendingSettlements()
+    {
+        return $this->hasMany(Settlement::class)
+            ->whereIn('status', [
+                \App\Enums\Casts\SettlementStatus::pending->value,
+                \App\Enums\Casts\SettlementStatus::processing->value,
+            ]);
+    }
+
+    public function completedSettlements()
+    {
+        return $this->hasMany(Settlement::class)
+            ->where('status', \App\Enums\Casts\SettlementStatus::completed->value);
+    }
 }

@@ -27,3 +27,8 @@ Schedule::command('app:auto-complete-bookings')
 Schedule::command('app:send-completion-reminders')
     ->hourly()
     ->withoutOverlapping();
+
+// release wllet
+Schedule::command('wallet:release-locked')->everyTenMinutes();
+// create wallet for users who dosen't have ones
+Schedule::command('wallets:backfill')->everyMinute();

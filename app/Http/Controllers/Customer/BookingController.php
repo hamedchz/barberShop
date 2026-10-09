@@ -20,6 +20,7 @@ use App\Notifications\BookingCompletedByCustomer;
 use App\Notifications\BookingCompletedByCustomerForAdmin;
 use App\Notifications\BookingDisputeByCustomer;
 use App\Notifications\BookingDisputedByCustomer;
+use App\Services\BookingCompletionService;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -409,7 +410,11 @@ class BookingController extends Controller
         $isExpired = false;
         $disputeDaysRemaining = null;
 
-
+        // ============ بررسی امکان تایید تکمیل ============
+        $canComplete = false;
+        if ($booking->status->value === BookingStatus::confirmed->value && $slotDateTime) {
+            $canComplete = $slotDateTime->isPast();
+        }
 
         // ============ وضعیت Pending ============
         if ($booking->status->value === BookingStatus::pending->value) {
@@ -552,6 +557,8 @@ class BookingController extends Controller
             ];
         })->toArray();
 
+
+
         // ============ آخرین اعتراض (برای نمایش) ============
         $latestDispute = !empty($disputes) ? $disputes[0] : null;
 
@@ -584,6 +591,7 @@ class BookingController extends Controller
                 'can_delete_review' => $canDeleteReview,
                 'can_dispute' => $canDispute,
                 'dispute_days_remaining' => $disputeDaysRemaining,
+                'can_customer_complete' => $canComplete,
 
                 // ============================================
                 // اطلاعات اعتراض (بخش جدید)
@@ -988,7 +996,7 @@ class BookingController extends Controller
         }
     }
 
-    public function complete(Booking $booking)
+    public function complete(Booking $booking, BookingCompletionService $completionService)
     {
         // بررسی مالکیت
         if ($booking->user_id !== auth()->id()) {
@@ -1037,13 +1045,15 @@ class BookingController extends Controller
                 'completed_by' => BookingCompletedBy::customer->value,
             ]);
 
+            $completionService->complete($booking, BookingCompletedBy::customer->value);
+
             // ============ اطلاع‌رسانی به آرایشگر ============
             $booking->barber->notify(
                 new BookingCompletedByCustomer($booking)
             );
 
             // ============ اطلاع‌رسانی به ادمین ============
-            \App\Models\User::role(['سوپر ادمین'])->get()
+            User::role(['سوپر ادمین'])->get()
                 ->each(function ($admin) use ($booking) {
                     $admin->notify(
                         new BookingCompletedByCustomerForAdmin($booking)
@@ -1056,7 +1066,7 @@ class BookingController extends Controller
 
 
             DB::commit();
-            StickyAlert::alert('تکمیل خدمت تایید شد. حالا می‌توانید نظر بدهید.', 'error');
+            StickyAlert::alert('تکمیل خدمت تایید شد. حالا می‌توانید نظر بدهید.', 'success');
             return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();

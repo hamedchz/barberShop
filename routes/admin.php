@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,7 +50,7 @@ Route::prefix('/barbers')
       ->name('online-status');
   });
 
-Route::prefix('/bookings')
+Route::prefix('bookings')
   ->name('bookings.')->controller(BarberBookingController::class)
   ->group(function () {
 
@@ -81,4 +82,16 @@ Route::prefix('disputes')->controller(DisputeController::class)
       ->name('request-response');
   });
 
+// review
+Route::prefix('/reviews')
+  ->name('reviews.')->controller(ReviewController::class)
+  ->group(function () {
+
+
+    Route::patch('/{review:id}/approve', 'approve')->name('approve');
+    Route::patch('/{review:id}/reject', 'reject')->name('reject');
+
+    // Route::delete('/barber/{barber}/cancel/{booking}',  'cancel')
+    //   ->name('cancel');
+  });
 // });

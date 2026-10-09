@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Casts\BookingCompletedBy;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\DisputedStatus;
 use App\Models\Booking;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Notifications\BookingAutoCompleted;
 use App\Notifications\BookingAutoCompletedForAdmin;
 use App\Notifications\BookingAutoCompletedForCustomer;
+use App\Services\BookingCompletionService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Console\Attributes\Description;
@@ -35,7 +37,7 @@ class AutoCompleteBookings extends Command
         DisputedStatus::resolved->value,
     ];
 
-    public function handle()
+    public function handle(BookingCompletionService $service)
     {
         $hours = (int) $this->option('hours');
         $isDryRun = $this->option('dry-run');
@@ -82,6 +84,7 @@ class AutoCompleteBookings extends Command
             DB::beginTransaction();
 
             try {
+
                 // ============ تکمیل خودکار ============
                 $booking->update([
                     'status'           => BookingStatus::completed->value,
@@ -90,18 +93,11 @@ class AutoCompleteBookings extends Command
                     'auto_completed'   => true,
                     'auto_complete_at' => now(),
                 ]);
-
+                $service->complete($booking, BookingCompletedBy::system->value);
                 // ============ ثبت لاگ ============
-                // Log::create([
-                //     'user_id'     => null,
-                //     'action'      => 'auto_complete_booking',
-                //     'model_type'  => Booking::class,
-                //     'model_id'    => $booking->id,
-                //     'description' => "تکمیل خودکار رزرو #{$booking->id} — آرایشگر تایید نکرد (بدون اعتراض فعال)",
-                //     'old_values'  => ['status' => 'confirmed'],
-                //     'new_values'  => ['status' => 'completed'],
-                //     'ip_address'  => request()->ip() ?? '127.0.0.1',
-                // ]);
+
+                (new Log())->storeLog($booking->id,  'auto_complete_booking', "تکمیل خودکار رزرو #{$booking->id} — آرایشگر تایید نکرد (بدون اعتراض فعال)");
+
 
                 // ============ Notification برای آرایشگر ============
                 try {

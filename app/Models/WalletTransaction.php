@@ -22,9 +22,19 @@ class WalletTransaction extends Model
         'reference_id',
         'description',
         'metadata',
+        'released_at',
+        'is_locked',
+        'is_settled',
+        'settled_at',
+        'settlement_reference',
+        'settlement_id'
     ];
 
     protected $casts = [
+        'released_at'         => 'datetime',
+        'is_locked' => 'bool',
+        'settled_at'         => 'datetime',
+        'is_settled' => 'bool',
         'amount'         => 'decimal:2',
         'balance_before' => 'decimal:2',
         'balance_after'  => 'decimal:2',
@@ -32,6 +42,13 @@ class WalletTransaction extends Model
         'direction'      => WalletTransactionDirection::class,
         'status'         => WalletTransactionStatus::class,
         'metadata'       => 'array',
+
+
+    ];
+
+    protected $attributes =  [
+        'is_locked' => false,
+
     ];
 
     // ============ روابط ============
@@ -83,5 +100,20 @@ class WalletTransaction extends Model
     public function scopeDebits($query)
     {
         return $query->where('direction', WalletTransactionDirection::debit->value);
+    }
+
+    public function settlement()
+    {
+        return $this->belongsTo(Settlement::class);
+    }
+
+    public function scopeUnsettled($query)
+    {
+        return $query->where('is_settled', false);
+    }
+
+    public function scopeSettled($query)
+    {
+        return $query->where('is_settled', true);
     }
 }

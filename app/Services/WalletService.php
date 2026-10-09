@@ -11,6 +11,7 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Carbon\CarbonInterface;
 
 class WalletService
 {
@@ -257,5 +258,96 @@ class WalletService
       reference: $reference,
       metadata: $metadata,
     );
+  }
+
+  /**
+   * واریز مبلغ به کیف پول به‌صورت قفل‌شده
+   * (مبلغ توی locked_balance میره و بعد از release_at آزاد میشه)
+   */
+  public function creditLocked(
+    User $user,
+    float $amount,
+    WalletTransactionType $type,
+    ?string $description = null,
+    ?Model $reference = null,
+    array $metadata = [],
+    ?CarbonInterface $releaseAt = null,
+  ): WalletTransaction {
+    $releaseAt = $releaseAt ?? now()->addHours(48);
+
+    return DB::transaction(function () use (
+      $user,
+      $amount,
+      $type,
+      $description,
+      $reference,
+      $metadata,
+      $releaseAt
+    ) {
+      $wallet = Wallet::where('user_id', $user->id)
+        ->lockForUpdate()
+        ->firstOrFail();
+
+      if (!$wallet->is_active) {
+        throw new WalletException('کیف پول کاربر غیرفعال است.');
+      }
+
+      $balanceBefore = (float) $wallet->balance;
+
+      // مبلغ به locked_balance اضافه میشه (نه balance)
+      $wallet->locked_balance += $amount;
+      $wallet->last_transaction_at = now();
+      $wallet->save();
+
+      // ثبت تراکنش
+      return WalletTransaction::create([
+        'wallet_id'      => $wallet->id,
+        'user_id'        => $user->id,
+        'type'           => $type->value,
+        'direction'      => WalletTransactionDirection::credit->value,
+        'amount'         => $amount,
+        'balance_before' => $balanceBefore,
+        'balance_after'  => $balanceBefore,  // balance واقعی تغییر نکرده
+        'status'         => WalletTransactionStatus::completed->value,
+        'reference_type' => $reference ? get_class($reference) : null,
+        'reference_id'   => $reference?->id,
+        'description'    => $description,
+        'metadata'       => array_merge($metadata, [
+          'release_at' => $releaseAt->toIso8601String(),
+        ]),
+        'is_locked'      => true,
+        'released_at'    => null,
+      ]);
+    });
+  }
+
+  /**
+   * آزاد کردن مبلغ قفل‌شده (انتقال از locked به balance)
+   */
+  public function releaseLocked(WalletTransaction $transaction): void
+  {
+    if (!$transaction->is_locked || $transaction->released_at) {
+      return;
+    }
+
+    DB::transaction(function () use ($transaction) {
+      $wallet = Wallet::where('id', $transaction->wallet_id)
+        ->lockForUpdate()
+        ->firstOrFail();
+
+      $balanceBefore = (float) $wallet->balance;
+      $amount = (float) $transaction->amount;
+
+      // انتقال از locked به balance
+      $wallet->locked_balance -= $amount;
+      $wallet->balance += $amount;
+      $wallet->save();
+
+      // آپدیت تراکنش
+      $transaction->update([
+        'released_at'    => now(),
+        'balance_after'  => $balanceBefore + $amount,
+      ]);
+    });
   }
 }

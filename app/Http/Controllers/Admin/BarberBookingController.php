@@ -331,8 +331,14 @@ class BarberBookingController extends Controller
                     'id' => $booking->review->id,
                     'rating' => (int) $booking->review->rating,
                     'comment' => $booking->review->comment,
-                    'status' => $booking->review->status,
+                    'status' => $booking->review->status->value,
+                    'status_label' => $booking->review->status->label(),
+                    'status_color' => $booking->review->status->color(),
+                    'status_icon' => $booking->review->status->icon(),
                     'created_at' => $booking->review->created_at,
+                    'moderated_at' => $booking->review->moderated_at,
+                    'moderated_by' => $booking->review->moderatedBy,
+
                 ] : null,
             ],
         ]);

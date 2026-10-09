@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Casts\ReviewStatus;
+use App\Services\ReviewService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,14 +18,25 @@ class Review extends Model
         'rating',
         'comment',
         'status',
+        'moderated_by',
+        'moderated_at',
+        'moderation_note',
+        'rejection_reason'
     ];
 
     protected $casts = [
         'rating' => 'integer',
+        'moderated_at' => 'datetime',
         'status' => ReviewStatus::class
     ];
     protected $attributes = [
         'status' => ReviewStatus::pending->value,
+    ];
+
+    protected $appends = [
+        'status_label',
+        'status_color',
+        'status_icon',
     ];
 
     protected static function booted()
@@ -81,5 +93,56 @@ class Review extends Model
     public function scopeApproved($query)
     {
         return $query->where('status', ReviewStatus::approved->value);
+    }
+
+    public function moderatedBy()
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
+    }
+
+    public function approve(User $admin, ?string $note = null): void
+    {
+        $this->update([
+            'status'         => ReviewStatus::approved->value,
+            'moderated_by'   => $admin->id,
+            'moderated_at'   => now(),
+            'moderation_note' => $note,
+        ]);
+    }
+
+    public function reject(User $admin, string $reason, ?string $note = null): void
+    {
+        $this->update([
+            'status'          => ReviewStatus::rejected->value,
+            'moderated_by'    => $admin->id,
+            'moderated_at'    => now(),
+            'moderation_note' => $note,
+            'rejection_reason' => $reason,
+        ]);
+
+        // بازمحاسبه امتیاز آرایشگر
+        app(ReviewService::class)->recalculateBarberRating($this->booking->barber);
+    }
+
+
+
+    public function scopePending($query)
+    {
+        return $query->where('status', ReviewStatus::pending->value);
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->status?->label() ?? 'نامشخص';
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return $this->status?->color() ?? 'gray';
+    }
+
+    public function getStatusIconAttribute(): string
+    {
+        return $this->status?->icon() ?? 'Clock4';
     }
 }

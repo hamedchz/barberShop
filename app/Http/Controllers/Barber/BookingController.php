@@ -11,6 +11,7 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Notifications\BookingAutoCompletedForCustomer;
 use App\Notifications\BookingCompletedForAdmin;
+use App\Services\BookingCompletionService;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -259,7 +260,7 @@ class BookingController extends Controller
     /**
      * تکمیل رزرو
      */
-    public function complete(Booking $booking)
+    public function complete(Booking $booking, BookingCompletionService $completionService)
     {
         // ============ بررسی مالکیت ============
         if ($booking->barber_id !== auth()->id()) {
@@ -305,11 +306,12 @@ class BookingController extends Controller
                 'completed_at' => now(),
                 'completed_by' => BookingCompletedBy::barber->value,
             ]);
+            $completionService->complete($booking, BookingCompletedBy::barber->value);
 
             // ۲. ثبت لاگ
 
 
-            (new \App\Models\Log())->storeLog($booking->id,  'barber_complete_booking', "تکمیل رزرو #{$booking->id} توسط آرایشگر",);
+            (new \App\Models\Log())->storeLog($booking->id,  'barber_complete_booking', "تکمیل رزرو #{$booking->id} توسط آرایشگر");
 
 
             // ۳. Notification به مشتری

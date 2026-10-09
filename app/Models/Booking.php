@@ -46,6 +46,10 @@ class Booking extends Model
         'auto_completed' => false,
     ];
 
+    protected $appends = [
+        'dispute_hours_remaining',
+    ];
+
     // ============================================
     // Relationships
     // ============================================
@@ -183,5 +187,30 @@ class Booking extends Model
                 DisputedStatus::awaitingResponse->value,
             ])
             ->exists();
+    }
+
+    // app/Models/Booking.php
+
+    /**
+     * ساعت باقی‌مانده برای ثبت اعتراض
+     * (از زمان آخرین اعتراض محاسبه میشه)
+     */
+
+    public function getDisputeHoursRemainingAttribute(): ?int
+    {
+        // از رابطه استفاده کن (اگه eager load شده باشه، کوئری اضافه نمیزنه)
+        $latestDispute = $this->relationLoaded('latestDispute')
+            ? $this->getRelation('latestDispute')
+            : $this->latestDispute;
+
+        if ($latestDispute?->created_at) {
+            $deadline = $latestDispute->created_at->copy()->addHours(48);
+        } elseif ($this->completed_at) {
+            $deadline = $this->completed_at->copy()->addHours(48);
+        } else {
+            return null;
+        }
+
+        return max(0, now()->diffInHours($deadline, false));
     }
 }
