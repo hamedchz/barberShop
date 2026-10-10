@@ -1,0 +1,127 @@
+/* ============================================
+   Pending Settlements
+   ============================================ */
+.settlements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.settlement-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.875rem;
+  border: 1px solid;
+}
+
+.settlement-item.status-yellow {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.settlement-item.status-blue {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.settlement-item.status-green {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.settlement-item.status-red {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.settlement-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.settlement-icon.yellow {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.settlement-icon.blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.settlement-icon.green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.settlement-icon.red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.settlement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.settlement-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.settlement-amount {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.settlement-status {
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+}
+
+.settlement-status.yellow {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.settlement-status.blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.settlement-status.green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.settlement-status.red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.settlement-date,
+.settlement-failure {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.settlement-failure {
+  color: #ef4444;
+}

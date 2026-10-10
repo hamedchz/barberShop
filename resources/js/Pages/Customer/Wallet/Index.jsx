@@ -9,12 +9,15 @@ import {
     Receipt,
     RefreshCw,
     ArrowUpRight,
+    Plus,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import CustomerWalletStats from "../Components/CustomerWalletStats";
 import CustomerPaymentsChart from "../Components/CustomerPaymentsChart";
 import RecentTransactions from "../Components/RecentTransactions";
 import WithdrawSection from "../Components/WithdrawSection";
+import PendingSettlements from "../Components/PendingSettlements";
+
 import "../Assets/Wallet.css";
 
 export default function WalletIndex({
@@ -24,6 +27,7 @@ export default function WalletIndex({
     recentTransactions,
     pendingSettlements,
     filters,
+    bankInfo,
 }) {
     const [period, setPeriod] = useState(filters.period || "30");
 
@@ -56,6 +60,13 @@ export default function WalletIndex({
                     <div className="wallet-header-actions">
                         <Link
                             href={route("customer.finance.wallet.payments")}
+                            className="btn-primary"
+                        >
+                            <Plus size={16} />
+                            شارژ کیف پول
+                        </Link>
+                        <Link
+                            href={route("customer.finance.wallet.payments")}
                             className="btn-secondary"
                         >
                             <Receipt size={16} />
@@ -67,6 +78,13 @@ export default function WalletIndex({
                         >
                             <RefreshCw size={16} />
                             تراکنشها
+                        </Link>
+                        <Link
+                            href={route("customer.finance.wallet.settlements")}
+                            className="btn-secondary"
+                        >
+                            <CreditCard size={16} />
+                            تسویه ها
                         </Link>
                     </div>
                 </div>
@@ -93,10 +111,34 @@ export default function WalletIndex({
                     </div>
 
                     <div className="wallet-sidebar">
+                        {/* کارت شارژ */}
+                        <div className="wallet-card deposit-card">
+                            <div className="wallet-card-header">
+                                <div className="card-icon-box green">
+                                    <Plus size={20} />
+                                </div>
+                                <h2>شارژ کیف پول</h2>
+                            </div>
+
+                            <p className="deposit-desc">
+                                برای پرداخت سریعتر رزروها، کیف پول خود را شارژ
+                                کنید.
+                            </p>
+
+                            <Link href="" className="btn-primary full-width">
+                                <Plus size={16} />
+                                شارژ کیف پول
+                            </Link>
+                        </div>
+
                         <WithdrawSection
                             wallet={wallet}
                             pendingSettlements={pendingSettlements}
+                            bankInfo={bankInfo}
                         />
+
+                        {/* تسویههای در انتظار */}
+                        <PendingSettlements settlements={pendingSettlements} />
                     </div>
                 </div>
             </div>

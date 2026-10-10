@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../Layouts/PublicLayout";
 import {
     CreditCard,
     Save,
@@ -14,7 +14,7 @@ import {
     Building2,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
-import "../Assets/css/BankInfo.css";
+import "../Assets/BankInfo.css";
 
 const iranianBanks = [
     "بانک ملی ایران",
@@ -114,7 +114,7 @@ export default function BankInfo({ auth, bankInfo }) {
         setErrors({});
 
         router.post(
-            route("barber.finance.profile.bank-info.update"),
+            route("customer.finance.profile.bank-info.update"),
             {
                 bank_name: formData.bank_name,
                 account_holder_name: formData.account_holder_name.trim(),
@@ -155,7 +155,7 @@ export default function BankInfo({ auth, bankInfo }) {
 
                     <div className="bank-info-header-actions">
                         <Link
-                            href={route("barber.finance.wallet.index")}
+                            href={route("customer.finance.wallet.index")}
                             className="btn-secondary"
                         >
                             <ArrowRight size={16} />
@@ -478,7 +478,7 @@ export default function BankInfo({ auth, bankInfo }) {
 
                         {/* لینک کیف پول */}
                         <Link
-                            href={route("barber.finance.wallet.index")}
+                            href={route("customer.finance.wallet.index")}
                             className="wallet-link-card"
                         >
                             <Wallet size={16} />

@@ -175,4 +175,96 @@ class Settlement extends Model
     {
         return $query->where('user_id', $userId);
     }
+
+    
+    // app/Models/Settlement.php
+
+    /**
+     * Scope: درخواستهای فعال (pending یا processing)
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', [
+            SettlementStatus::pending->value,
+            SettlementStatus::processing->value,
+        ]);
+    }
+
+
+
+    /**
+     * Scope: درخواستهای در حال پردازش
+     */
+    public function scopeProcessing($query)
+    {
+        return $query->where('status', SettlementStatus::processing->value);
+    }
+
+
+    /**
+     * Scope: درخواستهای مشتری
+     */
+    public function scopeForCustomers($query)
+    {
+        return $query->where('type', SettlementType::customerRefund->value);
+    }
+
+    // app/Models/Settlement.php
+
+    /**
+     * آیا کاربر درخواست فعال داره؟
+     */
+    public static function hasActiveForUser(int $userId): bool
+    {
+        return static::forUser($userId)->active()->exists();
+    }
+
+    /**
+     * گرفتن درخواست فعال کاربر (اگه هست)
+     */
+    public static function getActiveForUser(int $userId): ?self
+    {
+        return static::forUser($userId)->active()->latest()->first();
+    }
+
+    /**
+     * تعداد درخواستهای فعال کاربر
+     */
+    public static function activeCountForUser(int $userId): int
+    {
+        return static::forUser($userId)->active()->count();
+    }
+
+    /**
+     * جمع مبلغ درخواستهای فعال کاربر
+     */
+    public static function activeAmountForUser(int $userId): float
+    {
+        return (float) static::forUser($userId)->active()->sum('amount');
+    }
+
+    // app/Models/Settlement.php
+
+    /**
+     * آیا این درخواست فعاله؟
+     */
+    public function isActive(): bool
+    {
+        return in_array($this->status, [
+            SettlementStatus::pending,
+            SettlementStatus::processing,
+        ], true);
+    }
+
+    /**
+     * آیا درخواست کاربر دیگهای فعاله؟
+     * (بدون احتساب خودش)
+     */
+    public function userHasOtherActive(): bool
+    {
+        return static::forUser($this->user_id)
+            ->active()
+            ->where('id', '!=', $this->id)
+            ->exists();
+    }
 }

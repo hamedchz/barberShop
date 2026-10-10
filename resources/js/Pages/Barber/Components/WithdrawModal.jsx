@@ -11,7 +11,13 @@ import { toPersianNumber } from "../../../utils/persianNumbers";
 
 import "../Assets/css/WithdrawModal.css";
 
-export default function WithdrawModal({ wallet, bankInfo, onClose }) {
+export default function WithdrawModal({
+    wallet,
+    bankInfo,
+    routeName, // ✅ مسیر ارسال
+    bankInfoRoute, // ✅ مسیر اطلاعات بانکی
+    onClose,
+}) {
     const [amount, setAmount] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -26,7 +32,9 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
         if (!amount || numAmount <= 0) {
             clientErrors.amount = "لطفاً مبلغ را وارد کنید.";
         } else if (numAmount < minAmount) {
-            clientErrors.amount = `حداقل مبلغ برداشت ${toPersianNumber(minAmount.toLocaleString())} تومان است.`;
+            clientErrors.amount = `حداقل مبلغ برداشت ${toPersianNumber(
+                minAmount.toLocaleString(),
+            )} تومان است.`;
         } else if (numAmount > available) {
             clientErrors.amount =
                 "مبلغ وارد شده بیشتر از موجودی قابل برداشت است.";
@@ -39,7 +47,7 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
 
         setIsLoading(true);
         router.post(
-            route("barber.finance.wallet.withdraw"),
+            routeName, // ✅ داینامیک
             { amount: numAmount },
             {
                 preserveScroll: true,
@@ -60,6 +68,7 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
                 className="withdraw-modal"
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* هدر */}
                 <div className="withdraw-modal-header">
                     <div className="withdraw-modal-icon">
                         <ArrowUpRight size={24} />
@@ -109,9 +118,7 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
                         <button
                             type="button"
                             className="btn-primary"
-                            onClick={() =>
-                                router.visit(route("barber.profile.bank-info"))
-                            }
+                            onClick={() => router.visit(bankInfoRoute)} // ✅ داینامیک
                         >
                             <CreditCard size={16} />
                             تکمیل اطلاعات بانکی
@@ -132,20 +139,26 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
                             <label>مبلغ برداشت (تومان)</label>
                             <input
                                 type="number"
-                                className={`form-input ${errors.amount ? "error" : ""}`}
+                                className={`form-input ${
+                                    errors.amount ? "error" : ""
+                                }`}
                                 value={amount}
                                 onChange={(e) => {
                                     setAmount(e.target.value);
-                                    setErrors({ ...errors, amount: undefined });
+                                    setErrors({
+                                        ...errors,
+                                        amount: undefined,
+                                    });
                                 }}
-                                placeholder={`حداقل ${toPersianNumber(minAmount.toLocaleString())}`}
+                                placeholder={`حداقل ${toPersianNumber(
+                                    minAmount.toLocaleString(),
+                                )}`}
                                 min={minAmount}
                                 max={available}
                                 disabled={isLoading}
                                 autoFocus
                             />
 
-                            {/* ✅ نمایش مبلغ وارد شده */}
                             {amount > 0 && (
                                 <div className="amount-display">
                                     <div className="amount-main">
@@ -160,7 +173,6 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
                                     </div>
 
                                     <div className="amount-meta">
-                                        {/* درصد از موجودی */}
                                         {available > 0 && (
                                             <span className="amount-percentage">
                                                 {toPersianNumber(
@@ -174,7 +186,6 @@ export default function WithdrawModal({ wallet, bankInfo, onClose }) {
                                             </span>
                                         )}
 
-                                        {/* باقیمانده بعد از برداشت */}
                                         {Number(amount) <= available && (
                                             <>
                                                 <span className="meta-separator">

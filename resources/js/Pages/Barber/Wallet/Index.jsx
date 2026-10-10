@@ -48,7 +48,7 @@ export default function WalletIndex({
 
     return (
         <Layout>
-            <Head title="کیف پول" />
+            <Head title="مالی من" />
 
             <div className="barber-wallet-page">
                 {/* ============ هدر ============ */}
@@ -58,7 +58,7 @@ export default function WalletIndex({
                             <Wallet size={28} />
                         </div>
                         <div>
-                            <h1>کیف پول</h1>
+                            <h1>مالی من</h1>
                             <p>مدیریت درآمد، تراکنشها و برداشتها</p>
                         </div>
                     </div>
@@ -120,7 +120,11 @@ export default function WalletIndex({
                     {/* ستون چپ */}
                     <div className="wallet-sidebar">
                         {/* برداشت */}
-                        <WithdrawSection wallet={wallet} bankInfo={bankInfo} />
+                        <WithdrawSection
+                            wallet={wallet}
+                            bankInfo={bankInfo}
+                            pendingSettlements={pendingSettlements}
+                        />
 
                         {/* تسویههای در انتظار */}
                         <PendingSettlements settlements={pendingSettlements} />

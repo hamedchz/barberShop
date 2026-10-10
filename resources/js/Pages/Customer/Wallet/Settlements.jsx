@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../Layouts/PublicLayout";
 import {
     CreditCard,
     Clock4,
@@ -12,16 +12,13 @@ import {
     Eye,
     Calendar,
     AlertTriangle,
+    Ban,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
-
 import { formatFullDateTime } from "../../../utils/dateHelpers";
-
-import "../Assets/css/Wallet.css";
-import "../Assets/css/Settlement.css";
-
-import WithdrawModal from "../Components/WithdrawModal";
+import "../Assets/Settlements.css";
 import Pagination from "../../Admin/Components/Pagination";
+import WithdrawModal from "../../Barber/Components/WithdrawModal";
 
 const statusConfig = {
     pending: {
@@ -49,43 +46,42 @@ const statusConfig = {
         description: "متأسفانه واریز انجام نشد.",
     },
     cancelled: {
-        icon: XCircle,
+        icon: Ban,
         color: "gray",
         label: "لغو شده",
         description: "این درخواست لغو شده است.",
     },
 };
 
+const filterButtons = [
+    { value: "", label: "همه" },
+    { value: "pending", label: "در انتظار" },
+    { value: "processing", label: "در حال پردازش" },
+    { value: "completed", label: "تکمیل شده" },
+    { value: "failed", label: "ناموفق" },
+    { value: "cancelled", label: "لغو شده" },
+];
+
 export default function Settlements({
     settlements,
-    wallet,
-    bankInfo,
-    filters,
+    filters = {},
+    wallet = {},
+    bankInfo = {},
     has_active_settlement,
 }) {
-    const activeSettlement =
-        settlements.data.find(
-            (s) => s.status === "pending" || s.status === "processing",
-        ) || null;
-    const [statusFilter, setStatusFilter] = useState(filters?.status || "");
+    const [statusFilter, setStatusFilter] = useState(filters.status || "");
 
     const handleStatusChange = (status) => {
         setStatusFilter(status);
         router.get(
-            route("barber.finance.wallet.settlements"),
+            route("customer.finance.wallet.settlements"),
             { status },
             { preserveScroll: true, preserveState: true },
         );
     };
 
-    const filterButtons = [
-        { value: "", label: "همه" },
-        { value: "pending", label: "در انتظار" },
-        { value: "processing", label: "در حال پردازش" },
-        { value: "completed", label: "تکمیل شده" },
-        { value: "failed", label: "ناموفق" },
-    ];
-
+    const hasBankInfo = bankInfo?.has_bank_info === true;
+    const availableBalance = wallet?.available || 0;
     const [withdrawModal, setWithdrawModal] = useState({
         isOpen: false,
         amount: "",
@@ -102,11 +98,15 @@ export default function Settlements({
         });
     };
 
+    const activeSettlement =
+        settlements.data.find(
+            (s) => s.status === "pending" || s.status === "processing",
+        ) || null;
     return (
         <Layout>
             <Head title="تسویه‌ها" />
 
-            <div className="barber-wallet-page">
+            <div className="customer-wallet-page">
                 {/* ============ هدر ============ */}
                 <div className="wallet-header">
                     <div className="wallet-header-content">
@@ -115,18 +115,19 @@ export default function Settlements({
                         </div>
                         <div>
                             <h1>تسویه‌ها</h1>
-                            <p>تاریخچه درخواست‌های برداشت</p>
+                            <p>تاریخچه درخواست‌های برداشت شما</p>
                         </div>
                     </div>
 
                     <div className="wallet-header-actions">
                         <Link
-                            href={route("barber.finance.wallet.index")}
+                            href={route("customer.finance.wallet.index")}
                             className="btn-secondary"
                         >
                             <Wallet size={16} />
                             کیف پول
                         </Link>
+
                         {!has_active_settlement && (
                             <button
                                 type="button"
@@ -140,8 +141,29 @@ export default function Settlements({
                     </div>
                 </div>
 
+                {/* ============ هشدار نداشتن اطلاعات بانکی ============ */}
+                {!hasBankInfo && (
+                    <div className="no-bank-info-banner">
+                        <AlertTriangle size={20} />
+                        <div className="banner-content">
+                            <h3>اطلاعات بانکی تکمیل نشده است</h3>
+                            <p>
+                                برای ثبت درخواست برداشت، ابتدا اطلاعات بانکی خود
+                                را تکمیل کنید.
+                            </p>
+                        </div>
+                        <Link
+                            href={route("customer.finance.profile.bank-info")}
+                            className="btn-primary"
+                        >
+                            <CreditCard size={16} />
+                            تکمیل اطلاعات بانکی
+                        </Link>
+                    </div>
+                )}
+
                 {/* ============ فیلتر وضعیت ============ */}
-                <div className="settlement-filters">
+                <div className="status-filters">
                     {filterButtons.map((btn) => (
                         <button
                             key={btn.value}
@@ -155,6 +177,7 @@ export default function Settlements({
                         </button>
                     ))}
                 </div>
+
                 {/* ============ کارت درخواست فعال ============ */}
                 {activeSettlement && (
                     <div
@@ -175,12 +198,18 @@ export default function Settlements({
                         </div>
                     </div>
                 )}
-                {/* ============ لیست تسویهها ============ */}
+
+                {/* ============ لیست تسویه‌ها ============ */}
                 <div className="wallet-card">
                     {settlements.data.length === 0 ? (
                         <div className="empty-state-large">
                             <CreditCard size={48} />
-                            <p>تسویه‌ای یافت نشد.</p>
+                            <p>
+                                {statusFilter
+                                    ? "تسویه‌ای با این وضعیت یافت نشد."
+                                    : "هنوز تسویه‌ای ثبت نشده است."}
+                            </p>
+
                             {!has_active_settlement && (
                                 <button
                                     type="button"
@@ -290,7 +319,7 @@ export default function Settlements({
                                                     </div>
                                                 )}
 
-                                                {/* تاریخها */}
+                                                {/* تاریخ‌ها */}
                                                 <div className="settlement-card-dates">
                                                     {s.requested_at && (
                                                         <div className="date-item">
@@ -301,6 +330,17 @@ export default function Settlements({
                                                                 درخواست:{" "}
                                                                 {formatFullDateTime(
                                                                     s.requested_at,
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {s.processed_at && (
+                                                        <div className="date-item info">
+                                                            <Clock4 size={11} />
+                                                            <span>
+                                                                شروع پردازش:{" "}
+                                                                {formatFullDateTime(
+                                                                    s.processed_at,
                                                                 )}
                                                             </span>
                                                         </div>
@@ -338,7 +378,7 @@ export default function Settlements({
                                 })}
                             </div>
 
-                            {/* صفحهبندی */}
+                            {/* ============ صفحه‌بندی ============ */}
                             <Pagination links={settlements.links} />
                         </>
                     )}
@@ -349,8 +389,8 @@ export default function Settlements({
                 <WithdrawModal
                     wallet={wallet}
                     bankInfo={bankInfo}
-                    routeName={route("barber.finance.wallet.withdraw")}
-                    bankInfoRoute={route("barber.finance.profile.bank-info")}
+                    routeName={route("customer.finance.wallet.withdraw")}
+                    bankInfoRoute={route("customer.finance.profile.bank-info")}
                     onClose={() => setWithdrawModal(false)}
                 />
             )}

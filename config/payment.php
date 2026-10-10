@@ -341,7 +341,7 @@ return [
 
             'mode' => 'sandbox', // can be normal, sandbox, zaringate
             'merchantId' => '37febd1a-b5f5-45bb-8b03-12de642a50db',
-            'callbackUrl' =>  'http://barberapp.test/customer/payment/callback/zarinpal',
+            'callbackUrl' => env('APP_URL') . '/customer/payment/callback/zarinpal',
             'description' => 'payment using zarinpal',
             'currency' => 'T', //Can be R, T (Rial, Toman)
         ],

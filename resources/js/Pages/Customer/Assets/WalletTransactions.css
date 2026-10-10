@@ -1,0 +1,97 @@
+/* ============================================
+   Filters Grid Variations
+   ============================================ */
+.filters-grid-3 {
+  grid-template-columns: 1fr;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .filters-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.filters-grid-2 {
+  grid-template-columns: 1fr;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .filters-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================
+   Transaction Status (extra)
+   ============================================ */
+.transaction-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+}
+
+.transaction-status.status-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.transaction-status.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.transaction-status.status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.transaction-status.status-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ============================================
+   Transaction Item (Detailed)
+   ============================================ */
+.transaction-item.detailed {
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.transaction-item.detailed .transaction-amount {
+  align-items: flex-end;
+  padding-top: 0.25rem;
+}
+
+.transaction-item.detailed .amount-currency {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+/* ============================================
+   Transaction Meta
+   ============================================ */
+.transaction-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.meta-separator {
+  color: #d1d5db;
+}
+
+.meta-balance {
+  color: #9ca3af;
+}

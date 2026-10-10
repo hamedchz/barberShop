@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\WalletDepositStatus;
 use App\Exceptions\WalletException;
 use App\Http\Controllers\Controller;
 use App\Models\WalletDeposit;
@@ -18,26 +19,33 @@ class WalletDepositController extends Controller
     /**
      * صفحه شارژ کیف پول
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $wallet = $user->getOrCreateWallet();
 
-        // آخرین شارژها
-        $deposits = WalletDeposit::where('user_id', $user->id)
-            ->latest()
-            ->limit(10)
-            ->get()
-            ->map(fn($d) => $this->mapDeposit($d));
+        // ============ تاریخچه با فیلتر ============
+        $query = WalletDeposit::where('user_id', $user->id);
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $deposits = $query->latest()->paginate(10)->withQueryString();
+
+        $deposits->through(fn($d) => $this->mapDeposit($d));
 
         return Inertia::render('Customer/Wallet/Deposit', [
             'wallet' => [
                 'balance' => (float) $wallet->balance,
             ],
             'deposits' => $deposits,
-            'quickAmounts' => [50000, 100000, 200000, 500000, 1000000],
+            'quickAmounts' => [50000, 100000, 200000, 500000, 1000000, 2000000],
             'minAmount' => 10000,
             'maxAmount' => 50000000,
+            'filters' => [
+                'status' => $request->input('status', ''),
+            ],
         ]);
     }
 
@@ -67,8 +75,8 @@ class WalletDepositController extends Controller
 
             // برای تست:
             return redirect()->route('customer.wallet.deposit.callback', [
-                'deposit' => $deposit->id,
-                'status'  => 'OK',
+                'deposit'   => $deposit->id,
+                'status'    => 'OK',
                 'authority' => 'TEST_' . $deposit->id,
             ]);
         } catch (WalletException $e) {
@@ -77,17 +85,15 @@ class WalletDepositController extends Controller
     }
 
     /**
-     * بازگشت از درگاه (callback)
+     * بازگشت از درگاه
      */
     public function callback(Request $request, WalletDeposit $deposit)
     {
-        // بررسی مالکیت
         if ($deposit->user_id !== auth()->id()) {
             abort(403);
         }
 
         // TODO: تایید از درگاه
-        // $verified = $this->zarinpal->verify($deposit, $request->authority);
         $verified = $request->status === 'OK'; // برای تست
 
         if ($verified) {
@@ -109,7 +115,7 @@ class WalletDepositController extends Controller
             }
         }
 
-        $this->depositService->fail($deposit, 'پرداخت توسط کاربر لغو شد یا ناموفق بود.');
+        $this->depositService->fail($deposit, 'پرداخت ناموفق یا لغو شد.');
 
         return redirect()
             ->route('customer.wallet.deposit')
@@ -119,15 +125,15 @@ class WalletDepositController extends Controller
     private function mapDeposit(WalletDeposit $d): array
     {
         return [
-            'id'            => $d->id,
-            'amount'        => (float) $d->amount,
-            'paid_amount'   => (float) $d->paid_amount,
-            'status'        => $d->status->value,
-            'status_label'  => $d->status->label(),
-            'tracking_code' => $d->tracking_code,
-            'gateway'       => $d->gateway,
-            'paid_at'       => $d->paid_at,
-            'created_at'    => $d->created_at,
+            'id'             => $d->id,
+            'amount'         => (float) $d->amount,
+            'paid_amount'    => (float) $d->paid_amount,
+            'status'         => $d->status->value,
+            'status_label'   => $d->status->label(),
+            'tracking_code'  => $d->tracking_code,
+            'gateway'        => $d->gateway,
+            'paid_at'        => $d->paid_at,
+            'created_at'     => $d->created_at,
             'failure_reason' => $d->failure_reason,
         ];
     }

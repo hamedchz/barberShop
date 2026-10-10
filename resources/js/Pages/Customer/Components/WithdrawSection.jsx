@@ -13,7 +13,11 @@ import {
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import { formatFullDateTime } from "../../../utils/dateHelpers";
 
-export default function WithdrawSection({ wallet, pendingSettlements }) {
+export default function WithdrawSection({
+    wallet,
+    bankInfo,
+    pendingSettlements,
+}) {
     const [amount, setAmount] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -22,7 +26,7 @@ export default function WithdrawSection({ wallet, pendingSettlements }) {
     const minAmount = 50000; // حداقل برداشت مشتری
     const hasActiveSettlement =
         pendingSettlements && pendingSettlements.length > 0;
-
+    // const hasBankInfo = bankInfo?.has_bank_info === true;
     const handleSubmit = () => {
         const numAmount = Number(amount);
         const clientErrors = {};
@@ -71,107 +75,162 @@ export default function WithdrawSection({ wallet, pendingSettlements }) {
             </div>
 
             {/* موجودی قابل برداشت */}
-            <div className="withdraw-balance">
-                <span className="balance-label">موجودی قابل برداشت</span>
-                <div className="balance-value">
-                    <span>{toPersianNumber(available.toLocaleString())}</span>
-                    <span className="currency">تومان</span>
-                </div>
-            </div>
-
-            {/* هشدار درخواست فعال */}
-            {hasActiveSettlement && (
-                <div className="withdraw-warning">
-                    <Clock4 size={14} />
-                    <span>
-                        شما یک درخواست برداشت فعال دارید. لطفاً تا بررسی آن صبر
-                        کنید.
-                    </span>
-                </div>
-            )}
-
-            {/* هشدار موجودی کم */}
-            {!hasActiveSettlement && available < minAmount && (
-                <div className="withdraw-warning">
-                    <AlertTriangle size={14} />
-                    <span>
-                        موجودی شما کمتر از حداقل مبلغ برداشت (
-                        {toPersianNumber(minAmount.toLocaleString())} تومان)
-                        است.
-                    </span>
-                </div>
-            )}
-
-            {/* فرم برداشت */}
-            {!hasActiveSettlement && available >= minAmount && (
+            {bankInfo.has_bank_info ? (
                 <>
-                    <div className="form-group">
-                        <label>مبلغ برداشت (تومان)</label>
-                        <input
-                            type="number"
-                            className={`form-input ${
-                                errors.amount ? "error" : ""
-                            }`}
-                            value={amount}
-                            onChange={(e) => {
-                                setAmount(e.target.value);
-                                setErrors({ ...errors, amount: undefined });
-                            }}
-                            placeholder={`حداقل ${toPersianNumber(
-                                minAmount.toLocaleString(),
-                            )}`}
-                            min={minAmount}
-                            max={available}
-                            disabled={isLoading}
-                        />
+                    <div className="withdraw-balance">
+                        <span className="balance-label">
+                            موجودی قابل برداشت
+                        </span>
 
-                        {amount > 0 && (
-                            <div className="amount-display">
-                                <div className="amount-main">
-                                    <span className="amount-value">
-                                        {toPersianNumber(
-                                            Number(amount).toLocaleString(),
-                                        )}
-                                    </span>
-                                    <span className="amount-currency">
-                                        تومان
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                        <div className="balance-value">
+                            <span>
+                                {toPersianNumber(available.toLocaleString())}
+                            </span>
+                            <span className="currency">تومان</span>
+                        </div>
+                    </div>
 
-                        {errors.amount && (
-                            <span className="form-error">{errors.amount}</span>
-                        )}
-                        <span className="form-hint">
-                            حداقل مبلغ برداشت:{" "}
-                            {toPersianNumber(minAmount.toLocaleString())} تومان
+                    <div className="bank-info-preview">
+                        <CreditCard size={14} />
+                        <span>{bankInfo.bank_name}</span>
+                        <span className="separator">•</span>
+                        <span dir="ltr">
+                            ****{bankInfo.card_number?.slice(-4)}
                         </span>
                     </div>
 
+                    {/* هشدار درخواست فعال */}
+                    {hasActiveSettlement && (
+                        <div className="withdraw-warning">
+                            <Clock4 size={14} />
+                            <span>
+                                شما یک درخواست برداشت فعال دارید. لطفاً تا بررسی
+                                آن صبر کنید.
+                            </span>
+                        </div>
+                    )}
+
+                    {/* هشدار موجودی کم */}
+                    {!hasActiveSettlement && available < minAmount && (
+                        <div className="withdraw-warning">
+                            <AlertTriangle size={14} />
+                            <span>
+                                موجودی شما کمتر از حداقل مبلغ برداشت (
+                                {toPersianNumber(minAmount.toLocaleString())}{" "}
+                                تومان) است.
+                            </span>
+                        </div>
+                    )}
+
+                    {/* فرم برداشت */}
+                    {!hasActiveSettlement && available >= minAmount && (
+                        <>
+                            <div className="form-group">
+                                <label>مبلغ برداشت (تومان)</label>
+
+                                <input
+                                    type="number"
+                                    className={`form-input ${
+                                        errors.amount ? "error" : ""
+                                    }`}
+                                    value={amount}
+                                    onChange={(e) => {
+                                        setAmount(e.target.value);
+                                        setErrors({
+                                            ...errors,
+                                            amount: undefined,
+                                        });
+                                    }}
+                                    placeholder={`حداقل ${toPersianNumber(
+                                        minAmount.toLocaleString(),
+                                    )}`}
+                                    min={minAmount}
+                                    max={available}
+                                    disabled={isLoading}
+                                />
+
+                                {Number(amount) > 0 && (
+                                    <div className="amount-display">
+                                        <div className="amount-main">
+                                            <span className="amount-value">
+                                                {toPersianNumber(
+                                                    Number(
+                                                        amount,
+                                                    ).toLocaleString(),
+                                                )}
+                                            </span>
+
+                                            <span className="amount-currency">
+                                                تومان
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {errors.amount && (
+                                    <span className="form-error">
+                                        {errors.amount}
+                                    </span>
+                                )}
+
+                                <span className="form-hint">
+                                    حداقل مبلغ برداشت:{" "}
+                                    {toPersianNumber(
+                                        minAmount.toLocaleString(),
+                                    )}{" "}
+                                    تومان
+                                </span>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn-primary full-width"
+                                onClick={handleSubmit}
+                                disabled={
+                                    isLoading ||
+                                    !amount ||
+                                    Number(amount) < minAmount ||
+                                    Number(amount) > available
+                                }
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال ارسال...
+                                    </>
+                                ) : (
+                                    <>
+                                        <ArrowUpRight size={16} />
+                                        ثبت درخواست برداشت
+                                    </>
+                                )}
+                            </button>
+                        </>
+                    )}
+                </>
+            ) : (
+                <div className="no-bank-info">
+                    <CreditCard size={32} />
+
+                    <p>برای برداشت، ابتدا اطلاعات بانکی خود را تکمیل کنید.</p>
+
                     <button
                         type="button"
-                        className="btn-primary full-width"
-                        onClick={handleSubmit}
-                        disabled={isLoading || !amount}
+                        className="btn-primary"
+                        onClick={() =>
+                            router.visit(
+                                route("customer.finance.profile.bank-info"),
+                            )
+                        }
                     >
-                        {isLoading ? (
-                            <>
-                                <span className="spinner"></span>
-                                در حال ارسال...
-                            </>
-                        ) : (
-                            <>
-                                <ArrowUpRight size={16} />
-                                ثبت درخواست برداشت
-                            </>
-                        )}
+                        <CreditCard size={16} />
+                        تکمیل اطلاعات بانکی
                     </button>
-                </>
+                </div>
             )}
 
             {/* درخواست‌های در انتظار */}
-            {pendingSettlements && pendingSettlements.length > 0 && (
+            {/* {pendingSettlements && pendingSettlements.length > 0 && (
                 <div className="pending-settlements-mini">
                     <h4>درخواست‌های در انتظار</h4>
                     {pendingSettlements.map((s) => (
@@ -194,7 +253,7 @@ export default function WithdrawSection({ wallet, pendingSettlements }) {
                         </div>
                     ))}
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

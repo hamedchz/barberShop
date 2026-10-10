@@ -104,7 +104,7 @@ class WalletController extends Controller
 
         // ============ درخواستهای برداشت ============
         $pendingSettlements = Settlement::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'processing'])
+            ->whereIn('status', [SettlementStatus::pending->value, SettlementStatus::processing->value])
             ->latest()
             ->get()
             ->map(fn($s) => $this->mapSettlement($s));
@@ -216,6 +216,18 @@ class WalletController extends Controller
         $user = auth()->user();
         $wallet = $user->getOrCreateWallet();
 
+        if (Settlement::hasActiveForUser($user->id)) {
+            $active = Settlement::getActiveForUser($user->id);
+            StickyAlert::alert(
+                "شما یک درخواست برداشت فعال دارید (#{$active->id}) " .
+                    "به مبلغ " . EnglishtoPersianNumber(number_format($active->amount)) . " تومان. " .
+                    "لطفاً تا بررسی آن صبر کنید یا درخواست را لغو کنید.",
+
+                'error'
+            );
+            return redirect()->back();
+        }
+
         // بررسی موجودی
         if ($wallet->available_balance < $validated['amount']) {
 
@@ -285,8 +297,11 @@ class WalletController extends Controller
         $settlements = $query->latest()->paginate(33)->withQueryString();
         $settlements->through(fn($s) => $this->mapSettlement($s));
 
+        $hasActiveSettlement = Settlement::hasActiveForUser($user->id);
+
         return Inertia::render('Barber/Wallet/Settlements', [
             'settlements' => $settlements,
+            'has_active_settlement' => $hasActiveSettlement,
             'wallet' => [
                 'balance'        => (float) $wallet->balance,
                 'locked_balance' => (float) $wallet->locked_balance,
@@ -318,6 +333,8 @@ class WalletController extends Controller
 
         return back()->with('success', 'اطلاعات بانکی با موفقیت ذخیره شد.');
     }
+
+
 
     // ============================================
     // متدهای کمکی

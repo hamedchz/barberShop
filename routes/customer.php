@@ -97,9 +97,10 @@ Route::prefix('finance')
       Route::get('/transactions',  'transactions')->name('transactions');
       Route::get('/payments',  'payments')->name('payments');
       Route::post('/withdraw',  'requestWithdrawal')->name('withdraw');
+      Route::get('/settlements', 'settlements')->name('settlements');
     });
+    // شارژ
     Route::prefix('deposit')->name('deposit.')->controller(WalletDepositController::class)->group(function () {
-      // شارژ
       Route::get('/', 'index')->name('index');
       Route::post('/', 'initiate')->name('initiate');
       Route::get('/{deposit}/callback', 'callback')->name('callback');

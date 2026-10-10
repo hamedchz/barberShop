@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Casts\SettlementStatus;
+use App\Enums\Casts\SettlementType;
 use App\Enums\Casts\WalletTransactionStatus;
 use App\Enums\Casts\WalletTransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Settlement;
 use App\Models\WalletTransaction;
+use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class WalletController extends Controller
@@ -31,6 +35,8 @@ class WalletController extends Controller
             '365' => now()->subYear(),
             default => now()->subDays(30),
         };
+
+
 
         // ============ آمار ============
         $stats = [
@@ -63,6 +69,12 @@ class WalletController extends Controller
 
             // تعداد رزروها
             'total_bookings'  => Booking::where('user_id', $user->id)->count(),
+
+            //  مجموع شارژ
+            // 'total_deposited' => (float) WalletTransaction::where('user_id', $user->id)
+            //     ->where('type', WalletTransactionType::deposit->value)
+            //     ->where('status', WalletTransactionStatus::completed->value)
+            //     ->sum('amount'),
         ];
 
         // ============ نمودار پرداخت روزانه ============
@@ -77,10 +89,18 @@ class WalletController extends Controller
 
         // ============ درخواستهای برداشت ============
         $pendingSettlements = Settlement::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'processing'])
+            ->whereIn('status', [SettlementStatus::pending->value, SettlementStatus::processing->value])
             ->latest()
             ->get()
             ->map(fn($s) => $this->mapSettlement($s));
+
+        $bankInfo = [
+            'bank_name'           => $user->bank_name,
+            'account_holder_name' => $user->account_holder_name,
+            'card_number'         => $user->card_number,
+            'sheba_number'        => $user->sheba_number,
+            'has_bank_info'       => !empty($user->card_number) || !empty($user->sheba_number),
+        ];
 
         return Inertia::render('Customer/Wallet/Index', [
             'wallet' => [
@@ -88,12 +108,14 @@ class WalletController extends Controller
                 'locked_balance' => (float) $wallet->locked_balance,
                 'available'      => $wallet->available_balance,
                 'currency'       => $wallet->currency ?? 'IRT',
+                // 'total_deposited'  => (float) $wallet->total_deposited,
                 'is_active'      => $wallet->is_active,
             ],
             'stats'              => $stats,
             'dailyPayments'      => $dailyPayments,
             'recentTransactions' => $recentTransactions,
             'pendingSettlements' => $pendingSettlements,
+            'bankInfo'          => $bankInfo,
             'filters' => [
                 'period' => $period,
             ],
@@ -107,29 +129,65 @@ class WalletController extends Controller
     {
         $user = auth()->user();
 
-        $query = WalletTransaction::where('user_id', $user->id);
+        $query = WalletTransaction::where('user_id', $user->id)
+            ->with(['reference']);
 
-        // فیلترها
+        // ============ فیلتر نوع ============
         if ($type = $request->input('type')) {
             $query->where('type', $type);
         }
+
+        // ============ فیلتر جهت ============
         if ($direction = $request->input('direction')) {
             $query->where('direction', $direction);
         }
+
+        // ============ فیلتر وضعیت ============
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
 
-        // بازه تاریخ
+        // ============ فیلتر تاریخ ============
         if ($dateFrom = $request->input('date_from')) {
-            $query->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+            $query->where(
+                'created_at',
+                '>=',
+                Carbon::parse($dateFrom)->startOfDay()
+            );
         }
         if ($dateTo = $request->input('date_to')) {
-            $query->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+            $query->where(
+                'created_at',
+                '<=',
+                Carbon::parse($dateTo)->endOfDay()
+            );
+        }
+
+        // ============ جستجو ============
+        if ($search = trim($request->input('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
+            });
         }
 
         $transactions = $query->latest()->paginate(20)->withQueryString();
-        $transactions->through(fn($t) => $this->mapTransaction($t));
+
+        $transactions->through(fn($t) => [
+            'id'              => $t->id,
+            'type'            => $t->type->value,
+            'type_label'      => $t->type->label(),
+            'direction'       => $t->direction->value,
+            'direction_label' => $t->direction->label(),
+            'amount'          => (float) $t->amount,
+            'balance_before'  => (float) $t->balance_before,
+            'balance_after'   => (float) $t->balance_after,
+            'status'          => $t->status->value,
+            'status_label'    => $t->status->label(),
+            'description'     => $t->description,
+            'is_locked'       => (bool) $t->is_locked,
+            'created_at'      => $t->created_at,
+        ]);
 
         return Inertia::render('Customer/Wallet/Transactions', [
             'transactions' => $transactions,
@@ -139,8 +197,96 @@ class WalletController extends Controller
                 'status'    => $request->input('status', ''),
                 'date_from' => $request->input('date_from', ''),
                 'date_to'   => $request->input('date_to', ''),
+                'search'    => $request->input('search', ''),
+            ],
+            'transactionTypes' => collect(WalletTransactionType::cases())
+                ->map(fn($t) => [
+                    'value' => $t->value,
+                    'label' => $t->label(),
+                ])
+                ->values(),
+        ]);
+    }
+
+    public function settlements(Request $request)
+    {
+        $user = auth()->user();
+        $wallet = $user->getOrCreateWallet();
+
+        $query = Settlement::where('user_id', $user->id);
+        $hasActiveSettlement = Settlement::hasActiveForUser($user->id);
+
+        // ============ فیلتر وضعیت ============
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $settlements = $query->latest()->paginate(20)->withQueryString();
+
+        $settlements->through(fn($s) => [
+            'id'             => $s->id,
+            'amount'         => (float) $s->amount,
+            'status'         => $s->status->value,
+            'status_label'   => $s->status->label(),
+            'bank_name'      => $s->bank_name,
+            'card_number'    => $s->card_number,
+            'sheba_number'   => $s->sheba_number,
+            'bank_reference' => $s->bank_reference,
+            'notes'          => $s->notes,
+            'failure_reason' => $s->failure_reason,
+            'requested_at'   => $s->requested_at,
+            'processed_at'   => $s->processed_at,
+            'completed_at'   => $s->completed_at,
+            'failed_at'      => $s->failed_at,
+            'created_at'     => $s->created_at,
+        ]);
+
+        return Inertia::render('Customer/Wallet/Settlements', [
+            'settlements' => $settlements,
+            'has_active_settlement' => $hasActiveSettlement,
+
+            'filters' => [
+                'status' => $request->input('status', ''),
+            ],
+            'wallet' => [
+                'balance'        => (float) $wallet->balance,
+                'locked_balance' => (float) $wallet->locked_balance,
+                'available'      => $wallet->available_balance,
+            ],
+            'bankInfo' => [
+                'bank_name'     => $user->bank_name,
+                'card_number'   => $user->card_number,
+                'sheba_number'  => $user->sheba_number,
+                'has_bank_info' => !empty($user->card_number) || !empty($user->sheba_number),
             ],
         ]);
+    }
+
+    public function cancelWithdrawal(Settlement $settlement)
+    {
+        // بررسی مالکیت
+        if ($settlement->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // فقط pending قابل لغوه
+        if ($settlement->status->value !==  SettlementStatus::pending->value) {
+            StickyAlert::alert('این درخواست قابل لغو نیست.', 'error');
+            return redirect()->back();
+        }
+
+        DB::transaction(function () use ($settlement) {
+            $settlement->update([
+                'status' => 'cancelled',
+                'notes'  => 'لغو شده توسط کاربر',
+            ]);
+
+            // آزادسازی مبلغ قفلشده
+            $wallet = $settlement->user->wallet;
+            $wallet->decrement('locked_balance', $settlement->amount);
+        });
+        StickyAlert::alert('درخواست برداشت لغو شد.', 'success');
+        return redirect()->back();
     }
 
     /**
@@ -185,9 +331,6 @@ class WalletController extends Controller
                     // یا جستجو در شماره تراکنش
                     ->orWhereHas('payment', function ($pq) use ($search) {
                         $pq->where('transaction_id', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('payment', function ($pq) use ($search) {
-                        $pq->where('status', 'like', "%{$search}%");
                     });
             });
         }
@@ -242,27 +385,41 @@ class WalletController extends Controller
         $user = auth()->user();
         $wallet = $user->getOrCreateWallet();
 
+        if (Settlement::hasActiveForUser($user->id)) {
+            $active = Settlement::getActiveForUser($user->id);
+            StickyAlert::alert(
+                "شما یک درخواست برداشت فعال دارید (#{$active->id}) " .
+                    "به مبلغ " . EnglishtoPersianNumber(number_format($active->amount)) . " تومان. " .
+                    "لطفاً تا بررسی آن صبر کنید یا درخواست را لغو کنید.",
+
+                'error'
+            );
+            return redirect()->back();
+        }
+
         if ($wallet->available_balance < $validated['amount']) {
-            return back()->with('error', 'موجودی قابل برداشت کافی نیست.');
+            StickyAlert::alert('موجودی قابل برداشت کافی نیست.', 'error');
+            return redirect()->back();
         }
 
         if (empty($user->card_number) && empty($user->sheba_number)) {
-            return back()->with('error', 'لطفاً ابتدا اطلاعات بانکی خود را تکمیل کنید.');
+            StickyAlert::alert('لطفاً ابتدا اطلاعات بانکی خود را تکمیل کنید.', 'error');
+            return redirect()->back();
         }
 
         $hasActiveSettlement = Settlement::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'processing'])
+            ->whereIn('status', [SettlementStatus::pending->value, SettlementStatus::processing->value])
             ->exists();
 
         if ($hasActiveSettlement) {
-            return back()->with('error', 'شما یک درخواست برداشت فعال دارید.');
+            StickyAlert::alert('شما یک درخواست برداشت فعال دارید.', 'error');
+            return redirect()->back();
         }
 
         Settlement::create([
             'user_id'             => $user->id,
-            'type'                => 'customer_refund',
+            'type'                => SettlementType::customerRefund->value,
             'amount'              => $validated['amount'],
-            'status'              => 'pending',
             'bank_name'           => $user->bank_name,
             'account_holder_name' => $user->account_holder_name,
             'card_number'         => $user->card_number,
@@ -270,8 +427,8 @@ class WalletController extends Controller
             'requested_at'        => now(),
             'requested_by'        => $user->id,
         ]);
-
-        return back()->with('success', 'درخواست برداشت ثبت شد.');
+        StickyAlert::alert('درخواست برداشت ثبت شد.', 'success');
+        return redirect()->back();
     }
 
     // ============================================

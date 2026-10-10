@@ -1,0 +1,212 @@
+/* ============================================
+   Active Settlement Card
+   ============================================ */
+.active-settlement-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1.5px solid;
+  margin-bottom: 1.25rem;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.active-settlement-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* نوار رنگی سمت راست */
+.active-settlement-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+/* رنگ‌بندی بر اساس وضعیت */
+.active-settlement-card.status-pending {
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+  border-color: #fde68a;
+}
+
+.active-settlement-card.status-pending::before {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.active-settlement-card.status-processing {
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+  border-color: #bfdbfe;
+}
+
+.active-settlement-card.status-processing::before {
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
+}
+
+/* ============ آیکون ============ */
+.active-settlement-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  animation: activePulse 2s ease-in-out infinite;
+}
+
+.status-pending .active-settlement-icon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-processing .active-settlement-icon {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+@keyframes activePulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ============ محتوا ============ */
+.active-settlement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.active-settlement-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.active-settlement-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.active-settlement-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+}
+
+.active-settlement-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.active-settlement-status.processing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* ============ اطلاعات ============ */
+.active-settlement-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  font-size: 0.6875rem;
+}
+
+.active-settlement-info .info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.active-settlement-info .info-label {
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+.active-settlement-info .info-value {
+  color: #374151;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ دکمه ============ */
+.active-settlement-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: #ffffff;
+  border: 1.5px solid;
+  border-radius: 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.status-pending .active-settlement-action {
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.status-pending .active-settlement-action:hover {
+  background: #fef3c7;
+  transform: translateX(-2px);
+}
+
+.status-processing .active-settlement-action {
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.status-processing .active-settlement-action:hover {
+  background: #dbeafe;
+  transform: translateX(-2px);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .active-settlement-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .active-settlement-content {
+    width: 100%;
+  }
+
+  .active-settlement-action {
+    width: 100%;
+    justify-content: center;
+  }
+}

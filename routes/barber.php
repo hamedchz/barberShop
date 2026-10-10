@@ -81,7 +81,6 @@ Route::prefix('finance')
         Route::get('/transactions',  'transactions')->name('transactions');
         Route::get('/settlements',  'settlements')->name('settlements');
         Route::post('/withdraw',  'requestWithdrawal')->name('withdraw');
-        // Route::post('/bank-info',  'updateBankInfo')->name('bank-info');
       });
 
     Route::prefix('profile')->name('profile.')->controller(BankInfoController::class)->group(function () {
