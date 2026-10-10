@@ -43,6 +43,12 @@ class Settlement extends Model
         'failed_at'    => 'datetime',
     ];
 
+    protected $attributes = [
+        'status'       => SettlementStatus::pending->value,
+        'type'       => SettlementType::barberPayout->value,
+
+    ];
+
     // ============================================
     // روابط
     // ============================================

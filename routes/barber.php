@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Barber\AvailabilityController;
+use App\Http\Controllers\Barber\BankInfoController;
 use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\DisputeController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
+use App\Http\Controllers\Barber\WalletController;
 
 // خدمات
 // Route::resource('services', ServiceController::class)->except(['show'])
@@ -64,4 +66,26 @@ Route::prefix('disputes')
 
     Route::post('/{dispute}/respond',  'respond')
       ->name('respond');
+  });
+
+// wallet finance
+// routes/web.php
+
+Route::prefix('finance')
+  ->name('finance.')
+  ->group(function () {
+    Route::prefix('wallet')->controller(WalletController::class)
+      ->name('wallet.')
+      ->group(function () {
+        Route::get('/',  'index')->name('index');
+        Route::get('/transactions',  'transactions')->name('transactions');
+        Route::get('/settlements',  'settlements')->name('settlements');
+        Route::post('/withdraw',  'requestWithdrawal')->name('withdraw');
+        // Route::post('/bank-info',  'updateBankInfo')->name('bank-info');
+      });
+
+    Route::prefix('profile')->name('profile.')->controller(BankInfoController::class)->group(function () {
+      Route::get('/bank-info',  'show')->name('bank-info');
+      Route::post('/bank-info',  'update')->name('bank-info.update');
+    });
   });

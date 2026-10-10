@@ -1,0 +1,474 @@
+/* ============================================
+   Withdraw Modal
+   ============================================ */
+.withdraw-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: withdrawOverlayIn 0.2s ease-out;
+}
+
+@keyframes withdrawOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.withdraw-modal {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: withdrawModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes withdrawModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============ هدر مودال ============ */
+.withdraw-modal-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.withdraw-modal-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+.withdraw-modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.withdraw-modal-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.withdraw-modal-close:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.withdraw-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ موجودی ============ */
+.withdraw-balance-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.withdraw-balance-box .balance-label {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.withdraw-balance-box .balance-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: #065f46;
+  font-variant-numeric: tabular-nums;
+}
+
+.withdraw-balance-box .balance-value .currency {
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+/* ============ هشدار قفل ============ */
+.withdraw-warning-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 0.875rem;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.withdraw-warning-box svg {
+  flex-shrink: 0;
+}
+
+/* ============ نبود اطلاعات بانکی ============ */
+.no-bank-info-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: #f9fafb;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.no-bank-info-box svg {
+  color: #9ca3af;
+}
+
+.no-bank-info-box p {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============ پیش‌نمایش بانکی ============ */
+.bank-info-preview-box {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.875rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 1rem;
+}
+
+.bank-info-preview-box svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.bank-info-preview-box .separator {
+  color: #86efac;
+}
+
+/* ============ فرم ============ */
+.withdraw-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.withdraw-modal .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.withdraw-modal .form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  background: #f9fafb;
+  transition: all 0.2s;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+}
+
+.withdraw-modal .form-input:focus {
+  outline: none;
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.withdraw-modal .form-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.withdraw-modal .form-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.withdraw-modal .form-input::placeholder {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* حذف فلش‌های input number */
+.withdraw-modal .form-input::-webkit-outer-spin-button,
+.withdraw-modal .form-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.withdraw-modal .form-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.withdraw-modal .form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 700;
+  padding: 0.375rem 0.625rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+}
+
+.withdraw-modal .form-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============ دکمه‌ها ============ */
+.withdraw-modal-actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.withdraw-modal-actions .btn-ghost,
+.withdraw-modal-actions .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+  min-width: 100px;
+}
+
+.withdraw-modal-actions .btn-ghost {
+  background: #ffffff;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.withdraw-modal-actions .btn-ghost:hover:not(:disabled) {
+  background: #f9fafb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.withdraw-modal-actions .btn-primary {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.withdraw-modal-actions .btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+}
+
+.withdraw-modal-actions .btn-ghost:disabled,
+.withdraw-modal-actions .btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============ Spinner ============ */
+.withdraw-modal .spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: withdrawSpin 0.7s linear infinite;
+}
+
+@keyframes withdrawSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .withdraw-modal {
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .withdraw-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .withdraw-modal-actions .btn-ghost,
+  .withdraw-modal-actions .btn-primary {
+    width: 100%;
+  }
+
+  .withdraw-balance-box .balance-value {
+    font-size: 1.375rem;
+  }
+}
+
+/* ============================================
+   Amount Display — داخل Withdraw Modal
+   ============================================ */
+.withdraw-modal .amount-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem 0.875rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 0.875rem;
+  margin-top: 0.5rem;
+  animation: amountFadeIn 0.25s ease-out;
+}
+
+@keyframes amountFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.withdraw-modal .amount-display .amount-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.withdraw-modal .amount-display .amount-value {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #065f46;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.withdraw-modal .amount-display .amount-currency {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.withdraw-modal .amount-display .amount-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.withdraw-modal .amount-display .amount-percentage {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.5rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.625rem;
+}
+
+.withdraw-modal .amount-display .amount-remaining {
+  color: #9ca3af;
+}
+
+.withdraw-modal .amount-display .meta-separator {
+  color: #d1d5db;
+}

@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Customer\BankInfoController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\DisputeController;
 use App\Http\Controllers\Customer\PaymentController;
 use App\Http\Controllers\Customer\ReviewController;
+use App\Http\Controllers\Customer\WalletController;
+use App\Http\Controllers\Customer\WalletDepositController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('/bookings')
@@ -83,3 +86,26 @@ Route::prefix('disputes')->name('disputes.')->controller(DisputeController::clas
   Route::post('/{dispute}/respond',  'respond')
     ->name('respond');
 });
+// finance
+// routes/web.php
+
+Route::prefix('finance')
+  ->name('finance.')->controller(WalletController::class)
+  ->group(function () {
+    Route::prefix('wallet')->name('wallet.')->group(function () {
+      Route::get('/',  'index')->name('index');
+      Route::get('/transactions',  'transactions')->name('transactions');
+      Route::get('/payments',  'payments')->name('payments');
+      Route::post('/withdraw',  'requestWithdrawal')->name('withdraw');
+    });
+    Route::prefix('deposit')->name('deposit.')->controller(WalletDepositController::class)->group(function () {
+      // شارژ
+      Route::get('/', 'index')->name('index');
+      Route::post('/', 'initiate')->name('initiate');
+      Route::get('/{deposit}/callback', 'callback')->name('callback');
+    });
+    Route::prefix('profile')->name('profile.')->controller(BankInfoController::class)->group(function () {
+      Route::get('/bank-info',  'show')->name('bank-info');
+      Route::post('/bank-info',  'update')->name('bank-info.update');
+    });
+  });

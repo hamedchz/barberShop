@@ -1,0 +1,117 @@
+/* ============================================
+   Amount Display — زیر input مبلغ برداشت
+   ============================================ */
+.amount-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem 0.875rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+  border: 1.5px solid #a7f3d0;
+  border-radius: 0.875rem;
+  margin-top: 0.5rem;
+  animation: amountFadeIn 0.25s ease-out;
+}
+
+@keyframes amountFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============ مبلغ اصلی ============ */
+.amount-display .amount-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.amount-display .amount-value {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #065f46;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.amount-display .amount-currency {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* ============ متادیتا ============ */
+.amount-display .amount-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.amount-display .amount-percentage {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.5rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.625rem;
+}
+
+.amount-display .amount-remaining {
+  color: #9ca3af;
+}
+
+.amount-display .meta-separator {
+  color: #d1d5db;
+}
+
+/* ============ حالت خطا (بیشتر از موجودی) ============ */
+.amount-display.exceeds {
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+  border-color: #fecaca;
+}
+
+.amount-display.exceeds .amount-value {
+  color: #991b1b;
+}
+
+.amount-display.exceeds .amount-currency {
+  color: #dc2626;
+}
+
+.amount-display .amount-error-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+/* ============ داخل Withdraw Modal ============ */
+.withdraw-modal .amount-display {
+  margin-top: 0.625rem;
+}
+
+.withdraw-modal .amount-display .amount-main {
+  justify-content: center;
+}
+
+/* ============ داخل Filters Panel (اختیاری) ============ */
+.filters-panel .amount-display {
+  margin-top: 0.5rem;
+}

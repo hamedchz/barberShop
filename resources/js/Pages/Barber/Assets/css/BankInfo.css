@@ -1,0 +1,630 @@
+/* ============================================
+   Bank Info Page — Complete Styles
+   ============================================ */
+
+/* ============================================
+   Page Container
+   ============================================ */
+.bank-info-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.bank-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.06);
+}
+
+.bank-info-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bank-info-header-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.bank-info-header h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e40af;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.bank-info-header p {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.bank-info-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   Security Notice
+   ============================================ */
+.security-notice {
+  display: flex;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 1.25rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-start;
+}
+
+.security-notice svg {
+  color: #3b82f6;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.security-notice h3 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #1e40af;
+  margin: 0 0 0.375rem;
+}
+
+.security-notice p {
+  font-size: 0.8125rem;
+  color: #3b82f6;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============================================
+   Grid Layout
+   ============================================ */
+.bank-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .bank-info-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+/* ============================================
+   Card
+   ============================================ */
+.bank-info-card {
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.bank-info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.bank-info-card-header h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.bank-info-card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bank-info-card-icon.blue {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.bank-info-card-icon.green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.bank-info-card-icon.orange {
+  background: #fff7ed;
+  color: #f59e0b;
+}
+
+/* ============================================
+   Saved Info Badge
+   ============================================ */
+.saved-info-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 0.875rem;
+  color: #065f46;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+.saved-info-badge svg {
+  flex-shrink: 0;
+  color: #10b981;
+}
+
+/* ============================================
+   Form
+   ============================================ */
+.bank-info-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-info-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.bank-info-form .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.bank-info-form .form-group label svg {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.bank-info-form .form-group label .required {
+  color: #ef4444;
+  margin-right: 0.125rem;
+}
+
+/* ============ Form Input ============ */
+.bank-info-form .form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  background: #f9fafb;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.bank-info-form .form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.bank-info-form .form-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.bank-info-form .form-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.bank-info-form .form-input::placeholder {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.bank-info-form .form-input.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* ============ Select ============ */
+.bank-info-form select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 1rem center;
+  padding-left: 2.5rem;
+  cursor: pointer;
+}
+
+/* ============ Input with Icon ============ */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon>svg:first-child {
+  position: absolute;
+  right: 0.875rem;
+  color: #9ca3af;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bank-info-form .form-input.with-icon {
+  padding-right: 2.5rem;
+}
+
+/* ============ Form Error ============ */
+.bank-info-form .form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.bank-info-form .form-error svg {
+  flex-shrink: 0;
+  color: #ef4444;
+}
+
+/* ============ Form Hint ============ */
+.bank-info-form .form-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+  line-height: 1.6;
+  padding-right: 0.25rem;
+}
+
+/* ============ Submit Button ============ */
+.bank-info-form .submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  margin-top: 0.5rem;
+}
+
+.bank-info-form .submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4);
+}
+
+.bank-info-form .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============ Spinner ============ */
+.bank-info-form .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: bankInfoSpin 0.7s linear infinite;
+}
+
+@keyframes bankInfoSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Sidebar
+   ============================================ */
+.bank-info-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* ============================================
+   Bank Card Preview
+   ============================================ */
+.bank-card-preview {
+  perspective: 1000px;
+}
+
+.bank-card-gradient {
+  aspect-ratio: 1.586;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #ffffff;
+  box-shadow:
+    0 20px 40px rgba(59, 130, 246, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  position: relative;
+  overflow: hidden;
+}
+
+.bank-card-gradient::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 70%);
+  pointer-events: none;
+}
+
+.bank-card-chip {
+  width: 3rem;
+  height: 2.25rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border-radius: 0.5rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+.bank-card-chip::after {
+  content: "";
+  position: absolute;
+  inset: 25% 15%;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.25rem;
+}
+
+.bank-card-number {
+  font-family: ui-monospace, "Courier New", monospace;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  direction: ltr;
+  text-align: center;
+  margin: 1rem 0;
+  z-index: 1;
+  position: relative;
+}
+
+.bank-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 1;
+  position: relative;
+}
+
+.bank-card-holder,
+.bank-card-bank {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.bank-card-label {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.75;
+  letter-spacing: 0.08em;
+}
+
+.bank-card-value {
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   Tips List
+   ============================================ */
+.bank-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bank-tips-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.bank-tips-list li svg {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.bank-tips-list li svg.warning {
+  color: #f59e0b;
+}
+
+.bank-tips-list li svg.danger {
+  color: #ef4444;
+}
+
+/* ============================================
+   Wallet Link
+   ============================================ */
+.wallet-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 1.25rem;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.wallet-link-card:hover {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+  transform: translateY(-2px);
+}
+
+.wallet-link-card svg {
+  color: #10b981;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1023px) {
+  .bank-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bank-card-preview {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .bank-info-page {
+    padding: 1rem 0.75rem 3rem;
+  }
+
+  .bank-info-header {
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bank-info-header-actions {
+    width: 100%;
+  }
+
+  .bank-info-header-actions .btn-secondary {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .bank-info-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .bank-info-card {
+    padding: 1.25rem;
+  }
+
+  .security-notice {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .bank-card-number {
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .bank-info-form .submit-btn {
+    font-size: 0.8125rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bank-card-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .bank-info-header-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+}

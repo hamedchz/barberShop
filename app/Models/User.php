@@ -48,7 +48,11 @@ class User extends Authenticatable
         'average_rating',
         'total_reviews',
         'total_rating_sum',
-        'last_seen_at'
+        'last_seen_at',
+        'bank_name',
+        'account_holder_name',
+        'card_number',
+        'sheba_number'
     ];
     protected function casts(): array
     {
@@ -268,5 +272,33 @@ class User extends Authenticatable
     {
         return $this->hasMany(Settlement::class)
             ->where('status', \App\Enums\Casts\SettlementStatus::completed->value);
+    }
+
+    // app/Models/User.php
+
+    /**
+     * رزروها به‌عنوان آرایشگر
+     */
+    public function barberBookings()
+    {
+        return $this->hasMany(Booking::class, 'barber_id');
+    }
+
+    /**
+     * رزروهای امروز آرایشگر
+     */
+    public function todayBarberBookings()
+    {
+        return $this->barberBookings()
+            ->whereHas('timeSlot', fn($q) => $q->where('date', today()));
+    }
+
+    /**
+     * رزروهای تکمیل‌شده آرایشگر
+     */
+    public function completedBarberBookings()
+    {
+        return $this->barberBookings()
+            ->where('status', \App\Enums\Casts\BookingStatus::completed->value);
     }
 }

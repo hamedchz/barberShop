@@ -32,3 +32,8 @@ Schedule::command('app:send-completion-reminders')
 Schedule::command('wallet:release-locked')->everyTenMinutes();
 // create wallet for users who dosen't have ones
 Schedule::command('wallets:backfill')->everyMinute();
+// expire-pending-deposits
+Schedule::command('wallet:expire-pending-deposits')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();

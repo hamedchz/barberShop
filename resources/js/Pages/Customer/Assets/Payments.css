@@ -1,0 +1,78 @@
+/* ============================================
+   Filters Grid Variations
+   ============================================ */
+.filters-grid-2 {
+  grid-template-columns: 1fr;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .filters-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================
+   Status Filters — داخل Filters Panel
+   ============================================ */
+.filters-panel .status-filters {
+  margin-bottom: 1rem;
+}
+
+/* ============================================
+   Search Component Fix
+   ============================================ */
+.transactions-toolbar>*:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================
+   PersianDatePicker Fix
+   ============================================ */
+.filters-panel .persian-date-picker,
+.filters-panel .date-picker-wrapper {
+  min-width: 0;
+  width: 100%;
+}
+
+.filters-panel .persian-date-picker input,
+.filters-panel .date-picker-wrapper input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.filters-panel .persian-date-picker input:focus,
+.filters-panel .date-picker-wrapper input:focus {
+  outline: none;
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ============================================
+   Fix Calendar z-index
+   ============================================ */
+.filters-panel,
+.filters-grid,
+.filter-group,
+.wallet-card,
+.customer-wallet-page {
+  overflow: visible !important;
+}
+
+/* کلاس تقویم رو از فایل PersianDatePicker.jsx چک کن */
+.persian-date-picker__popup,
+.persian-date-picker__calendar,
+.date-picker-popup,
+.date-picker-calendar {
+  z-index: 99999 !important;
+}
