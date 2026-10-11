@@ -102,7 +102,7 @@ class BarberController extends Controller
                 'name' => $barber->name,
                 'slug' => $barber->slug,
                 'avatar' => $barber->avatarBig(),
-                'thumbnail' => $barber->avatar(),
+                'thumbnail' => $barber->avatarUrl(),
                 'is_online' => $barber->isOnline(),
                 'services_count' => $barber->services_count,
                 'services' => $barber->services->map(fn($s) => [
@@ -177,7 +177,7 @@ class BarberController extends Controller
             'name' => $barber->name,
             'slug' => $barber->slug,
             'avatar' => $barber->avatar,
-            'thumbnail' => $barber->avatar(),
+            'thumbnail' => $barber->avatarUrl(),
             'is_online' => $barber->isOnline(),
 
             // ============ اطلاعات امتیاز ============
@@ -210,7 +210,7 @@ class BarberController extends Controller
                     'id' => $review->user->id,
                     'name' => $review->user->name,
                     'avatar' => $review->user->avatar,
-                    'thumbnail' => $review->user->avatar(),
+                    'thumbnail' => $review->user->avatarUrl(),
                 ],
             ]);
 

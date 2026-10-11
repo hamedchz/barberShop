@@ -46,7 +46,7 @@ class WalletDepositService
   public function confirm(
     WalletDeposit $deposit,
     string $gatewayTransactionId,
-    string $gatewayReference = null,
+    ?string $gatewayReference = null,
     array $gatewayResponse = [],
     ?float $paidAmount = null,
   ): void {
@@ -67,7 +67,6 @@ class WalletDepositService
     ) {
       $paidAmount = $paidAmount ?? (float) $deposit->amount;
 
-      // آپدیت رکورد
       $deposit->update([
         'status'                 => WalletDepositStatus::paid->value,
         'paid_amount'            => $paidAmount,
@@ -85,8 +84,8 @@ class WalletDepositService
         description: "شارژ کیف پول - کد پیگیری: {$deposit->tracking_code}",
         reference: $deposit,
         metadata: [
-          'deposit_id'   => $deposit->id,
-          'gateway'      => $deposit->gateway,
+          'deposit_id'    => $deposit->id,
+          'gateway'       => $deposit->gateway,
           'tracking_code' => $deposit->tracking_code,
         ],
       );

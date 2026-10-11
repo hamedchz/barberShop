@@ -65,24 +65,57 @@ export default function Deposit({
         setIsLoading(true);
         setErrors({});
 
-        router.post(
-            route("customer.finance.deposit.initiate"),
-            { amount: Number(amount) },
-            {
-                onError: (errs) => {
-                    setErrors(errs);
-                    setIsLoading(false);
-                },
-                onFinish: () => setIsLoading(false),
-            },
-        );
+        // ✅ ساخت فرم مخفی و ارسال به درگاه
+        const form = document.createElement("form");
+
+        form.method = "POST";
+        form.action = route("customer.finance.deposit.initiate");
+        form.target = "_self"; // ← در همون تب باز میشه (نه تب جدید)
+
+        // CSRF Token
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        if (!csrfToken) {
+            setErrors({
+                amount: "خطا در ارسال درخواست. لطفاً صفحه را رفرش کنید.",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "_token";
+        csrfInput.value = csrfToken;
+
+        // مبلغ
+        const amountInput = document.createElement("input");
+        amountInput.type = "hidden";
+        amountInput.name = "amount";
+        amountInput.value = Number(amount);
+
+        // درگاه
+        const gatewayInput = document.createElement("input");
+        gatewayInput.type = "hidden";
+        gatewayInput.name = "gateway";
+        gatewayInput.value = "zarinpal";
+
+        form.appendChild(csrfInput);
+        form.appendChild(amountInput);
+        form.appendChild(gatewayInput);
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
     };
 
     // ============ فیلتر وضعیت ============
     const handleStatusChange = (status) => {
         setStatusFilter(status);
         router.get(
-            route("customer.finance.deposit"),
+            route("customer.finance.deposit.index"),
             { status },
             { preserveScroll: true, preserveState: true },
         );
@@ -392,7 +425,10 @@ export default function Deposit({
                                 </div>
 
                                 {/* صفحه‌بندی */}
-                                <Pagination links={deposits.links} />
+                                <Pagination
+                                    links={deposits.links}
+                                    only={["deposits"]}
+                                />
                             </>
                         )}
                     </div>

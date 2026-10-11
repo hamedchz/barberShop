@@ -9,13 +9,20 @@ use App\Enums\Casts\PaymentStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Models\Payment;
 use App\Models\Booking;
+use App\Models\WalletDeposit;
+use App\Services\WalletDepositService;
 use App\Supports\StickyAlert;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Shetabit\Multipay\Invoice as ShInvoice;
 use Shetabit\Payment\Facade\Payment as ShPayment;
 
 class PaymentController extends Controller
 {
+
+    public function __construct(
+        private WalletDepositService $depositService,
+    ) {}
     /**
      * مرحله ۲: ریدایرکت به درگاه پرداخت
      */
@@ -61,45 +68,6 @@ class PaymentController extends Controller
             }
         )->pay()->render();
     }
-    public function pay2(Request $request)
-    {
-        $validated = $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
-            'gateway' => 'required|string',
-        ]);
-
-        $booking = Booking::findOrFail($validated['booking_id']);
-
-        // ============ بررسی مالکیت ============
-        if ($booking->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        if ($booking->status->value !== BookingStatus::pending->value) {
-            StickyAlert::alert('این رزرو قابل پرداخت نیست.', 'error');
-            return redirect()->back();
-        }
-
-        // ============ بررسی درگاه ============
-        $gatewayConfig = config("payment.gateways.{$validated['gateway']}");
-        // dd($gatewayConfig);
-        if (!$gatewayConfig || !$gatewayConfig['enabled']) {
-            StickyAlert::alert('این رزرو قابل پرداخت درگاه پرداخت معتبر نیست', 'error');
-            return redirect()->back();
-        }
-
-        // ============ ایجاد رکورد پرداخت ============
-        $payment = Payment::create([
-            'user_id' => auth()->id(),
-            'booking_id' => $booking->id,
-            'gateway' => $validated['gateway'],
-            'amount' => $booking->amount,
-            'status' => PaymentStatus::pending->value,
-        ]);
-
-        // ============ ریدایرکت به درگاه ============
-        return $this->redirectToGateway($payment, $gatewayConfig);
-    }
 
     /**
      * مرحله ۳: بازگشت از درگاه (Callback)
@@ -115,90 +83,217 @@ class PaymentController extends Controller
         $status = $request->input('Status')
             ?? $request->input('status');
 
-        $payment = Payment::where('authority', $authority)
-            ->where('gateway', $gateway)
-            ->where('status', PaymentStatus::pending->value)
-            ->first();
-
-        if (!$payment) {
+        if (!$authority) {
+            Log::warning('Zarinpal callback: no authority', $request->all());
             StickyAlert::alert(
-                'پرداخت یافت نشد یا قبلاً بررسی شده است',
+                'اطلاعات پرداخت نامعتبر است.',
                 'error'
             );
 
-            return redirect()->back();
+            return redirect('/');
+        }
+        // ============ تشخیص نوع پرداخت ============
+        // ۱) اول توی wallet_deposits بگرد
+        $deposit = WalletDeposit::where('gateway_authority', $authority)->first();
+
+        if ($deposit) {
+            return $this->handleDeposit($deposit, $request, $gateway);
         }
 
-        $booking = $payment->booking;
+        // ۲) بعد توی payments (booking) بگرد
+        $payment = Payment::where('authority', $authority)->first();
+
+        if ($payment) {
+            return $this->handleBookingPayment($payment, $request, $gateway);
+        }
+    }
+
+    /**
+     * پردازش callback شارژ کیف پول
+     */
+    private function handleDeposit(WalletDeposit $deposit, Request $request, string $gateway)
+    {
+        $status = $request->input('Status') ?? $request->input('status');
+
+        $status = $request->input('Status') ?? $request->input('status');
+        $authority = $request->input('Authority')
+            ?? $request->input('authority');
+
+        // ============ بررسی وضعیت ============
+        if ($status !== 'OK') {
+            $this->depositService->fail($deposit, 'پرداخت توسط کاربر لغو شد.');
+
+            return redirect()
+                ->route('customer.finance.deposit.index')
+                ->with('error', 'پرداخت لغو شد.');
+        }
+
+        // ============ بررسی مالکیت ============
+        if (!auth()->check() || $deposit->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         try {
-
-            // ============ Verify پرداخت ============
-            $receipt = ShPayment::amount($payment->amount)
-                ->transactionId($payment->transaction_id)
+            // ============ تایید از زرین‌پال ============
+            $verified = ShPayment::amount($deposit->amount)
+                ->transactionId($deposit->gateway_transaction_id)
                 ->verify();
 
+            $response = $verified->getDetails();
 
-            // ============ پرداخت موفق ============
-            $payment->update([
-                'status' => PaymentStatus::success->value,
-                'paid_at' => now(),
-                'gateway_response' => $receipt->response,
-            ]);
+            if ($response['message'] === 'Verified') {
 
-            // ============ تایید رزرو ============
-            $booking->update([
-                'status' => BookingStatus::confirmed->value,
-                'confirmed_at' => now(),
-            ]);
 
-            // ============ رزرو نهایی بازه ============
-            $booking->timeSlot->update([
-                'status' => TimeSlotStatus::booked->value,
-                'booked_by' => $booking->user_id,
-            ]);
 
-            return redirect()->route(
-                'customer.payment.success',
-                $booking->id
+                $this->depositService->confirm(
+                    deposit: $deposit,
+                    gatewayTransactionId: (string) $deposit->gateway_authority,
+                    gatewayReference: $response['ref_id'] ?? null,
+                    gatewayResponse: $response,
+                );
+                StickyAlert::alert(
+                    'کیف پول شما با موفقیت شارژ شد.',
+                    'success'
+                );
+                return to_route('customer.finance.deposit.index');
+            }
+
+            $this->depositService->fail($deposit, $verified['message'] ?? 'تایید پرداخت ناموفق بود.');
+            StickyAlert::alert(
+                $verified['message'] ?? 'تایید پرداخت ناموفق بود.',
+                'error'
             );
+            return to_route('customer.finance.deposit.index');
         } catch (\Throwable $e) {
-
-            \Illuminate\Support\Facades\Log::error('Payment Verify Error', [
-                'gateway' => $gateway,
-                'payment_id' => $payment->id,
-                'amount' => $payment->amount,
-                'transaction_id' => $payment->transaction_id,
-                'authority' => $payment->authority,
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
+            Log::error('Deposit verification failed', [
+                'deposit_id' => $deposit->id,
+                'error'      => $e->getMessage(),
             ]);
 
-            // ============ پرداخت ناموفق ============
-            $payment->update([
-                'status' => PaymentStatus::failed->value,
-                'gateway_response' => isset($receipt)
-                    ? $receipt->response
-                    : $e->getMessage(),
-            ]);
-
-            $booking->update([
-                'status' => BookingStatus::cancelled->value,
-                'cancelled_at' => now(),
-            ]);
-
-            // ============ آزاد کردن بازه ============
-            $booking->timeSlot->update([
-                'status' => TimeSlotStatus::available->value,
-                'booked_by' => null,
-            ]);
-
-            return redirect()->route(
-                'customer.payment.failed',
-                $booking->id
+            $this->depositService->fail($deposit, 'خطا در تایید پرداخت.');
+            StickyAlert::alert(
+                'خطا در تایید پرداخت.',
+                'error'
             );
+            return to_route('customer.finance.deposit.index');
+        }
+    }
+
+    /**
+     * پردازش callback پرداخت رزرو
+     */
+    private function handleBookingPayment(Payment $payment, Request $request, string $gateway)
+    {
+        $status = $request->input('Status') ?? $request->input('status');
+        $authority = $request->input('Authority')
+            ?? $request->input('authority');
+        // ============ بررسی وضعیت ============
+        if ($status !== 'OK') {
+            StickyAlert::alert(
+                'پرداخت لغو شد.',
+                'error'
+            );
+
+            return to_route('customer.bookings.show', $payment->booking_id);
+        }
+
+        try {
+            $payment = Payment::where('authority', $authority)
+                ->where('gateway', $gateway)
+                ->where('status', PaymentStatus::pending->value)
+                ->first();
+
+            if (!$payment) {
+                StickyAlert::alert(
+                    'پرداخت یافت نشد یا قبلاً بررسی شده است',
+                    'error'
+                );
+
+                return redirect()->back();
+            }
+
+            $booking = $payment->booking;
+
+            try {
+
+                // ============ Verify پرداخت ============
+                $receipt = ShPayment::amount($payment->amount)
+                    ->transactionId($payment->transaction_id)
+                    ->verify();
+
+
+                // ============ پرداخت موفق ============
+                $payment->update([
+                    'status' => PaymentStatus::success->value,
+                    'paid_at' => now(),
+                    'gateway_response' => $receipt->response,
+                ]);
+
+                // ============ تایید رزرو ============
+                $booking->update([
+                    'status' => BookingStatus::confirmed->value,
+                    'confirmed_at' => now(),
+                ]);
+
+                // ============ رزرو نهایی بازه ============
+                $booking->timeSlot->update([
+                    'status' => TimeSlotStatus::booked->value,
+                    'booked_by' => $booking->user_id,
+                ]);
+
+                return redirect()->route(
+                    'customer.payment.success',
+                    $booking->id
+                );
+            } catch (\Throwable $e) {
+
+                \Illuminate\Support\Facades\Log::error('Payment Verify Error', [
+                    'gateway' => $payment->gateway,
+                    'payment_id' => $payment->id,
+                    'amount' => $payment->amount,
+                    'transaction_id' => $payment->transaction_id,
+                    'authority' => $payment->authority,
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // ============ پرداخت ناموفق ============
+                $payment->update([
+                    'status' => PaymentStatus::failed->value,
+                    'gateway_response' => isset($receipt)
+                        ? $receipt->response
+                        : $e->getMessage(),
+                ]);
+
+                $booking->update([
+                    'status' => BookingStatus::cancelled->value,
+                    'cancelled_at' => now(),
+                ]);
+
+                // ============ آزاد کردن بازه ============
+                $booking->timeSlot->update([
+                    'status' => TimeSlotStatus::available->value,
+                    'booked_by' => null,
+                ]);
+
+                return redirect()->route(
+                    'customer.payment.failed',
+                    $booking->id
+                );
+            }
+        } catch (\Throwable $e) {
+            Log::error('Booking payment verification failed', [
+                'payment_id' => $payment->id,
+                'error'      => $e->getMessage(),
+            ]);
+            StickyAlert::alert(
+                'خطا در تایید پرداخت',
+                'error'
+            );
+
+            return to_route('customer.bookings.show', $payment->booking_id);
         }
     }
 

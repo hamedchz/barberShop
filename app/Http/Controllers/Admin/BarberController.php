@@ -120,7 +120,7 @@ class BarberController extends Controller
                     'phone' => $barber->phone,
                     'slug' => $barber->slug,
                     'avatar' => $barber->avatar,
-                    'thumbnail' => $barber->avatar(),
+                    'thumbnail' => $barber->avatarUrl(),
 
                     'status' => $barber->status?->value ?? 'active',
                     'is_online' => $barber->is_online,
@@ -396,7 +396,7 @@ class BarberController extends Controller
             'phone' => $barber->phone,
             'slug' => $barber->slug,
             'avatar' => $barber->avatar,
-            'thumbnail' => $barber->avatar(),
+            'thumbnail' => $barber->avatarUrl(),
             'status' => $barber->status?->value ?? 'active',
             'is_online' => $barber->isOnline(),
             'last_activity' => $barber->lastActivity(),

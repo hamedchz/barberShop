@@ -93,7 +93,7 @@ class DisputeController extends Controller
                     'id' => $booking->barber->id,
                     'name' => $booking->barber->name,
                     'avatar' => $booking->barber->avatar,
-                    'thumbnail' => $booking->barber->avatar(),
+                    'thumbnail' => $booking->barber->avatarUrl(),
                     'slug' => $booking->barber->slug,
                     'specialty' => $booking->barber->specialty,
                 ] : null,

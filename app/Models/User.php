@@ -85,22 +85,26 @@ class User extends Authenticatable
     {
         return Cache::get('user-is-online-' . $this->id);
     }
+
     public function avatarBig(): string
     {
-        return Storage::url($this->avatar);
+        return Storage::url($this->attributes['avatar'] ?? '');
     }
 
-    public function avatar(): string
+    public function avatarUrl(): string
     {
-        // اگر آواتار وجود ندارد، آواتار پیش‌فرض را برگردان
-        if (
-            !empty($this->avatar) &&
-            Storage::exists('thumbnails/' . $this->avatar)
-        ) {
+        // دریافت مقدار آواتار از دیتابیس
+        $avatar = $this->attributes['avatar'] ?? null;
 
-            return Storage::url('thumbnails/' . $this->avatar);
+        // بررسی وجود تصویر بندانگشتی
+        if (
+            !empty($avatar) &&
+            Storage::exists('thumbnails/' . $avatar)
+        ) {
+            return Storage::url('thumbnails/' . $avatar);
         }
 
+        // اگر تصویر بندانگشتی وجود نداشت
         return $this->avatarBig();
     }
 

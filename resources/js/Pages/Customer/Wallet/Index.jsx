@@ -59,7 +59,7 @@ export default function WalletIndex({
 
                     <div className="wallet-header-actions">
                         <Link
-                            href={route("customer.finance.wallet.payments")}
+                            href={route("customer.finance.deposit.index")}
                             className="btn-primary"
                         >
                             <Plus size={16} />
@@ -125,7 +125,10 @@ export default function WalletIndex({
                                 کنید.
                             </p>
 
-                            <Link href="" className="btn-primary full-width">
+                            <Link
+                                href={route("customer.finance.deposit.index")}
+                                className="btn-primary full-width"
+                            >
                                 <Plus size={16} />
                                 شارژ کیف پول
                             </Link>

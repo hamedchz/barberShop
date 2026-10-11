@@ -201,7 +201,7 @@ class BookingController extends Controller
                     'id' => $booking->user->id,
                     'name' => $booking->user->name,
                     'avatar' => $booking->user->avatar,
-                    'thumbnail' => $booking->user->avatar(),
+                    'thumbnail' => $booking->user->avatarUrl(),
                     'phone' => $booking->user->phone,
                 ] : null,
 
@@ -589,7 +589,7 @@ class BookingController extends Controller
                 'disputed_by_user'     => $dispute->disputedByUser ? [
                     'id'        => $dispute->disputedByUser->id,
                     'name'      => $dispute->disputedByUser->name,
-                    'thumbnail' => $dispute->disputedByUser->avatar(),
+                    'thumbnail' => $dispute->disputedByUser->avatarUrl(),
                 ] : null,
                 'reason'               => $dispute->reason,
                 'status'               => $dispute->status->value,
@@ -667,7 +667,7 @@ class BookingController extends Controller
                     'id'        => $booking->user->id,
                     'name'      => $booking->user->name,
                     'avatar'    => $booking->user->avatar,
-                    'thumbnail' => $booking->user->avatar(),
+                    'thumbnail' => $booking->user->avatarUrl(),
                     'phone'     => $booking->user->phone,
                     'email'     => $booking->user->email,
                     'slug'      => $booking->user->slug,

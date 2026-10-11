@@ -104,7 +104,7 @@ class AdminController extends Controller
                     'phone' => $admin->phone,
                     'slug' => $admin->slug,
                     'avatar' => $admin->avatar,
-                    'thumbnail' => $admin->avatar(),
+                    'thumbnail' => $admin->avatarUrl(),
 
                     'status' => $admin->status?->value ?? 'active',
                     'is_online' => $admin->is_online,

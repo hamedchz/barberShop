@@ -5,8 +5,10 @@ use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
+use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\SettlementController;
 use Illuminate\Support\Facades\Route;
 
 // Route::group(['middleware' => ''], function () {
@@ -94,4 +96,35 @@ Route::prefix('/reviews')
     // Route::delete('/barber/{barber}/cancel/{booking}',  'cancel')
     //   ->name('cancel');
   });
+
+// finances
+// routes/web.php
+
+
+Route::prefix('finance')->name('finance.')->group(function () {
+  // داشبورد مالی
+  Route::controller(FinanceController::class)->group(function () {
+    Route::get('/',  'index')->name('index');
+    Route::get('/settlements/list', 'settlements')->name('settlements.index');
+    Route::get('/{settlement}/settlements/details', 'showSettlement')->name('settlements.show');
+
+    // تراکنشها
+    Route::get('/transactions', 'transactions')->name('transactions');
+
+    // شارژها
+    Route::get('/deposits', 'deposits')->name('deposits');
+
+    // گزارش درآمد
+    Route::get('/revenue', 'revenue')->name('revenue');
+  });
+
+  // تسویهها
+  Route::prefix('settlements')->name('settlements.')->controller(SettlementController::class)->group(function () {
+    Route::post('/{settlement}/process',  'process')->name('process');
+    Route::post('/{settlement}/complete',  'complete')->name('complete');
+    Route::post('/{settlement}/reject',  'reject')->name('reject');
+    Route::post('/{settlement}/cancel',  'cancel')->name('cancel');
+  });
+});
+  
 // });

@@ -345,7 +345,7 @@ class WalletController extends Controller
             'barber'     => $booking->barber ? [
                 'id'        => $booking->barber->id,
                 'name'      => $booking->barber->name,
-                'thumbnail' => $booking->barber->avatar(),
+                'thumbnail' => $booking->barber->avatarUrl(),
             ] : null,
             'service' => $booking->service ? [
                 'id'   => $booking->service->id,

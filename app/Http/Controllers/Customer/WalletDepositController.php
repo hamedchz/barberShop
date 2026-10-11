@@ -9,6 +9,8 @@ use App\Models\WalletDeposit;
 use App\Services\WalletDepositService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Shetabit\Multipay\Invoice as ShInvoice;
+use Shetabit\Payment\Facade\Payment as ShPayment;
 
 class WalletDepositController extends Controller
 {
@@ -31,7 +33,7 @@ class WalletDepositController extends Controller
             $query->where('status', $status);
         }
 
-        $deposits = $query->latest()->paginate(10)->withQueryString();
+        $deposits = $query->latest()->paginate(6)->withQueryString();
 
         $deposits->through(fn($d) => $this->mapDeposit($d));
 
@@ -69,10 +71,23 @@ class WalletDepositController extends Controller
                 gateway: 'zarinpal',
             );
 
-            // TODO: اتصال به درگاه زرین‌پال
-            // $paymentUrl = $this->zarinpal->request($deposit);
-            // return Inertia::location($paymentUrl);
 
+
+            return ShPayment::purchase(
+                (new ShInvoice)
+                    ->amount($deposit->amount)
+                    ->detail([
+                        'deposit' => $deposit->id,
+                        'Description' => "افزایش شارژ کیف پول #{$deposit->id}",
+                        'type' => 'Deposit'
+                    ]),
+                function ($driver, $transactionId) use ($deposit) {
+                    $deposit->update([
+                        'gateway_transaction_id' => $transactionId,
+                        'gateway_authority' => $transactionId,
+                    ]);
+                }
+            )->pay()->render();
             // برای تست:
             return redirect()->route('customer.wallet.deposit.callback', [
                 'deposit'   => $deposit->id,

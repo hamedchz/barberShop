@@ -58,7 +58,7 @@ class ReviewController extends Controller
                     'name' => $review->user?->name,
 
                     'avatar' => $review->user?->avatar,
-                    'thumbnail' => $review->user?->avatar(),
+                    'thumbnail' => $review->user?->avatarUrl(),
                 ],
 
             ];
@@ -69,7 +69,7 @@ class ReviewController extends Controller
             'id' => $barber->id,
             'name' => $barber->name,
             'avatar' => $barber->avatar,
-            'thumbnail' => $barber->avatar(),
+            'thumbnail' => $barber->avatarUrl(),
             'slug' => $barber->slug,
             'rating' => (float) $barber->average_rating,
             'total_reviews' => (int) $barber->total_reviews,
@@ -131,7 +131,7 @@ class ReviewController extends Controller
                     'id' => $booking->barber->id,
                     'name' => $booking->barber->name,
                     'avatar' => $booking->barber->avatar,
-                    'thumbnail' => $booking->barber->avatar(),
+                    'thumbnail' => $booking->barber->avatarUrl(),
                     'slug' => $booking->barber->slug,
                     'specialty' => $booking->barber->specialty,
                 ] : null,
@@ -244,7 +244,7 @@ class ReviewController extends Controller
                     'id' => $review->booking->barber->id,
                     'name' => $review->booking->barber->name,
                     'avatar' => $review->booking->barber->avatar,
-                    'thumbnail' => $review->booking->barber->avatar(),
+                    'thumbnail' => $review->booking->barber->avatarUrl(),
                     'slug' => $review->booking->barber->slug,
                     'specialty' => $review->booking->barber->specialty,
                 ] : null,

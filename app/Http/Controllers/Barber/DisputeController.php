@@ -334,7 +334,7 @@ class DisputeController extends Controller
                     'id' => $booking->user->id,
                     'name' => $booking->user->name,
                     'avatar' => $booking->user->avatar,
-                    'thumbnail' => $booking->user->avatar(),
+                    'thumbnail' => $booking->user->avatarUrl(),
                     'slug' => $booking->user->slug,
                 ] : null,
 

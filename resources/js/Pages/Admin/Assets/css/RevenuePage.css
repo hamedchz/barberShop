@@ -1,0 +1,570 @@
+/* ============================================
+   Revenue Page
+   ============================================ */
+
+/* ============ فیلتر دوره ============ */
+.revenue-filters {
+  margin-bottom: 1.5rem;
+}
+
+/* ============ کارتهای آماری ============ */
+.revenue-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .revenue-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .revenue-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.revenue-stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1.5px solid;
+  border-radius: 1.25rem;
+  transition: all 0.3s;
+}
+
+.revenue-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.revenue-stat-card.primary {
+  border-color: #ddd6fe;
+  background: linear-gradient(135deg, #f5f3ff, #ffffff);
+}
+
+.revenue-stat-card.commission {
+  border-color: #a7f3d0;
+  background: linear-gradient(135deg, #ecfdf5, #ffffff);
+}
+
+.revenue-stat-card.penalty {
+  border-color: #fecaca;
+  background: linear-gradient(135deg, #fef2f2, #ffffff);
+}
+
+.revenue-stat-card.average {
+  border-color: #bfdbfe;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.revenue-stat-card .stat-icon-wrapper {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.revenue-stat-card.primary .stat-icon-wrapper {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.revenue-stat-card.commission .stat-icon-wrapper {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.revenue-stat-card.penalty .stat-icon-wrapper {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.revenue-stat-card.average .stat-icon-wrapper {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.revenue-stat-card .stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.revenue-stat-card .stat-label {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.revenue-stat-card .stat-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.revenue-stat-card.primary .stat-value {
+  color: #5b21b6;
+}
+
+.revenue-stat-card.commission .stat-value {
+  color: #065f46;
+}
+
+.revenue-stat-card.penalty .stat-value {
+  color: #991b1b;
+}
+
+.revenue-stat-card.average .stat-value {
+  color: #1e40af;
+}
+
+.revenue-stat-card .stat-currency {
+  font-size: 0.625rem;
+  opacity: 0.7;
+}
+
+.revenue-stat-card .stat-extra {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.revenue-stat-card .stat-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.revenue-stat-card .stat-growth.positive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.revenue-stat-card .stat-growth.negative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ============ گرید اصلی ============ */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .revenue-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+.revenue-main,
+.revenue-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ============ تفکیک درآمد (لیست) ============ */
+.revenue-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.revenue-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+}
+
+.revenue-detail-row .detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.revenue-detail-row .detail-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.revenue-detail-row .detail-icon.green {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.revenue-detail-row .detail-icon.red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.revenue-detail-row .detail-icon.gray {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.revenue-detail-row .detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.revenue-detail-row .detail-label {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.revenue-detail-row .detail-count {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.revenue-detail-row .detail-amount {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #5b21b6;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.revenue-detail-row .detail-bar-wrapper {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.revenue-detail-row .detail-bar {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s ease;
+}
+
+.revenue-detail-row .detail-bar.green {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.revenue-detail-row .detail-bar.red {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.revenue-detail-row .detail-bar.gray {
+  background: linear-gradient(90deg, #9ca3af, #6b7280);
+}
+
+.revenue-detail-row .detail-percentage {
+  font-size: 0.625rem;
+  color: #6b7280;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* ============ برترین آرایشگرها ============ */
+.top-barbers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.top-barber-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+  transition: all 0.2s;
+}
+
+.top-barber-item:hover {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.rank-badge {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.rank-badge.rank-1 {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+.rank-badge.rank-2 {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(148, 163, 184, 0.3);
+}
+
+.rank-badge.rank-3 {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.top-barber-item .barber-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.top-barber-item .barber-info img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.top-barber-item .barber-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.top-barber-item .barber-name {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.top-barber-item .barber-stats {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.top-barber-item .barber-revenue {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.top-barber-item .revenue-amount {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #5b21b6;
+  font-variant-numeric: tabular-nums;
+}
+
+.top-barber-item .revenue-currency {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ============ نمودار دایره‌ای ============ */
+.revenue-pie-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  background: #f9fafb;
+  border-radius: 0.625rem;
+}
+
+.pie-legend-item .legend-color {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.pie-legend-item .legend-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+  flex: 1;
+}
+
+.pie-legend-item .legend-percentage {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #5b21b6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ خلاصه درآمد ============ */
+.revenue-summary-card {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+  border-color: #ddd6fe;
+}
+
+.revenue-summary-card .summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.revenue-summary-card .summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.revenue-summary-card .summary-label {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.revenue-summary-card .summary-value {
+  color: #1f2937;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.revenue-summary-card .summary-value.green {
+  color: #065f46;
+}
+
+.revenue-summary-card .summary-value.red {
+  color: #991b1b;
+}
+
+.revenue-summary-card .summary-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ddd6fe, transparent);
+  margin: 0.25rem 0;
+}
+
+.revenue-summary-card .summary-row.total {
+  padding-top: 0.5rem;
+  border-top: 2px dashed #ddd6fe;
+}
+
+.revenue-summary-card .summary-row.total .summary-label {
+  font-size: 0.875rem;
+  color: #5b21b6;
+  font-weight: 800;
+}
+
+.revenue-summary-card .summary-row.total .summary-value {
+  font-size: 1rem;
+  color: #5b21b6;
+  font-weight: 800;
+}
+
+/* ============ نکات مهم ============ */
+.revenue-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.revenue-tips-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.revenue-tips-list li svg {
+  color: #8b5cf6;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 1023px) {
+  .revenue-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .revenue-stat-card {
+    padding: 1rem;
+  }
+
+  .revenue-stat-card .stat-value {
+    font-size: 1rem;
+  }
+
+  .top-barber-item {
+    flex-wrap: wrap;
+  }
+
+  .top-barber-item .barber-revenue {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #e5e7eb;
+  }
+}
