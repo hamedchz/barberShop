@@ -8,32 +8,32 @@ use Illuminate\Support\Facades\Schedule;
 //     $this->comment(Inspiring::quote());
 // })->purpose('Display an inspiring quote');
 
-Schedule::command('app:cancel-pending-bookings')
-    ->everyFiveMinutes();
+// Schedule::command('app:cancel-pending-bookings')
+//     ->everyFiveMinutes();
 
 // complete booking
-Schedule::command('app:auto-complete-bookings')
-    ->hourly()
-    ->withoutOverlapping()
-    ->runInBackground()
-    ->onSuccess(function () {
-        \Illuminate\Support\Facades\Log::info('Auto-complete bookings ran successfully');
-    })
-    ->onFailure(function () {
-        \Illuminate\Support\Facades\Log::error('Auto-complete bookings failed');
-    });
+// Schedule::command('app:auto-complete-bookings')
+//     ->hourly()
+//     ->withoutOverlapping()
+//     ->runInBackground()
+//     ->onSuccess(function () {
+//         \Illuminate\Support\Facades\Log::info('Auto-complete bookings ran successfully');
+//     })
+//     ->onFailure(function () {
+//         \Illuminate\Support\Facades\Log::error('Auto-complete bookings failed');
+//     });
 
 // send reminder booking completion
-Schedule::command('app:send-completion-reminders')
-    ->hourly()
-    ->withoutOverlapping();
+// Schedule::command('app:send-completion-reminders')
+//     ->hourly()
+//     ->withoutOverlapping();
 
 // release wllet
-Schedule::command('wallet:release-locked')->everyTenMinutes();
+Schedule::command('wallet:release-locked')->everyMinute();
 // create wallet for users who dosen't have ones
-Schedule::command('wallets:backfill')->everyMinute();
+// Schedule::command('wallets:backfill')->everyMinute();
 // expire-pending-deposits
-Schedule::command('wallet:expire-pending-deposits')
-    ->everyFiveMinutes()
-    ->withoutOverlapping()
-    ->runInBackground();
+// Schedule::command('wallet:expire-pending-deposits')
+//     ->everyFiveMinutes()
+//     ->withoutOverlapping()
+//     ->runInBackground();

@@ -40,7 +40,6 @@ class BookingCompletionService
    */
   private function creditBarberEarningLocked(Booking $booking): void
   {
-    // ============ چک: قبلاً واریز نشده باشه ============
     $alreadyCredited = WalletTransaction::where('reference_type', Booking::class)
       ->where('reference_id', $booking->id)
       ->where('user_id', $booking->barber_id)
@@ -51,25 +50,20 @@ class BookingCompletionService
       return;
     }
 
-    // ============ محاسبه مبلغ (با کمیسیون اگه داری) ============
-    $commissionRate = (float) config('platform.commission_rate', 0);
-    $barberEarning = (float) $booking->amount * (1 - $commissionRate);
-
-    // ============ محاسبه زمان آزادسازی ============
     $releaseHours = (int) config('disputes.release_hours', 48);
     $releaseAt = now()->addHours($releaseHours);
 
-    // ============ واریز قفل‌شده ============
+    //  کل مبلغ، بدون کمیسیون
     $this->walletService->creditLocked(
       user: $booking->barber,
-      amount: $barberEarning,
+      amount: (float) $booking->amount,
       type: WalletTransactionType::earning,
       description: "درآمد رزرو #{$booking->id}",
       reference: $booking,
       metadata: [
         'booking_id'   => $booking->id,
+        'gross_amount' => (float) $booking->amount,
         'release_at'   => $releaseAt->toIso8601String(),
-        'locked_hours' => $releaseHours,
       ],
       releaseAt: $releaseAt,
     );

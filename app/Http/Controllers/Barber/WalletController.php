@@ -216,30 +216,7 @@ class WalletController extends Controller
         $user = auth()->user();
         $wallet = $user->getOrCreateWallet();
 
-        if (Settlement::hasActiveForUser($user->id)) {
-            $active = Settlement::getActiveForUser($user->id);
-            StickyAlert::alert(
-                "شما یک درخواست برداشت فعال دارید (#{$active->id}) " .
-                    "به مبلغ " . EnglishtoPersianNumber(number_format($active->amount)) . " تومان. " .
-                    "لطفاً تا بررسی آن صبر کنید یا درخواست را لغو کنید.",
-
-                'error'
-            );
-            return redirect()->back();
-        }
-
-        // بررسی موجودی
-        if ($wallet->available_balance < $validated['amount']) {
-
-            StickyAlert::alert(
-                'موجودی قابل برداشت کافی نیست. موجودی فعلی: ' .
-                    number_format($wallet->available_balance) . ' تومان',
-                'error'
-            );
-            return redirect()->back();
-        }
-
-        // بررسی اطلاعات بانکی
+        // ============ ۱) چک اطلاعات بانکی ============
         if (empty($user->card_number) && empty($user->sheba_number)) {
             StickyAlert::alert(
                 'لطفاً ابتدا اطلاعات بانکی خود را تکمیل کنید.',
@@ -248,39 +225,71 @@ class WalletController extends Controller
             return redirect()->back();
         }
 
-        // بررسی درخواست فعال
-        $hasActiveSettlement = Settlement::where('user_id', $user->id)
-            ->whereIn('status', [SettlementStatus::pending->value, SettlementStatus::processing->value])
-            ->exists();
-
-        if ($hasActiveSettlement) {
+        // ============ ۲) چک موجودی (فقط balance) ============
+        // ✅ با منطق جدید: balance = پول آزاد، locked_balance = قفل‌شده
+        if ($wallet->balance < $validated['amount']) {
             StickyAlert::alert(
-                'شما یک درخواست برداشت فعال دارید. لطفاً تا بررسی آن صبر کنید.',
+                'موجودی قابل برداشت کافی نیست. موجودی فعلی: ' .
+                    EnglishtoPersianNumber(number_format($wallet->balance)) .
+                    ' تومان',
                 'error'
             );
             return redirect()->back();
         }
 
-        // ساخت درخواست
-        Settlement::create([
-            'user_id'             => $user->id,
-            'type'                => 'barber_payout',
-            'amount'              => $validated['amount'],
-            'status'              => 'pending',
-            'bank_name'           => $user->bank_name,
-            'account_holder_name' => $user->account_holder_name,
-            'card_number'         => $user->card_number,
-            'sheba_number'        => $user->sheba_number,
-            'requested_at'        => now(),
-            'requested_by'        => $user->id,
-        ]);
-        StickyAlert::alert(
-            'درخواست برداشت با موفقیت ثبت شد.',
-            'success'
-        );
-        return redirect()->back();
-    }
+        // ============ ۳) چک درخواست فعال ============
+        if (Settlement::hasActiveForUser($user->id)) {
+            $active = Settlement::getActiveForUser($user->id);
+            StickyAlert::alert(
+                "شما یک درخواست برداشت فعال دارید (#{$active->id}) " .
+                    "به مبلغ " . EnglishtoPersianNumber(number_format($active->amount)) . " تومان. " .
+                    "لطفاً تا بررسی آن صبر کنید یا درخواست را لغو کنید.",
+                'error'
+            );
+            return redirect()->back();
+        }
 
+        // ============ ۴) ثبت درخواست + قفل کردن مبلغ ============
+        try {
+            DB::transaction(function () use ($user, $wallet, $validated) {
+                // ساخت درخواست
+                Settlement::create([
+                    'user_id'             => $user->id,
+                    'type'                => SettlementType::barberPayout->value,
+                    'amount'              => $validated['amount'],
+                    'status'              => SettlementStatus::pending->value,
+                    'bank_name'           => $user->bank_name,
+                    'account_holder_name' => $user->account_holder_name,
+                    'card_number'         => $user->card_number,
+                    'sheba_number'        => $user->sheba_number,
+                    'requested_at'        => now(),
+                    'requested_by'        => $user->id,
+                ]);
+
+                // ✅ از balance کم کن و به locked اضافه کن
+                $wallet->decrement('balance', $validated['amount']);
+                $wallet->increment('locked_balance', $validated['amount']);
+            });
+
+            StickyAlert::alert(
+                'درخواست برداشت با موفقیت ثبت شد.',
+                'success'
+            );
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            Log::error('Withdrawal request failed', [
+                'user_id' => $user->id,
+                'amount'  => $validated['amount'],
+                'error'   => $e->getMessage(),
+            ]);
+
+            StickyAlert::alert(
+                'خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.',
+                'error'
+            );
+            return redirect()->back();
+        }
+    }
     /**
      * لیست درخواستهای برداشت
      */

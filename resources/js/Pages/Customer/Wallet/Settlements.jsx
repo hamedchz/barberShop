@@ -291,33 +291,37 @@ export default function Settlements({
                                                 )}
 
                                                 {/* شماره پیگیری */}
-                                                {s.bank_reference && (
-                                                    <div className="settlement-card-reference">
-                                                        <CheckCircle
-                                                            size={12}
-                                                        />
-                                                        <span>
-                                                            شماره پیگیری:{" "}
-                                                            <strong dir="ltr">
-                                                                {
-                                                                    s.bank_reference
-                                                                }
-                                                            </strong>
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                {s.status === "completed" &&
+                                                    s.bank_reference && (
+                                                        <div className="settlement-card-reference">
+                                                            <CheckCircle
+                                                                size={12}
+                                                            />
+                                                            <span>
+                                                                شماره پیگیری:{" "}
+                                                                <strong dir="ltr">
+                                                                    {
+                                                                        s.bank_reference
+                                                                    }
+                                                                </strong>
+                                                            </span>
+                                                        </div>
+                                                    )}
 
                                                 {/* دلیل خطا */}
-                                                {s.failure_reason && (
-                                                    <div className="settlement-card-error">
-                                                        <AlertTriangle
-                                                            size={12}
-                                                        />
-                                                        <span>
-                                                            {s.failure_reason}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                {s.status === "failed" &&
+                                                    s.failure_reason && (
+                                                        <div className="settlement-card-error">
+                                                            <AlertTriangle
+                                                                size={12}
+                                                            />
+                                                            <span>
+                                                                {
+                                                                    s.failure_reason
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    )}
 
                                                 {/* تاریخ‌ها */}
                                                 <div className="settlement-card-dates">
@@ -345,32 +349,34 @@ export default function Settlements({
                                                             </span>
                                                         </div>
                                                     )}
-                                                    {s.completed_at && (
-                                                        <div className="date-item success">
-                                                            <CheckCircle
-                                                                size={11}
-                                                            />
-                                                            <span>
-                                                                تکمیل:{" "}
-                                                                {formatFullDateTime(
-                                                                    s.completed_at,
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                    {s.failed_at && (
-                                                        <div className="date-item danger">
-                                                            <XCircle
-                                                                size={11}
-                                                            />
-                                                            <span>
-                                                                ناموفق:{" "}
-                                                                {formatFullDateTime(
-                                                                    s.failed_at,
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                                    {s.status === "completed" &&
+                                                        s.completed_at && (
+                                                            <div className="date-item success">
+                                                                <CheckCircle
+                                                                    size={11}
+                                                                />
+                                                                <span>
+                                                                    تکمیل:{" "}
+                                                                    {formatFullDateTime(
+                                                                        s.completed_at,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    {s.status === "failed" &&
+                                                        s.failed_at && (
+                                                            <div className="date-item danger">
+                                                                <XCircle
+                                                                    size={11}
+                                                                />
+                                                                <span>
+                                                                    ناموفق:{" "}
+                                                                    {formatFullDateTime(
+                                                                        s.failed_at,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                 </div>
                                             </div>
                                         </div>

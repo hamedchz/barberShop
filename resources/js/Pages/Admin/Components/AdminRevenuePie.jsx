@@ -73,7 +73,14 @@ export default function AdminRevenuePie({ data }) {
                             />
                         ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip
+                        content={<CustomTooltip />}
+                        allowEscapeViewBox={{ x: false, y: false }}
+                        wrapperStyle={{
+                            zIndex: 10000,
+                            pointerEvents: "none",
+                        }}
+                    />
                 </PieChart>
             </ResponsiveContainer>
 

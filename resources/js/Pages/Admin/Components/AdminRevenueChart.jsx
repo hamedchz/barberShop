@@ -73,7 +73,8 @@ export default function AdminRevenueChart({
     };
 
     return (
-        <div className="admin-revenue-chart">
+        <div className="admin-revenue-chart" style={{ zIndex: 10000000 }}>
+            {" "}
             <ResponsiveContainer width="100%" height={320}>
                 <AreaChart
                     data={chartData}
@@ -162,7 +163,14 @@ export default function AdminRevenueChart({
                                   : value
                         }
                     />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip
+                        content={<CustomTooltip />}
+                        allowEscapeViewBox={{ x: false, y: false }}
+                        wrapperStyle={{
+                            zIndex: 10000,
+                            pointerEvents: "none",
+                        }}
+                    />
                     <Legend
                         wrapperStyle={{
                             fontSize: "0.75rem",

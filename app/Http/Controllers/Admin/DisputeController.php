@@ -36,6 +36,7 @@ class DisputeController extends Controller
     // ============================================
     public function index(Request $request)
     {
+
         $query = Dispute::query()
             ->with([
                 'booking' => function ($q) {
@@ -395,12 +396,12 @@ class DisputeController extends Controller
             return redirect()->back();
         } catch (WalletException $e) {
             // خطای مربوط به کیف پول (مثلاً موجودی کافی نیست)
-            Log::warning('Dispute resolution wallet error', [
+            FacadesLog::warning('Dispute resolution wallet error', [
                 'dispute_id' => $dispute->id,
                 'error'      => $e->getMessage(),
             ]);
-
-            return back()->with('error', $e->getMessage());
+            StickyAlert::alert($e->getMessage(), 'error');
+            return redirect()->back();
         } catch (\Throwable $e) {
             // خطای غیرمنتظره
             FacadesLog::error('Dispute resolution failed', [

@@ -351,15 +351,70 @@ class FinanceController extends Controller
     public function revenue(Request $request)
     {
         $period = $request->input('period', '30');
-        $startDate = $this->getStartDate($period);
+        $type = $request->input('type');
+        $userId = $request->input('user_id');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+        $minAmount = $request->input('min_amount');
+        $maxAmount = $request->input('max_amount');
+        $search = trim($request->input('search', ''));
 
-        // درآمد بر اساس نوع
-        $revenueByType = WalletTransaction::whereIn('type', [
-            WalletTransactionType::commission->value,
-            WalletTransactionType::penalty->value,
-        ])
+        // ============ تعیین بازه تاریخ ============
+        if ($period === 'custom' && $dateFrom && $dateTo) {
+            $startDate = Carbon::parse($dateFrom)->startOfDay();
+            $endDate = Carbon::parse($dateTo)->endOfDay();
+        } elseif ($period === 'today') {
+            $startDate = now()->startOfDay();
+            $endDate = now()->endOfDay();
+        } elseif ($period === 'yesterday') {
+            $startDate = now()->subDay()->startOfDay();
+            $endDate = now()->subDay()->endOfDay();
+        } else {
+            $startDate = $this->getStartDate($period);
+            $endDate = now();
+        }
+
+        // ============ بیس کوئری ============
+        $baseQuery = WalletTransaction::query()
+            ->whereIn('type', [
+                WalletTransactionType::commission->value,
+                WalletTransactionType::penalty->value,
+            ])
             ->where('status', WalletTransactionStatus::completed->value)
-            ->where('created_at', '>=', $startDate)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        // فیلتر نوع
+        if ($type) {
+            $baseQuery->where('type', $type);
+        }
+
+        // فیلتر کاربر
+        if ($userId) {
+            $baseQuery->where('user_id', $userId);
+        }
+
+        // فیلتر مبلغ
+        if ($minAmount) {
+            $baseQuery->where('amount', '>=', $minAmount);
+        }
+        if ($maxAmount) {
+            $baseQuery->where('amount', '<=', $maxAmount);
+        }
+
+        // جستجو
+        if ($search) {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // ============ درآمد بر اساس نوع ============
+        $revenueByType = (clone $baseQuery)
             ->selectRaw('type, SUM(amount) as total, COUNT(*) as count')
             ->groupBy('type')
             ->get()
@@ -378,12 +433,18 @@ class FinanceController extends Controller
                 ];
             });
 
-        $dailyRevenue = $this->getDailyRevenue($startDate);
+        // ============ نمودار روزانه ============
+        $dailyRevenueData = (clone $baseQuery)
+            ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
 
-        // درآمد بر اساس کاربر
-        $revenueByUser = WalletTransaction::where('type', WalletTransactionType::commission->value)
-            ->where('status', WalletTransactionStatus::completed->value)
-            ->where('created_at', '>=', $startDate)
+        $dailyRevenue = $this->fillDailyDataBetween($dailyRevenueData, $startDate, $endDate);
+
+        // ============ درآمد بر اساس کاربر ============
+        $revenueByUser = (clone $baseQuery)
+            ->where('type', WalletTransactionType::commission->value)
             ->whereNotNull('user_id')
             ->with('user:id,name,avatar')
             ->selectRaw('user_id, SUM(amount) as total, COUNT(*) as count')
@@ -402,45 +463,123 @@ class FinanceController extends Controller
                 'count'   => (int) $item->count,
             ]);
 
-        // آمار
-        $totalRevenue = $revenueByType->sum('total');
+        // ============ لیست آرایشگرها برای فیلتر ============
+        $barbers = User::role('آرایشگر')
+            ->select('id', 'name')
+            ->orderBy('name')->take(5)
+            ->get();
+
+        // ============ آمار ============
         $stats = [
-            'revenue_growth' => $this->calculateGrowth($startDate),
+            'revenue_growth' => $this->calculateGrowthBetween($startDate, $endDate),
         ];
 
+
+        //  مجموع کمیسیون
+        $totalCommission = WalletTransaction::where('type', WalletTransactionType::commission->value)
+            ->where('status', 'completed')
+            ->where('created_at', '>=', $startDate)
+            ->sum('amount');
+
+        //  روزانه
+        $dailyCommission = WalletTransaction::where('type', WalletTransactionType::commission->value)
+            ->where('status', 'completed')
+            ->where('created_at', '>=', $startDate)
+            ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        //  بر اساس آرایشگر
+        $byBarber = WalletTransaction::where('type', WalletTransactionType::commission->value)
+            ->where('status', 'completed')
+            ->where('created_at', '>=', $startDate)
+            ->with('user:id,name,avatar')
+            ->selectRaw('user_id, SUM(amount) as total, COUNT(*) as count')
+            ->groupBy('user_id')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get()
+            ->map(fn($item) => [
+                'user_id' => $item->user_id,
+                'user'    => $item->user ? [
+                    'id'        => $item->user->id,
+                    'name'      => $item->user->name,
+                    'thumbnail' => $item->user->avatar(),
+                ] : null,
+                'total'   => (float) $item->total,
+                'count'   => (int) $item->count,
+            ]);
+
         return Inertia::render('Admin/Finance/Revenue/Index', [
+            'totalCommission' => (float) $totalCommission,
+            'dailyCommission' => $dailyCommission,
+            'byBarber'        => $byBarber,
             'revenueByType' => $revenueByType,
             'dailyRevenue'  => $dailyRevenue,
             'revenueByUser' => $revenueByUser,
             'stats'         => $stats,
+            'barbers'       => $barbers,
             'filters' => [
-                'period' => $period,
+                'period'     => $period,
+                'type'       => $type ?? '',
+                'user_id'    => $userId ?? '',
+                'date_from'  => $dateFrom ?? '',
+                'date_to'    => $dateTo ?? '',
+                'min_amount' => $minAmount ?? '',
+                'max_amount' => $maxAmount ?? '',
+                'search'     => $search,
             ],
         ]);
     }
 
     /**
+     * پر کردن دادههای روزانه بین دو تاریخ
+     */
+    private function fillDailyDataBetween($data, Carbon $startDate, Carbon $endDate): array
+    {
+        $result = [];
+        $current = $startDate->copy();
+
+        while ($current->lte($endDate)) {
+            $dateStr = $current->format('Y-m-d');
+            $dayData = $data->firstWhere('date', $dateStr);
+
+            $result[] = [
+                'date'  => $dateStr,
+                'total' => $dayData ? (float) $dayData->total : 0,
+            ];
+
+            $current->addDay();
+        }
+
+        return $result;
+    }
+
+    /**
      * محاسبه رشد نسبت به دوره قبل
      */
-    private function calculateGrowth(Carbon $startDate): float
+    private function calculateGrowthBetween(Carbon $startDate, Carbon $endDate): float
     {
-        $periodDays = $startDate->diffInDays(now());
+        $periodDays = $startDate->diffInDays($endDate) + 1;
 
         $currentRevenue = WalletTransaction::whereIn('type', [
             WalletTransactionType::commission->value,
             WalletTransactionType::penalty->value,
         ])
             ->where('status', WalletTransactionStatus::completed->value)
-            ->where('created_at', '>=', $startDate)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('amount');
 
         $previousStart = $startDate->copy()->subDays($periodDays);
+        $previousEnd = $startDate->copy()->subSecond();
+
         $previousRevenue = WalletTransaction::whereIn('type', [
             WalletTransactionType::commission->value,
             WalletTransactionType::penalty->value,
         ])
             ->where('status', WalletTransactionStatus::completed->value)
-            ->whereBetween('created_at', [$previousStart, $startDate])
+            ->whereBetween('created_at', [$previousStart, $previousEnd])
             ->sum('amount');
 
         if ($previousRevenue == 0) {

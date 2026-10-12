@@ -6,6 +6,7 @@ import {
     ArrowUpRight,
     Wallet,
     Clock4,
+    AlertCircle,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import "../Assets/css/WithDrawSection.css";
@@ -18,7 +19,7 @@ export default function WithdrawSection({
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
-    const available = wallet.balance - wallet.locked_balance;
+    const available = wallet.balance;
     const minAmount = 10000;
     const hasActiveSettlement =
         pendingSettlements && pendingSettlements.length > 0;

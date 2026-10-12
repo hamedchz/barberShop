@@ -76,7 +76,7 @@ class DisputeResolutionService
     ?float $adminPenaltyAmount,
     ?float $adminCompensationAmount,
   ): Dispute {
-    // ============ ۰) چک امنیتی: قبلاً بررسی نشده باشه ============
+    // ============ ۰) چک امنیتی ============
     if (!in_array($dispute->status->value, [
       DisputedStatus::pending->value,
       DisputedStatus::investigating->value,
@@ -122,6 +122,8 @@ class DisputeResolutionService
       // اول از درآمد قفل‌شده آرایشگر (اگه هست) کم کن
       $this->reverseBarberEarning($booking, $refundAmount);
 
+      $this->releaseRemainingEarning($booking, $refundAmount);
+
       // بعد به مشتری برگردون
       $this->walletService->refund(
         user: $booking->user,
@@ -135,48 +137,18 @@ class DisputeResolutionService
         ],
       );
     }
-
-    // ۳.۲) اگه اعتراضی نبود که refund بده، ولی رزرو completed شده → واریز به آرایشگر
-    elseif ($booking->status->value === BookingStatus::completed->value) {
-      $alreadyCredited = WalletTransaction::where('reference_type', Booking::class)
-        ->where('reference_id', $booking->id)
-        ->where('user_id', $booking->barber_id)
-        ->where('type', WalletTransactionType::earning->value)
-        ->exists();
-
-      if (!$alreadyCredited) {
-        $releaseHours = (int) config('disputes.release_hours', 48);
-        $releaseAt = now()->addHours($releaseHours);
-        $barberEarning = (float) $booking->amount;
-
-        $this->walletService->creditLocked(
-          user: $booking->barber,
-          amount: $barberEarning,
-          type: WalletTransactionType::earning,
-          description: "درآمد رزرو #{$booking->id}",
-          reference: $booking,
-          metadata: [
-            'booking_id'   => $booking->id,
-            'dispute_id'   => $dispute->id,
-            'release_at'   => $releaseAt->toIso8601String(),
-            'locked_hours' => $releaseHours,
-          ],
-          releaseAt: $releaseAt,
-        );
-      }
-    }
-
-    // ۳.۳) آزادسازی پول قفل‌شده آرایشگر (اگه اعتراض به نفع آرایشگر تموم شد)
-    if ($refundAmount === 0) {
+    // ۳.۲) اگه اعتراض آرایشگر تایید شد (بدون refund) → آزادسازی درآمد
+    else {
+      // ✅ آزادسازی درآمد آرایشگر (با کسر کمیسیون)
       $this->releaseBarberEarning($booking);
     }
 
-    // ۳.۴) جریمه آرایشگر
+    // ۳.۳) جریمه آرایشگر (اگه اعتراض مشتری تایید شد)
     if ($penaltyAmount > 0) {
       $this->chargeBarberPenalty($booking, $penaltyAmount, $dispute);
     }
 
-    // ۳.۵) غرامت به آرایشگر (از مشتری)
+    // ۳.۴) غرامت به آرایشگر (از مشتری)
     if ($compensationAmount > 0) {
       // کسر از کیف پول مشتری
       $this->walletService->penalize(
@@ -256,7 +228,7 @@ class DisputeResolutionService
       ]);
     }
 
-    // ============ ۳) آزادسازی پول قفل‌شده آرایشگر ============
+    // ============ ۳) آزادسازی درآمد آرایشگر (با کسر کمیسیون) ============
     $this->releaseBarberEarning($booking);
 
     return $dispute->fresh();
@@ -267,7 +239,8 @@ class DisputeResolutionService
     // ============================================
 
   /**
-   * جریمه آرایشگر (با fallback به locked_balance)
+   * جریمه آرایشگر
+   * ✅ فقط از balance (چون locked برای درآمد و برداشته)
    */
   private function chargeBarberPenalty(
     Booking $booking,
@@ -281,74 +254,34 @@ class DisputeResolutionService
     }
 
     $balance = (float) $wallet->balance;
-    $locked = (float) $wallet->locked_balance;
 
-    // اگه balance کافیه → از balance کم کن
-    if ($balance >= $penaltyAmount) {
-      $this->walletService->penalize(
-        user: $booking->barber,
-        amount: $penaltyAmount,
-        description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
-        reference: $dispute,
-        metadata: [
-          'booking_id'   => $booking->id,
-          'dispute_id'   => $dispute->id,
-          'dispute_type' => $dispute->dispute_type->value,
-          'source'       => 'balance',
-        ],
+    // ✅ فقط از balance کم کن
+    if ($balance < $penaltyAmount) {
+      throw new WalletException(
+        'موجودی آرایشگر برای جریمه کافی نیست. ' .
+          'موجودی قابل استفاده: ' .
+          number_format($balance) .
+          ' تومان'
       );
-      return;
     }
 
-    // اگه locked کافیه → از locked_balance کم کن
-    if ($locked >= $penaltyAmount) {
-      $this->walletService->debitLocked(
-        user: $booking->barber,
-        amount: $penaltyAmount,
-        type: WalletTransactionType::penalty,
-        description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
-        reference: $dispute,
-        metadata: [
-          'booking_id'   => $booking->id,
-          'dispute_id'   => $dispute->id,
-          'dispute_type' => $dispute->dispute_type->value,
-          'source'       => 'locked_balance',
-        ],
-      );
-      return;
-    }
-
-    // ترکیبی: از balance + locked
-    if (($balance + $locked) >= $penaltyAmount) {
-      if ($balance > 0) {
-        $this->walletService->penalize(
-          user: $booking->barber,
-          amount: $balance,
-          description: "بخشی از جریمه اعتراض #{$dispute->id} - از balance",
-          reference: $dispute,
-        );
-      }
-
-      $remaining = $penaltyAmount - $balance;
-      $this->walletService->debitLocked(
-        user: $booking->barber,
-        amount: $remaining,
-        type: WalletTransactionType::penalty,
-        description: "بخشی از جریمه اعتراض #{$dispute->id} - از locked",
-        reference: $dispute,
-      );
-      return;
-    }
-
-    // موجودی کافی نیست → خطا
-    throw new WalletException(
-      "موجودی آرایشگر برای جریمه کافی نیست. " .
-        "موجودی قابل استفاده: " . number_format($balance + $locked)
+    $this->walletService->penalize(
+      user: $booking->barber,
+      amount: $penaltyAmount,
+      description: "جریمه اعتراض #{$dispute->id} - رزرو #{$booking->id}",
+      reference: $dispute,
+      metadata: [
+        'booking_id'   => $booking->id,
+        'dispute_id'   => $dispute->id,
+        'dispute_type' => $dispute->dispute_type->value,
+        'source'       => 'balance',
+      ],
     );
   }
 
   /**
    * برگرداندن درآمد آرایشگر (وقتی اعتراض مشتری تایید شد)
+   * ✅ پول هنوز توی locked هست (بعد از تکمیل رزرو)
    */
   private function reverseBarberEarning(Booking $booking, float $refundAmount): void
   {
@@ -370,7 +303,7 @@ class DisputeResolutionService
     }
 
     if ($earningTransaction->is_locked && !$earningTransaction->released_at) {
-      // از locked_balance کم کن
+      // ✅ پول هنوز توی locked هست → از locked کم کن
       $this->walletService->debitLocked(
         user: $booking->barber,
         amount: $amountToReverse,
@@ -384,7 +317,7 @@ class DisputeResolutionService
         ],
       );
     } else {
-      // از balance کم کن (پول آزاد شده)
+      // ⚠️ پول آزاد شده → از balance کم کن
       $this->walletService->debit(
         user: $booking->barber,
         amount: $amountToReverse,
@@ -402,6 +335,7 @@ class DisputeResolutionService
 
   /**
    * آزادسازی درآمد قفل‌شده آرایشگر
+   * ✅ با کسر کمیسیون (توی releaseLocked)
    */
   private function releaseBarberEarning(Booking $booking): void
   {
@@ -414,6 +348,7 @@ class DisputeResolutionService
       ->get();
 
     foreach ($transactions as $transaction) {
+      // ✅ releaseLocked خودش کمیسیون کسر میکنه
       $this->walletService->releaseLocked($transaction);
     }
   }
@@ -527,9 +462,6 @@ class DisputeResolutionService
     };
   }
 
-  /**
-   * حذف نظر نادرست + بازمحاسبه امتیاز آرایشگر
-   */
   private function handleFalseReview(
     Booking $booking,
     Dispute $dispute,
@@ -541,7 +473,6 @@ class DisputeResolutionService
       return;
     }
 
-    // ============ ۱) رد نظر ============
     $review->update([
       'status'           => \App\Enums\Casts\ReviewStatus::rejected->value,
       'moderated_by'     => $admin->id,
@@ -550,13 +481,10 @@ class DisputeResolutionService
       'moderation_note'  => "نظر به دلیل تایید اعتراض #{$dispute->id} حذف شد",
     ]);
 
-    // ============ ۲) Soft delete ============
     $review->delete();
 
-    // ============ ۳) بازمحاسبه امتیاز آرایشگر ============
     $this->recalculateBarberRating($booking->barber);
 
-    // ============ ۴) لاگ ============
     (new Log())->storeLog(
       $booking->barber_id,
       LogsStatus::delete->value . 'false_review_removed',
@@ -564,9 +492,6 @@ class DisputeResolutionService
     );
   }
 
-  /**
-   * بازمحاسبه امتیاز آرایشگر
-   */
   private function recalculateBarberRating(User $barber): void
   {
     $stats = Review::query()
@@ -587,17 +512,11 @@ class DisputeResolutionService
     ]);
   }
 
-  /**
-   * ثبت اخطار برای مشتری + بررسی بن
-   */
   private function handleCustomerRude(
     User $customer,
     Dispute $dispute,
     User $admin,
   ): void {
-
-
-    // ============ ۱) ثبت اخطار ============
     $warning = UserWarning::create([
       'user_id'    => $customer->id,
       'dispute_id' => $dispute->id,
@@ -607,7 +526,6 @@ class DisputeResolutionService
       'expires_at' => now()->addMonths(6),
     ]);
 
-    // ============ ۲) بررسی آستانه بن ============
     $activeWarningsCount = $customer->activeWarnings()->count();
     $banThreshold = (int) config('disputes.ban_threshold', 3);
 
@@ -618,7 +536,6 @@ class DisputeResolutionService
       );
     }
 
-    // ============ ۳) نوتیفیکیشن به مشتری ============
     try {
       $customer->notify(
         new \App\Notifications\CustomerWarningIssued($warning)
@@ -630,7 +547,6 @@ class DisputeResolutionService
       );
     }
 
-    // ============ ۴) لاگ ============
     (new Log())->storeLog(
       $warning->id,
       LogsStatus::store->value . 'customer_warning_issued',
@@ -638,9 +554,6 @@ class DisputeResolutionService
     );
   }
 
-  /**
-   * بن کردن مشتری
-   */
   private function banCustomer(User $customer, string $reason): void
   {
     $customer->update([
@@ -662,5 +575,116 @@ class DisputeResolutionService
         ['user_id' => $customer->id, 'error' => $e->getMessage()]
       );
     }
+  }
+
+  /**
+   * آزادسازی باقیمانده درآمد آرایشگر (بعد از کسر refund)
+   *
+   * مثال:
+   *   رزرو 450,000 → locked = 450,000
+   *   refund = 250,000
+   *   باقیمانده = 200,000
+   *   → کمیسیون روی 200,000
+   *   → balance += net
+   *   → locked -= 200,000
+   */
+  private function releaseRemainingEarning(
+    Booking $booking,
+    float $refundedAmount,
+  ): void {
+    $earningTransaction = WalletTransaction::where('reference_type', Booking::class)
+      ->where('reference_id', $booking->id)
+      ->where('user_id', $booking->barber_id)
+      ->where('type', WalletTransactionType::earning->value)
+      ->first();
+
+    if (!$earningTransaction) {
+      return;
+    }
+
+    $totalAmount = (float) $earningTransaction->amount;
+    $remainingAmount = $totalAmount - $refundedAmount;
+
+    if ($remainingAmount <= 0) {
+      $earningTransaction->update([
+        'released_at' => now(),
+      ]);
+      return;
+    }
+
+    if ($earningTransaction->released_at) {
+      return;
+    }
+
+    DB::transaction(function () use (
+      $earningTransaction,
+      $remainingAmount,
+      $booking,
+      $refundedAmount,   // ✅ این خط مهمه
+    ) {
+      $wallet = $earningTransaction->wallet;
+
+      if (!$wallet) {
+        throw new WalletException('کیف پول آرایشگر یافت نشد.');
+      }
+
+      if ((float) $wallet->locked_balance < $remainingAmount) {
+        throw new WalletException(
+          'مبلغ قفل‌شده کافی نیست. قفل: ' .
+            number_format($wallet->locked_balance)
+        );
+      }
+
+      // محاسبه کمیسیون
+      $commissionService = app(\App\Services\CommissionService::class);
+      $calc = $commissionService->calculate(
+        amount: $remainingAmount,
+        user: $booking->barber,
+      );
+
+      $balanceBefore = (float) $wallet->balance;
+
+      // انتقال به balance
+      $wallet->locked_balance -= $remainingAmount;
+      $wallet->balance += $calc['net'];
+      $wallet->last_transaction_at = now();
+      $wallet->save();
+
+      // ✅ حالا `$refundedAmount` توی closure قابل دسترسه
+      $earningTransaction->update([
+        'released_at' => now(),
+        'metadata'    => array_merge($earningTransaction->metadata ?? [], [
+          'reversed_amount'  => $refundedAmount,
+          'remaining_amount' => $remainingAmount,
+          'commission'       => $calc['commission'],
+          'commission_rate'  => $calc['rate'],
+          'net_amount'       => $calc['net'],
+          'released_reason'  => 'partial_refund',
+          'released_at'      => now()->toIso8601String(),
+        ]),
+      ]);
+
+      // ثبت کمیسیون
+      if ($calc['commission'] > 0) {
+        WalletTransaction::create([
+          'wallet_id'      => $wallet->id,
+          'user_id'        => $wallet->user_id,
+          'type'           => WalletTransactionType::commission->value,
+          'direction'      => 'debit',
+          'amount'         => $calc['commission'],
+          'balance_before' => $balanceBefore + $calc['net'],
+          'balance_after'  => $balanceBefore + $calc['net'],
+          'status'         => 'completed',
+          'reference_type' => WalletTransaction::class,
+          'reference_id'   => $earningTransaction->id,
+          'description'    => "کمیسیون باقیمانده درآمد رزرو #{$booking->id}",
+          'metadata'       => [
+            'commission_rate'       => $calc['rate'],
+            'source_transaction_id' => $earningTransaction->id,
+            'reason'                => 'partial_refund',
+          ],
+        ]);
+      }
+    });
   }
 }

@@ -7,42 +7,75 @@ use App\Services\WalletService;
 use Illuminate\Console\Command;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
+use Illuminate\Support\Facades\Log;
 
-#[Signature('wallet:release-locked')]
-#[Description('آزادسازی مبالغ قفل‌شده‌ای که زمانشان رسیده')]
+#[Signature('wallet:release-locked
+    {--dry-run : نمایش تراکنش‌ها بدون آزادسازی}
+    {--limit=100 : حداکثر تعداد تراکنش‌ها}
+')] #[Description('آزادسازی مبالغ قفل‌شده‌ای که زمانشان رسیده')]
 class ReleaseLockedWalletFunds extends Command
 {
     public function handle(WalletService $walletService): int
     {
+        $isDryRun = $this->option('dry-run');
+        $limit = (int) $this->option('limit');
         $now = now();
 
-        // تراکنش‌های قفل‌شده‌ای که زمان آزادسازیشون رسیده
+        $this->info("شروع آزادسازی...");
+
         $transactions = WalletTransaction::query()
             ->where('is_locked', true)
             ->whereNull('released_at')
-            ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.release_at')) <= ?", [
-                $now->toIso8601String(),
-            ])
+            ->whereNotNull('release_at')
+            ->where('release_at', '<=', $now)
+            ->with(['user:id,name,phone'])
+            ->orderBy('release_at')
+            ->limit($limit)
             ->get();
 
-        $this->info("تعداد تراکنش‌های آماده آزادسازی: {$transactions->count()}");
+        $this->info("تعداد: {$transactions->count()}");
+
+        if ($transactions->isEmpty()) {
+            $this->info('✓ هیچ تراکنشی برای آزادسازی وجود ندارد.');
+            return Command::SUCCESS;
+        }
+
+        if ($isDryRun) {
+            $this->table(
+                ['ID', 'User', 'Amount', 'Release At'],
+                $transactions->map(fn($t) => [
+                    $t->id,
+                    $t->user?->name ?? '-',
+                    number_format((float) $t->amount),
+                    $t->release_at?->format('Y-m-d H:i:s') ?? '-',
+                ])->toArray()
+            );
+            $this->warn('حالت Dry-Run.');
+            return Command::SUCCESS;
+        }
 
         $released = 0;
         $failed = 0;
+        $totalAmount = 0;
 
         foreach ($transactions as $transaction) {
             try {
                 $walletService->releaseLocked($transaction);
                 $released++;
-                $this->line("  ✓ تراکنش #{$transaction->id} آزاد شد");
+                $totalAmount += (float) $transaction->amount;
             } catch (\Throwable $e) {
                 $failed++;
-                $this->error("  ✗ تراکنش #{$transaction->id} - خطا: {$e->getMessage()}");
+                Log::error('Failed to release locked funds', [
+                    'transaction_id' => $transaction->id,
+                    'error'          => $e->getMessage(),
+                ]);
             }
         }
 
         $this->newLine();
-        $this->info("✓ آزاد شده: {$released}");
+        $this->info("✓ آزاد شده: {$released} تراکنش");
+        $this->info("✓ مبلغ کل: " . number_format($totalAmount) . " تومان");
+
         if ($failed > 0) {
             $this->error("✗ خطا: {$failed}");
         }

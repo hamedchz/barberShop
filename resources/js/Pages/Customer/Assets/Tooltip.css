@@ -386,3 +386,107 @@
     opacity: 1;
   }
 }
+
+```css
+
+/* ============ Tooltip Portal ============ */
+.tooltip-portal {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  pointer-events: none;
+
+  max-width: 280px;
+  width: max-content;
+  box-sizing: border-box;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  animation: tooltipPortalFadeIn 0.2s ease;
+}
+
+/* موقعیت Tooltip */
+.tooltip-portal.tooltip-top {
+  transform: translate(-50%, -100%);
+}
+
+.tooltip-portal.tooltip-bottom {
+  transform: translate(-50%, 0);
+}
+
+.tooltip-portal.tooltip-left {
+  transform: translate(-100%, -50%);
+}
+
+.tooltip-portal.tooltip-right {
+  transform: translate(0, -50%);
+}
+
+/* محتوای Tooltip */
+.tooltip-portal .tooltip-content {
+  position: relative;
+  box-sizing: border-box;
+
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.625rem;
+
+  background: linear-gradient(135deg,
+      #1f2937 0%,
+      #111827 100%);
+
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: center;
+  direction: rtl;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* فلش */
+.tooltip-portal .tooltip-arrow {
+  position: absolute;
+
+  width: 0.625rem;
+  height: 0.625rem;
+
+  background: #1f2937;
+  transform: rotate(45deg);
+
+  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-portal.tooltip-top .tooltip-arrow {
+  bottom: -0.3125rem;
+}
+
+.tooltip-portal.tooltip-bottom .tooltip-arrow {
+  top: -0.3125rem;
+}
+
+.tooltip-portal.tooltip-left .tooltip-arrow {
+  right: -0.3125rem;
+}
+
+.tooltip-portal.tooltip-right .tooltip-arrow {
+  left: -0.3125rem;
+}
+
+/* انیمیشن بدون تغییر transform موقعیت */
+@keyframes tooltipPortalFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+```

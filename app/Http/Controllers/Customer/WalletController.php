@@ -14,6 +14,7 @@ use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class WalletController extends Controller
@@ -385,50 +386,69 @@ class WalletController extends Controller
         $user = auth()->user();
         $wallet = $user->getOrCreateWallet();
 
+        // ============ ۱) چک اطلاعات بانکی ============
+        if (empty($user->card_number) && empty($user->sheba_number)) {
+            StickyAlert::alert('لطفاً ابتدا اطلاعات بانکی خود را تکمیل کنید.', 'error');
+            return redirect()->back();
+        }
+
+        // ============ ۲) چک موجودی (فقط balance) ============
+        if ($wallet->balance < $validated['amount']) {
+            StickyAlert::alert(
+                'موجودی قابل برداشت کافی نیست. موجودی فعلی: ' .
+                    EnglishtoPersianNumber(number_format($wallet->balance)) .
+                    ' تومان',
+                'error'
+            );
+            return redirect()->back();
+        }
+
+        // ============ ۳) چک درخواست فعال ============
         if (Settlement::hasActiveForUser($user->id)) {
             $active = Settlement::getActiveForUser($user->id);
             StickyAlert::alert(
                 "شما یک درخواست برداشت فعال دارید (#{$active->id}) " .
                     "به مبلغ " . EnglishtoPersianNumber(number_format($active->amount)) . " تومان. " .
                     "لطفاً تا بررسی آن صبر کنید یا درخواست را لغو کنید.",
-
                 'error'
             );
             return redirect()->back();
         }
 
-        if ($wallet->available_balance < $validated['amount']) {
-            StickyAlert::alert('موجودی قابل برداشت کافی نیست.', 'error');
+        // ============ ۴) ثبت درخواست + قفل کردن مبلغ ============
+        try {
+            DB::transaction(function () use ($user, $wallet, $validated) {
+                // ساخت درخواست
+                Settlement::create([
+                    'user_id'             => $user->id,
+                    'type'                => SettlementType::customerRefund->value,
+                    'amount'              => $validated['amount'],
+                    'status'              => SettlementStatus::pending->value,
+                    'bank_name'           => $user->bank_name,
+                    'account_holder_name' => $user->account_holder_name,
+                    'card_number'         => $user->card_number,
+                    'sheba_number'        => $user->sheba_number,
+                    'requested_at'        => now(),
+                    'requested_by'        => $user->id,
+                ]);
+
+                //  از balance کم کن و به locked اضافه کن
+                $wallet->decrement('balance', $validated['amount']);
+                $wallet->increment('locked_balance', $validated['amount']);
+            });
+
+            StickyAlert::alert('درخواست برداشت با موفقیت ثبت شد.', 'success');
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            Log::error('Withdrawal request failed', [
+                'user_id' => $user->id,
+                'amount'  => $validated['amount'],
+                'error'   => $e->getMessage(),
+            ]);
+
+            StickyAlert::alert('خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.', 'error');
             return redirect()->back();
         }
-
-        if (empty($user->card_number) && empty($user->sheba_number)) {
-            StickyAlert::alert('لطفاً ابتدا اطلاعات بانکی خود را تکمیل کنید.', 'error');
-            return redirect()->back();
-        }
-
-        $hasActiveSettlement = Settlement::where('user_id', $user->id)
-            ->whereIn('status', [SettlementStatus::pending->value, SettlementStatus::processing->value])
-            ->exists();
-
-        if ($hasActiveSettlement) {
-            StickyAlert::alert('شما یک درخواست برداشت فعال دارید.', 'error');
-            return redirect()->back();
-        }
-
-        Settlement::create([
-            'user_id'             => $user->id,
-            'type'                => SettlementType::customerRefund->value,
-            'amount'              => $validated['amount'],
-            'bank_name'           => $user->bank_name,
-            'account_holder_name' => $user->account_holder_name,
-            'card_number'         => $user->card_number,
-            'sheba_number'        => $user->sheba_number,
-            'requested_at'        => now(),
-            'requested_by'        => $user->id,
-        ]);
-        StickyAlert::alert('درخواست برداشت ثبت شد.', 'success');
-        return redirect()->back();
     }
 
     // ============================================

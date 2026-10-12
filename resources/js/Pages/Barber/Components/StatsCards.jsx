@@ -18,7 +18,7 @@ export default function StatsCards({ wallet, stats, period, onPeriodChange }) {
     const cards = [
         {
             label: "موجودی قابل برداشت",
-            value: wallet.balance - wallet.locked_balance,
+            value: wallet.balance,
             icon: Wallet,
             color: "green",
         },

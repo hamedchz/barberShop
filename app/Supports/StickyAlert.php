@@ -22,6 +22,7 @@ class StickyAlert
       'toast' => true,
       'timer' => $timer,
       'position' => $position,
+      'showConfirmButton' => false,
     ]);
   }
 

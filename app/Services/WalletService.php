@@ -9,14 +9,14 @@ use App\Exceptions\WalletException;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Carbon\CarbonInterface;
 
 class WalletService
 {
   /**
-   * گرفتن یا ساختن کیف پول برای کاربر
+   * گرفتن یا ساختن کیف پول
    */
   public function getOrCreateWallet(User $user): Wallet
   {
@@ -32,6 +32,10 @@ class WalletService
       ]
     );
   }
+
+    // ============================================
+    // متدهای عمومی
+    // ============================================
 
   /**
    * افزایش موجودی (credit)
@@ -54,11 +58,12 @@ class WalletService
       reference: $reference,
       metadata: $metadata,
       status: $status,
+      target: 'balance',   // ✅ به balance اضافه کن
     );
   }
 
   /**
-   * کاهش موجودی (debit)
+   * کاهش موجودی از balance (debit عادی)
    */
   public function debit(
     User $user,
@@ -78,11 +83,68 @@ class WalletService
       reference: $reference,
       metadata: $metadata,
       status: $status,
+      target: 'balance',   // ✅ از balance کم کن
     );
   }
 
   /**
-   * هسته اصلی: اعمال تراکنش
+   * کسر از locked_balance (برای تسویه)
+   */
+  public function debitLocked(
+    User $user,
+    float $amount,
+    WalletTransactionType $type,
+    ?string $description = null,
+    ?Model $reference = null,
+    array $metadata = [],
+  ): WalletTransaction {
+    return $this->applyTransaction(
+      user: $user,
+      amount: $amount,
+      type: $type,
+      direction: WalletTransactionDirection::debit,
+      description: $description,
+      reference: $reference,
+      metadata: array_merge($metadata, ['from_locked' => true]),
+      status: WalletTransactionStatus::completed,
+      target: 'locked',   // ✅ از locked کم کن
+    );
+  }
+
+  /**
+   * واریز به locked_balance (برای درآمد در انتظار)
+   */
+  public function creditLocked(
+    User $user,
+    float $amount,
+    WalletTransactionType $type,
+    ?string $description = null,
+    ?Model $reference = null,
+    array $metadata = [],
+    ?CarbonInterface $releaseAt = null,
+  ): WalletTransaction {
+    $releaseAt = $releaseAt ?? now()->addHours(48);
+
+    return $this->applyTransaction(
+      user: $user,
+      amount: $amount,
+      type: $type,
+      direction: WalletTransactionDirection::credit,
+      description: $description,
+      reference: $reference,
+      metadata: $metadata,
+      status: WalletTransactionStatus::completed,
+      target: 'locked',
+      releaseAt: $releaseAt,
+    );
+  }
+
+    // ============================================
+    // هسته اصلی
+    // ============================================
+
+  /**
+   * @param string $target 'balance' یا 'locked'
    */
   private function applyTransaction(
     User $user,
@@ -93,8 +155,9 @@ class WalletService
     ?Model $reference,
     array $metadata,
     ?WalletTransactionStatus $status,
+    string $target = 'balance',
+    ?CarbonInterface $releaseAt = null,
   ): WalletTransaction {
-
     if ($amount <= 0) {
       throw new WalletException('مبلغ تراکنش باید بزرگتر از صفر باشد.');
     }
@@ -109,16 +172,17 @@ class WalletService
       $description,
       $reference,
       $metadata,
-      $status
+      $status,
+      $target,
+      $releaseAt,
     ) {
-      // قفل کردن ردیف برای جلوگیری از race condition
+      // ============ قفل کردن ردیف ============
       $wallet = Wallet::where('user_id', $user->id)
         ->lockForUpdate()
         ->first();
 
       if (!$wallet) {
         $wallet = $this->getOrCreateWallet($user);
-        // دوباره با قفل بگیر
         $wallet = Wallet::where('user_id', $user->id)
           ->lockForUpdate()
           ->first();
@@ -128,43 +192,70 @@ class WalletService
         throw new WalletException('کیف پول کاربر غیرفعال است.');
       }
 
-      $balanceBefore = (float) $wallet->balance;
       $isCredit = $direction === WalletTransactionDirection::credit;
 
-      // بررسی موجودی کافی برای debit
+      // ============ چک موجودی برای debit ============
       if (!$isCredit && $status === WalletTransactionStatus::completed) {
-        $available = $balanceBefore - (float) $wallet->locked_balance;
-        if ($available < $amount) {
-          throw new WalletException(
-            "موجودی کافی نیست. موجودی قابل استفاده: {$available}"
-          );
+        if ($target === 'locked') {
+          // ✅ از locked کم میکنه — چک locked_balance
+          if ((float) $wallet->locked_balance < $amount) {
+            throw new WalletException(
+              'مبلغ قفل‌شده کافی نیست. قفل‌شده: ' .
+                EnglishtoPersianNumber(
+                  number_format($wallet->locked_balance)
+                ) .
+                ' تومان'
+            );
+          }
+        } else {
+          // ✅ از balance کم میکنه — چک balance
+          if ((float) $wallet->balance < $amount) {
+            throw new WalletException(
+              'موجودی کافی نیست. موجودی قابل برداشت: ' .
+                EnglishtoPersianNumber(
+                  number_format($wallet->balance)
+                ) .
+                ' تومان'
+            );
+          }
         }
       }
 
-      $balanceAfter = $isCredit
-        ? $balanceBefore + $amount
-        : $balanceBefore - $amount;
+      // ============ اعمال تغییرات ============
+      $balanceBefore = (float) $wallet->balance;
+      $lockedBefore = (float) $wallet->locked_balance;
 
-      // فقط اگه تراکنش completed باشه، balance واقعی رو آپدیت می‌کنیم
       if ($status === WalletTransactionStatus::completed) {
-        $wallet->balance = $balanceAfter;
+        if ($target === 'locked') {
+          // ✅ تغییر روی locked_balance
+          if ($isCredit) {
+            $wallet->locked_balance += $amount;
+          } else {
+            $wallet->locked_balance -= $amount;
+          }
+        } else {
+          // ✅ تغییر روی balance
+          if ($isCredit) {
+            $wallet->balance += $amount;
+          } else {
+            $wallet->balance -= $amount;
 
-        if ($isCredit && $type === WalletTransactionType::deposit) {
-          $wallet->total_deposited += $amount;
-        }
-        if (!$isCredit && $type === WalletTransactionType::withdraw) {
-          $wallet->total_withdrawn += $amount;
+            if ($type === WalletTransactionType::withdraw) {
+              $wallet->total_withdrawn += $amount;
+            }
+          }
+
+          if ($isCredit && $type === WalletTransactionType::deposit) {
+            $wallet->total_deposited += $amount;
+          }
         }
 
         $wallet->last_transaction_at = now();
-      } else {
-        // برای pending، balance_after = balance_before
-        $balanceAfter = $balanceBefore;
       }
 
       $wallet->save();
 
-      // ثبت تراکنش
+      // ============ ثبت تراکنش ============
       return WalletTransaction::create([
         'wallet_id'      => $wallet->id,
         'user_id'        => $user->id,
@@ -172,18 +263,31 @@ class WalletService
         'direction'      => $direction->value,
         'amount'         => $amount,
         'balance_before' => $balanceBefore,
-        'balance_after'  => $balanceAfter,
+        'balance_after'  => (float) $wallet->balance,
         'status'         => $status->value,
         'reference_type' => $reference ? get_class($reference) : null,
         'reference_id'   => $reference?->id,
         'description'    => $description,
-        'metadata'       => $metadata,
+        'metadata'       => array_merge($metadata, [
+          'target'        => $target,
+          'locked_before' => $lockedBefore,
+          'locked_after'  => (float) $wallet->locked_balance,
+        ]),
+        'is_locked'      => $target === 'locked',
+        'released_at'    => null,
+        'release_at'     => $target === 'locked' ? $releaseAt : null,
       ]);
     });
   }
 
+  
+
+    // ============================================
+    // متدهای تخصصی
+    // ============================================
+
   /**
-   * بازگشت وجه (مثلاً بعد از اعتراض تاییدشده)
+   * بازگشت وجه
    */
   public function refund(
     User $user,
@@ -203,7 +307,7 @@ class WalletService
   }
 
   /**
-   * جریمه (کسر از موجودی)
+   * جریمه
    */
   public function penalize(
     User $user,
@@ -223,7 +327,7 @@ class WalletService
   }
 
   /**
-   * برداشت از کیف پول
+   * برداشت (فقط از balance)
    */
   public function withdraw(
     User $user,
@@ -261,68 +365,8 @@ class WalletService
   }
 
   /**
-   * واریز مبلغ به کیف پول به‌صورت قفل‌شده
-   * (مبلغ توی locked_balance میره و بعد از release_at آزاد میشه)
-   */
-  public function creditLocked(
-    User $user,
-    float $amount,
-    WalletTransactionType $type,
-    ?string $description = null,
-    ?Model $reference = null,
-    array $metadata = [],
-    ?CarbonInterface $releaseAt = null,
-  ): WalletTransaction {
-    $releaseAt = $releaseAt ?? now()->addHours(48);
-
-    return DB::transaction(function () use (
-      $user,
-      $amount,
-      $type,
-      $description,
-      $reference,
-      $metadata,
-      $releaseAt
-    ) {
-      $wallet = Wallet::where('user_id', $user->id)
-        ->lockForUpdate()
-        ->firstOrFail();
-
-      if (!$wallet->is_active) {
-        throw new WalletException('کیف پول کاربر غیرفعال است.');
-      }
-
-      $balanceBefore = (float) $wallet->balance;
-
-      // مبلغ به locked_balance اضافه میشه (نه balance)
-      $wallet->locked_balance += $amount;
-      $wallet->last_transaction_at = now();
-      $wallet->save();
-
-      // ثبت تراکنش
-      return WalletTransaction::create([
-        'wallet_id'      => $wallet->id,
-        'user_id'        => $user->id,
-        'type'           => $type->value,
-        'direction'      => WalletTransactionDirection::credit->value,
-        'amount'         => $amount,
-        'balance_before' => $balanceBefore,
-        'balance_after'  => $balanceBefore,  // balance واقعی تغییر نکرده
-        'status'         => WalletTransactionStatus::completed->value,
-        'reference_type' => $reference ? get_class($reference) : null,
-        'reference_id'   => $reference?->id,
-        'description'    => $description,
-        'metadata'       => array_merge($metadata, [
-          'release_at' => $releaseAt->toIso8601String(),
-        ]),
-        'is_locked'      => true,
-        'released_at'    => null,
-      ]);
-    });
-  }
-
-  /**
    * آزاد کردن مبلغ قفل‌شده (انتقال از locked به balance)
+   *  با کسر کمیسیون پلتفرم
    */
   public function releaseLocked(WalletTransaction $transaction): void
   {
@@ -335,84 +379,68 @@ class WalletService
         ->lockForUpdate()
         ->firstOrFail();
 
-      $balanceBefore = (float) $wallet->balance;
-      $amount = (float) $transaction->amount;
+      $grossAmount = (float) $transaction->amount;
 
-      // انتقال از locked به balance
-      $wallet->locked_balance -= $amount;
-      $wallet->balance += $amount;
-      $wallet->save();
-
-      // آپدیت تراکنش
-      $transaction->update([
-        'released_at'    => now(),
-        'balance_after'  => $balanceBefore + $amount,
-      ]);
-    });
-  }
-
-  /**
-   * کاهش از locked_balance (برای برگشت پول قفل‌شده)
-   */
-  public function debitLocked(
-    User $user,
-    float $amount,
-    WalletTransactionType $type,
-    ?string $description = null,
-    ?Model $reference = null,
-    array $metadata = [],
-  ): WalletTransaction {
-    if ($amount <= 0) {
-      throw new WalletException('مبلغ تراکنش باید بزرگتر از صفر باشد.');
-    }
-
-    return DB::transaction(function () use (
-      $user,
-      $amount,
-      $type,
-      $description,
-      $reference,
-      $metadata
-    ) {
-      $wallet = Wallet::where('user_id', $user->id)
-        ->lockForUpdate()
-        ->firstOrFail();
-
-      if (!$wallet->is_active) {
-        throw new WalletException('کیف پول کاربر غیرفعال است.');
-      }
-
-      // چک: locked_balance کافیه؟
-      if ((float) $wallet->locked_balance < $amount) {
+      // ✅ چک امنیتی
+      if ((float) $wallet->locked_balance < $grossAmount) {
         throw new WalletException(
-          "مبلغ قفل‌شده کافی نیست. موجود: {$wallet->locked_balance}"
+          'مبلغ قفل‌شده کافی نیست. قفل: ' .
+            number_format($wallet->locked_balance)
         );
       }
 
+      // ✅ محاسبه کمیسیون
+      $commissionService = app(\App\Services\CommissionService::class);
+      $calc = $commissionService->calculate($grossAmount, $wallet->user);
+
       $balanceBefore = (float) $wallet->balance;
 
-      // کم کردن از locked_balance (نه balance)
-      $wallet->locked_balance -= $amount;
+      // ✅ انتقال خالص به balance
+      $wallet->locked_balance -= $grossAmount;
+      $wallet->balance += $calc['net'];
       $wallet->last_transaction_at = now();
       $wallet->save();
 
-      // ثبت تراکنش
-      return WalletTransaction::create([
-        'wallet_id'      => $wallet->id,
-        'user_id'        => $user->id,
-        'type'           => $type->value,
-        'direction'      => WalletTransactionDirection::debit->value,
-        'amount'         => $amount,
-        'balance_before' => $balanceBefore,
-        'balance_after'  => $balanceBefore,  // balance تغییر نکرده
-        'status'         => WalletTransactionStatus::completed->value,
-        'reference_type' => $reference ? get_class($reference) : null,
-        'reference_id'   => $reference?->id,
-        'description'    => $description,
-        'metadata'       => array_merge($metadata, [
-          'from_locked' => true,
+      // آپدیت تراکنش اصلی
+      $transaction->update([
+        'released_at' => now(),
+        'metadata'    => array_merge($transaction->metadata ?? [], [
+          'commission'      => $calc['commission'],
+          'commission_rate' => $calc['rate'],
+          'gross_amount'    => $grossAmount,
+          'net_amount'      => $calc['net'],
+          'released_at'     => now()->toIso8601String(),
         ]),
       ]);
+
+      // ✅ ثبت کمیسیون
+      if ($calc['commission'] > 0) {
+        WalletTransaction::create([
+          'wallet_id'      => $wallet->id,
+          'user_id'        => $wallet->user_id,
+          'type'           => WalletTransactionType::commission->value,
+          'direction'      => 'debit',
+          'amount'         => $calc['commission'],
+          'balance_before' => $balanceBefore + $calc['net'],
+          'balance_after'  => $balanceBefore + $calc['net'],
+          'status'         => 'completed',
+          'reference_type' => WalletTransaction::class,
+          'reference_id'   => $transaction->id,
+          'description'    => "کمیسیون آزادسازی درآمد #{$transaction->id}",
+          'metadata'       => [
+            'commission_rate'       => $calc['rate'],
+            'source_transaction_id' => $transaction->id,
+          ],
+        ]);
+      }
     });
+  }
+  /**
+   * انتقال از locked به balance (برای برگشت درآمد)
+   */
+  public function releaseLockedToBalance(
+    WalletTransaction $transaction,
+  ): void {
+    $this->releaseLocked($transaction);
   }
 }

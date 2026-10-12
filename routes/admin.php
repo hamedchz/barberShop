@@ -3,9 +3,11 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
+use App\Http\Controllers\Admin\CommissionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
 use App\Http\Controllers\Admin\FinanceController;
+use App\Http\Controllers\Admin\FinanceExportController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SettlementController;
@@ -105,8 +107,8 @@ Route::prefix('finance')->name('finance.')->group(function () {
   // داشبورد مالی
   Route::controller(FinanceController::class)->group(function () {
     Route::get('/',  'index')->name('index');
-    Route::get('/settlements/list', 'settlements')->name('settlements.index');
-    Route::get('/{settlement}/settlements/details', 'showSettlement')->name('settlements.show');
+    // Route::get('/settlements/list', 'settlements')->name('settlements.index');
+    // Route::get('/{settlement}/settlements/details', 'showSettlement')->name('settlements.show');
 
     // تراکنشها
     Route::get('/transactions', 'transactions')->name('transactions');
@@ -120,11 +122,39 @@ Route::prefix('finance')->name('finance.')->group(function () {
 
   // تسویهها
   Route::prefix('settlements')->name('settlements.')->controller(SettlementController::class)->group(function () {
+    Route::get('/',  'index')->name('index');
+    Route::get('/{settlement}',  'show')->name('show');
     Route::post('/{settlement}/process',  'process')->name('process');
     Route::post('/{settlement}/complete',  'complete')->name('complete');
     Route::post('/{settlement}/reject',  'reject')->name('reject');
     Route::post('/{settlement}/cancel',  'cancel')->name('cancel');
+    Route::post('/bulk-process', 'bulkProcess')->name('bulk-process');
   });
+
+  // Export CSV
+  Route::prefix('export')->name('export.')->controller(FinanceExportController::class)->group(function () {
+    Route::get('/revenue',  'revenueCsv')
+      ->name('revenue');
+    Route::get('/settlements',  'settlementsCsv')
+      ->name('settlements');
+    Route::get('/deposits',  'depositsCsv')
+      ->name('deposits');
+    Route::get('/transactions',  'transactionsCsv')
+      ->name('transactions');
+  });
+
+  Route::prefix('commission')
+    ->name('commission.')->controller(CommissionController::class)
+    ->group(function () {
+
+      Route::get('/', 'index')->name('index');
+      Route::post('/default', 'updateDefault')->name('update-default');
+      Route::post('/users/{user}', 'updateUserRate')->name('update-user');
+      Route::delete('/users/{user}', 'removeUserRate')->name('remove-user');
+    });
 });
+
+
+
   
 // });

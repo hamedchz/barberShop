@@ -82,18 +82,11 @@ class Settlement extends Model
 
     public function isPending(): bool
     {
-        return $this->status === SettlementStatus::pending;
+        return $this->status->value === SettlementStatus::pending->value;
     }
 
-    public function isCompleted(): bool
-    {
-        return $this->status === SettlementStatus::completed;
-    }
 
-    public function isFailed(): bool
-    {
-        return $this->status === SettlementStatus::failed;
-    }
+
 
     /**
      * علامت‌گذاری به‌عنوان در حال پردازش
@@ -250,9 +243,9 @@ class Settlement extends Model
      */
     public function isActive(): bool
     {
-        return in_array($this->status, [
-            SettlementStatus::pending,
-            SettlementStatus::processing,
+        return in_array($this->status->value, [
+            SettlementStatus::pending->value,
+            SettlementStatus::processing->value,
         ], true);
     }
 
@@ -266,5 +259,60 @@ class Settlement extends Model
             ->active()
             ->where('id', '!=', $this->id)
             ->exists();
+    }
+
+    // app/Models/Settlement.php
+
+    /**
+     * آیا در حال پردازش است؟
+     */
+    public function isProcessing(): bool
+    {
+        return $this->status->value === SettlementStatus::processing->value;
+    }
+
+    /**
+     * آیا تکمیل شده است؟
+     */
+    public function isCompleted(): bool
+    {
+        return $this->status->value === SettlementStatus::completed->value;
+    }
+
+    /**
+     * آیا ناموفق بوده است؟
+     */
+    public function isFailed(): bool
+    {
+        return $this->status->value === SettlementStatus::failed->value;
+    }
+
+    /**
+     * آیا لغو شده است؟
+     */
+    public function isCancelled(): bool
+    {
+        return $this->status->value === SettlementStatus::cancelled->value;
+    }
+
+
+    /**
+     * آیا به پایان رسیده است؟ (نهایی)
+     */
+    public function isFinalized(): bool
+    {
+        return in_array($this->status->value, [
+            SettlementStatus::completed->value,
+            SettlementStatus::failed->value,
+            SettlementStatus::cancelled->value,
+        ], true);
+    }
+
+    /**
+     * آیا توسط کاربر قابل لغو است؟
+     */
+    public function canBeCancelledByUser(): bool
+    {
+        return $this->isPending();
     }
 }

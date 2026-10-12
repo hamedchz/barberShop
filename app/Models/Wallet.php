@@ -47,7 +47,7 @@ class Wallet extends Model
      */
     public function getAvailableBalanceAttribute(): float
     {
-        return (float) $this->balance - (float) $this->locked_balance;
+        return (float) $this->balance;
     }
 
     public function hasEnoughBalance(float $amount): bool

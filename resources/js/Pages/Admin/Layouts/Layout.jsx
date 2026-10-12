@@ -29,12 +29,17 @@ export default function Layout({ children }) {
     useEffect(() => {
         if (flash?.alert) {
             Swal.fire({
-                icon: flash.alert["type"],
-                title: flash.alert["title"],
+                icon: flash.alert.type,
+                title: flash.alert.title,
+
+                // به‌صورت پیش‌فرض دکمه نمایش داده می‌شود
                 confirmButtonText: "باشه",
-                toast: flash.alert["toast"],
-                position: flash.alert["position"],
-                timer: flash.alert["timer"],
+                showConfirmButton: flash.alert.showConfirmButton ?? true,
+
+                toast: flash.alert.toast ?? false,
+                position: flash.alert.position || "top-end",
+                timer: flash.alert.timer,
+
                 customClass: {
                     popup: "rtl-alert",
                 },

@@ -1,0 +1,426 @@
+/* ============================================
+   Commission Page
+   ============================================ */
+.commission-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .commission-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+.commission-main,
+.commission-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.commission-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.8;
+  margin: 0 0 1.25rem;
+}
+
+.commission-rate-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+  margin-bottom: 1rem;
+}
+
+.commission-rate-input .form-input {
+  padding-left: 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.commission-rate-input .input-suffix {
+  position: absolute;
+  left: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+.commission-example {
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.example-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.example-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.example-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.example-row span {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.example-row strong {
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.example-row.commission strong {
+  color: #7c3aed;
+}
+
+.example-row.net strong {
+  color: #065f46;
+}
+
+.custom-rates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.custom-rate-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.875rem;
+  transition: all 0.2s;
+}
+
+.custom-rate-item:hover {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.rate-user {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.rate-user img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rate-user .user-name {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.rate-value {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #7c3aed;
+  padding: 0.25rem 0.75rem;
+  background: #f5f3ff;
+  border-radius: 9999px;
+}
+
+.rate-actions {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.commission-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.commission-tips li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.commission-tips li svg {
+  color: #10b981;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.commission-tips li svg.warning {
+  color: #f59e0b;
+}
+
+/* ============================================
+   Modal — General
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: modalOverlayIn 0.2s ease-out;
+}
+
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: modalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============ Modal Header ============ */
+.modal-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+}
+
+.modal-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal-icon.process {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.modal-icon.complete {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.modal-icon.reject {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+/* ============ Modal Actions ============ */
+.modal-actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+/* ============ Form داخل Modal ============ */
+.modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.modal .form-group label .required {
+  color: #ef4444;
+}
+
+.modal .form-input,
+.modal .form-textarea {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  background: #f9fafb;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.modal .form-input:focus,
+.modal .form-textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.modal .form-input.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.modal .form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+/* ============ Select در Modal ============ */
+.modal select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 0.875rem center;
+  padding-left: 2.5rem;
+  cursor: pointer;
+}
+
+/* ============ Spinner ============ */
+.modal .spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: modalSpin 0.7s linear infinite;
+}
+
+@keyframes modalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .modal {
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions .btn-ghost,
+  .modal-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.commission-search {
+  margin-bottom: 1rem;
+}
+
+.commission-search>* {
+  width: 100%;
+}

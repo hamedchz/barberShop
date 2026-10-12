@@ -13,37 +13,63 @@ import {
     Eye,
     BarChart3,
     PieChart,
-    DollarSign,
     Percent,
     Award,
     ArrowUpRight,
-    RefreshCw,
+    X,
+    RotateCcw,
+    Search,
+    ChevronDown,
+    FileSpreadsheet,
+    FileText,
 } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
 import { formatFullDateTime } from "../../../../utils/dateHelpers";
 import AdminRevenueChart from "../../Components/AdminRevenueChart";
 import AdminRevenuePie from "../../Components/AdminRevenuePie";
+import SearchComponent from "../../../../Components/Search";
+import PersianDatePicker from "../../../../Components/PersianDatePicker";
+import Select2 from "../../Components/Select2";
 import "../../Assets/css/Finance.css";
 import "../../Assets/css/RevenuePage.css";
+
+const periodOptions = [
+    { value: "today", label: "امروز" },
+    { value: "yesterday", label: "دیروز" },
+    { value: "7", label: "۷ روز" },
+    { value: "30", label: "۳۰ روز" },
+    { value: "90", label: "۹۰ روز" },
+    { value: "365", label: "۱ سال" },
+    { value: "custom", label: "دلخواه" },
+];
+
+const typeOptions = [
+    { value: "", label: "همه" },
+    { value: "commission", label: "کمیسیون" },
+    { value: "penalty", label: "جریمه" },
+];
 
 export default function RevenueIndex({
     revenueByType,
     dailyRevenue,
     revenueByUser,
-    topBarbers,
     stats,
-    filters,
+    filters = {},
+    barbers = [],
 }) {
+    const [showExportMenu, setShowExportMenu] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
     const [period, setPeriod] = useState(filters.period || "30");
-
-    const handlePeriodChange = (newPeriod) => {
-        setPeriod(newPeriod);
-        router.get(
-            route("admin.finance.revenue"),
-            { period: newPeriod },
-            { preserveScroll: true, preserveState: true },
-        );
-    };
+    const [localFilters, setLocalFilters] = useState({
+        type: filters.type || "",
+        user_id: filters.user_id || "",
+        date_from: filters.date_from || "",
+        date_to: filters.date_to || "",
+        min_amount: filters.min_amount || "",
+        max_amount: filters.max_amount || "",
+    });
+    const [searchTerm, setSearchTerm] = useState(filters.search || "");
+    const [isSearching, setIsSearching] = useState(false);
 
     const formatAmount = (value) =>
         toPersianNumber(Number(value || 0).toLocaleString());
@@ -52,6 +78,97 @@ export default function RevenueIndex({
         (sum, item) => sum + item.total,
         0,
     );
+
+    const barberOptions = [
+        { value: "", label: "همه آرایشگرها" },
+        ...barbers.map((b) => ({
+            value: b.id.toString(),
+            label: b.name,
+        })),
+    ];
+
+    // ============ تغییر دوره ============
+    const handlePeriodChange = (newPeriod) => {
+        setPeriod(newPeriod);
+
+        if (newPeriod === "custom") {
+            setShowFilters(true);
+            return;
+        }
+
+        router.get(
+            route("admin.finance.revenue"),
+            {
+                ...localFilters,
+                period: newPeriod,
+                search: searchTerm,
+            },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
+    // ============ اعمال فیلترها ============
+    const applyFilters = (newFilters = localFilters) => {
+        router.get(
+            route("admin.finance.revenue"),
+            {
+                ...newFilters,
+                period: period === "custom" ? "custom" : period,
+                search: searchTerm,
+            },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
+    // ============ پاک کردن فیلترها ============
+    const clearFilters = () => {
+        const cleared = {
+            type: "",
+            user_id: "",
+            date_from: "",
+            date_to: "",
+            min_amount: "",
+            max_amount: "",
+        };
+        setLocalFilters(cleared);
+        setSearchTerm("");
+        setPeriod("30");
+
+        router.get(
+            route("admin.finance.revenue"),
+            { period: "30" },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
+    // ============ جستجو ============
+    const handleSearch = (value) => {
+        setIsSearching(true);
+        router.get(
+            route("admin.finance.revenue"),
+            {
+                ...localFilters,
+                period: period === "custom" ? "custom" : period,
+                search: value,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onFinish: () => setIsSearching(false),
+            },
+        );
+    };
+
+    // ============ آیا فیلتر فعاله؟ ============
+    const hasActiveFilters =
+        Object.values(localFilters).some((v) => v) ||
+        searchTerm.trim() !== "" ||
+        period === "custom";
+
+    // ============ تعداد فیلترهای فعال ============
+    const activeFiltersCount = Object.values(localFilters).filter(
+        (v) => v !== "",
+    ).length;
 
     return (
         <Layout>
@@ -78,41 +195,300 @@ export default function RevenueIndex({
                             <ArrowRight size={16} />
                             داشبورد مالی
                         </Link>
-                        <button
-                            type="button"
-                            className="btn-secondary"
-                            onClick={() => window.print()}
-                        >
-                            <Download size={16} />
-                            چاپ گزارش
-                        </button>
-                    </div>
-                </div>
 
-                {/* ============ فیلتر دوره ============ */}
-                <div className="revenue-filters">
-                    <div className="period-filter">
-                        {[
-                            { value: "7", label: "۷ روز" },
-                            { value: "30", label: "۳۰ روز" },
-                            { value: "90", label: "۹۰ روز" },
-                            { value: "365", label: "۱ سال" },
-                        ].map((p) => (
+                        {/* ✅ دکمه Export */}
+                        <div className="export-dropdown">
                             <button
-                                key={p.value}
                                 type="button"
-                                className={`period-btn ${
-                                    period === p.value ? "active" : ""
-                                }`}
-                                onClick={() => handlePeriodChange(p.value)}
+                                className="btn-secondary"
+                                onClick={() =>
+                                    setShowExportMenu(!showExportMenu)
+                                }
                             >
-                                {p.label}
+                                <Download size={16} />
+                                خروجی
+                                <ChevronDown size={14} />
                             </button>
-                        ))}
+
+                            {showExportMenu && (
+                                <div className="export-menu">
+                                    <a
+                                        href={route(
+                                            "admin.finance.export.revenue",
+                                            {
+                                                period,
+                                                ...localFilters,
+                                                search: searchTerm,
+                                            },
+                                        )}
+                                        className="export-item"
+                                    >
+                                        <FileSpreadsheet size={16} />
+                                        <div>
+                                            <span>Excel (CSV)</span>
+                                            <small>
+                                                فرمت قابل باز شدن در Excel
+                                            </small>
+                                        </div>
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        className="export-item"
+                                        onClick={() => window.print()}
+                                    >
+                                        <FileText size={16} />
+                                        <div>
+                                            <span>چاپ / PDF</span>
+                                            <small>ذخیره به‌صورت PDF</small>
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* ============ کارتهای آماری ============ */}
+                {/* ============ نوار جستجو + فیلتر ============ */}
+                <div className="revenue-toolbar">
+                    <div className="revenue-toolbar-search">
+                        <SearchComponent
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                            onSearch={handleSearch}
+                            placeholder="جستجو در توضیحات یا نام آرایشگر..."
+                            delay={500}
+                            isLoading={isSearching}
+                        />
+                    </div>
+
+                    <button
+                        type="button"
+                        className={`filter-toggle ${showFilters ? "active" : ""}`}
+                        onClick={() => setShowFilters(!showFilters)}
+                    >
+                        <Filter size={14} />
+                        <span>فیلتر پیشرفته</span>
+                        {activeFiltersCount > 0 && (
+                            <span className="filter-count">
+                                {toPersianNumber(activeFiltersCount)}
+                            </span>
+                        )}
+                    </button>
+                </div>
+
+                {/* ============ پنل فیلترهای پیشرفته ============ */}
+                {showFilters && (
+                    <div className="filters-panel">
+                        {/* ردیف اول */}
+                        <div className="filters-grid filters-grid-2">
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <span className="label-icon">
+                                        <Calendar size={14} />
+                                    </span>
+                                    <span className="label-text">
+                                        دوره زمانی
+                                    </span>
+                                </label>
+                                <select
+                                    className="filter-select"
+                                    value={period}
+                                    onChange={(e) =>
+                                        handlePeriodChange(e.target.value)
+                                    }
+                                >
+                                    {periodOptions.map((o) => (
+                                        <option key={o.value} value={o.value}>
+                                            {o.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <span className="label-icon">
+                                        <Coins size={14} />
+                                    </span>
+                                    <span className="label-text">
+                                        نوع درآمد
+                                    </span>
+                                </label>
+                                <select
+                                    className="filter-select"
+                                    value={localFilters.type}
+                                    onChange={(e) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            type: e.target.value,
+                                        }))
+                                    }
+                                >
+                                    {typeOptions.map((o) => (
+                                        <option key={o.value} value={o.value}>
+                                            {o.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* ردیف دوم */}
+                        {period === "custom" && (
+                            <div className="filters-grid filters-grid-2">
+                                <PersianDatePicker
+                                    label="از تاریخ"
+                                    value={localFilters.date_from}
+                                    onChange={(value) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            date_from: value,
+                                        }))
+                                    }
+                                    placeholder="انتخاب تاریخ شروع"
+                                />
+
+                                <PersianDatePicker
+                                    label="تا تاریخ"
+                                    value={localFilters.date_to}
+                                    onChange={(value) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            date_to: value,
+                                        }))
+                                    }
+                                    placeholder="انتخاب تاریخ پایان"
+                                    minDate={localFilters.date_from || null}
+                                />
+                            </div>
+                        )}
+
+                        {/* ردیف سوم */}
+                        <div className="filters-grid filters-grid-3">
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <span className="label-icon">
+                                        <Users size={14} />
+                                    </span>
+                                    <span className="label-text">آرایشگر</span>
+                                </label>
+
+                                <Select2
+                                    options={[
+                                        { value: "", label: "همه آرایشگرها" },
+                                        ...barbers.map((b) => ({
+                                            value: b.id.toString(),
+                                            label: b.name,
+                                        })),
+                                    ]}
+                                    value={localFilters.user_id}
+                                    onChange={(value) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            user_id: value,
+                                        }))
+                                    }
+                                    placeholder="جستجو و انتخاب آرایشگر..."
+                                    isRtl
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <span className="label-icon">
+                                        <ArrowUpRight size={14} />
+                                    </span>
+                                    <span className="label-text">
+                                        حداقل مبلغ (تومان)
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    className="filter-input"
+                                    value={localFilters.min_amount}
+                                    onChange={(e) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            min_amount: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="مثلاً ۱۰,۰۰۰"
+                                />
+                            </div>
+
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    <span className="label-icon">
+                                        <ArrowRight size={14} />
+                                    </span>
+                                    <span className="label-text">
+                                        حداکثر مبلغ (تومان)
+                                    </span>
+                                </label>
+                                <input
+                                    type="number"
+                                    className="filter-input"
+                                    value={localFilters.max_amount}
+                                    onChange={(e) =>
+                                        setLocalFilters((prev) => ({
+                                            ...prev,
+                                            max_amount: e.target.value,
+                                        }))
+                                    }
+                                    placeholder="مثلاً ۱,۰۰۰,۰۰۰"
+                                />
+                            </div>
+                        </div>
+
+                        {/* اکشنها */}
+                        <div className="filters-actions">
+                            <button
+                                type="button"
+                                className="btn-ghost"
+                                onClick={clearFilters}
+                            >
+                                <RotateCcw size={14} />
+                                پاک کردن
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-primary"
+                                onClick={() => applyFilters()}
+                            >
+                                <Filter size={14} />
+                                اعمال فیلتر
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ============ فیلتر سریع دوره ============ */}
+                {!showFilters && (
+                    <div className="revenue-filters">
+                        <div className="period-filter">
+                            {periodOptions
+                                .filter((p) => p.value !== "custom")
+                                .map((p) => (
+                                    <button
+                                        key={p.value}
+                                        type="button"
+                                        className={`period-btn ${
+                                            period === p.value ? "active" : ""
+                                        }`}
+                                        onClick={() =>
+                                            handlePeriodChange(p.value)
+                                        }
+                                    >
+                                        {p.label}
+                                    </button>
+                                ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ============ کارت‌های آماری ============ */}
                 <div className="revenue-stats-grid">
                     {/* درآمد کل */}
                     <div className="revenue-stat-card primary">
@@ -185,7 +561,7 @@ export default function RevenueIndex({
                             <AlertTriangle size={24} />
                         </div>
                         <div className="stat-content">
-                            <span className="stat-label">جریمه ها</span>
+                            <span className="stat-label">جریمه‌ها</span>
                             <div className="stat-value">
                                 <span>
                                     {formatAmount(
@@ -345,7 +721,7 @@ export default function RevenueIndex({
                             {revenueByUser.length === 0 ? (
                                 <div className="empty-state">
                                     <Users size={32} />
-                                    <span>دادهای برای نمایش وجود ندارد</span>
+                                    <span>داده‌ای برای نمایش وجود ندارد</span>
                                 </div>
                             ) : (
                                 <div className="top-barbers-list">
@@ -402,7 +778,7 @@ export default function RevenueIndex({
 
                     {/* سایدبار */}
                     <div className="revenue-sidebar">
-                        {/* نمودار دایرهای */}
+                        {/* نمودار دایره‌ای */}
                         <div className="finance-card">
                             <div className="finance-card-header">
                                 <div className="card-icon-box purple">

@@ -52,7 +52,8 @@ class User extends Authenticatable
         'bank_name',
         'account_holder_name',
         'card_number',
-        'sheba_number'
+        'sheba_number',
+        'commission_rate'
     ];
     protected function casts(): array
     {
