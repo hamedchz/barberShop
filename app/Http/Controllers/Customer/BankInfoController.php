@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class BankInfoController extends Controller
@@ -58,20 +59,21 @@ class BankInfoController extends Controller
     /**
      * نمایش صفحه اطلاعات بانکی
      */
-    // public function show()
-    // {
-    //     $user = auth()->user();
+    public function showBankInfo()
+    {
+        $user = auth()->user()->load('bank');
 
-    //     return Inertia::render('Customer/Profile/BankInfo', [
-    //         'bankInfo' => [
-    //             'bank_name'           => $user->bank_name,
-    //             'account_holder_name' => $user->account_holder_name,
-    //             'card_number'         => $user->card_number,
-    //             'sheba_number'        => $user->sheba_number,
-    //             'has_bank_info'       => !empty($user->card_number) || !empty($user->sheba_number),
-    //         ],
-    //     ]);
-    // }
+        return Inertia::render('Customer/Profile/BankInfo', [
+            'bankInfo' => [
+                'bank_id' => $user->bank_id,
+                'bank_name' => $user->bank?->name,
+                'account_holder_name' => $user->account_holder_name,
+                'card_number'         => $user->card_number,
+                'sheba_number'        => $user->sheba_number,
+                'has_bank_info'       => !empty($user->card_number) || !empty($user->sheba_number),
+            ],
+        ]);
+    }
 
     /**
      * ذخیره اطلاعات بانکی
@@ -79,26 +81,50 @@ class BankInfoController extends Controller
     public function update(Request $request)
     {
 
+
+
         $validated = $request->validate([
-            'bank_name'           => 'required|string|max:100',
-            'account_holder_name' => 'required|string|max:150',
-            'card_number'         => 'nullable|string|size:16',
-            'sheba_number'        => 'nullable|string|size:24',
-        ], [
-            'bank_name.required'           => 'لطفاً نام بانک را انتخاب کنید.',
-            'account_holder_name.required' => 'لطفاً نام صاحب حساب را وارد کنید.',
-            'card_number.size'             => 'شماره کارت باید ۱۶ رقم باشد.',
-            'sheba_number.size'            => 'شماره شبا باید ۲۴ رقم باشد.',
+            'bank_id' => [
+                'required',
+                'integer',
+                Rule::exists('banks', 'id'),
+            ],
+            'account_holder_name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'card_number' => [
+                'nullable',
+                'digits:16',
+            ],
+            'sheba_number' => [
+                'nullable',
+                'regex:/^\d{24}$/',
+            ],
         ]);
 
-        // بررسی: حداقل یکی از کارت یا شبا
-        if (empty($validated['card_number']) && empty($validated['sheba_number'])) {
+        if (
+            empty($validated['card_number']) &&
+            empty($validated['sheba_number'])
+        ) {
             return back()->withErrors([
-                'card_number' => 'حداقل یکی از موارد شماره کارت یا شبا الزامی است.',
+                'card_number' =>
+                'حداقل یکی از شماره کارت یا شماره شبا الزامی است.',
             ]);
         }
 
-        auth()->user()->update($validated);
+        $user = $request->user();
+        $bank = Bank::findOrFail($validated['bank_id']);
+        $user->bank_id = $validated['bank_id'];
+        $user->bank_name = $bank->name;
+        $user->account_holder_name = $validated['account_holder_name'];
+        $user->card_number = $validated['card_number'] ?? null;
+        $user->sheba_number = $validated['sheba_number'] ?? null;
+
+        $user->save();
+
+        // auth()->user()->update($validated);
         StickyAlert::alert('اطلاعات بانکی با موفقیت ذخیره شد.', 'success');
         return redirect()->back();
     }

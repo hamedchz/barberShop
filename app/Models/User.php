@@ -313,4 +313,20 @@ class User extends Authenticatable
         return $this->barberBookings()
             ->where('status', \App\Enums\Casts\BookingStatus::completed->value);
     }
+
+    // app/Models/User.php
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
+    /**
+     * نام بانک برای نمایش
+     * (اول از relation، بعد snapshot)
+     */
+    public function getDisplayBankNameAttribute(): ?string
+    {
+        return $this->bank?->name ?? $this->bank_name;
+    }
 }

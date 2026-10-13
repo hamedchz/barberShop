@@ -13,36 +13,32 @@ import {
 
 import Select2 from "../../../Admin/Components/Select2";
 
-export default function BankInfoForm({ bankInfo, banks = [] }) {
+export default function BankInfoForm({ bankInfo, banks }) {
     const [formData, setFormData] = useState({
         bank_id: bankInfo?.bank_id ?? "",
-        account_holder_name: bankInfo?.account_holder_name || "",
-        card_number: bankInfo?.card_number || "",
-        sheba_number: bankInfo?.sheba_number || "",
+        account_holder_name: bankInfo?.account_holder_name ?? "",
+        card_number: bankInfo?.card_number ?? "",
+        sheba_number: bankInfo?.sheba_number ?? "",
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
     // گزینه اولیه برای نمایش بانک ذخیره‌شده
+    const selectedBank = banks.find(
+        (bank) => String(bank.value ?? bank.id) === String(formData.bank_id),
+    );
+
     const initialBankOptions = formData.bank_id
         ? [
               {
-                  value: formData.bank_id,
+                  value: String(formData.bank_id),
                   label:
                       bankInfo?.bank_name ||
-                      banks.find(
-                          (bank) =>
-                              String(bank.value ?? bank.id) ===
-                              String(formData.bank_id),
-                      )?.label ||
-                      banks.find(
-                          (bank) =>
-                              String(bank.value ?? bank.id) ===
-                              String(formData.bank_id),
-                      )?.name ||
+                      selectedBank?.label ||
+                      selectedBank?.name ||
                       "بانک انتخاب‌شده",
-                  icon: bankInfo?.icon || null,
+                  icon: bankInfo?.icon || selectedBank?.icon || null,
               },
           ]
         : [];
@@ -187,28 +183,21 @@ export default function BankInfoForm({ bankInfo, banks = [] }) {
                     </label>
 
                     <Select2
-                        isAsync={true}
+                        isAsync
                         asyncUrl={route("customer.banks.search")}
                         asyncMethod="GET"
                         asyncParams={{ limit: 5 }}
-                        asyncDelay={400}
-                        value={formData.bank_id}
+                        value={formData.bank_id ? String(formData.bank_id) : ""}
                         initialOptions={initialBankOptions}
                         onChange={(value) => {
-                            setFormData((previous) => ({
-                                ...previous,
+                            console.log("Selected bank value:", value);
+
+                            setFormData((prev) => ({
+                                ...prev,
                                 bank_id: value ?? "",
                             }));
-
-                            clearFieldError("bank_id");
                         }}
-                        placeholder="جست‌وجو و انتخاب بانک..."
-                        noOptionsMessage="بانکی یافت نشد"
-                        loadingMessage="در حال جست‌وجوی بانک‌ها..."
-                        isRtl={true}
-                        isSearchable={true}
-                        isClearable={true}
-                        isDisabled={isLoading}
+                        placeholder="بانک خود را انتخاب کنید"
                     />
 
                     {errors.bank_id && (

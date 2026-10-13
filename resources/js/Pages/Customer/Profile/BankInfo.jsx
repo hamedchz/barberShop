@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../Layouts/PublicLayout";
 import {
@@ -13,47 +13,15 @@ import {
     Wallet,
     Building2,
 } from "lucide-react";
-import { toPersianNumber } from "../../../utils/persianNumbers";
 import "../Assets/BankInfo.css";
-
-const iranianBanks = [
-    "بانک ملی ایران",
-    "بانک ملت",
-    "بانک صادرات ایران",
-    "بانک تجارت",
-    "بانک سپه",
-    "بانک کشاورزی",
-    "بانک مسکن",
-    "بانک پارسیان",
-    "بانک پاسارگاد",
-    "بانک سامان",
-    "بانک اقتصاد نوین",
-    "بانک کارآفرین",
-    "بانک سینا",
-    "بانک شهر",
-    "بانک دی",
-    "بانک صنعت و معدن",
-    "بانک توسعه صادرات ایران",
-    "بانک رفاه کارگران",
-    "بانک آینده",
-    "بانک قرض‌الحسنه رسالت",
-    "بانک قرض‌الحسنه مهر ایران",
-    "بانک خاورمیانه",
-    "بانک ایران زمین",
-    "بانک قوامین",
-    "بانک حکمت ایرانیان",
-    "بانک گردشگری",
-    "بانک توسعه تعاون",
-    "پست بانک ایران",
-    "بانک مهر ایران",
-    "بانک سرمایه",
-];
+import Select2 from "../../Admin/Components/Select2";
 
 export default function BankInfo({ auth, bankInfo }) {
     const [formData, setFormData] = useState({
+        bank_id: bankInfo?.bank_id != null ? String(bankInfo.bank_id) : "",
         bank_name: bankInfo?.bank_name || "",
         account_holder_name:
-            bankInfo?.account_holder_name || auth.user.name || "",
+            bankInfo?.account_holder_name || auth?.user?.name || "",
         card_number: bankInfo?.card_number || "",
         sheba_number: bankInfo?.sheba_number || "",
     });
@@ -61,18 +29,44 @@ export default function BankInfo({ auth, bankInfo }) {
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
-    // ============ فرمت کارت (هر ۴ رقم یه فاصله) ============
+    // هماهنگ‌سازی فرم با اطلاعات جدید دریافتی از بک‌اند
+    useEffect(() => {
+        setFormData({
+            bank_id: bankInfo?.bank_id != null ? String(bankInfo.bank_id) : "",
+            bank_name: bankInfo?.bank_name || "",
+            account_holder_name:
+                bankInfo?.account_holder_name || auth?.user?.name || "",
+            card_number: bankInfo?.card_number || "",
+            sheba_number: bankInfo?.sheba_number || "",
+        });
+    }, [bankInfo, auth?.user?.name]);
+
+    // گزینه بانک ذخیره‌شده برای نمایش صحیح در Select2
+    const initialBankOptions = formData.bank_id
+        ? [
+              {
+                  value: String(formData.bank_id),
+                  label: formData.bank_name || "بانک انتخاب‌شده",
+                  icon: bankInfo?.icon || null,
+              },
+          ]
+        : [];
+
+    // فرمت شماره کارت: هر چهار رقم یک فاصله
     const formatCardNumber = (value) => {
-        const cleaned = value.replace(/\D/g, "").slice(0, 16);
+        const cleaned = String(value || "")
+            .replace(/\D/g, "")
+            .slice(0, 16);
+
         return cleaned.replace(/(.{4})/g, "$1 ").trim();
     };
 
-    // ============ اعتبارسنجی سمت کلاینت ============
+    // اعتبارسنجی فرم
     const validate = () => {
         const newErrors = {};
 
-        if (!formData.bank_name) {
-            newErrors.bank_name = "لطفاً نام بانک را انتخاب کنید.";
+        if (!formData.bank_id) {
+            newErrors.bank_id = "لطفاً نام بانک را انتخاب کنید.";
         }
 
         if (!formData.account_holder_name.trim()) {
@@ -100,11 +94,12 @@ export default function BankInfo({ auth, bankInfo }) {
         return newErrors;
     };
 
-    // ============ ارسال ============
+    // ارسال فرم
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const clientErrors = validate();
+
         if (Object.keys(clientErrors).length > 0) {
             setErrors(clientErrors);
             return;
@@ -116,7 +111,7 @@ export default function BankInfo({ auth, bankInfo }) {
         router.post(
             route("customer.finance.profile.bank-info.update"),
             {
-                bank_name: formData.bank_name,
+                bank_id: formData.bank_id || null,
                 account_holder_name: formData.account_holder_name.trim(),
                 card_number: formData.card_number.replace(/\s/g, ""),
                 sheba_number: formData.sheba_number
@@ -125,9 +120,12 @@ export default function BankInfo({ auth, bankInfo }) {
             },
             {
                 preserveScroll: true,
-                onSuccess: () => setIsLoading(false),
-                onError: (errs) => {
-                    setErrors(errs);
+
+                onError: (serverErrors) => {
+                    setErrors(serverErrors);
+                },
+
+                onFinish: () => {
                     setIsLoading(false);
                 },
             },
@@ -141,18 +139,19 @@ export default function BankInfo({ auth, bankInfo }) {
             <Head title="اطلاعات بانکی" />
 
             <div className="bank-info-page">
-                {/* ============ هدر ============ */}
+                {/* هدر */}
                 <div className="bank-info-header">
                     <div className="bank-info-header-content">
                         <div className="bank-info-header-icon">
                             <CreditCard size={28} />
                         </div>
+
                         <div>
                             <h1>اطلاعات بانکی</h1>
                             <p>اطلاعات حساب برای واریز درآمد و تسویه</p>
                         </div>
                     </div>
-
+                    {/* TODO:مشکل بک گراند کلید */}
                     <div className="bank-info-header-actions">
                         <Link
                             href={route("customer.finance.wallet.index")}
@@ -164,9 +163,10 @@ export default function BankInfo({ auth, bankInfo }) {
                     </div>
                 </div>
 
-                {/* ============ هشدار امنیتی ============ */}
+                {/* هشدار امنیتی */}
                 <div className="security-notice">
                     <Shield size={22} />
+
                     <div>
                         <h3>اطلاعات شما امن است</h3>
                         <p>
@@ -176,14 +176,14 @@ export default function BankInfo({ auth, bankInfo }) {
                     </div>
                 </div>
 
-                {/* ============ گرید ============ */}
+                {/* محتوای اصلی */}
                 <div className="bank-info-grid">
-                    {/* فرم */}
                     <div className="bank-info-card">
                         <div className="bank-info-card-header">
                             <div className="bank-info-card-icon blue">
                                 <CreditCard size={20} />
                             </div>
+
                             <h2>اطلاعات حساب بانکی</h2>
                         </div>
 
@@ -201,41 +201,55 @@ export default function BankInfo({ auth, bankInfo }) {
                             onSubmit={handleSubmit}
                             className="bank-info-form"
                         >
-                            {/* نام بانک */}
+                            {/* انتخاب بانک */}
                             <div className="form-group">
                                 <label>
                                     <Building2 size={14} />
                                     نام بانک
                                     <span className="required">*</span>
                                 </label>
-                                <select
-                                    className={`form-input ${
-                                        errors.bank_name ? "error" : ""
-                                    }`}
-                                    value={formData.bank_name}
-                                    onChange={(e) => {
+
+                                <Select2
+                                    isAsync
+                                    asyncUrl={route("customer.banks.search")}
+                                    asyncMethod="GET"
+                                    asyncParams={{ limit: 5 }}
+                                    value={formData.bank_id}
+                                    initialOptions={initialBankOptions}
+                                    onChange={(value, option) => {
+                                        const selectedValue =
+                                            value != null && value !== ""
+                                                ? String(value)
+                                                : "";
+
+                                        const selectedLabel =
+                                            option?.label ?? option?.name ?? "";
+
                                         setFormData((prev) => ({
                                             ...prev,
-                                            bank_name: e.target.value,
+                                            bank_id: selectedValue,
+                                            bank_name: selectedValue
+                                                ? selectedLabel ||
+                                                  prev.bank_name
+                                                : "",
                                         }));
+
                                         setErrors((prev) => ({
                                             ...prev,
+                                            bank_id: undefined,
                                             bank_name: undefined,
                                         }));
                                     }}
-                                    disabled={isLoading}
-                                >
-                                    <option value="">انتخاب بانک...</option>
-                                    {iranianBanks.map((bank) => (
-                                        <option key={bank} value={bank}>
-                                            {bank}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.bank_name && (
+                                    placeholder="بانک خود را انتخاب کنید"
+                                    isSearchable
+                                    isClearable
+                                    isDisabled={isLoading}
+                                />
+
+                                {(errors.bank_id || errors.bank_name) && (
                                     <span className="form-error">
                                         <AlertCircle size={12} />
-                                        {errors.bank_name}
+                                        {errors.bank_id || errors.bank_name}
                                     </span>
                                 )}
                             </div>
@@ -247,8 +261,10 @@ export default function BankInfo({ auth, bankInfo }) {
                                     نام صاحب حساب
                                     <span className="required">*</span>
                                 </label>
+
                                 <div className="input-with-icon">
                                     <User size={16} />
+
                                     <input
                                         type="text"
                                         className={`form-input with-icon ${
@@ -263,6 +279,7 @@ export default function BankInfo({ auth, bankInfo }) {
                                                 account_holder_name:
                                                     e.target.value,
                                             }));
+
                                             setErrors((prev) => ({
                                                 ...prev,
                                                 account_holder_name: undefined,
@@ -272,12 +289,14 @@ export default function BankInfo({ auth, bankInfo }) {
                                         disabled={isLoading}
                                     />
                                 </div>
+
                                 {errors.account_holder_name && (
                                     <span className="form-error">
                                         <AlertCircle size={12} />
                                         {errors.account_holder_name}
                                     </span>
                                 )}
+
                                 <span className="form-hint">
                                     نام باید با نام صاحب حساب بانکی یکسان باشد.
                                 </span>
@@ -289,8 +308,10 @@ export default function BankInfo({ auth, bankInfo }) {
                                     <CreditCard size={14} />
                                     شماره کارت (۱۶ رقم)
                                 </label>
+
                                 <div className="input-with-icon">
                                     <CreditCard size={16} />
+
                                     <input
                                         type="text"
                                         className={`form-input with-icon ltr ${
@@ -300,15 +321,15 @@ export default function BankInfo({ auth, bankInfo }) {
                                             formData.card_number,
                                         )}
                                         onChange={(e) => {
-                                            const value =
-                                                e.target.value.replace(
-                                                    /\s/g,
-                                                    "",
-                                                );
+                                            const value = e.target.value
+                                                .replace(/\D/g, "")
+                                                .slice(0, 16);
+
                                             setFormData((prev) => ({
                                                 ...prev,
                                                 card_number: value,
                                             }));
+
                                             setErrors((prev) => ({
                                                 ...prev,
                                                 card_number: undefined,
@@ -320,6 +341,7 @@ export default function BankInfo({ auth, bankInfo }) {
                                         disabled={isLoading}
                                     />
                                 </div>
+
                                 {errors.card_number && (
                                     <span className="form-error">
                                         <AlertCircle size={12} />
@@ -328,14 +350,16 @@ export default function BankInfo({ auth, bankInfo }) {
                                 )}
                             </div>
 
-                            {/* شبا */}
+                            {/* شماره شبا */}
                             <div className="form-group">
                                 <label>
                                     <Hash size={14} />
                                     شماره شبا (اختیاری)
                                 </label>
+
                                 <div className="input-with-icon">
                                     <Hash size={16} />
+
                                     <input
                                         type="text"
                                         className={`form-input with-icon ltr ${
@@ -343,19 +367,25 @@ export default function BankInfo({ auth, bankInfo }) {
                                         }`}
                                         value={
                                             formData.sheba_number
-                                                ? `IR${formData.sheba_number.replace(/^IR/i, "")}`
+                                                ? `IR${formData.sheba_number.replace(
+                                                      /^IR/i,
+                                                      "",
+                                                  )}`
                                                 : ""
                                         }
                                         onChange={(e) => {
-                                            const value =
-                                                e.target.value.toUpperCase();
+                                            const value = e.target.value
+                                                .toUpperCase()
+                                                .replace(/\s/g, "")
+                                                .replace(/^IR/i, "")
+                                                .replace(/\D/g, "")
+                                                .slice(0, 24);
+
                                             setFormData((prev) => ({
                                                 ...prev,
-                                                sheba_number: value.replace(
-                                                    /^IR/i,
-                                                    "",
-                                                ),
+                                                sheba_number: value,
                                             }));
+
                                             setErrors((prev) => ({
                                                 ...prev,
                                                 sheba_number: undefined,
@@ -367,12 +397,14 @@ export default function BankInfo({ auth, bankInfo }) {
                                         disabled={isLoading}
                                     />
                                 </div>
+
                                 {errors.sheba_number && (
                                     <span className="form-error">
                                         <AlertCircle size={12} />
                                         {errors.sheba_number}
                                     </span>
                                 )}
+
                                 <span className="form-hint">
                                     حداقل یکی از موارد شماره کارت یا شبا الزامی
                                     است.
@@ -387,7 +419,7 @@ export default function BankInfo({ auth, bankInfo }) {
                             >
                                 {isLoading ? (
                                     <>
-                                        <span className="spinner"></span>
+                                        <span className="spinner" />
                                         در حال ذخیره...
                                     </>
                                 ) : (
@@ -406,25 +438,30 @@ export default function BankInfo({ auth, bankInfo }) {
                         <div className="bank-card-preview">
                             <div className="bank-card-gradient">
                                 <div className="bank-card-chip" />
+
                                 <div className="bank-card-number" dir="ltr">
                                     {formData.card_number
                                         ? formatCardNumber(formData.card_number)
                                         : "•••• •••• •••• ••••"}
                                 </div>
+
                                 <div className="bank-card-footer">
                                     <div className="bank-card-holder">
                                         <span className="bank-card-label">
                                             صاحب حساب
                                         </span>
+
                                         <span className="bank-card-value">
                                             {formData.account_holder_name ||
                                                 "نام صاحب حساب"}
                                         </span>
                                     </div>
+
                                     <div className="bank-card-bank">
                                         <span className="bank-card-label">
                                             بانک
                                         </span>
+
                                         <span className="bank-card-value">
                                             {formData.bank_name || "—"}
                                         </span>
@@ -439,6 +476,7 @@ export default function BankInfo({ auth, bankInfo }) {
                                 <div className="bank-info-card-icon orange">
                                     <AlertCircle size={20} />
                                 </div>
+
                                 <h2>نکات مهم</h2>
                             </div>
 
@@ -450,6 +488,7 @@ export default function BankInfo({ auth, bankInfo }) {
                                         باشد.
                                     </span>
                                 </li>
+
                                 <li>
                                     <CheckCircle size={14} />
                                     <span>
@@ -457,12 +496,14 @@ export default function BankInfo({ auth, bankInfo }) {
                                         ساعت به حساب شما واریز می‌شود.
                                     </span>
                                 </li>
+
                                 <li>
                                     <CheckCircle size={14} />
                                     <span>
                                         حداقل مبلغ برداشت ۱۰,۰۰۰ تومان است.
                                     </span>
                                 </li>
+
                                 <li>
                                     <AlertCircle
                                         size={14}

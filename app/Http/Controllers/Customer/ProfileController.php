@@ -19,20 +19,20 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-        $user = auth()->user();
+        $user = auth()->user()->load('bank');
 
-        $banks = Bank::active()
-            ->ordered()
-            ->get()->take(5)
-            ->map(fn($b) => [
-                'id'    => $b->id,
-                'name'  => $b->name,
-                'slug'  => $b->slug,
-                'code'  => $b->code,
-                'icon'  => $b->icon ? asset('storage/' . $b->icon) : null,
-                'color' => $b->color,
-            ])
-            ->toArray();;
+        // $banks = Bank::active()
+        //     ->ordered()
+        //     ->get()->take(5)
+        //     ->map(fn($b) => [
+        //         'id'    => $b->id,
+        //         'name'  => $b->name,
+        //         'slug'  => $b->slug,
+        //         'code'  => $b->code,
+        //         'icon'  => $b->icon ? asset('storage/' . $b->icon) : null,
+        //         'color' => $b->color,
+        //     ])
+        //     ->toArray();
 
         return Inertia::render('Customer/Profile/Edit', [
             'user' => [
@@ -53,13 +53,14 @@ class ProfileController extends Controller
                 'has_password'  => !is_null($user->password),
             ],
             'bankInfo' => [
-                'bank_name'           => $user->bank_name,
+                'bank_id'               => $user->bank_id,
+                'bank_name'           => $user->bank->name,
                 'account_holder_name' => $user->account_holder_name,
                 'card_number'         => $user->card_number,
                 'sheba_number'        => $user->sheba_number,
                 'has_bank_info'       => !empty($user->card_number) || !empty($user->sheba_number),
             ],
-            'banks'                   => $banks,
+            'banks'                   => [],
 
         ]);
     }
@@ -185,6 +186,7 @@ class ProfileController extends Controller
     public function updateBankInfo(Request $request)
     {
         $validated = $request->validate([
+            'bank_id'             => 'nullable|exists:banks,id',
             'bank_name'           => 'nullable|string|max:100',
             'account_holder_name' => 'nullable|string|max:150',
             'card_number'         => 'nullable|string|size:16',

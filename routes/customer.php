@@ -107,7 +107,7 @@ Route::prefix('finance')
       Route::get('/{deposit}/callback', 'callback')->name('callback');
     });
     Route::prefix('profile')->name('profile.')->controller(BankInfoController::class)->group(function () {
-      Route::get('/bank-info',  'show')->name('bank-info');
+      Route::get('/bank-info',  'showBankInfo')->name('bank-info');
       Route::post('/bank-info',  'update')->name('bank-info.update');
     });
   });

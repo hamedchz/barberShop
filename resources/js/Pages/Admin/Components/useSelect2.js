@@ -65,20 +65,37 @@ export function useSelect2({
 
     // حفظ برچسب گزینه‌های انتخاب‌شده
     const displayOptions = useMemo(() => {
-        const merged = [...initialOptions, ...selectedOptionCache, ...options];
+        const merged = [...selectedOptionCache, ...options, ...initialOptions];
 
-        return merged.filter(
-            (option, index, array) =>
-                array.findIndex((item) => item.value === option.value) ===
-                index,
-        );
-    }, [initialOptions, selectedOptionCache, options]);
+        const uniqueOptions = new Map();
+
+        merged.forEach((option) => {
+            const key = String(option.value);
+
+            // اولین گزینه اولویت دارد
+            if (!uniqueOptions.has(key)) {
+                uniqueOptions.set(key, option);
+            }
+        });
+
+        return Array.from(uniqueOptions.values());
+    }, [selectedOptionCache, options, initialOptions]);
 
     const selectedOptions = useMemo(() => {
-        return displayOptions.filter((option) =>
-            selectedValues.includes(option.value),
-        );
-    }, [displayOptions, selectedValues]);
+        return selectedValues
+            .map((value) => {
+                const key = String(value);
+
+                return (
+                    [
+                        ...selectedOptionCache,
+                        ...options,
+                        ...initialOptions,
+                    ].find((option) => String(option.value) === key) ?? null
+                );
+            })
+            .filter(Boolean);
+    }, [selectedValues, selectedOptionCache, options, initialOptions]);
 
     // دریافت داده از سرور
     const fetchAsync = useCallback(
@@ -254,21 +271,25 @@ export function useSelect2({
         (option) => {
             if (isDisabled || option.disabled) return;
 
-            setSelectedOptionCache((previous) => {
-                const merged = [
-                    ...previous.filter((item) => item.value !== option.value),
-                    option,
-                ];
-
-                return merged;
-            });
+            setSelectedOptionCache((previous) => [
+                ...previous.filter(
+                    (item) => String(item.value) !== String(option.value),
+                ),
+                option,
+            ]);
 
             if (isMulti) {
-                const newValues = selectedValues.includes(option.value)
-                    ? selectedValues.filter((item) => item !== option.value)
-                    : [...selectedValues, option.value];
+                const exists = selectedValues.some(
+                    (item) => String(item) === String(option.value),
+                );
 
-                onChange?.(newValues);
+                onChange?.(
+                    exists
+                        ? selectedValues.filter(
+                              (item) => String(item) !== String(option.value),
+                          )
+                        : [...selectedValues, option.value],
+                );
             } else {
                 onChange?.(option.value);
                 setSearch("");

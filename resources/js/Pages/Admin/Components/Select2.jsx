@@ -15,6 +15,7 @@ import "../Assets/css/Select2.css";
 export default function Select2({
     // پایه
     options = [],
+    initialOptions = [],
     value,
     onChange,
     placeholder = "انتخاب کنید...",
@@ -79,6 +80,7 @@ export default function Select2({
         handleKeyDown,
     } = useSelect2({
         options,
+        initialOptions,
         value,
         isMulti,
         isSearchable,
@@ -187,7 +189,9 @@ export default function Select2({
 
     // ============ نمایش هر گزینه ============
     const renderOptionItem = (option, index) => {
-        const isSelected = selectedValues.includes(option.value);
+        const isSelected = selectedValues.some(
+            (value) => String(value) === String(option.value),
+        );
         const isHighlighted = index === highlightedIndex;
         const isMaxReached =
             isMulti &&
