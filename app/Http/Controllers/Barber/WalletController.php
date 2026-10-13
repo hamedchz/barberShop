@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Barber;
 
 use App\Enums\Casts\SettlementStatus;
+use App\Enums\Casts\SettlementType;
 use App\Enums\Casts\WalletTransactionStatus;
 use App\Enums\Casts\WalletTransactionType;
 use App\Http\Controllers\Controller;
@@ -11,6 +12,8 @@ use App\Models\WalletTransaction;
 use App\Supports\StickyAlert;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class WalletController extends Controller
@@ -252,12 +255,12 @@ class WalletController extends Controller
         // ============ ۴) ثبت درخواست + قفل کردن مبلغ ============
         try {
             DB::transaction(function () use ($user, $wallet, $validated) {
+
                 // ساخت درخواست
                 Settlement::create([
                     'user_id'             => $user->id,
                     'type'                => SettlementType::barberPayout->value,
                     'amount'              => $validated['amount'],
-                    'status'              => SettlementStatus::pending->value,
                     'bank_name'           => $user->bank_name,
                     'account_holder_name' => $user->account_holder_name,
                     'card_number'         => $user->card_number,
@@ -275,6 +278,7 @@ class WalletController extends Controller
                 'درخواست برداشت با موفقیت ثبت شد.',
                 'success'
             );
+
             return redirect()->back();
         } catch (\Throwable $e) {
             Log::error('Withdrawal request failed', [

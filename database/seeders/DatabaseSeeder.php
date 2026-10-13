@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $this->call([
             // PermisionsSeeder::class
-            BarberProfileSeeder::class
+            // BarberProfileSeeder::class
+            BanksSeeder::class
         ]);
         // User::factory()->create([
         //     'name' => 'Test User',

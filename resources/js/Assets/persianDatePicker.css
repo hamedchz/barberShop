@@ -473,3 +473,93 @@
     height: 44px;
   }
 }
+
+
+/* هدر انتخاب ماه و سال */
+.datepicker-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.datepicker-header-title .datepicker-month-title,
+.datepicker-header-title .datepicker-year {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.datepicker-header-title .datepicker-month-title:hover,
+.datepicker-header-title .datepicker-year:hover {
+  background: #f1f5f9;
+}
+
+.datepicker-year-grid,
+.datepicker-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 8px;
+  direction: rtl;
+}
+
+.datepicker-picker-item {
+  min-height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.datepicker-picker-item:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.datepicker-picker-item.active {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+  font-weight: 700;
+}
+
+.datepicker-header>.datepicker-month-title {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.datepicker-header-spacer {
+  width: 32px;
+}
+
+@media (max-width: 360px) {
+
+  .datepicker-year-grid,
+  .datepicker-month-grid {
+    gap: 5px;
+    padding-inline: 4px;
+  }
+
+  .datepicker-picker-item {
+    font-size: 12px;
+    min-height: 36px;
+  }
+}

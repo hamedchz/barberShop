@@ -27,25 +27,23 @@ export default function Layout({ children }) {
     // Alert
     const { flash } = usePage().props;
     useEffect(() => {
-        if (flash?.alert) {
-            Swal.fire({
-                icon: flash.alert.type,
-                title: flash.alert.title,
+        const alert = flash?.alert;
 
-                // به‌صورت پیش‌فرض دکمه نمایش داده می‌شود
-                confirmButtonText: "باشه",
-                showConfirmButton: flash.alert.showConfirmButton ?? true,
+        if (!alert) return;
 
-                toast: flash.alert.toast ?? false,
-                position: flash.alert.position || "top-end",
-                timer: flash.alert.timer,
-
-                customClass: {
-                    popup: "rtl-alert",
-                },
-            });
-        }
-    }, [flash]);
+        Swal.fire({
+            icon: alert.type,
+            title: alert.title,
+            confirmButtonText: "باشه",
+            showConfirmButton: alert.showConfirmButton ?? true,
+            toast: alert.toast ?? false,
+            position: alert.position || "top-end",
+            timer: alert.timer,
+            customClass: {
+                popup: "rtl-alert",
+            },
+        });
+    }, [flash?.alert?.id]);
     const { toast } = useAlert();
     return (
         <div

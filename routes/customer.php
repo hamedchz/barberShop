@@ -4,6 +4,7 @@ use App\Http\Controllers\Customer\BankInfoController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\DisputeController;
 use App\Http\Controllers\Customer\PaymentController;
+use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\WalletController;
 use App\Http\Controllers\Customer\WalletDepositController;
@@ -86,8 +87,8 @@ Route::prefix('disputes')->name('disputes.')->controller(DisputeController::clas
   Route::post('/{dispute}/respond',  'respond')
     ->name('respond');
 });
+
 // finance
-// routes/web.php
 
 Route::prefix('finance')
   ->name('finance.')->controller(WalletController::class)
@@ -109,4 +110,29 @@ Route::prefix('finance')
       Route::get('/bank-info',  'show')->name('bank-info');
       Route::post('/bank-info',  'update')->name('bank-info.update');
     });
+  });
+
+// profile
+// routes/web.php
+
+Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
+  Route::get('/', 'edit')->name('edit');
+  Route::put('/', 'update')->name('update');
+  Route::post('/avatar', 'updateAvatar')->name('update-avatar');
+  Route::delete('/avatar', 'deleteAvatar')->name('delete-avatar');
+  Route::put('/password', 'updatePassword')->name('update-password');
+  Route::put('/bank-info', 'updateBankInfo')->name('update-bank-info');
+});
+
+// search
+
+Route::prefix('banks')
+  ->name('banks.')->controller(BankInfoController::class)
+  ->group(function () {
+    // جستجوی بانکها
+    Route::get('/search',  'search')
+      ->name('search');
+
+    Route::get('/{bank}',  'show')
+      ->name('show');
   });

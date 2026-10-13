@@ -7,21 +7,26 @@ import Swal from "sweetalert2";
 
 export default function PublicLayout({ children }) {
     const { flash } = usePage().props;
+
     useEffect(() => {
-        if (flash?.alert) {
-            Swal.fire({
-                icon: flash.alert["type"],
-                title: flash.alert["title"],
-                confirmButtonText: "باشه",
-                toast: flash.alert["toast"],
-                position: flash.alert["position"],
-                timer: flash.alert["timer"],
-                customClass: {
-                    popup: "rtl-alert",
-                },
-            });
-        }
-    }, [flash]);
+        const alert = flash?.alert;
+
+        if (!alert) return;
+
+        Swal.fire({
+            icon: alert.type,
+            title: alert.title,
+            confirmButtonText: "باشه",
+            showConfirmButton: alert.showConfirmButton ?? true,
+            toast: alert.toast ?? false,
+            position: alert.position || "top-end",
+            timer: alert.timer,
+            customClass: {
+                popup: "rtl-alert",
+            },
+        });
+    }, [flash?.alert?.id]);
+
     return (
         <div className="public-layout">
             <Navbar />

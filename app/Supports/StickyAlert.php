@@ -3,6 +3,7 @@
 namespace App\Supports;
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class StickyAlert
 {
@@ -16,6 +17,7 @@ class StickyAlert
 
 
     Session::flash('alert', [
+      'id' => (string) Str::uuid(),
       'type' => $type,
       'title' => $title,
       'message' => '',
@@ -35,6 +37,7 @@ class StickyAlert
 
 
     Session::flash('alert', [
+      'id' => (string) Str::uuid(),
       'type' => $type,
       'title' => $title,
       'message' => '',

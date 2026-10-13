@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\Casts\GenderTypes;
 use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\UserStatus;
 use Database\Factories\UserFactory;
@@ -53,7 +54,11 @@ class User extends Authenticatable
         'account_holder_name',
         'card_number',
         'sheba_number',
-        'commission_rate'
+        'commission_rate',
+        'birth_date',
+        'gender',
+        'email',
+        'bank_id'
     ];
     protected function casts(): array
     {
@@ -64,7 +69,9 @@ class User extends Authenticatable
             'last_seen_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatus::class,
-            'is_admin' => 'bool'
+            'gender' => GenderTypes::class,
+            'is_admin' => 'bool',
+            'birth_date' => 'date'
         ];
     }
     protected $attributes = [

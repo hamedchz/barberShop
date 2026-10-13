@@ -1,175 +1,370 @@
 import React from "react";
-import Select from "react-select";
-
-const colorMap = {
-    green: { bg: "#ecfdf5", color: "#065f46", border: "#d1fae5" },
-    blue: { bg: "#eff6ff", color: "#1e40af", border: "#dbeafe" },
-    orange: { bg: "#fff7ed", color: "#9a3412", border: "#ffedd5" },
-    red: { bg: "#fef2f2", color: "#991b1b", border: "#fee2e2" },
-    gray: { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" },
-    purple: { bg: "#f5f3ff", color: "#5b21b6", border: "#ede9fe" },
-};
+import {
+    Search,
+    X,
+    ChevronDown,
+    Check,
+    Loader2,
+    AlertCircle,
+    Plus,
+} from "lucide-react";
+import { toPersianNumber } from "../../../utils/persianNumbers";
+import { useSelect2 } from "./useSelect2";
+import "../Assets/css/Select2.css";
 
 export default function Select2({
+    // پایه
     options = [],
-    value = null,
+    value,
     onChange,
     placeholder = "انتخاب کنید...",
-    isMulti = false,
     isRtl = true,
     isDisabled = false,
-    isLoading = false,
     isClearable = true,
     isSearchable = true,
-    showColors = false, // ← نمایش رنگ گزینه‌ها
+
+    // multi
+    isMulti = false,
+    maxSelected = null,
+
+    // async
+    isAsync = false,
+    asyncUrl,
+    asyncMethod = "GET",
+    asyncParams = {},
+    asyncDelay = 400,
+
+    // ظاهر
+    size = "md",
+    variant = "default",
+    menuPlacement = "auto",
+    maxMenuHeight = 300,
+
+    // رفتار
+    isSearchFocused = true,
+    closeMenuOnSelect = true,
+
+    // سفارشی
+    renderOption = null,
+    renderValue = null,
+    noOptionsMessage = "گزینه‌ای یافت نشد",
+    loadingMessage = "در حال بارگذاری...",
+
+    // رویدادها
+    onSearchChange,
+    onMenuOpen,
+    onMenuClose,
+    onFocus,
+    onBlur,
+
+    className = "",
 }) {
-    // ============ استایل ============
-    const customStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            borderRadius: "0.75rem",
-            borderColor: state.isFocused ? "#10b981" : "#e5e7eb",
-            boxShadow: state.isFocused
-                ? "0 0 0 3px rgba(16, 185, 129, 0.1)"
-                : "none",
-            padding: "0.25rem",
-            minHeight: "48px",
-            fontFamily: "inherit",
-            backgroundColor: isDisabled ? "#f9fafb" : "white",
-            "&:hover": {
-                borderColor: isDisabled ? "#e5e7eb" : "#10b981",
-            },
-        }),
-        valueContainer: (provided) => ({
-            ...provided,
-            padding: "0.25rem 0.5rem",
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-                ? "#10b981"
-                : state.isFocused
-                  ? "#ecfdf5"
-                  : "white",
-            color: state.isSelected ? "white" : "#1f2937",
-            cursor: "pointer",
-            padding: "0.625rem 1rem",
-            fontFamily: "inherit",
-            fontSize: "0.875rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-        }),
-        singleValue: (provided) => ({
-            ...provided,
-            color: "#1f2937",
-            fontSize: "0.875rem",
-        }),
-        placeholder: (provided) => ({
-            ...provided,
-            color: "#9ca3af",
-            fontSize: "0.875rem",
-        }),
-        input: (provided) => ({
-            ...provided,
-            fontSize: "0.875rem",
-            fontFamily: "inherit",
-        }),
-        menu: (provided) => ({
-            ...provided,
-            borderRadius: "0.75rem",
-            overflow: "hidden",
-            boxShadow:
-                "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-            zIndex: 9999,
-            marginTop: "0.25rem",
-            border: "1px solid #f3f4f6",
-        }),
-        menuList: (provided) => ({
-            ...provided,
-            maxHeight: "280px",
-            padding: "0.25rem",
-        }),
-        dropdownIndicator: (provided) => ({
-            ...provided,
-            cursor: "pointer",
-            color: "#9ca3af",
-            "&:hover": {
-                color: "#10b981",
-            },
-        }),
-        clearIndicator: (provided) => ({
-            ...provided,
-            cursor: "pointer",
-            color: "#9ca3af",
-            "&:hover": {
-                color: "#ef4444",
-            },
-        }),
-        indicatorSeparator: (provided) => ({
-            ...provided,
-            backgroundColor: "#e5e7eb",
-        }),
-        noOptionsMessage: (provided) => ({
-            ...provided,
-            fontSize: "0.875rem",
-            color: "#9ca3af",
-            padding: "0.75rem",
-        }),
+    const {
+        isOpen,
+        setIsOpen,
+        search,
+        setSearch,
+        isLoading,
+        error,
+        highlightedIndex,
+        setHighlightedIndex,
+        containerRef,
+        inputRef,
+        filteredOptions,
+        selectedOptions,
+        selectedValues,
+        selectOption,
+        removeValue,
+        clearAll,
+        handleKeyDown,
+    } = useSelect2({
+        options,
+        value,
+        isMulti,
+        isSearchable,
+        isAsync,
+        asyncUrl,
+        asyncMethod,
+        asyncParams,
+        asyncDelay,
+        isDisabled,
+        closeMenuOnSelect,
+        onChange,
+    });
+
+    // ============ Toggle menu ============
+    const toggleMenu = () => {
+        if (isDisabled) return;
+
+        const newState = !isOpen;
+        setIsOpen(newState);
+
+        if (newState) {
+            onMenuOpen?.();
+            if (isSearchFocused) {
+                setTimeout(() => inputRef.current?.focus(), 50);
+            }
+        } else {
+            onMenuClose?.();
+        }
     };
 
-    // ============ فرمت‌دهی گزینه‌ها ============
-    const formatOptionLabel = (option, { context }) => {
-        if (!showColors || !option.color) {
-            return option.label;
+    // ============ Search change ============
+    const handleSearchChange = (e) => {
+        const val = e.target.value;
+        setSearch(val);
+        onSearchChange?.(val);
+    };
+
+    // ============ حذف ============
+    const handleRemove = (e, val) => {
+        e.stopPropagation();
+        removeValue(val);
+    };
+
+    // ============ آپشن‌ها با Grouping ============
+    const groupedOptions = React.useMemo(() => {
+        // اگه گروه نداریم، یه گروه ساده
+        return [{ label: null, options: filteredOptions }];
+    }, [filteredOptions]);
+
+    // ============ نمایش مقدار انتخاب‌شده ============
+    const renderSelected = () => {
+        if (selectedOptions.length === 0) {
+            return <span className="select2-placeholder">{placeholder}</span>;
         }
 
-        const colorConfig = colorMap[option.color] || colorMap.gray;
+        if (isMulti) {
+            return (
+                <div className="select2-multi-values">
+                    {selectedOptions.map((opt) => (
+                        <span
+                            key={opt.value}
+                            className="select2-tag"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {opt.icon && (
+                                <img
+                                    src={opt.icon}
+                                    alt={opt.label}
+                                    className="select2-tag-icon"
+                                />
+                            )}
+                            <span>{opt.label}</span>
+                            {!isDisabled && (
+                                <button
+                                    type="button"
+                                    className="select2-tag-remove"
+                                    onClick={(e) => handleRemove(e, opt.value)}
+                                >
+                                    <X size={12} />
+                                </button>
+                            )}
+                        </span>
+                    ))}
+                </div>
+            );
+        }
+
+        const selected = selectedOptions[0];
+        if (renderValue) {
+            return renderValue(selected);
+        }
 
         return (
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                }}
+            <span className="select2-single-value">
+                {selected?.icon && (
+                    <img
+                        src={selected.icon}
+                        alt={selected.label}
+                        className="select2-value-icon"
+                    />
+                )}
+                <span>{selected?.label}</span>
+            </span>
+        );
+    };
+
+    // ============ نمایش هر گزینه ============
+    const renderOptionItem = (option, index) => {
+        const isSelected = selectedValues.includes(option.value);
+        const isHighlighted = index === highlightedIndex;
+        const isMaxReached =
+            isMulti &&
+            maxSelected &&
+            selectedValues.length >= maxSelected &&
+            !isSelected;
+
+        return (
+            <button
+                key={option.value}
+                type="button"
+                className={`select2-option ${
+                    isSelected ? "selected" : ""
+                } ${isHighlighted ? "highlighted" : ""} ${
+                    option.disabled || isMaxReached ? "disabled" : ""
+                }`}
+                onClick={() => !isMaxReached && selectOption(option)}
+                onMouseEnter={() => setHighlightedIndex(index)}
+                disabled={option.disabled || isMaxReached}
             >
-                <span
-                    style={{
-                        width: "0.625rem",
-                        height: "0.625rem",
-                        borderRadius: "50%",
-                        backgroundColor: colorConfig.color,
-                        flexShrink: 0,
-                    }}
-                ></span>
-                <span>{option.label}</span>
-            </div>
+                {isMulti && (
+                    <span className="select2-checkbox">
+                        {isSelected && <Check size={12} />}
+                    </span>
+                )}
+
+                {option.icon && (
+                    <img
+                        src={option.icon}
+                        alt={option.label}
+                        className="select2-option-icon"
+                    />
+                )}
+
+                <span className="select2-option-label">
+                    {renderOption ? renderOption(option) : option.label}
+                </span>
+
+                {!isMulti && isSelected && (
+                    <Check size={14} className="select2-option-check" />
+                )}
+            </button>
         );
     };
 
     return (
-        <Select
-            options={options}
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            isMulti={isMulti}
-            isDisabled={isDisabled}
-            isLoading={isLoading}
-            isClearable={isClearable}
-            isSearchable={isSearchable}
-            styles={customStyles}
-            isRtl={isRtl}
-            formatOptionLabel={showColors ? formatOptionLabel : undefined}
-            noOptionsMessage={() => "موردی یافت نشد"}
-            loadingMessage={() => "در حال بارگذاری..."}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            menuPlacement="auto"
-            closeMenuOnSelect={!isMulti}
-            hideSelectedOptions={true} // گزینه‌های انتخاب شده از لیست حذف شوند
-            isOptionDisabled={() => false}
-        />
+        <div
+            className={`select2-container size-${size} variant-${variant} ${className}`}
+            ref={containerRef}
+            dir={isRtl ? "rtl" : "ltr"}
+        >
+            {/* ============ Trigger ============ */}
+            <div
+                className={`select2-trigger ${isOpen ? "open" : ""} ${
+                    isDisabled ? "disabled" : ""
+                } ${error ? "has-error" : ""}`}
+                onClick={toggleMenu}
+                onKeyDown={handleKeyDown}
+                tabIndex={isDisabled ? -1 : 0}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                role="combobox"
+                aria-expanded={isOpen}
+                aria-haspopup="listbox"
+            >
+                <div className="select2-trigger-content">
+                    {/* Search input (وقتی بازه و searchable) */}
+                    {isSearchable && isOpen ? (
+                        <div className="select2-search-input">
+                            <Search size={14} />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={search}
+                                onChange={handleSearchChange}
+                                placeholder={
+                                    selectedOptions.length > 0
+                                        ? ""
+                                        : placeholder
+                                }
+                                onClick={(e) => e.stopPropagation()}
+                                autoComplete="off"
+                            />
+                        </div>
+                    ) : (
+                        <div className="select2-selected">
+                            {renderSelected()}
+                        </div>
+                    )}
+                </div>
+
+                <div className="select2-trigger-actions">
+                    {isLoading && (
+                        <Loader2 size={14} className="select2-spinner" />
+                    )}
+
+                    {isClearable &&
+                        selectedValues.length > 0 &&
+                        !isDisabled &&
+                        !isLoading && (
+                            <button
+                                type="button"
+                                className="select2-clear-btn"
+                                onClick={clearAll}
+                                tabIndex={-1}
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
+
+                    <ChevronDown
+                        size={16}
+                        className={`select2-chevron ${isOpen ? "open" : ""}`}
+                    />
+                </div>
+            </div>
+
+            {/* ============ Dropdown ============ */}
+            {isOpen && (
+                <div
+                    className={`select2-dropdown placement-${menuPlacement}`}
+                    style={{ maxHeight: maxMenuHeight }}
+                >
+                    <div className="select2-options" role="listbox">
+                        {error ? (
+                            <div className="select2-empty error">
+                                <AlertCircle size={24} />
+                                <span>{error}</span>
+                            </div>
+                        ) : isLoading && filteredOptions.length === 0 ? (
+                            <div className="select2-empty">
+                                <Loader2
+                                    size={20}
+                                    className="select2-spinner"
+                                />
+                                <span>{loadingMessage}</span>
+                            </div>
+                        ) : filteredOptions.length === 0 ? (
+                            <div className="select2-empty">
+                                <Search size={24} />
+                                <span>{noOptionsMessage}</span>
+                            </div>
+                        ) : (
+                            groupedOptions.map((group, gi) => (
+                                <div key={gi}>
+                                    {group.label && (
+                                        <div className="select2-group-label">
+                                            {group.label}
+                                        </div>
+                                    )}
+                                    {group.options.map((opt, i) =>
+                                        renderOptionItem(opt, i),
+                                    )}
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Footer */}
+                    {filteredOptions.length > 0 && (
+                        <div className="select2-footer">
+                            {toPersianNumber(filteredOptions.length)} گزینه
+                            {isMulti &&
+                                maxSelected &&
+                                selectedValues.length >= maxSelected && (
+                                    <span className="select2-max-warning">
+                                        {" "}
+                                        • حداکثر {toPersianNumber(
+                                            maxSelected,
+                                        )}{" "}
+                                        انتخاب
+                                    </span>
+                                )}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
     );
 }
