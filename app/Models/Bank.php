@@ -14,12 +14,20 @@ class Bank extends Model
         'color',
         'is_active',
         'sort_order',
+        'description',
     ];
 
     protected $casts = [
         'is_active'  => 'bool',
         'sort_order' => 'int',
     ];
+
+    protected $appends = ['icon_url'];
+
+    public function getIconUrlAttribute(): ?string
+    {
+        return $this->icon ? asset('storage/' . $this->icon) : null;
+    }
 
     // ============================================
     // Scopeها
@@ -72,5 +80,10 @@ class Bank extends Model
                 'color' => $b->color,
             ])
             ->toArray();
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'bank_id');
     }
 }

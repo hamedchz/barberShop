@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\CommissionController;
@@ -154,7 +155,20 @@ Route::prefix('finance')->name('finance.')->group(function () {
     });
 });
 
+// banks
+// routes/web.php
 
 
+Route::prefix('banks')->name('banks.')->controller(BankController::class)->group(function () {
+  Route::get('/',  'index')->name('index');
+  Route::post('/',  'store')->name('store');
+  Route::put('/{bank}',  'update')->name('update');
+  Route::delete('/{bank}',  'destroy')->name('destroy');
+  Route::patch('/{bank}/toggle',  'toggleStatus')->name('toggle');
+
+  Route::get('/search', 'search')
+    ->name('search');
+});
+   
   
 // });

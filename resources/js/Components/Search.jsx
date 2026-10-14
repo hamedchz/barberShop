@@ -12,58 +12,90 @@ export default function Search({
     className = "",
     showClearButton = true,
 }) {
-    const [searchTerm, setSearchTerm] = useState(value);
+    const [searchTerm, setSearchTerm] = useState(value ?? "");
     const [isFocused, setIsFocused] = useState(false);
+
     const inputRef = useRef(null);
     const debounceTimer = useRef(null);
+    const onSearchRef = useRef(onSearch);
+    const onChangeRef = useRef(onChange);
+    const lastSearchRef = useRef(value ?? "");
 
-    // ============ همگام‌سازی با مقدار خارجی ============
+    // به‌روزرسانی callbackها بدون ایجاد تایمر اضافی
     useEffect(() => {
-        setSearchTerm(value);
+        onSearchRef.current = onSearch;
+        onChangeRef.current = onChange;
+    }, [onSearch, onChange]);
+
+    // همگام‌سازی با مقدار خارجی، مثلاً بعد از پاسخ Inertia
+    useEffect(() => {
+        const externalValue = value ?? "";
+
+        setSearchTerm((current) =>
+            current === externalValue ? current : externalValue,
+        );
+
+        lastSearchRef.current = externalValue;
     }, [value]);
 
-    // ============ Debounce ============
+    // اجرای جستجو پس از توقف تایپ
     useEffect(() => {
-        // پاک کردن تایمر قبلی
         if (debounceTimer.current) {
             clearTimeout(debounceTimer.current);
         }
 
-        // اگر مقدار تغییر کرد، بعد از delay تابع onSearch را صدا بزن
+        // اگر مقدار ورودی با آخرین جستجوی ارسال‌شده برابر است،
+        // درخواست تکراری نفرست.
+        if (searchTerm === lastSearchRef.current) {
+            return;
+        }
+
         debounceTimer.current = setTimeout(() => {
-            if (onSearch && searchTerm !== value) {
-                onSearch(searchTerm);
-            }
-            if (onChange) {
-                onChange(searchTerm);
-            }
+            lastSearchRef.current = searchTerm;
+
+            onChangeRef.current?.(searchTerm);
+            onSearchRef.current?.(searchTerm);
         }, delay);
 
-        // پاک‌سازی در unmount
         return () => {
             if (debounceTimer.current) {
                 clearTimeout(debounceTimer.current);
             }
         };
-    }, [searchTerm]);
+    }, [searchTerm, delay]);
 
-    // ============ پاک کردن جستجو ============
+    // پاک‌کردن جستجو
     const handleClear = () => {
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+        }
+
         setSearchTerm("");
-        if (onSearch) onSearch("");
-        if (onChange) onChange("");
+        lastSearchRef.current = "";
+
+        onChangeRef.current?.("");
+        onSearchRef.current?.("");
+
         inputRef.current?.focus();
     };
 
-    // ============ زدن Enter ============
+    // کلیدهای Enter و Escape
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
+
             if (debounceTimer.current) {
                 clearTimeout(debounceTimer.current);
             }
-            if (onSearch) onSearch(searchTerm);
+
+            if (searchTerm !== lastSearchRef.current) {
+                lastSearchRef.current = searchTerm;
+
+                onChangeRef.current?.(searchTerm);
+                onSearchRef.current?.(searchTerm);
+            }
         }
+
         if (e.key === "Escape") {
             handleClear();
         }
@@ -96,14 +128,16 @@ export default function Search({
                 {isLoading ? (
                     <Loader2
                         size={20}
-                        style={{ animation: "spin 0.8s linear infinite" }}
+                        style={{
+                            animation: "search-spin 0.8s linear infinite",
+                        }}
                     />
                 ) : (
                     <SearchIcon size={20} />
                 )}
             </div>
 
-            {/* Input */}
+            {/* ورودی جستجو */}
             <input
                 ref={inputRef}
                 type="text"
@@ -135,7 +169,7 @@ export default function Search({
                 }}
             />
 
-            {/* دکمه پاک کردن */}
+            {/* دکمه پاک‌کردن */}
             {showClearButton && searchTerm && (
                 <button
                     type="button"
@@ -157,23 +191,14 @@ export default function Search({
                         justifyContent: "center",
                         transition: "all 0.2s",
                     }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#f3f4f6";
-                        e.currentTarget.style.color = "#ef4444";
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-light)";
-                    }}
                     aria-label="پاک کردن جستجو"
                 >
                     <X size={18} />
                 </button>
             )}
 
-            {/* استایل اسپینر */}
-            <style jsx="true">{`
-                @keyframes spin {
+            <style>{`
+                @keyframes search-spin {
                     to {
                         transform: rotate(360deg);
                     }

@@ -34,6 +34,8 @@ return new class extends Migration
             // ترتیب نمایش
             $table->integer('sort_order')->default(0);
 
+            $table->text('description')->nullable();
+
             $table->timestamps();
 
             $table->index(['is_active', 'sort_order']);
