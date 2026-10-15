@@ -25,10 +25,48 @@ enum Permissions: string
   case manageBarber = 'manage-barber';
   case barberDashboardPanel = 'barber-dashboard-panel';
 
-
+  public function description(): string
+  {
+    return match ($this) {
+      self::manageUsers => 'مدیریت کاربران',
+      self::manageRoles => 'مدیریت نقش‌ها و دسترسی‌ها',
+      self::manageBlog => 'مدیریت مطالب وبلاگ',
+      self::manageProducts => 'مدیریت محصولات',
+      self::manageComment => 'مدیریت نظرات',
+      self::manageSeo => 'مدیریت تنظیمات سئو',
+      self::manageProductsInfo => 'مدیریت اطلاعات محصولات',
+      self::manageBlogCategory => 'مدیریت دسته‌بندی‌های وبلاگ',
+      self::manageAboutus => 'مدیریت صفحه درباره ما',
+      self::manageContactus => 'مدیریت صفحه تماس با ما',
+      self::manageProjects => 'مدیریت پروژه‌ها',
+      self::manageGeneralSettings => 'مدیریت تنظیمات عمومی',
+      self::MemberDashboardPanel => 'دسترسی به پنل اعضا',
+      self::CustomerDashboardPanel => 'دسترسی به پنل مشتریان',
+      self::AdminDashboardPanel => 'دسترسی به پنل مدیریت',
+      self::managePackages => 'مدیریت پکیج‌ها',
+      self::manageAdmins => 'مدیریت مدیران',
+      self::manageOrder => 'مدیریت سفارش‌ها',
+      self::manageBarber => 'مدیریت آرایشگران',
+      self::barberDashboardPanel => 'دسترسی به پنل آرایشگر',
+    };
+  }
 
   public static function toArray(): array
   {
-    return array_map(fn($status) => $status->value, self::cases());
+    return array_map(
+      fn(self $permission) => $permission->value,
+      self::cases()
+    );
+  }
+
+  public static function descriptions(): array
+  {
+    $descriptions = [];
+
+    foreach (self::cases() as $permission) {
+      $descriptions[$permission->value] = $permission->description();
+    }
+
+    return $descriptions;
   }
 }

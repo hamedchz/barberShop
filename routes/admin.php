@@ -5,10 +5,12 @@ use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\BarberBookingController;
 use App\Http\Controllers\Admin\BarberController;
 use App\Http\Controllers\Admin\CommissionController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\FinanceExportController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SettlementController;
@@ -26,6 +28,16 @@ Route::prefix('/roles')
     Route::get('/{role}/edit',  'edit')->name('edit');
     Route::put('/{role}/update',  'update')->name('update');
     Route::delete('/{role}/destroy',  'destroy')->name('destroy');
+  });
+
+// permissions
+Route::prefix('permissions')
+  ->name('permissions.')->controller(PermissionController::class)
+  ->group(function () {
+    Route::get(
+      '/search',
+      'search'
+    )->name('search');
   });
 // admins list
 Route::prefix('/admins')
@@ -169,6 +181,17 @@ Route::prefix('banks')->name('banks.')->controller(BankController::class)->group
   Route::get('/search', 'search')
     ->name('search');
 });
+
+// customers
+
+Route::prefix('customers')->name('customers.')->controller(CustomerController::class)->group(function () {
+  Route::get('/', 'index')->name('index');
+  Route::get('/{customer}', 'show')->name('show');
+  Route::patch('/{customer}/toggle', 'toggleStatus')->name('toggle');
+  Route::patch('/{customer}/status', 'updateStatus')
+    ->name('update-status');
+});
+ 
    
   
 // });

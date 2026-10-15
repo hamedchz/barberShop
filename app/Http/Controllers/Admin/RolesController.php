@@ -134,28 +134,25 @@ class RolesController extends Controller
 
     public function edit(Role $role)
     {
-        // ترجمه تمام دسترسی‌ها
-        $allPermissions = Permission::select('id', 'name')->get()->map(function ($permission) {
-            return [
-                'id' => $permission->id,
-                'name' => $permission->name,
-                'label' => __($permission->name) !== $permission->name
-                    ? __($permission->name)
-                    : $this->humanizePermission($permission->name),
-            ];
-        });
+        $role->load('permissions');
 
-        // ID دسترسی‌های فعلی این نقش
-        $rolePermissionIds = $role->permissions->pluck('id')->toArray();
+        $permissions = $role->permissions->map(function ($permission) {
+            return [
+                'value' => (string) $permission->id,
+                'label' => $permission->description
+                    ?: __($permission->name),
+                'name' => $permission->name,
+            ];
+        })->values();
 
         return Inertia::render('Admin/Roles/Edit', [
             'title' => 'ویرایش نقش',
             'role' => [
                 'id' => $role->id,
                 'name' => $role->name,
-                'permissions' => $rolePermissionIds,
+                'guard_name' => $role->guard_name,
             ],
-            'permissions' => $allPermissions,
+            'permissions' => $permissions,
             'scope' => ['roles', 'role-edit'],
         ]);
     }

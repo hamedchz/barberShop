@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Barber\AvailabilityController;
 use App\Http\Controllers\Barber\BankInfoController;
 use App\Http\Controllers\Barber\BookingController;
+use App\Http\Controllers\Barber\CustomerController;
 use App\Http\Controllers\Barber\DisputeController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
@@ -88,3 +89,10 @@ Route::prefix('finance')
       Route::post('/bank-info',  'update')->name('bank-info.update');
     });
   });
+
+// customers
+
+Route::prefix('customers')->name('customers.')->controller(CustomerController::class)->group(function () {
+  Route::get('/', 'index')->name('index');
+  Route::get('/{customer}', 'show')->name('show');
+});

@@ -12,22 +12,19 @@ export default function Create({ auth, permissions, scope }) {
     });
     // تبدیل permissions به فرمت مورد نیاز react-select
     const permissionOptions = permissions.map((perm) => ({
-        value: perm.id,
+        value: String(perm.id),
         label: perm.label,
+        name: perm.name,
     }));
 
     // پیدا کردن گزینه‌های انتخاب شده
-    const selectedPermissions = permissionOptions.filter((opt) =>
-        data.permissions.includes(opt.value),
-    );
+    const selectedPermissionIds = (data.permissions ?? []).map(String);
+
+    const selectedPermissions = (data.permissions ?? []).map(String);
 
     // هندل کردن تغییر Select2
-    const handlePermissionsChange = (selectedOptions) => {
-        // اگر selectedOptions null بود (وقتی همه پاک می‌شوند)
-        const selectedIds = selectedOptions
-            ? selectedOptions.map((opt) => opt.value)
-            : [];
-        setData("permissions", selectedIds);
+    const handlePermissionsChange = (values) => {
+        setData("permissions", (values ?? []).map(String));
     };
 
     // ارسال فرم
@@ -98,11 +95,20 @@ export default function Create({ auth, permissions, scope }) {
                                 </span>
                             </label>
                             <Select2
-                                options={permissionOptions}
+                                isAsync={true}
+                                asyncUrl={route("admin.permissions.search")}
+                                asyncMethod="GET"
+                                asyncParams={{ limit: 20 }}
+                                asyncDelay={400}
+                                initialOptions={permissionOptions}
                                 value={selectedPermissions}
                                 onChange={handlePermissionsChange}
                                 placeholder="جستجو و انتخاب دسترسی‌ها..."
                                 isMulti={true}
+                                isSearchable={true}
+                                isClearable={true}
+                                closeMenuOnSelect={false}
+                                noOptionsMessage="دسترسی‌ای یافت نشد"
                             />
                             {errors.permissions && (
                                 <div className="form-error">

@@ -176,22 +176,28 @@ export function useSelect2({
                 setHighlightedIndex(0);
 
                 // حفظ گزینه‌هایی که قبلاً انتخاب شده‌اند
+
                 setSelectedOptionCache((previous) => {
-                    const selectedPrevious = previous.filter((option) =>
-                        selectedValues.includes(option.value),
+                    const selectedIds = new Set(
+                        selectedValues.map((value) => String(value)),
                     );
 
-                    const selectedResults = results.filter((option) =>
-                        selectedValues.includes(option.value),
-                    );
+                    const merged = [
+                        ...previous.filter((option) =>
+                            selectedIds.has(String(option.value)),
+                        ),
+                        ...results.filter((option) =>
+                            selectedIds.has(String(option.value)),
+                        ),
+                    ];
 
-                    const merged = [...selectedPrevious, ...selectedResults];
-
-                    return merged.filter(
-                        (option, index, array) =>
-                            array.findIndex(
-                                (item) => item.value === option.value,
-                            ) === index,
+                    return Array.from(
+                        new Map(
+                            merged.map((option) => [
+                                String(option.value),
+                                option,
+                            ]),
+                        ).values(),
                     );
                 });
             } catch (err) {
@@ -309,7 +315,9 @@ export function useSelect2({
 
             if (isMulti) {
                 onChange?.(
-                    selectedValues.filter((item) => item !== valueToRemove),
+                    selectedValues.filter(
+                        (item) => String(item) !== String(valueToRemove),
+                    ),
                 );
             } else {
                 onChange?.(null);

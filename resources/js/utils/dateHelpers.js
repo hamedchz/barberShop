@@ -39,6 +39,22 @@ export const formatFullDateTime = (date) => {
     );
 };
 
+export const formatFullDateWithoutTime = (date) => {
+    if (!date) return "-";
+
+    const d = new Date(date);
+
+    const { jy, jm, jd } = toJalaali(
+        d.getFullYear(),
+        d.getMonth() + 1,
+        d.getDate(),
+    );
+
+    return toPersianNumber(
+        `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`,
+    );
+};
+
 /**
  * فقط ساعت
  * @param {string|Date} date

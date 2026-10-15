@@ -58,7 +58,8 @@ class User extends Authenticatable
         'birth_date',
         'gender',
         'email',
-        'bank_id'
+        'bank_id',
+        'is_active'
     ];
     protected function casts(): array
     {
@@ -71,6 +72,7 @@ class User extends Authenticatable
             'status' => UserStatus::class,
             'gender' => GenderTypes::class,
             'is_admin' => 'bool',
+            'is_active' => 'bool',
             'birth_date' => 'date'
         ];
     }
@@ -328,5 +330,15 @@ class User extends Authenticatable
     public function getDisplayBankNameAttribute(): ?string
     {
         return $this->bank?->name ?? $this->bank_name;
+    }
+
+    // app/Models/User.php
+
+    /**
+     * رزروهایی که این کاربر به‌عنوان مشتری داره
+     */
+    public function customerBookings()
+    {
+        return $this->hasMany(Booking::class, 'user_id');
     }
 }

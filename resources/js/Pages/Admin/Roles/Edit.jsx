@@ -13,9 +13,22 @@ import {
 } from "lucide-react";
 
 export default function Edit({ auth, role, permissions, scope }) {
+    // const { data, setData, put, processing, errors } = useForm({
+    //     name: role.name || "",
+    //     permissions: role.permissions || [],
+    // });
+
+    const permissionOptions = permissions.map((permission) => ({
+        value: String(permission.value ?? permission.id),
+        label: permission.label ?? permission.name,
+        name: permission.name,
+    }));
+
     const { data, setData, put, processing, errors } = useForm({
-        name: role.name || "",
-        permissions: role.permissions || [],
+        name: role.name ?? "",
+        permissions: permissionOptions.map((permission) =>
+            String(permission.value),
+        ),
     });
 
     // ============ تبدیل permissions به فرمت react-select ============
@@ -28,32 +41,15 @@ export default function Edit({ auth, role, permissions, scope }) {
         }));
     }, [permissions]);
 
-    // گزینه‌های انتخاب شده
-    const selectedPermissionOptions = useMemo(() => {
-        return allPermissionOptions.filter((option) =>
-            data.permissions.includes(option.value),
-        );
-    }, [allPermissionOptions, data.permissions]);
-
-    // گزینه‌های انتخاب نشده
-    const unselectedPermissionOptions = useMemo(() => {
-        return allPermissionOptions.filter(
-            (option) => !data.permissions.includes(option.value),
-        );
-    }, [allPermissionOptions, data.permissions]);
-
-    const handlePermissionsChange = (selectedOptions) => {
-        const selectedIds = selectedOptions
-            ? selectedOptions.map((opt) => opt.value)
-            : [];
-        setData("permissions", selectedIds);
+    const handlePermissionsChange = (values) => {
+        setData("permissions", (values ?? []).map(String));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        put(`/admin/roles/${role.id}/update`);
-    };
+    const handleSubmit = (event) => {
+        event.preventDefault();
 
+        put(route("admin.role.update", role.id));
+    };
     const handleSelectAll = () => {
         setData(
             "permissions",
@@ -140,14 +136,14 @@ export default function Edit({ auth, role, permissions, scope }) {
                                 </label>
 
                                 <div className="permission-shortcuts">
-                                    <button
+                                    {/* <button
                                         type="button"
                                         className="shortcut-btn"
                                         onClick={handleSelectAll}
                                     >
                                         <Check size={14} />
                                         انتخاب همه
-                                    </button>
+                                    </button> */}
                                     <button
                                         type="button"
                                         className="shortcut-btn danger"
@@ -158,14 +154,21 @@ export default function Edit({ auth, role, permissions, scope }) {
                                     </button>
                                 </div>
                             </div>
-
                             <Select2
-                                options={unselectedPermissionOptions}
-                                value={selectedPermissionOptions}
+                                isAsync={true}
+                                asyncUrl={route("admin.permissions.search")}
+                                asyncMethod="GET"
+                                asyncParams={{ limit: 20 }}
+                                asyncDelay={400}
+                                initialOptions={permissionOptions}
+                                value={data.permissions}
                                 onChange={handlePermissionsChange}
-                                placeholder="جستجو و افزودن دسترسی..."
+                                placeholder="جستجو و انتخاب دسترسی‌ها..."
                                 isMulti={true}
-                                isRtl={true}
+                                isSearchable={true}
+                                isClearable={true}
+                                closeMenuOnSelect={false}
+                                noOptionsMessage="دسترسی‌ای یافت نشد"
                             />
 
                             {errors.permissions && (
