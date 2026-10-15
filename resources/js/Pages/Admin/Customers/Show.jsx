@@ -43,6 +43,7 @@ import {
 } from "../../../Enums/UserWarningType";
 import Pagination from "../Components/Pagination";
 import CustomerStatusCard from "./CustomerStatusCard";
+import { formatCompactNumber } from "../../../Constants/formatCompactNumber";
 
 export default function CustomerShow({
     customer,
@@ -226,15 +227,24 @@ export default function CustomerShow({
                         <div className="stat-icon-box">
                             <DollarSign size={20} />
                         </div>
+
                         <div className="stat-content">
                             <span className="stat-label">مجموع پرداختی</span>
+
                             <div className="stat-value">
                                 <span>
-                                    {toPersianNumber(
-                                        stats.total_paid.toLocaleString(),
-                                    )}
+                                    {formatCompactNumber(stats.total_paid)}
                                 </span>
                                 <span className="stat-currency">تومان</span>
+                            </div>
+
+                            <div className="text-sm text-gray-500 mt-1 break-words">
+                                {toPersianNumber(
+                                    Number(
+                                        stats.total_paid || 0,
+                                    ).toLocaleString("en-US"),
+                                )}{" "}
+                                تومان
                             </div>
                         </div>
                     </div>
@@ -277,7 +287,7 @@ export default function CustomerShow({
 
                             {activeTab === "bookings" && (
                                 <div className="customer-card">
-                                    {recentBookings.length === 0 ? (
+                                    {recentBookings.data.length === 0 ? (
                                         <div className="empty-tab">
                                             <ShoppingBag size={32} />
                                             <span>رزروی ثبت نشده است.</span>
@@ -357,7 +367,7 @@ export default function CustomerShow({
                             {/* اخطارها */}
                             {activeTab === "warnings" && (
                                 <div className="customer-card">
-                                    {warnings.length === 0 ? (
+                                    {warnings.data.length === 0 ? (
                                         <div className="empty-tab">
                                             <AlertTriangle size={32} />
                                             <span>اخطاری ثبت نشده است.</span>
@@ -429,7 +439,7 @@ export default function CustomerShow({
                             {/* اعتراضات */}
                             {activeTab === "disputes" && (
                                 <div className="customer-card">
-                                    {disputes.length === 0 ? (
+                                    {disputes.data.length === 0 ? (
                                         <div className="empty-tab">
                                             <Shield size={32} />
                                             <span>اعتراضی ثبت نشده است.</span>
@@ -483,7 +493,7 @@ export default function CustomerShow({
                             {/* تراکنش‌ها */}
                             {activeTab === "transactions" && (
                                 <div className="customer-card">
-                                    {transactions.length === 0 ? (
+                                    {transactions.data.length === 0 ? (
                                         <div className="empty-tab">
                                             <Wallet size={32} />
                                             <span>تراکنشی ثبت نشده است.</span>

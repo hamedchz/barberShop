@@ -119,23 +119,35 @@ class BookingController extends Controller
             $isPast = $bookingDate && Carbon::parse($bookingDate)->isPast();
 
             // ============ بررسی وجود نظر ============
-            $review = Review::where('user_id', $booking->user_id)
+            // $review = Review::where('user_id', $booking->user_id)
+            //     ->where('booking_id', $booking->id)
+            //     ->first();
+
+            // ============ دریافت نظر (شامل soft delete شده‌ها) ============
+            $review = Review::withTrashed()
                 ->where('booking_id', $booking->id)
+                ->where('user_id', $booking->user_id)
                 ->first();
 
-            $hasReview = (bool) $review;
+            // ============ تعیین وضعیت ============
+            $hasReview = $review !== null;                          // آیا نظری (حتی حذف‌شده) وجود داره؟
+            $isReviewRemoved = $review?->trashed() ?? false;        // آیا نظر soft delete شده؟
+            $isReviewActive = $hasReview && !$isReviewRemoved;      // آیا نظر فعاله؟
+            $isReviewPending = $isReviewActive && $review->status->value === 'pending';
 
+            $reviewRemovedReason = $isReviewRemoved
+                ? $review->deletion_reason
+                : null;
 
-
-            // ============ بررسی امکان ثبت نظر ============
+            // ============ امکان ثبت نظر جدید ============
+            // فقط اگه: رزرو تکمیل شده + هیچ نظری (حتی حذف‌شده) وجود نداره
             $canReview = $booking->status->value === BookingStatus::completed->value
                 && !$hasReview;
 
-            // ============ بررسی امکان ویرایش/حذف نظر ============
-            // فقط اگر نظر در وضعیت pending باشد
-            $canEditReview = $hasReview && $review->status === 'pending';
-            $canDeleteReview = $hasReview && $review->status === 'pending';
-
+            // ============ امکان ویرایش/حذف نظر ============
+            // فقط اگه: نظر فعال + وضعیت pending
+            $canEditReview = $isReviewPending;
+            $canDeleteReview = $isReviewPending;
             // ============ بررسی امکان پرداخت مجدد ============
             $canPay = false;
             $expiresAt = null;
@@ -380,8 +392,11 @@ class BookingController extends Controller
         // ============================================
         // ۳. بررسی نظر
         // ============================================
-        $review = $booking->review;
-
+        // $review = $booking->review;
+        $review = Review::withTrashed()
+            ->where('booking_id', $booking->id)
+            ->where('user_id', auth()->id())
+            ->first();
         // ============================================
         // ۴. بررسی TimeSlot
         // ============================================
@@ -468,7 +483,15 @@ class BookingController extends Controller
         if ($booking->status->value === BookingStatus::completed->value) {
             // ============ امکان ثبت نظر ============
             if (!$review) {
+                // هیچ نظری ثبت نشده → می‌تونه نظر بده
                 $canReview = true;
+            } elseif ($review->trashed()) {
+                // نظر soft delete شده → نمی‌تونه دوباره نظر بده
+                $canReview = false;
+                $reviewRemovedReason = $review->deletion_reason; // برای نمایش به کاربر
+            } else {
+                // نظر فعال داره → نمی‌تونه دوباره نظر بده
+                $canReview = false;
             }
 
             // ============ امکان ویرایش/حذف نظر ============

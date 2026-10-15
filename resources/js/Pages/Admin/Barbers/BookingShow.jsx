@@ -87,6 +87,8 @@ const formatFullDateTime = (date) => {
         hours,
     )}:${toPersianNumber(minutes)}`;
 };
+
+// ============ دلایل رد نظر ============
 const rejectionReasons = [
     {
         value: "inappropriate_language",
@@ -200,6 +202,7 @@ const gatewayLabels = {
     nextpay: "نکست‌پی",
 };
 
+// ============ Map وضعیت نظر به آیکون ============
 const reviewStatusIcons = {
     pending: Clock4,
     approved: CheckCircle,
@@ -208,6 +211,7 @@ const reviewStatusIcons = {
 };
 
 export default function BarberBookingShow({ auth, barber, booking }) {
+    // ============ Modal states ============
     const [rejectModal, setRejectModal] = useState({
         isOpen: false,
         review: null,
@@ -216,7 +220,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         isLoading: false,
         errors: {},
     });
-    // ============ Modal states ============
+
     const [cancelModal, setCancelModal] = useState({
         isOpen: false,
         isLoading: false,
@@ -229,14 +233,35 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         errors: {},
     });
 
-    const config = statusConfig[booking.status] || statusConfig.pending;
+    const [changeDecisionModal, setChangeDecisionModal] = useState({
+        isOpen: false,
+        review: null,
+        newDecision: null, // "approve" | "reject"
+        isLoading: false,
+    });
+
+    // ============ Loading states ============
+    const [loading, setLoading] = useState(null); // "approve" | null
+
+    // ============ Config های محاسبه‌شده ============
+    const config = statusConfig[booking.status] ?? statusConfig.pending;
     const StatusIcon = config.icon;
 
     const paymentConfig = booking.payment
-        ? paymentStatusConfig[booking.payment.status] ||
-          paymentStatusConfig.pending
+        ? (paymentStatusConfig[booking.payment.status] ??
+          paymentStatusConfig.pending)
         : null;
     const PaymentIcon = paymentConfig?.icon;
+
+    // ============ وضعیت نظر (امن برای null) ============
+    const reviewStatus = booking.review?.status; // ← optional chaining
+
+    const ReviewStatusIcon = reviewStatusIcons[reviewStatus] ?? Clock4;
+    const isPending = reviewStatus === "pending";
+    const isApproved = reviewStatus === "approved";
+    const isRejected = reviewStatus === "rejected";
+    const isFlagged = reviewStatus === "flagged";
+    const isFinalized = isApproved || isRejected;
 
     // ============ بررسی امکان تکمیل توسط ادمین ============
     const canAdminComplete = (() => {
@@ -277,9 +302,10 @@ export default function BarberBookingShow({ auth, barber, booking }) {
             },
         );
     };
+
     // ============ تکمیل خدمت ============
     const handleCompleteBooking = () => {
-        if (completeModal.reason.length < 10) {
+        if (completeModal.reason.trim().length < 10) {
             setCompleteModal((prev) => ({
                 ...prev,
                 errors: { reason: "دلیل باید حداقل ۱۰ کاراکتر باشد." },
@@ -291,7 +317,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
         router.patch(
             `/admin/bookings/${barber.id}/barbers/${booking.id}/complete`,
-            { reason: completeModal.reason },
+            { reason: completeModal.reason.trim() },
             {
                 preserveScroll: true,
                 onSuccess: () =>
@@ -310,11 +336,12 @@ export default function BarberBookingShow({ auth, barber, booking }) {
             },
         );
     };
-    const [loading, setLoading] = useState(null);
-    const handleApprove = (review) => {
+
+    // ============ تایید نظر ============
+    const handleApprove = (reviewId) => {
         setLoading("approve");
         router.patch(
-            `/admin/reviews/${review}/approve`,
+            `/admin/reviews/${reviewId}/approve`,
             {},
             {
                 preserveScroll: true,
@@ -322,15 +349,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
             },
         );
     };
-    // ============ وضعیت‌های نظر ============
-    const ReviewStatusIcon = reviewStatusIcons[booking.review.status] || Clock4;
 
-    const isPending = booking.review.status === "pending";
-    const isApproved = booking.review.status === "approved";
-    const isRejected = booking.review.status === "rejected";
-    const isFlagged = booking.review.status === "flagged";
-    const isFinalized = isApproved || isRejected;
-    // ============ باز کردن مدال ============
+    // ============ باز کردن مدال رد ============
     const openRejectModal = (review) => {
         setRejectModal({
             isOpen: true,
@@ -342,7 +362,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         });
     };
 
-    // ============ بستن مدال ============
+    // ============ بستن مدال رد ============
     const closeRejectModal = () => {
         setRejectModal({
             isOpen: false,
@@ -354,9 +374,15 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         });
     };
 
-    // ============ ارسال ============
+    // ============ ارسال رد ============
     const handleReject = () => {
         const { review, reason, note } = rejectModal;
+
+        // محافظت: اگه review نال باشه
+        if (!review?.id) {
+            console.error("Review not found");
+            return;
+        }
 
         // ============ Validation سمت کلاینت ============
         const clientErrors = {};
@@ -396,15 +422,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
         );
     };
 
-    const [changeDecisionModal, setChangeDecisionModal] = useState({
-        isOpen: false,
-        review: null,
-        newDecision: null, // "approve" | "reject"
-        isLoading: false,
-    });
-
+    // ============ تغییر تصمیم ============
     const handleChangeDecision = (review, newDecision) => {
-        console.log(review);
         setChangeDecisionModal({
             isOpen: true,
             review,
@@ -415,6 +434,12 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
     const confirmChangeDecision = () => {
         const { review, newDecision } = changeDecisionModal;
+
+        if (!review?.id || !newDecision) {
+            console.error("Invalid change decision payload");
+            return;
+        }
+
         setChangeDecisionModal((prev) => ({ ...prev, isLoading: true }));
 
         const url =
@@ -422,9 +447,10 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 ? `/admin/reviews/${review.id}/approve`
                 : `/admin/reviews/${review.id}/reject`;
 
+        // ⚠️ reason باید یکی از مقادیر مجاز rejectionReasons باشه
         const payload =
             newDecision === "reject"
-                ? { reason: "changed_decision", note: "تغییر تصمیم ادمین" }
+                ? { reason: "false_review_dispute", note: "تغییر تصمیم ادمین" }
                 : {};
 
         router.patch(url, payload, {
@@ -436,11 +462,13 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                     newDecision: null,
                     isLoading: false,
                 }),
-            onError: () =>
+            onError: (errors) => {
+                console.error("Change decision failed:", errors);
                 setChangeDecisionModal((prev) => ({
                     ...prev,
                     isLoading: false,
-                })),
+                }));
+            },
         });
     };
 
@@ -590,7 +618,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                     </div>
 
                                     <Link
-                                        href={`/admin/users/${booking.customer.id}`}
+                                        href={`/admin/customers/${booking.customer.id}`}
                                         className="view-customer-btn"
                                     >
                                         <User size={14} />
@@ -683,7 +711,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                         </div>
 
                         {/* کارت پرداخت */}
-                        {booking.payment && (
+                        {booking.payment && paymentConfig && (
                             <div className="admin-booking-show-card">
                                 <div className="admin-booking-show-card-header">
                                     <div className="card-icon-box purple">
@@ -786,11 +814,13 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                 >
                                     <div className="review-status-main">
                                         <div
-                                            className={`review-status-badge status-${booking.review.status}`}
+                                            className={`review-status-badge status-${reviewStatus ?? "unknown"}`}
                                         >
                                             <ReviewStatusIcon size={14} />
                                             <span>
-                                                {booking.review.status_label}
+                                                {booking.review.status_label ??
+                                                    booking.review.status ??
+                                                    "نامشخص"}
                                             </span>
                                         </div>
 
@@ -854,6 +884,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                         </p>
                                     )}
                                 </div>
+
                                 <div className="review-actions">
                                     {isPending && (
                                         <>
@@ -865,9 +896,23 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                                         booking.review.id,
                                                     )
                                                 }
+                                                disabled={loading === "approve"}
                                             >
-                                                <CheckCircle size={14} />
-                                                <span>تایید نظر</span>
+                                                {loading === "approve" ? (
+                                                    <>
+                                                        <span className="spinner"></span>
+                                                        <span>
+                                                            در حال تایید...
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <CheckCircle
+                                                            size={14}
+                                                        />
+                                                        <span>تایید نظر</span>
+                                                    </>
+                                                )}
                                             </button>
                                             <button
                                                 type="button"
@@ -883,6 +928,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                             </button>
                                         </>
                                     )}
+
                                     {isApproved && (
                                         <button
                                             type="button"
@@ -1029,6 +1075,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                         <span>تماس با مشتری</span>
                                     </a>
                                 )}
+
                                 {canAdminComplete && (
                                     <button
                                         type="button"
@@ -1108,6 +1155,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                     </div>
                 </div>
             </div>
+
             {/* ============ Modal تکمیل خدمت ============ */}
             {completeModal.isOpen && (
                 <div
@@ -1255,6 +1303,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 isLoading={cancelModal.isLoading}
             />
 
+            {/* ============ Modal رد نظر ============ */}
             {rejectModal.isOpen && rejectModal.review && (
                 <div
                     className="reject-modal-overlay"
@@ -1474,6 +1523,7 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 </div>
             )}
 
+            {/* ============ Modal تغییر تصمیم ============ */}
             <ConfirmModal
                 isOpen={changeDecisionModal.isOpen}
                 onClose={() =>
@@ -1492,8 +1542,8 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 }
                 message={
                     changeDecisionModal.newDecision === "approve"
-                        ? "آیا از تغییر تصمیم به «تایید» مطمئن هستید؟ نظر دوباره در دید عمومی نمایش داده میشود و امتیاز آرایشگر بازمحاسبه میشود."
-                        : "آیا از تغییر تصمیم به «رد» مطمئن هستید؟ نظر از دید عمومی مخفی میشود و امتیاز آرایشگر بازمحاسبه میشود."
+                        ? "آیا از تغییر تصمیم به «تایید» مطمئن هستید؟ نظر دوباره در دید عمومی نمایش داده می‌شود و امتیاز آرایشگر بازمحاسبه می‌شود."
+                        : "آیا از تغییر تصمیم به «رد» مطمئن هستید؟ نظر از دید عمومی مخفی می‌شود و امتیاز آرایشگر بازمحاسبه می‌شود."
                 }
                 confirmText="بله، تغییر بده"
                 cancelText="انصراف"

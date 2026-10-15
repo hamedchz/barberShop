@@ -160,16 +160,18 @@ class ReviewController extends Controller
 
         // ============ بررسی وضعیت ============
         if ($booking->status->value !== BookingStatus::completed->value) {
-            return back()->with('error', 'این رزرو قابل ثبت نظر نیست.');
+            StickyAlert::alert('این رزرو قابل ثبت نظر نیست.', 'error');
+            return redirect()->back();
         }
 
         // ============ بررسی نظر تکراری ============
-        $existingReview = Review::where('user_id', auth()->id())
+        $existingReview = Review::withTrashed()->where('user_id', auth()->id())
             ->where('booking_id', $booking->id)
             ->first();
 
         if ($existingReview) {
-            return back()->with('error', 'قبلاً برای این رزرو نظر ثبت کرده‌اید.');
+            StickyAlert::alert('قبلاً برای این رزرو نظر ثبت کرده‌اید.', 'error');
+            return redirect()->back();
         }
 
         // ============ اعتبارسنجی ============
@@ -194,10 +196,8 @@ class ReviewController extends Controller
 
         // ============ پاک کردن کش امتیازات ============
         $booking->barber->clearReviewsCache();
-
-        return redirect()
-            ->route('customer.bookings.show', $booking->id)
-            ->with('success', 'نظر شما با موفقیت ثبت شد. متشکریم!');
+        StickyAlert::alert('نظر شما با موفقیت ثبت شد. متشکریم.', 'success');
+        return to_route('customer.bookings.show', $booking->id);
     }
 
     /**
