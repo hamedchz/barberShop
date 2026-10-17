@@ -25,11 +25,12 @@ Route::prefix('/services')
 
 Route::prefix('/availabilities')
   ->name('availabilities.')->controller(AvailabilityController::class)->group(function () {
-
-
     Route::get('/', 'index')->name('index');
     Route::post('/', 'store')->name('store');
+    Route::put('/{availability}', 'update')->name('update');
+    Route::patch('/{availability}', 'update')->name('update');
     Route::delete('/{availability}', 'destroy')->name('destroy');
+    Route::delete('/{availability}/shifts/{shift}', 'destroyShift')->name('shifts.destroy');
   });
 
 Route::prefix('/time-slots')

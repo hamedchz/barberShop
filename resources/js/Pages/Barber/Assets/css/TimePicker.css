@@ -1,0 +1,108 @@
+.time-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.time-picker-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.time-picker-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* ← وسط‌چین */
+  gap: 0.5rem;
+  direction: ltr;
+  /* ← چپ‌به‌راست */
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.time-picker-select {
+  flex: 0 0 auto;
+  width: 4.5rem;
+  /* ← عرض ثابت */
+  padding: 0.5rem 0.25rem;
+  text-align: center;
+  text-align-last: center;
+  /* ← این مهم‌ترین خطه */
+  direction: ltr;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  appearance: none;
+  /* ← حذف arrow پیش‌فرض */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* آیکون arrow سفارشی */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 0.5rem center;
+  /* ← arrow سمت چپ */
+  background-size: 1rem;
+  padding-left: 1.75rem;
+  /* ← فضا برای arrow */
+}
+
+.time-picker-select:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.time-picker-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.time-picker-select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.time-picker-separator {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #6b7280;
+  user-select: none;
+  line-height: 1;
+  padding: 0 0.25rem;
+  margin-top: 10px;
+}
+
+/* چیدمان عمودی فقط برای شیفت‌ها */
+.time-picker-vertical .time-picker-inputs {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* عرض مناسب برای selectها در چیدمان عمودی */
+.time-picker-vertical .time-picker-select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* جداکننده ساعت و دقیقه */
+.time-picker-vertical .time-picker-separator {
+  line-height: 1;
+  padding: 0;
+}

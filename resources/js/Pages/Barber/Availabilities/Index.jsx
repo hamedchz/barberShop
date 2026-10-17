@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, router } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
@@ -9,6 +9,8 @@ import {
     toPersianTimeRange,
     toPersianNumber,
 } from "../../../utils/persianNumbers";
+
+import "../Assets/css/Availability.css";
 import {
     Calendar,
     Plus,
@@ -23,20 +25,21 @@ import {
     Moon,
     Edit3,
     ChevronLeft,
+    X,
 } from "lucide-react";
 
 // ============ آیکون هر روز ============
 const dayIcons = {
-    0: Sunrise, // شنبه
-    1: Sun, // یکشنبه
-    2: Sun, // دوشنبه
-    3: Sun, // سه‌شنبه
-    4: Sun, // چهارشنبه
-    5: Sunset, // پنجشنبه
-    6: Moon, // جمعه
+    0: Sunrise,
+    1: Sun,
+    2: Sun,
+    3: Sun,
+    4: Sun,
+    5: Sunset,
+    6: Moon,
 };
 
-// ============ رنگ هر روز (اختیاری) ============
+// ============ رنگ هر روز ============
 const dayColors = {
     0: { bg: "#ecfdf5", color: "#065f46", border: "#d1fae5" },
     1: { bg: "#eff6ff", color: "#1e40af", border: "#dbeafe" },
@@ -47,58 +50,218 @@ const dayColors = {
     6: { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" },
 };
 
+// ============ شیفت خالی پیش‌فرض ============
+const emptyShift = () => ({
+    id: null,
+    start_time: "09:00",
+    end_time: "13:00",
+});
+
 export default function AvailabilitiesIndex({
     auth,
     availabilities,
     daysOfWeek,
 }) {
     const [selectedDay, setSelectedDay] = useState(0);
-    const [startTime, setStartTime] = useState("09:00");
-    const [endTime, setEndTime] = useState("22:00");
+    const [shifts, setShifts] = useState([emptyShift()]);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // ============ State Modal حذف ============
+    // ============ State Modal حذف روز ============
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         availability: null,
         isLoading: false,
     });
 
-    // ============ بررسی اینکه روز انتخاب شده قبلاً وجود دارد یا نه ============
-    const isDayAlreadyDefined = availabilities.some(
+    // ============ State Modal حذف شیفت ============
+    const [deleteShiftModal, setDeleteShiftModal] = useState({
+        isOpen: false,
+        availability: null,
+        shift: null,
+        isLoading: false,
+    });
+
+    // ============ availability روز انتخاب‌شده ============
+    const existingAvailability = availabilities.find(
         (a) => a.day_of_week === selectedDay,
     );
-    const normalizedStart = startTime.substring(0, 5); // "09:00:00" → "09:00"
-    const normalizedEnd = endTime.substring(0, 5);
-    // ============ ذخیره ============
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setErrors({});
-        setIsSubmitting(true);
+    const isDayAlreadyDefined = Boolean(existingAvailability);
 
-        router.post(
-            "/barber/availabilities",
-            {
-                day_of_week: selectedDay,
-                start_time: normalizedStart,
-                end_time: normalizedEnd,
-            },
+    // ============ key یکتا برای sync خودکار shifts ============
+    // هر بار شیفت‌های روز جاری از سرور تغییر کنن (اضافه/حذف)، این key عوض می‌شه
+    const currentShiftsKey = JSON.stringify(
+        existingAvailability?.shifts?.map((s) => ({
+            id: s.id,
+            start: s.start_time,
+            end: s.end_time,
+        })) ?? [],
+    );
+
+    // ============ sync خودکار shifts با availabilities ============
+    useEffect(() => {
+        if (existingAvailability?.shifts?.length > 0) {
+            setShifts(
+                existingAvailability.shifts.map((s) => ({
+                    id: s.id,
+                    start_time: s.start_time.substring(0, 5),
+                    end_time: s.end_time.substring(0, 5),
+                })),
+            );
+        } else {
+            setShifts([emptyShift()]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentShiftsKey, selectedDay]);
+
+    // ============ تغییر روز انتخاب‌شده ============
+    const handleSelectDay = (dayKey) => {
+        setSelectedDay(dayKey);
+        setErrors({});
+        // shifts خودکار توسط useEffect آپدیت می‌شه
+    };
+
+    // ============ مدیریت شیفت‌ها ============
+    const addShift = () => {
+        setShifts((prev) => [...prev, emptyShift()]);
+    };
+
+    const removeShift = (index) => {
+        setShifts((prev) => {
+            if (prev.length === 1) return prev;
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
+    const updateShift = (index, field, value) => {
+        setShifts((prev) => {
+            const copy = [...prev];
+            copy[index] = { ...copy[index], [field]: value };
+            return copy;
+        });
+    };
+
+    // ============ Modal حذف شیفت ============
+    const openDeleteShiftModal = (availability, shift) => {
+        setDeleteShiftModal({
+            isOpen: true,
+            availability,
+            shift,
+            isLoading: false,
+        });
+    };
+
+    const closeDeleteShiftModal = () => {
+        setDeleteShiftModal({
+            isOpen: false,
+            availability: null,
+            shift: null,
+            isLoading: false,
+        });
+    };
+
+    const handleConfirmDeleteShift = () => {
+        if (!deleteShiftModal.availability || !deleteShiftModal.shift) return;
+
+        setDeleteShiftModal((prev) => ({ ...prev, isLoading: true }));
+
+        router.delete(
+            `/barber/availabilities/${deleteShiftModal.availability.id}/shifts/${deleteShiftModal.shift.id}`,
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    setIsSubmitting(false);
-                    setErrors({});
+                    closeDeleteShiftModal();
+                    // نکته: shifts خودکار توسط useEffect آپدیت می‌شه
+                    // چون availabilities از سرور دوباره می‌آد و currentShiftsKey عوض می‌شه
                 },
-                onError: (err) => {
-                    setErrors(err);
-                    setIsSubmitting(false);
-                },
+                onError: () =>
+                    setDeleteShiftModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                    })),
             },
         );
     };
 
-    // ============ Modal حذف ============
+    // ============ اعتبارسنجی سمت کلاینت ============
+    const validateShifts = () => {
+        const errs = {};
+
+        if (shifts.length === 0) {
+            errs.shifts = "حداقل یک شیفت باید تعریف شود.";
+            return errs;
+        }
+
+        shifts.forEach((shift, i) => {
+            const start = shift.start_time;
+            const end = shift.end_time;
+
+            if (!start) {
+                errs[`shifts.${i}.start_time`] = "ساعت شروع الزامی است.";
+            }
+            if (!end) {
+                errs[`shifts.${i}.end_time`] = "ساعت پایان الزامی است.";
+            }
+            if (start && end && start >= end) {
+                errs[`shifts.${i}.end_time`] =
+                    "ساعت پایان باید بعد از شروع باشد.";
+            }
+        });
+
+        const sorted = [...shifts].sort((a, b) =>
+            a.start_time.localeCompare(b.start_time),
+        );
+
+        for (let i = 0; i < sorted.length - 1; i++) {
+            if (sorted[i].end_time > sorted[i + 1].start_time) {
+                errs.shifts = "شیفت‌ها با یکدیگر تداخل دارند.";
+                break;
+            }
+        }
+
+        return errs;
+    };
+
+    // ============ ذخیره ============
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setErrors({});
+
+        const clientErrors = validateShifts();
+        if (Object.keys(clientErrors).length > 0) {
+            setErrors(clientErrors);
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const payload = {
+            day_of_week: selectedDay,
+            shifts: shifts.map((s) => ({
+                start_time: s.start_time,
+                end_time: s.end_time,
+            })),
+        };
+
+        const method = isDayAlreadyDefined ? "put" : "post";
+        const url = isDayAlreadyDefined
+            ? `/barber/availabilities/${existingAvailability.id}`
+            : "/barber/availabilities";
+
+        router[method](url, payload, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsSubmitting(false);
+                setErrors({});
+            },
+            onError: (err) => {
+                setErrors(err);
+                setIsSubmitting(false);
+            },
+        });
+    };
+
+    // ============ Modal حذف روز ============
     const openDeleteModal = (availability) =>
         setDeleteModal({ isOpen: true, availability, isLoading: false });
 
@@ -165,9 +328,10 @@ export default function AvailabilitiesIndex({
                             <li>
                                 <CheckCircle size={14} />
                                 <span>
-                                    <strong>روزهای کاری:</strong> روزهایی که
-                                    می‌خواهید نوبت بپذیرید را انتخاب و ساعت شروع
-                                    و پایان را مشخص کنید.
+                                    <strong>شیفت‌های کاری:</strong> برای هر روز
+                                    می‌توانید چند شیفت تعریف کنید (مثلاً صبح
+                                    ۸-۱۳ و عصر ۱۶:۳۰-۲۰). ساعات بین شیفت‌ها
+                                    به‌صورت خودکار تعطیل در نظر گرفته می‌شود.
                                 </span>
                             </li>
                             <li>
@@ -175,7 +339,7 @@ export default function AvailabilitiesIndex({
                                 <span>
                                     <strong>ویرایش:</strong> اگر می‌خواهید ساعات
                                     یک روز را تغییر دهید، فقط همان روز را دوباره
-                                    با ساعات جدید ذخیره کنید؛ اطلاعات قبلی به
+                                    با شیفت‌های جدید ذخیره کنید؛ اطلاعات قبلی به
                                     صورت خودکار جایگزین می‌شود.
                                 </span>
                             </li>
@@ -201,7 +365,7 @@ export default function AvailabilitiesIndex({
 
                 {/* ============ گرید دو ستونه ============ */}
                 <div className="availability-grid">
-                    {/* ============ فرم افزودن ============ */}
+                    {/* ============ فرم افزودن/ویرایش ============ */}
                     <div className="card">
                         <div className="card-header">
                             <h2 className="card-title">
@@ -259,7 +423,7 @@ export default function AvailabilitiesIndex({
                                                             : ""
                                                     }`}
                                                     onClick={() =>
-                                                        setSelectedDay(dayKey)
+                                                        handleSelectDay(dayKey)
                                                     }
                                                     style={
                                                         isSelected
@@ -293,37 +457,137 @@ export default function AvailabilitiesIndex({
                                 </div>
                             </div>
 
-                            {/* ساعات */}
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <TimePicker
-                                        label="ساعت شروع"
-                                        value={startTime}
-                                        onChange={setStartTime}
-                                        minuteStep={10}
-                                    />
-                                    {errors.start_time && (
-                                        <div className="form-error">
-                                            <AlertCircle size={14} />
-                                            <span>{errors.start_time}</span>
+                            {/* ============ شیفت‌ها ============ */}
+                            <div className="form-group">
+                                <label className="form-label">
+                                    <Clock size={14} />
+                                    شیفت‌های کاری
+                                    <span className="required">*</span>
+                                </label>
+
+                                <div className="shifts-list">
+                                    {shifts.map((shift, index) => (
+                                        <div key={index} className="shift-row">
+                                            <div className="shift-number">
+                                                {toPersianNumber(index + 1)}
+                                            </div>
+
+                                            <div className="shift-time-field">
+                                                <TimePicker
+                                                    label="شروع"
+                                                    value={shift.start_time}
+                                                    onChange={(v) =>
+                                                        updateShift(
+                                                            index,
+                                                            "start_time",
+                                                            v,
+                                                        )
+                                                    }
+                                                    minuteStep={10}
+                                                    vertical={true}
+                                                />
+                                                {errors[
+                                                    `shifts.${index}.start_time`
+                                                ] && (
+                                                    <div className="form-error">
+                                                        <AlertCircle
+                                                            size={12}
+                                                        />
+                                                        <span>
+                                                            {
+                                                                errors[
+                                                                    `shifts.${index}.start_time`
+                                                                ]
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <TimePicker
+                                                    label="پایان"
+                                                    value={shift.end_time}
+                                                    onChange={(v) =>
+                                                        updateShift(
+                                                            index,
+                                                            "end_time",
+                                                            v,
+                                                        )
+                                                    }
+                                                    minuteStep={10}
+                                                    vertical
+                                                />
+                                                {errors[
+                                                    `shifts.${index}.end_time`
+                                                ] && (
+                                                    <div className="form-error">
+                                                        <AlertCircle
+                                                            size={12}
+                                                        />
+                                                        <span>
+                                                            {
+                                                                errors[
+                                                                    `shifts.${index}.end_time`
+                                                                ]
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                className="btn-icon danger"
+                                                onClick={() => {
+                                                    if (
+                                                        shift.id &&
+                                                        existingAvailability
+                                                    ) {
+                                                        // شیفت ذخیره‌شده → تایید و حذف از سرور
+                                                        openDeleteShiftModal(
+                                                            existingAvailability,
+                                                            shift,
+                                                        );
+                                                    } else {
+                                                        // شیفت جدید → حذف از فرم
+                                                        removeShift(index);
+                                                    }
+                                                }}
+                                                title={
+                                                    shift.id
+                                                        ? "حذف این شیفت (ذخیره‌شده)"
+                                                        : "حذف این شیفت از فرم"
+                                                }
+                                                disabled={shifts.length === 1}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
-                                    )}
+                                    ))}
                                 </div>
 
-                                <div className="form-group">
-                                    <TimePicker
-                                        label="ساعت پایان"
-                                        value={endTime}
-                                        onChange={setEndTime}
-                                        minuteStep={15}
-                                    />
-                                    {errors.end_time && (
-                                        <div className="form-error">
-                                            <AlertCircle size={14} />
-                                            <span>{errors.end_time}</span>
-                                        </div>
-                                    )}
-                                </div>
+                                {errors.shifts && (
+                                    <div className="form-error">
+                                        <AlertCircle size={14} />
+                                        <span>{errors.shifts}</span>
+                                    </div>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    onClick={addShift}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                        marginTop: "0.5rem",
+                                    }}
+                                >
+                                    <Plus size={14} />
+                                    افزودن شیفت جدید
+                                </button>
                             </div>
 
                             {/* دکمه */}
@@ -427,37 +691,106 @@ export default function AvailabilitiesIndex({
                                                         ]
                                                     }
                                                 </span>
-                                                <span className="day-time">
-                                                    <Clock size={12} />
-                                                    {/* {toPersianTimeRange(avail.start_time, avail.end_time)}  */}
-                                                    {toPersianTime(
-                                                        avail.start_time,
-                                                    )}{" "}
-                                                    -{" "}
-                                                    {toPersianTime(
-                                                        avail.end_time,
+
+                                                {/* نمایش همه شیفت‌ها */}
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        gap: "0.25rem",
+                                                        marginTop: "0.25rem",
+                                                    }}
+                                                >
+                                                    {avail.shifts?.length >
+                                                    0 ? (
+                                                        avail.shifts.map(
+                                                            (shift, i) => (
+                                                                <div
+                                                                    key={
+                                                                        shift.id ??
+                                                                        i
+                                                                    }
+                                                                    style={{
+                                                                        display:
+                                                                            "flex",
+                                                                        alignItems:
+                                                                            "center",
+                                                                        justifyContent:
+                                                                            "space-between",
+                                                                        gap: "0.5rem",
+                                                                        padding:
+                                                                            "0.25rem 0.5rem",
+                                                                        background:
+                                                                            "#f9fafb",
+                                                                        borderRadius:
+                                                                            "0.375rem",
+                                                                        marginTop:
+                                                                            "0.25rem",
+                                                                    }}
+                                                                >
+                                                                    <span className="day-time">
+                                                                        <Clock
+                                                                            size={
+                                                                                12
+                                                                            }
+                                                                        />
+                                                                        {toPersianTime(
+                                                                            shift.start_time,
+                                                                        )}{" "}
+                                                                        -{" "}
+                                                                        {toPersianTime(
+                                                                            shift.end_time,
+                                                                        )}
+                                                                    </span>
+
+                                                                    {avail
+                                                                        .shifts
+                                                                        .length >
+                                                                        1 && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn-icon danger"
+                                                                            onClick={() =>
+                                                                                openDeleteShiftModal(
+                                                                                    avail,
+                                                                                    shift,
+                                                                                )
+                                                                            }
+                                                                            title="حذف این شیفت"
+                                                                            style={{
+                                                                                width: "1.5rem",
+                                                                                height: "1.5rem",
+                                                                            }}
+                                                                        >
+                                                                            <Trash2
+                                                                                size={
+                                                                                    12
+                                                                                }
+                                                                            />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            ),
+                                                        )
+                                                    ) : (
+                                                        <span className="day-time">
+                                                            <AlertCircle
+                                                                size={12}
+                                                            />
+                                                            بدون شیفت
+                                                        </span>
                                                     )}
-                                                </span>
+                                                </div>
                                             </div>
 
                                             <div className="availability-item-actions">
                                                 <button
                                                     className="btn-icon"
-                                                    onClick={() => {
-                                                        setSelectedDay(
+                                                    onClick={() =>
+                                                        handleSelectDay(
                                                             avail.day_of_week,
-                                                        );
-                                                        setStartTime(
-                                                            avail.start_time,
-                                                        );
-                                                        setEndTime(
-                                                            avail.end_time,
-                                                        );
-                                                        window.scrollTo({
-                                                            top: 0,
-                                                            behavior: "smooth",
-                                                        });
-                                                    }}
+                                                        )
+                                                    }
                                                     title="ویرایش"
                                                 >
                                                     <Edit3 size={16} />
@@ -481,7 +814,7 @@ export default function AvailabilitiesIndex({
                 </div>
             </div>
 
-            {/* ============ Modal حذف ============ */}
+            {/* ============ Modal حذف روز ============ */}
             <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
@@ -498,6 +831,27 @@ export default function AvailabilitiesIndex({
                 cancelText="انصراف"
                 type="danger"
                 isLoading={deleteModal.isLoading}
+            />
+
+            {/* ============ Modal حذف شیفت ============ */}
+            <ConfirmModal
+                isOpen={deleteShiftModal.isOpen}
+                onClose={closeDeleteShiftModal}
+                onConfirm={handleConfirmDeleteShift}
+                title="حذف شیفت"
+                message={
+                    deleteShiftModal.shift
+                        ? `آیا از حذف شیفت ${toPersianTime(
+                              deleteShiftModal.shift.start_time,
+                          )} تا ${toPersianTime(
+                              deleteShiftModal.shift.end_time,
+                          )} مطمئن هستید؟`
+                        : ""
+                }
+                confirmText="بله، حذف کن"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={deleteShiftModal.isLoading}
             />
         </Layout>
     );

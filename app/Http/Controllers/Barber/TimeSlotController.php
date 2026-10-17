@@ -101,7 +101,7 @@ class TimeSlotController extends Controller
     {
         $validated = $request->validate([
             'date' => 'required|date|after_or_equal:today',
-            'service_id' => 'required|exists:services,id',  // ← اجباری
+            'service_id' => 'required|exists:services,id',
         ], [
             'date.required' => 'انتخاب تاریخ الزامی است.',
             'date.after_or_equal' => 'تاریخ باید امروز یا بعد از آن باشد.',

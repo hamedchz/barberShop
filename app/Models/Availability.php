@@ -36,4 +36,15 @@ class Availability extends Model
             6 => 'جمعه',
         ];
     }
+
+    // public function shifts()
+    // {
+    //     return $this->hasMany(AvailabilityShift::class)->orderBy('order');
+    // }
+
+    public function shifts()
+    {
+        return $this->hasMany(AvailabilityShift::class)
+            ->orderBy('start_time');
+    }
 }

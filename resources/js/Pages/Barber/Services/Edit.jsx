@@ -403,14 +403,14 @@ export default function ServicesEdit({ auth, service }) {
                 </div>
 
                 {/* ============ کارت اطلاعات اضافی ============ */}
-                <div
+                {/* <div
                     className="card"
                     style={{
                         maxWidth: "700px",
                         margin: "0 auto",
                         width: "100%",
                     }}
-                ></div>
+                ></div> */}
             </div>
         </Layout>
     );
