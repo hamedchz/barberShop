@@ -105,7 +105,7 @@ class CommissionController extends Controller
         // بررسی: کاربر آرایشگر باشه
         if (!$user->hasRole('آرایشگر')) {
 
-            StickyAlert::toast('این کاربر آرایشگر نیست.', 'error');
+            StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return redirect()->back();
         }
@@ -128,7 +128,7 @@ class CommissionController extends Controller
     public function removeUserRate(User $user)
     {
         if (!$user->hasRole('آرایشگر')) {
-            StickyAlert::toast('این کاربر آرایشگر نیست.', 'error');
+            StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return redirect()->back();
         }

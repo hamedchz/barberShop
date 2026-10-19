@@ -1,28 +1,159 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, usePage } from "@inertiajs/react";
-import { LogOut, X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    LogOut,
+    X,
+    ChevronLeft,
+    ChevronRight,
+    ChevronDown,
+} from "lucide-react";
 import { menuConfig } from "../../../Config/menu";
+import "../Assets/css/SideBar.css";
+// ============ فیلتر منوها بر اساس دسترسی ============
+const filterMenuItems = (items, hasPermission) => {
+    return items.reduce((result, item) => {
+        const hasChildren = Array.isArray(item.children);
 
-// ============ آیتم منو ============
-const SidebarItem = ({ item, isActive, isCollapsed }) => {
-    const Icon = item.icon;
+        // ابتدا فرزندان را مستقل بر اساس Permission فیلتر کن
+        const children = hasChildren
+            ? filterMenuItems(item.children, hasPermission)
+            : [];
+
+        // دسترسی مستقیم خود آیتم
+        const hasOwnPermission =
+            !item.permissions?.length || item.permissions.some(hasPermission);
+
+        // دسترسی والد از طریق Permissionهای تعریف‌شده برای فرزندان
+        const hasChildrenPermission =
+            item.childrenPermissions?.some(hasPermission) ?? false;
+
+        // والد فقط با دسترسی خودش یا یکی از دسترسی‌های مجاز فرزندان نمایش داده شود
+        const canShow = hasOwnPermission || hasChildrenPermission;
+
+        if (!canShow) {
+            return result;
+        }
+
+        // اگر والد زیرمنو دارد ولی هیچ زیرمنویی قابل‌نمایش نیست،
+        // والد را نیز نمایش نده
+        if (hasChildren && children.length === 0) {
+            return result;
+        }
+
+        result.push({
+            ...item,
+            ...(hasChildren ? { children } : {}),
+        });
+
+        return result;
+    }, []);
+};
+
+// ============ تشخیص فعال بودن منو ============
+const checkItemActive = (item, scope, currentPath) => {
+    if (item.scopes?.some((s) => (scope || []).includes(s))) {
+        return true;
+    }
+
+    if (
+        item.href &&
+        (currentPath === item.href || currentPath.startsWith(item.href + "/"))
+    ) {
+        return true;
+    }
 
     return (
-        <Link
-            href={item.href}
-            className={`sidebar-item ${isActive ? "active" : ""}`}
-            title={isCollapsed ? item.label : ""}
-        >
-            <div className="sidebar-item-icon">
-                <Icon size={20} />
-            </div>
-            {!isCollapsed && (
-                <span className="sidebar-item-label">{item.label}</span>
+        item.children?.some((child) =>
+            checkItemActive(child, scope, currentPath),
+        ) ?? false
+    );
+};
+
+// ============ آیتم منو و زیرمنوها ============
+const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
+    const Icon = item.icon;
+    const hasChildren = item.children?.length > 0;
+
+    const active = isActive(item);
+    const [isExpanded, setIsExpanded] = useState(active);
+
+    // با تغییر صفحه، والد منوی فعال باز شود
+    useEffect(() => {
+        if (active) {
+            setIsExpanded(true);
+        }
+    }, [active, currentPath]);
+
+    const toggleChildren = () => {
+        setIsExpanded((prev) => !prev);
+    };
+
+    return (
+        <div className="sidebar-menu-group">
+            {hasChildren ? (
+                <button
+                    type="button"
+                    className={`sidebar-item sidebar-parent ${
+                        active ? "active" : ""
+                    } ${isExpanded ? "expanded" : ""}`}
+                    onClick={toggleChildren}
+                    title={isCollapsed ? item.label : ""}
+                    aria-expanded={isExpanded}
+                >
+                    <div className="sidebar-item-icon">
+                        {Icon && <Icon size={20} />}
+                    </div>
+
+                    {!isCollapsed && (
+                        <>
+                            <span className="sidebar-item-label">
+                                {item.label}
+                            </span>
+
+                            <ChevronDown
+                                size={16}
+                                className={`sidebar-submenu-chevron ${
+                                    isExpanded ? "rotated" : ""
+                                }`}
+                            />
+                        </>
+                    )}
+                </button>
+            ) : (
+                <Link
+                    href={item.href}
+                    className={`sidebar-item ${active ? "active" : ""}`}
+                    title={isCollapsed ? item.label : ""}
+                >
+                    <div className="sidebar-item-icon">
+                        {Icon && <Icon size={20} />}
+                    </div>
+
+                    {!isCollapsed && (
+                        <span className="sidebar-item-label">{item.label}</span>
+                    )}
+
+                    {active && !isCollapsed && (
+                        <span className="sidebar-item-indicator" />
+                    )}
+                </Link>
             )}
-            {isActive && !isCollapsed && (
-                <span className="sidebar-item-indicator"></span>
+
+            {hasChildren && !isCollapsed && isExpanded && (
+                <div className="sidebar-submenu">
+                    {item.children.map((child) => (
+                        <SidebarItem
+                            key={child.id}
+                            item={child}
+                            isCollapsed={false}
+                            isActive={isActive}
+                            scope={scope}
+                            currentPath={currentPath}
+                        />
+                    ))}
+                </div>
             )}
-        </Link>
+        </div>
     );
 };
 
@@ -35,61 +166,31 @@ export default function Sidebar({
 }) {
     const { auth, scope } = usePage().props;
 
-    // ============ بررسی دسترسی کاربر به یک permission ============
+    const currentPath =
+        typeof window !== "undefined" ? window.location.pathname : "";
+
+    // بررسی Permission
     const hasPermission = (permission) => {
         if (!auth?.user) return false;
 
-        const userPermissions = auth.user.permissions || [];
-
-        // اگر ادمین ارشد است، همه دسترسی‌ها را دارد
-        if (auth.user.roles?.includes("super-admin")) return true;
-
-        return userPermissions.includes(permission);
-    };
-
-    // ============ بررسی اینکه کاربر حداقل یکی از permission ها را دارد ============
-    const hasAnyPermission = (permissions) => {
-        if (!permissions || permissions.length === 0) return true; // اگر permission تعریف نشده، نمایش بده
-        return permissions.some((p) => hasPermission(p));
-    };
-
-    // ============ فیلتر منوها بر اساس permissions ============
-    const visibleItems = useMemo(() => {
-        if (!auth?.user) return [];
-
-        return menuConfig.filter((item) => {
-            // اگر permissions تعریف نشده، نمایش بده (مثل داشبورد)
-            if (!item.permissions || item.permissions.length === 0) {
-                return true;
-            }
-
-            // در غیر این صورت، چک کن که کاربر حداقل یکی از این permission ها را دارد
-            return hasAnyPermission(item.permissions);
-        });
-    }, [auth]);
-
-    // ============ تشخیص منوی فعال (بر اساس scope) ============
-    const isItemActive = (item) => {
-        const currentScopes = scope || [];
-
-        // اگر scope صفحه فعلی با scope منو تطابق داشت → فعال
-        if (item.scopes?.some((s) => currentScopes.includes(s))) {
+        if (auth.user.roles?.includes("super-admin")) {
             return true;
         }
 
-        // در غیر این صورت، بر اساس URL چک کن
-        if (typeof window !== "undefined") {
-            const currentPath = window.location.pathname;
-            // چک کن که path فعلی با href منو شروع می‌شود
-            return (
-                currentPath === item.href ||
-                currentPath.startsWith(item.href + "/")
-            );
-        }
-        return false;
+        return (auth.user.permissions || []).includes(permission);
     };
 
-    // ============ خروج ============
+    // فیلتر منوها و زیرمنوها
+    const visibleItems = useMemo(() => {
+        if (!auth?.user) return [];
+
+        return filterMenuItems(menuConfig, hasPermission);
+    }, [auth]);
+
+    // تشخیص فعال بودن یک منو، با توجه به زیرمنوهای آن
+    const isItemActive = (item) => checkItemActive(item, scope, currentPath);
+
+    // خروج
     const handleLogout = () => {
         if (confirm("آیا می‌خواهید از حساب خود خارج شوید؟")) {
             window.location.href = "/logout";
@@ -102,16 +203,18 @@ export default function Sidebar({
                 isCollapsed ? "collapsed" : ""
             }`}
         >
-            {/* ============ هدر ============ */}
+            {/* هدر */}
             <div className="sidebar-header">
                 <div className="logo-container">
                     <div className="logo-icon">S</div>
+
                     {!isCollapsed && (
                         <span className="logo-text">SCHOOLUS</span>
                     )}
                 </div>
 
                 <button
+                    type="button"
                     className="close-sidebar-btn"
                     onClick={closeSidebar}
                     aria-label="بستن منو"
@@ -120,6 +223,7 @@ export default function Sidebar({
                 </button>
 
                 <button
+                    type="button"
                     className="collapse-sidebar-btn"
                     onClick={toggleCollapse}
                     aria-label={isCollapsed ? "باز کردن" : "جمع کردن"}
@@ -132,7 +236,7 @@ export default function Sidebar({
                 </button>
             </div>
 
-            {/* ============ منوها ============ */}
+            {/* منوها */}
             <nav className="sidebar-nav">
                 {visibleItems.length === 0 ? (
                     <p className="sidebar-empty">منویی موجود نیست.</p>
@@ -141,16 +245,19 @@ export default function Sidebar({
                         <SidebarItem
                             key={item.id}
                             item={item}
-                            isActive={isItemActive(item)}
+                            isActive={isItemActive}
                             isCollapsed={isCollapsed}
+                            scope={scope}
+                            currentPath={currentPath}
                         />
                     ))
                 )}
             </nav>
 
-            {/* ============ خروج ============ */}
+            {/* فوتر */}
             <div className="sidebar-footer">
                 <button
+                    type="button"
                     className="logout-btn"
                     onClick={handleLogout}
                     title={isCollapsed ? "خروج" : ""}
@@ -164,7 +271,7 @@ export default function Sidebar({
                         <div className="sidebar-user-avatar">
                             {auth.user.avatar ? (
                                 <img
-                                    src={auth.user.avatar}
+                                    src={auth.user.avatarUrl}
                                     alt={auth.user.name}
                                 />
                             ) : (
@@ -173,10 +280,12 @@ export default function Sidebar({
                                 </span>
                             )}
                         </div>
+
                         <div className="sidebar-user-info">
                             <span className="sidebar-user-name">
                                 {auth.user.name}
                             </span>
+
                             <span className="sidebar-user-role">
                                 {auth.user.roles?.[0] || "کاربر"}
                             </span>

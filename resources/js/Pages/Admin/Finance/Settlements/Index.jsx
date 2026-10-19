@@ -169,6 +169,25 @@ export default function SettlementsIndex({ settlements, stats, filters = {} }) {
         (s) => s.status === "pending",
     ).length;
 
+    // ============ تب‌های فیلتر سریع ============
+    const statusTabs = [
+        { value: "", label: "همه", icon: CreditCard },
+        { value: "pending", label: "در انتظار", icon: Clock4 },
+        { value: "processing", label: "در حال پردازش", icon: Play },
+        { value: "completed", label: "تکمیل شده", icon: CheckCircle },
+        { value: "failed", label: "ناموفق", icon: XCircle },
+        { value: "cancelled", label: "لغو شده", icon: Ban },
+    ];
+
+    const applyQuickFilter = (status) => {
+        setLocalFilters((prev) => ({ ...prev, status }));
+        router.get(
+            route("admin.finance.settlements.index"),
+            { ...localFilters, status, search: searchTerm || "" },
+            { preserveScroll: true, preserveState: true },
+        );
+    };
+
     return (
         <Layout>
             <Head title="مدیریت تسویه ها" />
@@ -199,7 +218,33 @@ export default function SettlementsIndex({ settlements, stats, filters = {} }) {
 
                 {/* ============ آمار ============ */}
                 <SettlementStats stats={stats} />
+                {/* ============ تب‌های فیلتر سریع وضعیت ============ */}
+                <div className="status-filters">
+                    {statusTabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isActive = localFilters.status === tab.value;
+                        const count = tab.value
+                            ? (stats[`${tab.value}_count`] ?? 0)
+                            : (stats.total_count ?? 0);
 
+                        return (
+                            <button
+                                key={tab.value || "all"}
+                                type="button"
+                                className={`filter-btn ${isActive ? "active" : ""}`}
+                                onClick={() => applyQuickFilter(tab.value)}
+                            >
+                                <Icon size={12} />
+                                {tab.label}
+                                {count > 0 && (
+                                    <span className="filter-count-badge">
+                                        {toPersianNumber(count)}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
                 {/* ============ نوار ابزار ============ */}
                 <div className="settlements-toolbar">
                     <SearchComponent

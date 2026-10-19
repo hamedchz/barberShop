@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Hekmatinasser\Verta\Verta;
+use Illuminate\Support\Facades\DB;
 
 class TimeSlotController extends Controller
 {
@@ -23,9 +24,8 @@ class TimeSlotController extends Controller
         $selectedServiceId = $request->input('service_id');
 
         if (!$selectedServiceId) {
-            return redirect()
-                ->route('barber.services.index')
-                ->with('error', 'برای زمان‌بندی، ابتدا یک سرویس را انتخاب کنید.');
+            StickyAlert::alert('برای زمان‌بندی، ابتدا یک سرویس را انتخاب کنید.', 'error');
+            return to_route('barber.services.index');
         }
 
         // ============ بررسی مالکیت سرویس ============
@@ -34,9 +34,8 @@ class TimeSlotController extends Controller
             ->first();
 
         if (!$service) {
-            return redirect()
-                ->route('barber.services.index')
-                ->with('error', 'این سرویس متعلق به شما نمی‌باشد.');
+            StickyAlert::alert('این سرویس متعلق به شما نمی‌باشد.', 'error');
+            return to_route('barber.services.index');
         }
 
         // ============ تبدیل تاریخ شمسی به میلادی ============
@@ -69,8 +68,13 @@ class TimeSlotController extends Controller
             ->get();
 
         // ============ برنامه هفتگی این روز ============
+
+
+        // تبدیل ترتیب Carbon (یکشنبه = 0) به ترتیب پروژه (شنبه = 0)
+        $dayOfWeek = (Carbon::parse($selectedDate)->dayOfWeek + 1) % 7;
+
         $availability = Availability::where('user_id', $user->id)
-            ->where('day_of_week', Carbon::parse($selectedDate)->dayOfWeek)
+            ->where('day_of_week', $dayOfWeek)
             ->where('is_active', true)
             ->first();
 
@@ -97,76 +101,176 @@ class TimeSlotController extends Controller
             ],
         ]);
     }
+
     public function generate(Request $request)
     {
+        // ============ اعتبارسنجی اطلاعات ورودی ============
         $validated = $request->validate([
             'date' => 'required|date|after_or_equal:today',
             'service_id' => 'required|exists:services,id',
         ], [
             'date.required' => 'انتخاب تاریخ الزامی است.',
+            'date.date' => 'تاریخ انتخاب‌شده معتبر نیست.',
             'date.after_or_equal' => 'تاریخ باید امروز یا بعد از آن باشد.',
             'service_id.required' => 'انتخاب سرویس الزامی است.',
-            'service_id.exists' => 'سرویس انتخاب شده معتبر نیست.',
+            'service_id.exists' => 'سرویس انتخاب‌شده معتبر نیست.',
         ]);
 
         $user = auth()->user();
 
         // ============ بررسی مالکیت سرویس ============
-        $service = Service::where('user_id', $user->id)
+        $service = Service::query()
+            ->where('user_id', $user->id)
             ->where('id', $validated['service_id'])
             ->first();
 
         if (!$service) {
-            return redirect()->back()->with('error', 'این سرویس متعلق به شما نمی‌باشد.');
+            StickyAlert::alert(
+                'این سرویس متعلق به شما نمی‌باشد.',
+                'error'
+            );
+
+            return redirect()->back();
         }
 
-        $date = Carbon::parse($validated['date']);
-        $dayOfWeek = $date->dayOfWeek;
+        // ============ آماده‌سازی تاریخ ============
+        $date = Carbon::parse($validated['date'])->startOfDay();
+        $gregorianDate = $date->toDateString();
 
-        $availability = Availability::where('user_id', $user->id)
+        // ============ تبدیل روز هفته ============
+        // شنبه = 0، یکشنبه = 1، ... جمعه = 6
+        $dayOfWeek = ($date->dayOfWeek + 1) % 7;
+
+        // ============ دریافت برنامه کاری و شیفت‌ها ============
+        $availability = Availability::query()
+            ->with('shifts')
+            ->where('user_id', $user->id)
             ->where('day_of_week', $dayOfWeek)
             ->where('is_active', true)
             ->first();
 
         if (!$availability) {
-            return redirect()->back()->with('error', 'برای این روز برنامه کاری تعریف نشده است.');
+            StickyAlert::alert(
+                'برای این روز برنامه کاری تعریف نشده است.',
+                'error'
+            );
+
+            return redirect()->back();
         }
 
-        // حذف بازه‌های available قبلی **برای این سرویس در این تاریخ**
-        TimeSlot::where('user_id', $user->id)
-            ->where('service_id', $validated['service_id'])
-            ->where('date', $date->toDateString())
-            ->where('status', 'available')
-            ->delete();
+        if ($availability->shifts->isEmpty()) {
+            StickyAlert::alert(
+                'برای این روز شیفت کاری تعریف نشده است.',
+                'error'
+            );
 
-        // ساخت بازه‌ها
-        $start = Carbon::parse($date->toDateString() . ' ' . $availability->start_time);
-        $end = Carbon::parse($date->toDateString() . ' ' . $availability->end_time);
-        $interval = $service->duration;
-
-        $count = 0;
-        while ($start->copy()->addMinutes($interval)->lte($end)) {
-            TimeSlot::create([
-                'user_id' => $user->id,
-                'service_id' => $validated['service_id'],
-                'date' => $date->toDateString(),
-                'start_time' => $start->format('H:i'),
-                'end_time' => $start->copy()->addMinutes($interval)->format('H:i'),
-                'status' => 'available',
-            ]);
-            $start->addMinutes($interval);
-            $count++;
+            return redirect()->back();
         }
 
-        return redirect()
-            ->route('barber.time-slots.index', [
-                'service_id' => $validated['service_id'],
-                'jy' => verta($date)->format('Y'),
-                'jm' => verta($date)->format('m'),
-                'jd' => verta($date)->format('d'),
-            ])
-            ->with('success', "$count بازه زمانی ساخته شد.");
+        // ============ مرتب‌سازی شیفت‌ها ============
+        $shifts = $availability->shifts
+            ->sortBy('start_time')
+            ->values();
+
+        // ============ اعتبارسنجی مدت سرویس ============
+        $interval = (int) $service->duration;
+
+        if ($interval <= 0) {
+            StickyAlert::alert(
+                'مدت زمان سرویس معتبر نیست.',
+                'error'
+            );
+
+            return redirect()->back();
+        }
+
+        // ============ شمارنده بازه‌های قابل رزرو ============
+        $availableCount = 0;
+
+        // ============ حذف و تولید تایم‌اسلات‌ها ============
+        DB::transaction(function () use (
+            $user,
+            $service,
+            $gregorianDate,
+            $shifts,
+            $interval,
+            &$availableCount
+        ) {
+            // حذف بازه‌های available قبلی که رزرو ندارند
+            TimeSlot::query()
+                ->where('user_id', $user->id)
+                ->where('service_id', $service->id)
+                ->where('date', $gregorianDate)
+                ->where('status', 'available')
+                ->whereDoesntHave('bookings')
+                ->delete();
+
+            // حذف بازه‌های blocked قبلی که رزرو ندارند
+            // برای پاک‌سازی رکوردهای قدیمی تولیدشده
+            TimeSlot::query()
+                ->where('user_id', $user->id)
+                ->where('service_id', $service->id)
+                ->where('date', $gregorianDate)
+                ->where('status', 'blocked')
+                ->whereDoesntHave('bookings')
+                ->delete();
+
+            // ============ تولید بازه‌های available ============
+            foreach ($shifts as $shift) {
+                $shiftStart = Carbon::parse(
+                    $gregorianDate . ' ' . $shift->start_time
+                );
+
+                $shiftEnd = Carbon::parse(
+                    $gregorianDate . ' ' . $shift->end_time
+                );
+
+                // جلوگیری از تولید بازه برای شیفت نامعتبر
+                if (!$shiftStart->lt($shiftEnd)) {
+                    continue;
+                }
+
+                $cursor = $shiftStart->copy();
+
+                // فقط بازه‌هایی تولید می‌شوند که
+                // مدت کامل سرویس در شیفت جا شود
+                while (
+                    $cursor->copy()->addMinutes($interval)->lte($shiftEnd)
+                ) {
+                    $slotEnd = $cursor->copy()->addMinutes($interval);
+
+                    TimeSlot::create([
+                        'user_id' => $user->id,
+                        'service_id' => $service->id,
+                        'date' => $gregorianDate,
+                        'start_time' => $cursor->format('H:i'),
+                        'end_time' => $slotEnd->format('H:i'),
+                        'status' => 'available',
+                    ]);
+
+                    $cursor->addMinutes($interval);
+
+                    $availableCount++;
+                }
+            }
+        });
+
+        // ============ پیام نتیجه ============
+        StickyAlert::alert(
+            "{$availableCount} بازه قابل رزرو ساخته شد.",
+            'success'
+        );
+
+        // ============ بازگشت به تقویم شمسی ============
+        return to_route('barber.time-slots.index', [
+            'service_id' => $service->id,
+            'jy' => verta($date)->format('Y'),
+            'jm' => verta($date)->format('m'),
+            'jd' => verta($date)->format('d'),
+        ]);
     }
+
+
     public function update(Request $request, TimeSlot $timeSlot)
     {
         if ($timeSlot->user_id !== auth()->id()) {
@@ -178,8 +282,11 @@ class TimeSlotController extends Controller
         ]);
 
         $timeSlot->update(['status' => $validated['status']]);
-
-        return redirect()->back()->with('success', 'وضعیت بازه بروزرسانی شد.');
+        StickyAlert::toast(
+            'وضعیت بازه بروزرسانی شد.',
+            'success'
+        );
+        return redirect()->back();
     }
 
     public function destroy(TimeSlot $timeSlot)
@@ -189,7 +296,10 @@ class TimeSlotController extends Controller
         }
 
         $timeSlot->delete();
-
-        return redirect()->back()->with('success', 'بازه زمانی حذف شد.');
+        StickyAlert::toast(
+            'بازه زمانی حذف شد.',
+            'success'
+        );
+        return redirect()->back();
     }
 }

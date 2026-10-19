@@ -388,7 +388,7 @@ class AdminController extends Controller
             'ادمین با موفقیت حذف شد.',
             'success'
         );
-        // return redirect()->back()->with('success', 'ادمین با موفقیت حذف شد.');
+        return redirect()->back();
     }
 
     public function onlineStatus()

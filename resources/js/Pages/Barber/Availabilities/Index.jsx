@@ -538,7 +538,7 @@ export default function AvailabilitiesIndex({
 
                                             <button
                                                 type="button"
-                                                className="btn-icon danger"
+                                                className={`btn-icon danger ${shift.id ? "saved" : "new"}`}
                                                 onClick={() => {
                                                     if (
                                                         shift.id &&

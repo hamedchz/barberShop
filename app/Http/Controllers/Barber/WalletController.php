@@ -343,8 +343,11 @@ class WalletController extends Controller
         ]);
 
         auth()->user()->update($validated);
-
-        return back()->with('success', 'اطلاعات بانکی با موفقیت ذخیره شد.');
+        StickyAlert::toast(
+            'اطلاعات بانکی با موفقیت ذخیره شد.',
+            'success'
+        );
+        return redirect()->back();
     }
 
 

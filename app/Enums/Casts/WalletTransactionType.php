@@ -12,6 +12,8 @@ enum WalletTransactionType: string
   case earning    = 'earning';     // درآمد آرایشگر
   case commission = 'commission';  // کمیسیون پلتفرم
 
+
+
   public function label(): string
   {
     return match ($this) {

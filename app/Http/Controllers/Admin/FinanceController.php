@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Casts\PaymentGateway;
 use App\Enums\Casts\BookingStatus;
+use App\Enums\Casts\PaymentStatus;
 use App\Enums\Casts\SettlementStatus;
 use App\Enums\Casts\WalletDepositStatus;
+use App\Enums\Casts\WalletTransactionDirection;
 use App\Enums\Casts\WalletTransactionStatus;
 use App\Enums\Casts\WalletTransactionType;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Models\Settlement;
 use App\Models\User;
 use App\Models\Wallet;
@@ -117,7 +121,7 @@ class FinanceController extends Controller
             ->map(fn($s) => $this->mapSettlement($s));
 
         // ============ آخرین تراکنشها ============
-        $recentTransactions = WalletTransaction::with(['user:id,name'])
+        $recentTransactions = WalletTransaction::with(['user:id,name,slug'])
             ->latest()
             ->limit(10)
             ->get()
@@ -134,6 +138,7 @@ class FinanceController extends Controller
             'filters' => [
                 'period' => $period,
             ],
+            'scopes' => ['finance']
         ]);
     }
 
@@ -201,6 +206,7 @@ class FinanceController extends Controller
                 'date_to'   => $request->input('date_to', ''),
                 'search'    => $request->input('search', ''),
             ],
+            'scopes' => ['settlements']
         ]);
     }
 
@@ -213,6 +219,7 @@ class FinanceController extends Controller
 
         return Inertia::render('Admin/Finance/Settlements/Show', [
             'settlement' => $this->mapSettlement($settlement, detailed: true, full: true),
+            'scopes' => ['settlements']
         ]);
     }
 
@@ -221,34 +228,51 @@ class FinanceController extends Controller
      */
     public function transactions(Request $request)
     {
-        $query = WalletTransaction::with(['user:id,name,avatar,phone']);
+        $query = WalletTransaction::with([
+            'user:id,name,avatar,phone,slug',
+            'wallet:id,balance',
+            'reference',
+            'settlement:id,amount,status,reference,created_at',
+        ]);
 
-        // فیلتر نوع
+        // ============ فیلترها ============
         if ($type = $request->input('type')) {
             $query->where('type', $type);
         }
 
-        // فیلتر جهت
         if ($direction = $request->input('direction')) {
             $query->where('direction', $direction);
         }
 
-        // فیلتر وضعیت
         if ($status = $request->input('status')) {
             $query->where('status', $status);
         }
 
-        // فیلتر کاربر
         if ($userId = $request->input('user_id')) {
             $query->where('user_id', $userId);
         }
 
-        // فیلتر تاریخ
         if ($dateFrom = $request->input('date_from')) {
             $query->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
         }
+
         if ($dateTo = $request->input('date_to')) {
             $query->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+        }
+
+        // فیلتر قفل
+        if ($request->filled('is_locked')) {
+            $query->where('is_locked', (bool) $request->input('is_locked'));
+        }
+
+        // فیلتر تسویه
+        if ($request->filled('is_settled')) {
+            $query->where('is_settled', (bool) $request->input('is_settled'));
+        }
+
+        // فیلتر «فقط پرداخت درگاه» (مکمل)
+        if ($request->input('filter') === 'gateway_only') {
+            $query->where('reference_type', Payment::class);
         }
 
         // جستجو
@@ -256,6 +280,8 @@ class FinanceController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('id', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('reference_id', $search)
+                    ->orWhere('settlement_reference', 'like', "%{$search}%")
                     ->orWhereHas('user', function ($uq) use ($search) {
                         $uq->where('name', 'like', "%{$search}%")
                             ->orWhere('phone', 'like', "%{$search}%");
@@ -263,34 +289,186 @@ class FinanceController extends Controller
             });
         }
 
-        $transactions = $query->latest()->paginate(20)->withQueryString();
+        // ============ Pagination ============
+        $transactions = $query->latest()->paginate(33)->withQueryString();
         $transactions->through(fn($t) => $this->mapTransaction($t, detailed: true));
 
-        // آمار
-        $stats = [
-            'total_credit' => (float) WalletTransaction::where('direction', 'credit')->sum('amount'),
-            'total_debit'  => (float) WalletTransaction::where('direction', 'debit')->sum('amount'),
-            'total_count'  => WalletTransaction::count(),
-        ];
+        // ============ آمار (بر اساس فیلترهای فعلی) ============
+        $stats = $this->buildStats($request);
+
+        // ============ آپشن‌ها ============
+        $users = User::query()
+            ->select('id', 'name', 'phone')
+            ->orderBy('name')
+            ->limit(200)
+            ->get();
 
         return Inertia::render('Admin/Finance/Transactions/Index', [
-            'transactions' => $transactions,
-            'stats' => $stats,
-            'filters' => [
-                'type'      => $request->input('type', ''),
-                'direction' => $request->input('direction', ''),
-                'status'    => $request->input('status', ''),
-                'user_id'   => $request->input('user_id', ''),
-                'date_from' => $request->input('date_from', ''),
-                'date_to'   => $request->input('date_to', ''),
-                'search'    => $request->input('search', ''),
+            'transactions'    => $transactions,
+            'stats'           => $stats,
+            'filters'         => [
+                'type'       => $request->input('type', ''),
+                'direction'  => $request->input('direction', ''),
+                'status'     => $request->input('status', ''),
+                'user_id'    => $request->input('user_id', ''),
+                'date_from'  => $request->input('date_from', ''),
+                'date_to'    => $request->input('date_to', ''),
+                'is_locked'  => $request->input('is_locked', ''),
+                'is_settled' => $request->input('is_settled', ''),
+                'filter'     => $request->input('filter', ''),
+                'search'     => $request->input('search', ''),
             ],
             'transactionTypes' => collect(WalletTransactionType::cases())
                 ->map(fn($t) => ['value' => $t->value, 'label' => $t->label()])
                 ->values(),
+            'transactionDirections' => collect(WalletTransactionDirection::cases())
+                ->map(fn($d) => [
+                    'value' => $d->value,
+                    'label' => $d->value === 'credit' ? 'واریز' : 'برداشت',
+                ])
+                ->values(),
+            'transactionStatuses' => collect(WalletTransactionStatus::cases())
+                ->map(fn($s) => [
+                    'value' => $s->value,
+                    'label' => $s->label() ?? $s->value,
+                ])
+                ->values(),
+            'users'    => $users,
+            'scopes'   => ['transactions'],
         ]);
     }
 
+    // ============ آمار با احترام به فیلترها ============
+    private function buildStats(Request $request): array
+    {
+        $base = WalletTransaction::query();
+
+        // فیلترهای اصلی رو اعمال کن (به جز direction/status/search که آمار رو بی‌معنی می‌کنن)
+        if ($type = $request->input('type')) {
+            $base->where('type', $type);
+        }
+        if ($userId = $request->input('user_id')) {
+            $base->where('user_id', $userId);
+        }
+        if ($dateFrom = $request->input('date_from')) {
+            $base->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+        }
+        if ($dateTo = $request->input('date_to')) {
+            $base->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+        }
+        if ($request->filled('is_locked')) {
+            $base->where('is_locked', (bool) $request->input('is_locked'));
+        }
+        if ($request->filled('is_settled')) {
+            $base->where('is_settled', (bool) $request->input('is_settled'));
+        }
+        $totals = (clone $base)->selectRaw('
+        COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_credit,
+        COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_debit,
+        COUNT(*) as total_count
+    ', [
+            WalletTransactionDirection::credit->value,
+            WalletTransactionDirection::debit->value,
+        ])->first();
+
+        $lockedAmount = (clone $base)->where('is_locked', true)->sum('amount');
+
+        $gatewayTotal = Payment::query()
+            ->where('status', PaymentStatus::success->value)
+            ->when($request->input('date_from'), fn($q) => $q->whereDate('paid_at', '>=', $request->input('date_from')))
+            ->when($request->input('date_to'), fn($q) => $q->whereDate('paid_at', '<=', $request->input('date_to')))
+            ->sum('amount');
+
+        $gatewayBreakdown = $this->buildGatewayBreakdown($request);
+
+        return [
+            'total_credit'        => (float) $totals->total_credit,
+            'total_debit'         => (float) $totals->total_debit,
+            'total_count'         => (int) $totals->total_count,
+            'net_amount'          => (float) ($totals->total_credit - $totals->total_debit),
+            'locked_amount'       => (float) $lockedAmount,
+            'locked_count'        => (clone $base)->where('is_locked', true)->count(),
+            'gateway_total'       => (float) $gatewayTotal,
+            'gateway_count'       => Payment::query()
+                ->where('status', PaymentStatus::success->value)
+                ->when($request->input('date_from'), fn($q) => $q->whereDate('paid_at', '>=', $request->input('date_from')))
+                ->when($request->input('date_to'), fn($q) => $q->whereDate('paid_at', '<=', $request->input('date_to')))
+                ->count(),
+            'unsettled_count'     => (clone $base)->where('is_settled', false)->count(),
+
+            'credit_breakdown'  => $this->buildTypeBreakdown($request, $base, 'credit'),
+            'debit_breakdown'   => $this->buildTypeBreakdown($request, $base, 'debit'),
+            'settlement_total'    => (float) (clone $base)->where('direction', 'debit')->where('type', 'settlement')->sum('amount'),
+            'settlement_count'    => (clone $base)->where('direction', 'debit')->where('type', 'settlement')->count(),
+            'commission_total'    => (float) (clone $base)->where('direction', 'debit')->where('type', 'commission')->sum('amount'),
+            'commission_count'    => (clone $base)->where('direction', 'debit')->where('type', 'commission')->count(),
+            'refunds'             => (float) (clone $base)->where('type', 'refund')->sum('amount'),
+            'refunds_count'       => (clone $base)->where('type', 'refund')->count(),
+            'manual_deposits'     => (float) (clone $base)->where('type', 'deposit')->sum('amount'),
+            'manual_deposits_count' => (clone $base)->where('type', 'deposit')->count(),
+            'withdrawals'         => (float) (clone $base)->where('type', 'withdrawal')->sum('amount'),
+            'withdrawals_count'   => (clone $base)->where('type', 'withdrawal')->count(),
+            'released_amount'     => (float) (clone $base)->where('is_locked', false)->whereNotNull('released_at')->sum('amount'),
+            'released_count'      => (clone $base)->where('is_locked', false)->whereNotNull('released_at')->count(),
+            'settlements_pending' => Settlement::where('status', SettlementStatus::pending->value)->count(),
+            'settlements_processing' => Settlement::where('status', SettlementStatus::processing->value)->count(),
+            'settlements_pending_amount' => (float) Settlement::whereIn('status', [
+                SettlementStatus::pending->value,
+                SettlementStatus::processing->value,
+            ])->sum('amount'),
+        ];
+    }
+    /**
+     * Breakdown داینامیک درگاه‌های پرداخت
+     */
+    private function buildGatewayBreakdown(Request $request): array
+    {
+        $gatewayLabels = [
+            'zarinpal' => 'زرین‌پال',
+            'idpay'    => 'آیدی‌پی',
+            'payping'  => 'پی‌پینگ',
+            'nextpay'  => 'نکست‌پی',
+        ];
+
+        $rows = Payment::query()
+            ->where('status', PaymentStatus::success->value)
+            ->when($request->input('date_from'), fn($q) => $q->whereDate('paid_at', '>=', $request->input('date_from')))
+            ->when($request->input('date_to'), fn($q) => $q->whereDate('paid_at', '<=', $request->input('date_to')))
+            ->selectRaw('gateway, COUNT(*) as count, COALESCE(SUM(amount), 0) as total')
+            ->groupBy('gateway')
+            ->orderByDesc('total')
+            ->get();
+
+        $items = $rows->map(fn($row) => [
+            'key'   => $row->gateway,
+            'label' => $gatewayLabels[$row->gateway] ?? $row->gateway ?? 'نامشخص',
+            'value' => (float) $row->total,
+            'count' => (int) $row->count,
+        ])->toArray();
+
+        return [
+            'total' => (float) $rows->sum('total'),
+            'count' => (int) $rows->sum('count'),
+            'items' => $items,
+        ];
+    }
+
+    private function buildTypeBreakdown(Request $request, $base, string $direction): array
+    {
+        $rows = (clone $base)
+            ->where('direction', $direction)
+            ->selectRaw('type, COUNT(*) as count, COALESCE(SUM(amount), 0) as total')
+            ->groupBy('type')
+            ->orderByDesc('total')
+            ->get();
+
+        return $rows->map(fn($row) => [
+            'key'   => $row->type?->value,
+            'label' => $row->type?->label() ?? 'نامشخص',
+            'value' => (float) $row->total,
+            'count' => (int) $row->count,
+        ])->toArray();
+    }
     /**
      * لیست شارژهای کیف پول
      */
@@ -340,6 +518,7 @@ class FinanceController extends Controller
                 'date_to'   => $request->input('date_to', ''),
                 'search'    => $request->input('search', ''),
             ],
+            'scopes' => ['deposits']
         ]);
     }
 
@@ -530,6 +709,7 @@ class FinanceController extends Controller
                 'max_amount' => $maxAmount ?? '',
                 'search'     => $search,
             ],
+            'scopes' => ['revenue']
         ]);
     }
 
@@ -714,33 +894,87 @@ class FinanceController extends Controller
     private function mapTransaction(WalletTransaction $t, bool $detailed = false): array
     {
         $data = [
-            'id'             => $t->id,
-            'type'           => $t->type->value,
-            'type_label'     => $t->type->label(),
-            'direction'      => $t->direction->value,
-            'direction_label' => $t->direction->label(),
+            'id'           => $t->id,
+            'type'         => $t->type?->value,
+            'type_label'   => $t->type?->label() ?? $t->type?->value,
+            'direction'    => $t->direction?->value,
+            'status'       => $t->status?->value,
+            'status_label' => $t->status?->label() ?? $t->status?->value,
             'amount'         => (float) $t->amount,
             'balance_before' => (float) $t->balance_before,
             'balance_after'  => (float) $t->balance_after,
-            'status'         => $t->status->value,
-            'status_label'   => $t->status->label(),
-            'description'    => $t->description,
-            'created_at'     => $t->created_at,
+            'description'  => $t->description,
+            'is_locked'    => (bool) $t->is_locked,
+            'is_settled'   => (bool) $t->is_settled,
+            'settled_at'   => $t->settled_at?->toIso8601String(),
+            'created_at'   => $t->created_at?->toIso8601String(),
+
             'user' => $t->user ? [
-                'id'        => $t->user->id,
-                'name'      => $t->user->name,
-                'thumbnail' => $t->user->avatarUrl(),
+                'id'            => $t->user->id,
+                'name'          => $t->user->name,
+                'avatar'        => $t->user->avatar,
+                'phone'         => $t->user->phone,
+                'roles'         => $t->user->getRoleNames()->toArray(),
+                'primary_role'  => $t->user->primaryRole(),
+                'profile_url'   => $t->user->adminProfileUrl(),
+                'profile_label' => $t->user->primaryRoleLabel(),
             ] : null,
         ];
 
-        if ($detailed) {
-            $data['reference_type'] = $t->reference_type;
-            $data['reference_id'] = $t->reference_id;
-            $data['is_locked'] = (bool) $t->is_locked;
-            $data['released_at'] = $t->released_at;
+        if (!$detailed) {
+            return $data;
         }
 
+        $data['reference'] = $this->mapReference($t);
+        $data['wallet_balance'] = $t->wallet ? (float) $t->wallet->balance : null;
+        $data['settlement'] = $t->settlement ? [
+            'id'     => $t->settlement->id,
+            'amount' => (float) $t->settlement->amount,
+            'status' => $t->settlement->status?->value,
+        ] : null;
+
         return $data;
+    }
+
+    private function mapReference(WalletTransaction $t): ?array
+    {
+        if (!$t->reference_type || !$t->reference) {
+            return null;
+        }
+
+        $ref = $t->reference;
+
+        // Payment
+        if ($ref instanceof Payment) {
+            return [
+                'kind'           => 'payment',
+                'id'             => $ref->id,
+                'gateway'        => $ref->gateway,
+                'transaction_id' => $ref->transaction_id,
+                'authority'      => $ref->authority,
+                'amount'         => (float) $ref->amount,
+                'status'         => $ref->status?->value,
+                'paid_at'        => $ref->paid_at?->toIso8601String(),
+                'booking_id'     => $ref->booking_id,
+                'url'            => route('admin.payments.show', $ref->id),
+            ];
+        }
+
+        // Settlement
+        if ($ref instanceof Settlement) {
+            return [
+                'kind'   => 'settlement',
+                'id'     => $ref->id,
+                'amount' => (float) $ref->amount,
+                'status' => $ref->status?->value,
+                'url'    => route('admin.finance.settlements.show', $ref->id),
+            ];
+        }
+
+        return [
+            'kind' => class_basename($ref),
+            'id'   => $ref->id,
+        ];
     }
 
     private function mapDeposit(WalletDeposit $d): array
@@ -764,4 +998,55 @@ class FinanceController extends Controller
             ] : null,
         ];
     }
+
+    private function getUserProfileUrl(?User $user): ?string
+    {
+        if (!$user) return null;
+
+        // اولویت: barber > customer > admin
+        // (هر کدوم که مهم‌تره اول بیاد)
+
+        if ($user->hasRole('آرایشگر')) {
+            return "/admin/barbers/{$user->id}/detail";
+        }
+
+        if ($user->hasRole('مشتری')) {
+            return "/admin/customers/show/{$user->id}";
+        }
+
+        if ($user->hasRole('admin')) {
+            return "/admin/users/{$user->id}";
+        }
+
+        return null;
+    }
+
+    private function getUserProfileLabel(?User $user): string
+    {
+        if (!$user) return 'کاربر';
+
+        if ($user->hasRole('barber')) {
+            return 'آرایشگر';
+        }
+
+        if ($user->hasRole('customer')) {
+            return 'مشتری';
+        }
+
+        if ($user->hasRole('admin')) {
+            return 'ادمین';
+        }
+
+        return 'کاربر';
+    }
+    // private function getUserProfileLabel(?User $user): string
+    // {
+    //     if (!$user) return 'کاربر';
+
+    //     return match ($user->role?->value) {
+    //         'barber'   => 'آرایشگر',
+    //         'customer' => 'مشتری',
+    //         default    => 'کاربر',
+    //     };
+    // }
 }

@@ -221,7 +221,7 @@ class BarberController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -350,7 +350,7 @@ class BarberController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -374,7 +374,7 @@ class BarberController extends Controller
             'آرایشگر با موفقیت حذف شد.',
             'success'
         );
-        // return redirect()->back()->with('success', 'ادمین با موفقیت حذف شد.');
+        return redirect()->back();
     }
 
     /**
@@ -384,9 +384,8 @@ class BarberController extends Controller
     {
         // بررسی اینکه کاربر آرایشگر است
         if (!$barber->roles()->where('roles.id', 8)->exists()) {
-            return redirect()
-                ->route('admin.barbers.list')
-                ->with('error', 'این کاربر آرایشگر نیست.');
+            StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
+            return to_route('admin.barbers.list');
         }
 
         // ============ اطلاعات پایه ============

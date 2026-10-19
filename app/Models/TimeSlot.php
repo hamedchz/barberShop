@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Casts\TimeSlotStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TimeSlot extends Model
 {
@@ -35,5 +36,10 @@ class TimeSlot extends Model
     public function bookedBy()
     {
         return $this->belongsTo(User::class, 'booked_by');
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class, 'time_slot_id');
     }
 }

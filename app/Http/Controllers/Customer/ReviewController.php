@@ -97,9 +97,9 @@ class ReviewController extends Controller
 
         // ============ بررسی وضعیت ============
         if ($booking->status->value !== BookingStatus::completed->value) {
-            return redirect()
-                ->route('customer.bookings.show', $booking->id)
-                ->with('error', 'فقط می‌توانید برای رزروهای تکمیل شده نظر ثبت کنید.');
+
+            StickyAlert::alert('فقط می‌توانید برای رزروهای تکمیل شده نظر ثبت کنید.', 'error');
+            return to_route('customer.bookings.show', $booking->id);
         }
 
         // ============ بررسی نظر تکراری ============
@@ -108,9 +108,8 @@ class ReviewController extends Controller
             ->first();
 
         if ($existingReview) {
-            return redirect()
-                ->route('customer.bookings.show', $booking->id)
-                ->with('error', 'قبلاً برای این رزرو نظر ثبت کرده‌اید.');
+            StickyAlert::alert('قبلاً برای این رزرو نظر ثبت کرده‌اید.', 'error');
+            return to_route('customer.bookings.show', $booking->id);
         }
 
         // ============ بارگذاری روابط ============
@@ -215,16 +214,14 @@ class ReviewController extends Controller
             ->first();
 
         if (!$review) {
-            return redirect()
-                ->route('customer.bookings.show', $review->booking->id)
-                ->with('error', 'نظری برای این رزرو یافت نشد.');
+            StickyAlert::alert('نظری برای این رزرو یافت نشد.', 'error');
+            return to_route('customer.bookings.show', $review->booking->id);
         }
 
         // ============ بررسی وضعیت ============
         if ($review->status->value !== ReviewStatus::pending->value) {
-            return redirect()
-                ->route('customer.bookings.show', $review->booking->id)
-                ->with('error', 'فقط نظرات در انتظار تایید قابل ویرایش هستند.');
+            StickyAlert::alert('فقط نظرات در انتظار تایید قابل ویرایش هستند.', 'error');
+            return to_route('customer.bookings.show', $review->booking->id);
         }
 
         $review->booking->load([
@@ -279,9 +276,8 @@ class ReviewController extends Controller
 
         // ============ بررسی وضعیت ============
         if ($review->status->value !== ReviewStatus::pending->value) {
-            return redirect()
-                ->route('customer.bookings.show', $review->booking_id)
-                ->with('error', 'فقط نظرات در انتظار تایید قابل ویرایش هستند.');
+            StickyAlert::alert('فقط نظرات در انتظار تایید قابل ویرایش هستند.', 'error');
+            return to_route('customer.bookings.show', $review->booking_id);
         }
 
         $validated = $request->validate([
@@ -299,10 +295,8 @@ class ReviewController extends Controller
         ]);
 
         $review->barber->clearReviewsCache();
-
-        return redirect()
-            ->route('customer.bookings.show', $review->booking_id)
-            ->with('success', 'نظر شما بروزرسانی شد و در انتظار تایید ادمین است.');
+        StickyAlert::alert('نظر شما بروزرسانی شد و در انتظار تایید ادمین است.', 'error');
+        return to_route('customer.bookings.show', $review->booking_id);
     }
 
     /**

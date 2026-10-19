@@ -24,11 +24,14 @@ enum Permissions: string
   case manageOrder = 'manage-order';
   case manageBarber = 'manage-barber';
   case barberDashboardPanel = 'barber-dashboard-panel';
+  case manageFinance = 'manage-finance';
+
 
   public function description(): string
   {
     return match ($this) {
       self::manageUsers => 'مدیریت کاربران',
+      self::manageFinance => 'مدیریت مالی',
       self::manageRoles => 'مدیریت نقش‌ها و دسترسی‌ها',
       self::manageBlog => 'مدیریت مطالب وبلاگ',
       self::manageProducts => 'مدیریت محصولات',

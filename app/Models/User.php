@@ -80,11 +80,62 @@ class User extends Authenticatable
         'is_admin' => false,
         'status' => UserStatus::PENDING->value,
     ];
-    // public function isOnline(): bool
+
+    public const ROLE_BARBER        = 'آرایشگر';
+    public const ROLE_CUSTOMER      = 'مشتری';
+    public const ROLE_SUPER_ADMIN   = 'سوپر ادمین';
+    /**
+     * نقش اصلی کاربر با اولویت
+     * آرایشگر > مشتری > سوپر ادمین
+     */
+    public function primaryRole(): ?string
+    {
+        return match (true) {
+            $this->hasRole(self::ROLE_BARBER)      => 'barber',
+            $this->hasRole(self::ROLE_CUSTOMER)    => 'customer',
+            $this->hasRole(self::ROLE_SUPER_ADMIN) => 'super_admin',
+            default                                => null,
+        };
+    }
+
+    /**
+     * URL پروفایل کاربر در پنل ادمین
+     */
+    // public function adminProfileUrl(): ?string
     // {
-    //     return Cache::has('user-is-online-' . $this->id);
+    //     return match ($this->primaryRole()) {
+    //         'barber'      => "/admin/barbers/{$this->slug}/detail",
+    //         'customer'    => "/admin/customers/{$this->id}",
+    //         'super_admin' => "/admin/users/{$this->id}",
+    //         default       => null,
+    //     };
     // }
 
+    public function adminProfileUrl(): ?string
+    {
+        return match ($this->primaryRole()) {
+            'barber' => $this->slug
+                ?  route('admin.barbers.show', $this->slug)
+                : route('admin.barbers.show', $this->id),
+
+            'customer'    => route('admin.customers.show', $this->id),
+            'super_admin' => route('admin.users.show', $this->id),
+            default       => null,
+        };
+    }
+
+    /**
+     * برچسب نقش برای نمایش (فارسی)
+     */
+    public function primaryRoleLabel(): string
+    {
+        return match ($this->primaryRole()) {
+            'barber'      => 'آرایشگر',
+            'customer'    => 'مشتری',
+            'super_admin' => 'سوپر ادمین',
+            default       => 'کاربر',
+        };
+    }
     public function isOnline(): bool
     {
         return $this->last_seen_at &&

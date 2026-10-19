@@ -92,7 +92,7 @@ class ServiceController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -161,7 +161,7 @@ class ServiceController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -185,7 +185,7 @@ class ServiceController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );

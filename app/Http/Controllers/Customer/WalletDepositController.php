@@ -7,6 +7,7 @@ use App\Exceptions\WalletException;
 use App\Http\Controllers\Controller;
 use App\Models\WalletDeposit;
 use App\Services\WalletDepositService;
+use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Shetabit\Multipay\Invoice as ShInvoice;
@@ -89,13 +90,17 @@ class WalletDepositController extends Controller
                 }
             )->pay()->render();
             // برای تست:
-            return redirect()->route('customer.wallet.deposit.callback', [
-                'deposit'   => $deposit->id,
-                'status'    => 'OK',
-                'authority' => 'TEST_' . $deposit->id,
-            ]);
+            // return redirect()->route('customer.wallet.deposit.callback', [
+            //     'deposit'   => $deposit->id,
+            //     'status'    => 'OK',
+            //     'authority' => 'TEST_' . $deposit->id,
+            // ]);
         } catch (WalletException $e) {
-            return back()->with('error', $e->getMessage());
+            StickyAlert::alert(
+                $e->getMessage(),
+                'error'
+            );
+            return redirect()->back();
         }
     }
 
@@ -119,22 +124,17 @@ class WalletDepositController extends Controller
                     gatewayReference: $request->ref_id ?? null,
                     gatewayResponse: $request->all(),
                 );
-
-                return redirect()
-                    ->route('customer.wallet.index')
-                    ->with('success', 'کیف پول شما با موفقیت شارژ شد.');
+                StickyAlert::alert('کیف پول شما با موفقیت شارژ شد.', 'success');
+                return to_route('customer.wallet.index');
             } catch (WalletException $e) {
-                return redirect()
-                    ->route('customer.wallet.deposit')
-                    ->with('error', $e->getMessage());
+                StickyAlert::alert($e->getMessage(), 'error');
+                return to_route('customer.wallet.deposit');
             }
         }
 
         $this->depositService->fail($deposit, 'پرداخت ناموفق یا لغو شد.');
-
-        return redirect()
-            ->route('customer.wallet.deposit')
-            ->with('error', 'پرداخت ناموفق بود. لطفاً دوباره تلاش کنید.');
+        StickyAlert::alert('پرداخت ناموفق بود. لطفاً دوباره تلاش کنید.', 'error');
+        return to_route('customer.wallet.deposit');
     }
 
     private function mapDeposit(WalletDeposit $d): array

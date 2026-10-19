@@ -404,3 +404,191 @@
     opacity: 1;
   }
 }
+
+/* دکمه منوی والد */
+.sidebar-parent {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+}
+
+/* فلش زیرمنو */
+.sidebar-submenu-chevron {
+  margin-right: auto;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-submenu-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+/* محفظه زیرمنو */
+.sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 10px 8px 0;
+  padding-right: 12px;
+  border-right: 2px solid var(--sidebar-submenu-border, #e5e7eb);
+}
+
+/* آیتم‌های زیرمنو */
+.sidebar-submenu .sidebar-item {
+  min-height: 40px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* آیکون زیرمنو */
+.sidebar-submenu .sidebar-item-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* منوی والد فعال */
+.sidebar-parent.active {
+  color: var(--sidebar-active-color, #2563eb);
+}
+
+/* حالت جمع‌شده */
+.sidebar.collapsed .sidebar-submenu {
+  display: none;
+}
+
+/* تمام آیتم‌های Sidebar عرض یکسان داشته باشند */
+.sidebar-nav .sidebar-item {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* دکمه والد زیرمنو */
+.sidebar-nav button.sidebar-parent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  margin: 0;
+  border: none;
+  font: inherit;
+  text-align: right;
+}
+
+/* گروه منو نیز تمام عرض را بگیرد */
+.sidebar-nav .sidebar-menu-group {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* زیرمنوها */
+.sidebar-nav .sidebar-submenu {
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* گروه والد */
+.sidebar-menu-group {
+  width: 100%;
+  min-width: 0;
+}
+
+/* والد دارای زیرمنو */
+.sidebar-parent {
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+/* والد هنگام باز بودن */
+.sidebar-parent.expanded {
+  background: rgba(100, 116, 139, 0.10);
+  border-radius: 8px 8px 0 0;
+}
+
+/* محفظه زیرمنوها */
+.sidebar-nav .sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin: 0 0 10px 0;
+  padding: 8px 10px 10px 8px;
+
+  background: rgba(100, 116, 139, 0.07);
+  border-right: 3px solid #64748b;
+  border-radius: 0 0 8px 8px;
+
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* هر آیتم زیرمنو */
+.sidebar-submenu .sidebar-item {
+  position: relative;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 10px;
+
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--sidebar-submenu-text, #64748b);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* هاور زیرمنو */
+.sidebar-submenu .sidebar-item:hover {
+  background: rgba(100, 116, 139, 0.13);
+  color: var(--sidebar-submenu-hover, #334155);
+  transform: translateX(-2px);
+}
+
+/* زیرمنوی فعال */
+.sidebar-submenu .sidebar-item.active {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* نشانگر زیرمنوی فعال */
+.sidebar-submenu .sidebar-item.active::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 3px;
+  border-radius: 3px;
+  background: #2563eb;
+}
+
+/* آیکون زیرمنو */
+.sidebar-submenu .sidebar-item-icon {
+  flex-shrink: 0;
+}
+
+.sidebar-submenu .sidebar-item-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* انیمیشن فلش والد */
+.sidebar-submenu-chevron {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-submenu-chevron.rotated {
+  transform: rotate(180deg);
+}

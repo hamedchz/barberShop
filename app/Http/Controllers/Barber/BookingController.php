@@ -246,15 +246,22 @@ class BookingController extends Controller
         }
 
         if ($booking->status->value !== BookingStatus::pending->value) {
-            return back()->with('error', 'این رزرو قابل تایید نیست.');
+            StickyAlert::toast(
+                'این رزرو قابل تایید نیست.',
+                'error'
+            );
+            return redirect()->back();
         }
 
         $booking->update([
             'status' => BookingStatus::confirmed->value,
             'confirmed_at' => now(),
         ]);
-
-        return back()->with('success', 'رزرو با موفقیت تایید شد.');
+        StickyAlert::toast(
+            'رزرو با موفقیت تایید شد.',
+            'success'
+        );
+        return redirect()->back();
     }
 
     /**

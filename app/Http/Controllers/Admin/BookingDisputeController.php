@@ -6,15 +6,21 @@ use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BookingDisputeController extends Controller
 {
     public function resolve(Request $request, Booking $booking)
     {
         if (!$booking->is_disputed) {
-            return back()->with('error', 'این رزرو اعتراضی ندارد.');
+            StickyAlert::alert(
+                'این رزرو اعتراضی ندارد.',
+                'error'
+            );
+            return redirect()->back();
         }
 
         $validated = $request->validate([
@@ -85,15 +91,22 @@ class BookingDisputeController extends Controller
             }
 
             DB::commit();
-
-            return back()->with('success', 'اعتراض بررسی و تصمیم ثبت شد.');
+            StickyAlert::toast(
+                'اعتراض بررسی و تصمیم ثبت شد.',
+                'success'
+            );
+            return redirect()->back();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Dispute resolution failed', [
+            Log::error('Dispute resolution failed', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage(),
             ]);
-            return back()->with('error', 'خطا در بررسی اعتراض.');
+            StickyAlert::alert(
+                'خطا در بررسی اعتراض.',
+                'error'
+            );
+            return redirect()->back();
         }
     }
 

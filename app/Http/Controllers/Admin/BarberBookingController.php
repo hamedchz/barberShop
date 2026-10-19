@@ -353,7 +353,11 @@ class BarberBookingController extends Controller
 
         // بررسی وضعیت
         if ($booking->status->value !== BookingStatus::confirmed->value) {
-            return back()->with('error', 'این رزرو قابل تکمیل نیست.');
+            StickyAlert::alert(
+                'این رزرو قابل تکمیل نیست.',
+                'error'
+            );
+            return redirect()->back();
         }
 
         // ============ بررسی گذشته بودن ============

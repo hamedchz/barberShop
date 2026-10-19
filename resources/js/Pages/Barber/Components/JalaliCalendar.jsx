@@ -40,8 +40,11 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
     // روز اول ماه (چه روزی از هفته)
     const firstDayOfMonth = useMemo(() => {
         const gregorian = toGregorian(currentYear, currentMonth, 1);
-        const date = new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd);
-        // تبدیل به شنبه = 0
+
+        // استفاده از ظهر برای جلوگیری از مشکلات احتمالی منطقه زمانی
+        const date = new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12);
+
+        // شنبه = 0، یکشنبه = 1، ... جمعه = 6
         return (date.getDay() + 1) % 7;
     }, [currentYear, currentMonth]);
 

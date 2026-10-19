@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\FinanceExportController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
@@ -73,7 +74,7 @@ Route::prefix('bookings')
 
     // رزروهای آرایشگر
     Route::get('/barber/{barber:slug}',  'index')
-      ->name('.bookings.index');
+      ->name('index');
     Route::get('/{barber}/barber/{booking}',  'show')
       ->name('show');
 
@@ -132,8 +133,13 @@ Route::prefix('finance')->name('finance.')->group(function () {
     // گزارش درآمد
     Route::get('/revenue', 'revenue')->name('revenue');
   });
-
-  // تسویهها
+  Route::prefix('payments')->name('payments.')->controller(PaymentController::class)->group(function () {
+    Route::get('/',  'index')
+      ->name('index');
+    // Route::get('/payments/export',  'export')
+    //   ->name('payments.export');
+  });
+  // تسویه ها
   Route::prefix('settlements')->name('settlements.')->controller(SettlementController::class)->group(function () {
     Route::get('/',  'index')->name('index');
     Route::get('/{settlement}',  'show')->name('show');

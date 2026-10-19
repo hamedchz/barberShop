@@ -10,6 +10,17 @@ import {
     Settings,
     Package,
     UserShield,
+    CalendarCheck2,
+    Scale,
+    SlidersHorizontal,
+    Percent,
+    CreditCard,
+    Bell,
+    Receipt,
+    Coins,
+    ChartColumn,
+    Landmark,
+    ChartCandlestick,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -49,7 +60,7 @@ export const menuConfig = [
         id: "users",
         label: "کاربران",
         icon: Users,
-        href: "/admin/users",
+        href: "/admin/customers",
         scopes: ["users", "user-list"],
         permissions: ["manage-users"],
     },
@@ -61,6 +72,133 @@ export const menuConfig = [
         href: "/admin/roles",
         scopes: ["roles", "role-list"],
         permissions: ["manage-roles"],
+    },
+
+    // ============ مالی ============
+
+    {
+        id: "finance",
+        label: "مالی",
+        icon: ChartCandlestick,
+        childrenPermissions: [
+            "manage-finance",
+            "manage-transactions",
+            "manage-revenue",
+            "manage-settlements",
+            "manage-commission",
+        ],
+        children: [
+            {
+                id: "finance-index",
+                label: "مدیریت مالی",
+                icon: Coins,
+                href: "/admin/finance",
+                permissions: ["manage-finance"],
+                scopes: ["finance"],
+            },
+            {
+                id: "transactions",
+                label: "تراکنش ها",
+                icon: Receipt,
+                href: "/admin/finance/transactions",
+                permissions: ["manage-transactions", "manage-finance"],
+                scopes: ["transactions"],
+            },
+            {
+                id: "revenue",
+                label: "گزارش درآمد",
+                icon: ChartColumn,
+                href: "/admin/finance/revenue",
+                permissions: ["manage-revenue", "manage-finance"],
+                scopes: ["revenue"],
+            },
+            {
+                id: "settlements",
+                label: "تسویه ها",
+                icon: CreditCard,
+                href: "/admin/finance/settlements",
+                permissions: ["manage-settlements", "manage-finance"],
+                scopes: ["settlements"],
+            },
+            {
+                id: "commission",
+                label: "کمیسیون",
+                icon: Percent,
+                href: "/admin/finance/commission",
+                permissions: ["manage-commission", "manage-finance"],
+                scopes: ["commission"],
+            },
+        ],
+    },
+    // ============ گزارش‌ها ============
+    {
+        id: "banks",
+        label: "بانک ها",
+        icon: Landmark,
+        href: "/admin/banks",
+        scopes: [],
+        permissions: [],
+    },
+    // ============ رزروهای آرایشگر ============
+    {
+        id: "bookings",
+        label: "رزروها",
+        icon: CalendarCheck2,
+        href: "",
+        scopes: ["bookings"],
+        permissions: [],
+    },
+
+    {
+        id: "disputes",
+        label: "اعتراض ها",
+        icon: Scale,
+        href: "admin/disputes",
+        scopes: ["disputes"],
+        permissions: [],
+    },
+
+    // ============ تنظیمات ============
+
+    {
+        id: "settings",
+        label: "تنظیمات",
+        icon: Settings,
+        permissions: [],
+        children: [
+            {
+                id: "general-settings",
+                label: "تنظیمات عمومی",
+                icon: SlidersHorizontal,
+                href: "/admin/settings/general",
+                permissions: [],
+                scopes: ["manage-general-settings"],
+            },
+            {
+                id: "commission-settings",
+                label: "تنظیمات کمیسیون",
+                icon: Percent,
+                href: "/admin/settings/commission",
+                permissions: [],
+                scopes: ["commission-settings"],
+            },
+            {
+                id: "payment-settings",
+                label: "تنظیمات پرداخت",
+                icon: CreditCard,
+                href: "/admin/settings/payment",
+                permissions: [],
+                scopes: ["payment-settings"],
+            },
+            {
+                id: "notification-settings",
+                label: "تنظیمات اعلان‌ها",
+                icon: Bell,
+                href: "/admin/settings/notifications",
+                permissions: [],
+                scopes: [],
+            },
+        ],
     },
 
     // ============ خدمات من (آرایشگر) ============
@@ -80,7 +218,7 @@ export const menuConfig = [
         icon: Calendar,
         href: "/barber/availabilities",
         scopes: ["availabilities", "availability-list"],
-        permissions: ["availabilities.manage"],
+        permissions: [],
     },
 
     // ============ زمان‌بندی نوبت‌ها ============
@@ -90,26 +228,6 @@ export const menuConfig = [
         icon: Clock,
         href: "/barber/time-slots",
         scopes: ["time-slots", "time-slot-list"],
-        permissions: ["time-slots.manage"],
-    },
-
-    // ============ گزارش‌ها ============
-    {
-        id: "reports",
-        label: "گزارش‌ها",
-        icon: BarChart2,
-        href: "/admin/reports",
-        scopes: ["reports"],
-        permissions: ["reports.view"],
-    },
-
-    // ============ تنظیمات ============
-    {
-        id: "settings",
-        label: "تنظیمات",
-        icon: Settings,
-        href: "/admin/settings",
-        scopes: ["settings"],
-        permissions: ["settings.manage"],
+        permissions: [],
     },
 ];

@@ -122,10 +122,8 @@ class PaymentController extends Controller
         // ============ بررسی وضعیت ============
         if ($status !== 'OK') {
             $this->depositService->fail($deposit, 'پرداخت توسط کاربر لغو شد.');
-
-            return redirect()
-                ->route('customer.finance.deposit.index')
-                ->with('error', 'پرداخت لغو شد.');
+            StickyAlert::alert('پرداخت لغو شد.', 'error');
+            return to_route('customer.finance.deposit.index');
         }
 
         // ============ بررسی مالکیت ============
@@ -475,9 +473,8 @@ class PaymentController extends Controller
         }
 
 
-
-        return redirect()->route('customer.payment.failed', $payment->booking_id)
-            ->with('error', 'خطا در ارتباط با درگاه پرداخت.');
+        StickyAlert::alert('خطا در ارتباط با درگاه پرداخت.', 'error');
+        return to_route('customer.payment.failed', $payment->booking_id);
     }
 
     /**

@@ -124,7 +124,7 @@ class RolesController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -188,7 +188,7 @@ class RolesController extends Controller
                 'success'
             );
         } else {
-            StickyAlert::toast(
+            StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
@@ -207,7 +207,7 @@ class RolesController extends Controller
                 'success'
             );
         } else {
-            return   StickyAlert::toast(
+            return   StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
