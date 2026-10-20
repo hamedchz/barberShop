@@ -14,6 +14,7 @@ export function useSelect2({
     asyncDelay = 400,
     isDisabled = false,
     closeMenuOnSelect = true,
+    searchParam = "search", // ← جدید (پیش‌فرض "search" = رفتار قبلی حفظ می‌شه)
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -40,15 +41,21 @@ export function useSelect2({
         if (isMulti) {
             return Array.isArray(value) ? value : [];
         }
-
         return value !== null && value !== undefined && value !== ""
             ? [value]
             : [];
     }, [value, isMulti]);
 
-    // گزینه‌های قابل نمایش در منو
+    // ============ تغییر ۱: fallback به initialOptions ============
+    // اگه asyncOptions خالی باشه (قبل از fetch)، از initialOptions استفاده کن
+    // این تغییر backward-compatible هست چون اگه initialOptions=[] باشه،
+    // رفتار قبلی حفظ می‌شه (همون []).
     const filteredOptions = useMemo(() => {
-        const source = isAsync ? asyncOptions : options;
+        const source = isAsync
+            ? asyncOptions.length > 0
+                ? asyncOptions
+                : initialOptions
+            : options;
 
         if (isAsync || !isSearchable || !search.trim()) {
             return source;
@@ -61,23 +68,18 @@ export function useSelect2({
                 option.label?.toLowerCase().includes(term) ||
                 String(option.value).toLowerCase().includes(term),
         );
-    }, [isAsync, asyncOptions, options, isSearchable, search]);
+    }, [isAsync, asyncOptions, initialOptions, options, isSearchable, search]);
 
     // حفظ برچسب گزینه‌های انتخاب‌شده
     const displayOptions = useMemo(() => {
         const merged = [...selectedOptionCache, ...options, ...initialOptions];
-
         const uniqueOptions = new Map();
-
         merged.forEach((option) => {
             const key = String(option.value);
-
-            // اولین گزینه اولویت دارد
             if (!uniqueOptions.has(key)) {
                 uniqueOptions.set(key, option);
             }
         });
-
         return Array.from(uniqueOptions.values());
     }, [selectedOptionCache, options, initialOptions]);
 
@@ -85,7 +87,6 @@ export function useSelect2({
         return selectedValues
             .map((value) => {
                 const key = String(value);
-
                 return (
                     [
                         ...selectedOptionCache,
@@ -102,12 +103,9 @@ export function useSelect2({
         async (searchTerm = "") => {
             if (!asyncUrl || isDisabled) return;
 
-            // لغو درخواست قبلی
             abortControllerRef.current?.abort();
-
             const controller = new AbortController();
             abortControllerRef.current = controller;
-
             const requestId = ++requestIdRef.current;
 
             setIsLoading(true);
@@ -115,7 +113,6 @@ export function useSelect2({
 
             try {
                 const url = new URL(asyncUrl, window.location.origin);
-
                 const params = new URLSearchParams();
 
                 Object.entries(asyncParamsRef.current).forEach(([key, val]) => {
@@ -124,14 +121,15 @@ export function useSelect2({
                     }
                 });
 
+                // ============ تغییر ۲: استفاده از searchParam ============
+                // پیش‌فرض "search" (رفتار قبلی)، ولی می‌تونی "q" یا هر چیز دیگه پاس بدی
                 if (searchTerm.trim()) {
-                    params.set("search", searchTerm.trim());
+                    params.set(searchParam, searchTerm.trim());
                 } else {
-                    params.delete("search");
+                    params.delete(searchParam);
                 }
 
                 const method = asyncMethod.toUpperCase();
-
                 const config = {
                     method,
                     headers: {
@@ -149,7 +147,6 @@ export function useSelect2({
                 } else {
                     config.headers["Content-Type"] =
                         "application/x-www-form-urlencoded";
-
                     config.body = params.toString();
                 }
 
@@ -169,19 +166,15 @@ export function useSelect2({
                         ? data.data
                         : [];
 
-                // فقط آخرین درخواست اجازه تغییر state دارد
                 if (requestId !== requestIdRef.current) return;
 
                 setAsyncOptions(results);
                 setHighlightedIndex(0);
 
-                // حفظ گزینه‌هایی که قبلاً انتخاب شده‌اند
-
                 setSelectedOptionCache((previous) => {
                     const selectedIds = new Set(
                         selectedValues.map((value) => String(value)),
                     );
-
                     const merged = [
                         ...previous.filter((option) =>
                             selectedIds.has(String(option.value)),
@@ -190,7 +183,6 @@ export function useSelect2({
                             selectedIds.has(String(option.value)),
                         ),
                     ];
-
                     return Array.from(
                         new Map(
                             merged.map((option) => [
@@ -214,19 +206,17 @@ export function useSelect2({
                 }
             }
         },
-        [asyncUrl, asyncMethod, isDisabled, selectedValues],
+        // searchParam به dependency اضافه شد
+        [asyncUrl, asyncMethod, isDisabled, selectedValues, searchParam],
     );
 
     // بارگذاری اولیه و جست‌وجو با debounce
     useEffect(() => {
         if (!isAsync || !isOpen || isDisabled) return;
-
         const delay = search.trim() ? asyncDelay : 0;
-
         debounceRef.current = setTimeout(() => {
             fetchAsync(search);
         }, delay);
-
         return () => {
             clearTimeout(debounceRef.current);
         };
@@ -235,10 +225,8 @@ export function useSelect2({
     // لغو درخواست هنگام بسته شدن منو
     useEffect(() => {
         if (isOpen) return;
-
         clearTimeout(debounceRef.current);
         abortControllerRef.current?.abort();
-
         requestIdRef.current++;
         setIsLoading(false);
     }, [isOpen]);
@@ -254,7 +242,6 @@ export function useSelect2({
     // کلیک بیرون از کامپوننت
     useEffect(() => {
         if (!isOpen) return;
-
         const handleClickOutside = (event) => {
             if (
                 containerRef.current &&
@@ -264,9 +251,7 @@ export function useSelect2({
                 setSearch("");
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -276,19 +261,16 @@ export function useSelect2({
     const selectOption = useCallback(
         (option) => {
             if (isDisabled || option.disabled) return;
-
             setSelectedOptionCache((previous) => [
                 ...previous.filter(
                     (item) => String(item.value) !== String(option.value),
                 ),
                 option,
             ]);
-
             if (isMulti) {
                 const exists = selectedValues.some(
                     (item) => String(item) === String(option.value),
                 );
-
                 onChange?.(
                     exists
                         ? selectedValues.filter(
@@ -299,7 +281,6 @@ export function useSelect2({
             } else {
                 onChange?.(option.value);
                 setSearch("");
-
                 if (closeMenuOnSelect) {
                     setIsOpen(false);
                 }
@@ -312,7 +293,6 @@ export function useSelect2({
     const removeValue = useCallback(
         (valueToRemove) => {
             if (isDisabled) return;
-
             if (isMulti) {
                 onChange?.(
                     selectedValues.filter(
@@ -330,9 +310,7 @@ export function useSelect2({
     const clearAll = useCallback(
         (event) => {
             event?.stopPropagation();
-
             if (isDisabled) return;
-
             onChange?.(isMulti ? [] : null);
             setSearch("");
         },
@@ -343,16 +321,13 @@ export function useSelect2({
     const handleKeyDown = useCallback(
         (event) => {
             if (isDisabled) return;
-
             if (!isOpen) {
                 if (["Enter", " ", "ArrowDown"].includes(event.key)) {
                     event.preventDefault();
                     setIsOpen(true);
                 }
-
                 return;
             }
-
             switch (event.key) {
                 case "ArrowDown":
                     event.preventDefault();
@@ -360,34 +335,28 @@ export function useSelect2({
                         Math.min(previous + 1, filteredOptions.length - 1),
                     );
                     break;
-
                 case "ArrowUp":
                     event.preventDefault();
                     setHighlightedIndex((previous) =>
                         Math.max(previous - 1, 0),
                     );
                     break;
-
                 case "Enter":
                     event.preventDefault();
-
                     if (filteredOptions[highlightedIndex]) {
                         selectOption(filteredOptions[highlightedIndex]);
                     }
                     break;
-
                 case "Escape":
                     event.preventDefault();
                     setIsOpen(false);
                     setSearch("");
                     break;
-
                 case "Backspace":
                     if (!search && isMulti && selectedValues.length > 0) {
                         removeValue(selectedValues[selectedValues.length - 1]);
                     }
                     break;
-
                 default:
                     break;
             }

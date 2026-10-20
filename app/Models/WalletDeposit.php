@@ -71,11 +71,11 @@ class WalletDeposit extends Model
     // ============ متد ============
     public function isPaid(): bool
     {
-        return $this->status === WalletDepositStatus::paid;
+        return $this->status === WalletDepositStatus::paid->value;
     }
 
     public function isPending(): bool
     {
-        return $this->status === WalletDepositStatus::pending;
+        return $this->status === WalletDepositStatus::pending->value;
     }
 }

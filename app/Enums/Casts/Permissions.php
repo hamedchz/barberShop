@@ -25,6 +25,7 @@ enum Permissions: string
   case manageBarber = 'manage-barber';
   case barberDashboardPanel = 'barber-dashboard-panel';
   case manageFinance = 'manage-finance';
+  case manageDeposits = 'manage-deposits';
 
 
   public function description(): string
@@ -51,6 +52,7 @@ enum Permissions: string
       self::manageOrder => 'مدیریت سفارش‌ها',
       self::manageBarber => 'مدیریت آرایشگران',
       self::barberDashboardPanel => 'دسترسی به پنل آرایشگر',
+      self::manageDeposits => 'مدیریت شارژ ها',
     };
   }
 

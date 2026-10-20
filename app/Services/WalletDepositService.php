@@ -133,4 +133,55 @@ class WalletDepositService
 
     return $code;
   }
+
+  /**
+   * تایید شارژ دستی توسط ادمین
+   * - WalletDeposit (paid, manual)
+   * - WalletTransaction (deposit, credit)
+   * - آپدیت balance + total_deposited
+   */
+  public function confirmManual(
+    User $user,
+    float $amount,
+    ?string $description = null,
+    ?int $adminId = null,
+  ): WalletDeposit {
+    if ($amount < 1000) {
+      throw new WalletException('حداقل مبلغ شارژ ۱,۰۰۰ تومان است.');
+    }
+
+    $wallet = $this->walletService->getOrCreateWallet($user);
+
+    return DB::transaction(function () use ($user, $wallet, $amount, $description, $adminId) {
+      // ۱. ساخت WalletDeposit (paid, manual)
+      $deposit = WalletDeposit::create([
+        'user_id'       => $user->id,
+        'wallet_id'     => $wallet->id,
+        'amount'        => $amount,
+        'paid_amount'   => $amount,
+        'status'        => WalletDepositStatus::paid->value,
+        'gateway'       => 'manual',
+        'tracking_code' => $this->generateTrackingCode(),
+        'paid_at'       => now(),
+      ]);
+
+      // ۲. واریز به کیف پول (WalletService مسئول lockForUpdate + آپدیت)
+      $this->walletService->deposit(
+        user: $user,
+        amount: $amount,
+        description: $description
+          ?? "شارژ دستی توسط ادمین - کد پیگیری: {$deposit->tracking_code}",
+        reference: $deposit,
+        metadata: [
+          'deposit_id'    => $deposit->id,
+          'gateway'       => 'manual',
+          'tracking_code' => $deposit->tracking_code,
+          'admin_id'      => $adminId,
+          'is_manual'     => true,
+        ],
+      );
+
+      return $deposit;
+    });
+  }
 }

@@ -1,0 +1,66 @@
+/* ============================================
+   Selected User Preview (در Modal)
+   ============================================ */
+.selected-user-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  margin-top: 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  animation: selectedUserIn 0.2s ease-out;
+}
+
+@keyframes selectedUserIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.selected-user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #065f46;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.selected-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selected-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.selected-user-info strong {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #065f46;
+}
+
+.selected-user-info span {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 600;
+}

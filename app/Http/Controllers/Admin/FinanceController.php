@@ -636,7 +636,7 @@ class FinanceController extends Controller
                 'user'    => $item->user ? [
                     'id'        => $item->user->id,
                     'name'      => $item->user->name,
-                    'thumbnail' => $item->user->avatar(),
+                    'thumbnail' => $item->user->avatarUrl(),
                 ] : null,
                 'total'   => (float) $item->total,
                 'count'   => (int) $item->count,
@@ -684,7 +684,7 @@ class FinanceController extends Controller
                 'user'    => $item->user ? [
                     'id'        => $item->user->id,
                     'name'      => $item->user->name,
-                    'thumbnail' => $item->user->avatar(),
+                    'thumbnail' => $item->user->avatarUrl(),
                 ] : null,
                 'total'   => (float) $item->total,
                 'count'   => (int) $item->count,

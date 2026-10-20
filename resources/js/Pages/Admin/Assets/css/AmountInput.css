@@ -1,0 +1,200 @@
+/* ============================================
+   AmountInput
+   ============================================ */
+
+.amount-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+/* ============ Container ============ */
+.amount-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.amount-input-field {
+  width: 100%;
+  padding: 0.625rem 3.75rem 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1f2937;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  text-align: right;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-input-field::-webkit-outer-spin-button,
+.amount-input-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.amount-input-field[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.amount-input-field:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.amount-input-field:disabled,
+.amount-input-field.disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.amount-input-field.has-error {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.amount-input-field.has-error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.amount-input-field.has-success {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.amount-input-field.has-success:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* ============ واحد ============ */
+.amount-input-unit {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  pointer-events: none;
+  background: #f9fafb;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.375rem;
+}
+
+.amount-input-field:focus~.amount-input-unit {
+  background: #f5f3ff;
+  color: #8b5cf6;
+}
+
+.amount-input-field.has-error~.amount-input-unit {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.amount-input-field.has-success~.amount-input-unit {
+  background: #f0fdf4;
+  color: #065f46;
+}
+
+/* ============ پیش‌نمایش مبلغ ============ */
+.amount-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  animation: amountPreviewIn 0.2s ease-out;
+}
+
+@keyframes amountPreviewIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.amount-preview.valid {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.amount-preview.invalid {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.amount-preview svg {
+  flex-shrink: 0;
+}
+
+.amount-preview-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.amount-preview-value {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+
+.amount-preview-unit {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+
+.amount-preview-icon.success {
+  margin-right: auto;
+  color: #10b981;
+}
+
+/* ============ خطا / راهنما ============ */
+.amount-input-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.amount-input-error svg {
+  flex-shrink: 0;
+}
+
+.amount-input-hint {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 0 0.25rem;
+}

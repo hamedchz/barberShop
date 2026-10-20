@@ -14,7 +14,9 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SettlementController;
+use App\Http\Controllers\Admin\WalletDepositController;
 use Illuminate\Support\Facades\Route;
 
 // Route::group(['middleware' => ''], function () {
@@ -128,11 +130,23 @@ Route::prefix('finance')->name('finance.')->group(function () {
     Route::get('/transactions', 'transactions')->name('transactions');
 
     // شارژها
-    Route::get('/deposits', 'deposits')->name('deposits');
+    // Route::get('/deposits', 'deposits')->name('deposits');
 
     // گزارش درآمد
     Route::get('/revenue', 'revenue')->name('revenue');
   });
+
+  // deposits
+  Route::prefix('wallet/deposits')
+    ->name('wallet.deposits.')
+    ->controller(WalletDepositController::class)
+    ->group(function () {
+      Route::get('/', 'index')->name('index');
+      // Route::get('/export', 'export')->name('export');
+      Route::post('/', 'store')->name('store');
+      Route::delete('/{transaction}', 'destroy')->name('destroy');
+    });
+
   Route::prefix('payments')->name('payments.')->controller(PaymentController::class)->group(function () {
     Route::get('/',  'index')
       ->name('index');
@@ -197,7 +211,10 @@ Route::prefix('customers')->name('customers.')->controller(CustomerController::c
   Route::patch('/{customer}/status', 'updateStatus')
     ->name('update-status');
 });
- 
-   
-  
-// });
+// search
+Route::prefix('/search')
+  ->name('search.')->controller(SearchController::class)
+  ->group(function () {
+    Route::get('/users',  'UserSearch')
+      ->name('users.search');
+  });

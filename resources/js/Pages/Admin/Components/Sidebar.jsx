@@ -49,16 +49,30 @@ const filterMenuItems = (items, hasPermission) => {
     }, []);
 };
 
-// ============ تشخیص فعال بودن منو ============
 const checkItemActive = (item, scope, currentPath) => {
-    if (item.scopes?.some((s) => (scope || []).includes(s))) {
-        return true;
+    const normalizePath = (path = "") =>
+        `/${path}`.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
+
+    const path = normalizePath(currentPath);
+
+    // آیتم دارای مسیر: ابتدا تطبیق مسیر
+    if (item.href) {
+        const href = normalizePath(item.href);
+
+        // برای منوی مالی، مسیر دقیق بررسی شود
+        if (item.id === "finance-index") {
+            return path === href;
+        }
+
+        if (path === href || path.startsWith(`${href}/`)) {
+            return true;
+        }
+
+        return false;
     }
 
-    if (
-        item.href &&
-        (currentPath === item.href || currentPath.startsWith(item.href + "/"))
-    ) {
+    // آیتم بدون مسیر: Scope یا فرزندان
+    if (item.scopes?.some((s) => (scope || []).includes(s))) {
         return true;
     }
 
@@ -164,8 +178,7 @@ export default function Sidebar({
     isCollapsed,
     toggleCollapse,
 }) {
-    const { auth, scope } = usePage().props;
-
+    const { auth, scopes: scope } = usePage().props;
     const currentPath =
         typeof window !== "undefined" ? window.location.pathname : "";
 

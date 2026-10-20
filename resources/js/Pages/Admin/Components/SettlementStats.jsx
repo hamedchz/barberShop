@@ -128,7 +128,6 @@ export default function SettlementStats({ stats }) {
                             onKeyDown={(e) => {
                                 if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
-                                    // همون منطق onClick
                                 }
                             }}
                             title="برای مشاهده جزئیات کلیک کنید"
@@ -137,7 +136,7 @@ export default function SettlementStats({ stats }) {
                                 <Icon size={22} />
                             </div>
                             <div className="stat-content">
-                                <span className="stat-label">{card.label}</span>
+                                <span className="stat-label">{card.title}</span>
                                 <div className="stat-value">
                                     <span>{toPersianNumber(card.value)}</span>
                                     <span className="stat-unit">مورد</span>

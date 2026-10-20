@@ -335,12 +335,7 @@ class SettlementController extends Controller
 
             'total_paid' => (float) Settlement::where('status', SettlementStatus::completed->value)->sum('amount'),
 
-            'pending_count'    => Settlement::where('status', 'pending')->count(),
-            'processing_count' => Settlement::where('status', 'processing')->count(),
-            'completed_count'  => Settlement::where('status', 'completed')->count(),
-            'failed_count'     => Settlement::where('status', 'failed')->count(),
-            'cancelled_count'  => Settlement::where('status', 'cancelled')->count(),
-            'total_count'      => Settlement::count(),
+
         ];
     }
 

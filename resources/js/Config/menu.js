@@ -121,6 +121,14 @@ export const menuConfig = [
                 scopes: ["settlements"],
             },
             {
+                id: "deposits",
+                label: "شارژ ها",
+                icon: Percent,
+                href: "/admin/finance/deposits",
+                permissions: ["manage-deposits", "manage-finance"],
+                scopes: ["deposits"],
+            },
+            {
                 id: "commission",
                 label: "کمیسیون",
                 icon: Percent,

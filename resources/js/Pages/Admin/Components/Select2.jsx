@@ -6,7 +6,6 @@ import {
     Check,
     Loader2,
     AlertCircle,
-    Plus,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import { useSelect2 } from "./useSelect2";
@@ -57,8 +56,12 @@ export default function Select2({
     onMenuClose,
     onFocus,
     onBlur,
-
+    searchParam = "search",
     className = "",
+
+    // گزینه‌های فیلترشده توسط سرور
+    // فقط در کامپوننت‌هایی که این prop را فعال کنند استفاده می‌شود
+    serverFilteredOptions = false,
 }) {
     const {
         isOpen,
@@ -92,7 +95,13 @@ export default function Select2({
         isDisabled,
         closeMenuOnSelect,
         onChange,
+        searchParam,
     });
+
+    // ============ گزینه‌های قابل نمایش ============
+    // در حالت serverFilteredOptions، گزینه‌ها مستقیماً از options می‌آیند.
+    // در حالت عادی، رفتار قبلی useSelect2 حفظ می‌شود.
+    const displayedOptions = serverFilteredOptions ? options : filteredOptions;
 
     // ============ Toggle menu ============
     const toggleMenu = () => {
@@ -103,6 +112,7 @@ export default function Select2({
 
         if (newState) {
             onMenuOpen?.();
+
             if (isSearchFocused) {
                 setTimeout(() => inputRef.current?.focus(), 50);
             }
@@ -114,21 +124,22 @@ export default function Select2({
     // ============ Search change ============
     const handleSearchChange = (e) => {
         const val = e.target.value;
+
         setSearch(val);
         onSearchChange?.(val);
     };
 
-    // ============ حذف ============
+    // ============ حذف گزینه انتخاب‌شده ============
     const handleRemove = (e, val) => {
         e.stopPropagation();
         removeValue(val);
     };
 
-    // ============ آپشن‌ها با Grouping ============
-    const groupedOptions = React.useMemo(() => {
-        // اگه گروه نداریم، یه گروه ساده
-        return [{ label: null, options: filteredOptions }];
-    }, [filteredOptions]);
+    // ============ گروه‌بندی گزینه‌ها ============
+    const groupedOptions = React.useMemo(
+        () => [{ label: null, options: displayedOptions }],
+        [displayedOptions],
+    );
 
     // ============ نمایش مقدار انتخاب‌شده ============
     const renderSelected = () => {
@@ -152,7 +163,9 @@ export default function Select2({
                                     className="select2-tag-icon"
                                 />
                             )}
+
                             <span>{opt.label}</span>
+
                             {!isDisabled && (
                                 <button
                                     type="button"
@@ -169,6 +182,7 @@ export default function Select2({
         }
 
         const selected = selectedOptions[0];
+
         if (renderValue) {
             return renderValue(selected);
         }
@@ -182,6 +196,7 @@ export default function Select2({
                         className="select2-value-icon"
                     />
                 )}
+
                 <span>{selected?.label}</span>
             </span>
         );
@@ -190,9 +205,11 @@ export default function Select2({
     // ============ نمایش هر گزینه ============
     const renderOptionItem = (option, index) => {
         const isSelected = selectedValues.some(
-            (value) => String(value) === String(option.value),
+            (selectedValue) => String(selectedValue) === String(option.value),
         );
+
         const isHighlighted = index === highlightedIndex;
+
         const isMaxReached =
             isMulti &&
             maxSelected &&
@@ -258,10 +275,10 @@ export default function Select2({
                 aria-haspopup="listbox"
             >
                 <div className="select2-trigger-content">
-                    {/* Search input (وقتی بازه و searchable) */}
                     {isSearchable && isOpen ? (
                         <div className="select2-search-input">
                             <Search size={14} />
+
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -321,7 +338,7 @@ export default function Select2({
                                 <AlertCircle size={24} />
                                 <span>{error}</span>
                             </div>
-                        ) : isLoading && filteredOptions.length === 0 ? (
+                        ) : isLoading && displayedOptions.length === 0 ? (
                             <div className="select2-empty">
                                 <Loader2
                                     size={20}
@@ -329,7 +346,7 @@ export default function Select2({
                                 />
                                 <span>{loadingMessage}</span>
                             </div>
-                        ) : filteredOptions.length === 0 ? (
+                        ) : displayedOptions.length === 0 ? (
                             <div className="select2-empty">
                                 <Search size={24} />
                                 <span>{noOptionsMessage}</span>
@@ -342,6 +359,7 @@ export default function Select2({
                                             {group.label}
                                         </div>
                                     )}
+
                                     {group.options.map((opt, i) =>
                                         renderOptionItem(opt, i),
                                     )}
@@ -351,9 +369,9 @@ export default function Select2({
                     </div>
 
                     {/* Footer */}
-                    {filteredOptions.length > 0 && (
+                    {displayedOptions.length > 0 && (
                         <div className="select2-footer">
-                            {toPersianNumber(filteredOptions.length)} گزینه
+                            {toPersianNumber(displayedOptions.length)} گزینه
                             {isMulti &&
                                 maxSelected &&
                                 selectedValues.length >= maxSelected && (
