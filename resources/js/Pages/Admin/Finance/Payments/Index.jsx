@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 
 import { toPersianNumber } from "../../../../utils/persianNumbers";
+import { formatFullDateTime } from "../../../../utils/dateHelpers";
 import { formatCompactNumber } from "../../../../Constants/formatCompactNumber";
 
 // ============ تنظیمات وضعیت ============
@@ -81,23 +82,6 @@ const gatewayConfig = {
     idpay: { label: "آیدی‌پی", color: "#3b82f6", bg: "#dbeafe" },
     payping: { label: "پی‌پینگ", color: "#10b981", bg: "#d1fae5" },
     nextpay: { label: "نکست‌پی", color: "#8b5cf6", bg: "#ede9fe" },
-};
-
-// ============ فرمت‌ها ============
-const formatAmount = (amount) =>
-    toPersianNumber(Number(amount || 0).toLocaleString("en-US"));
-
-const formatDate = (iso) => {
-    if (!iso) return "-";
-    const d = new Date(iso);
-    const jy = d.getFullYear();
-    const jm = String(d.getMonth() + 1).padStart(2, "0");
-    const jd = String(d.getDate()).padStart(2, "0");
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mm = String(d.getMinutes()).padStart(2, "0");
-    return `${toPersianNumber(jy)}/${toPersianNumber(jm)}/${toPersianNumber(
-        jd,
-    )} - ${toPersianNumber(hh)}:${toPersianNumber(mm)}`;
 };
 
 // ============ کامپوننت ============
@@ -409,7 +393,7 @@ export default function PaymentsIndex({
                         {payment.paid_at && (
                             <span className="transaction-meta-item">
                                 <Calendar size={10} />
-                                {formatDate(payment.paid_at)}
+                                {formatFullDateTime(payment.paid_at)}
                             </span>
                         )}
                         {payment.authority && (
@@ -421,7 +405,7 @@ export default function PaymentsIndex({
                         {payment.created_at && !payment.paid_at && (
                             <span className="transaction-meta-item">
                                 <Clock size={10} />
-                                ایجاد: {formatDate(payment.created_at)}
+                                ایجاد: {formatFullDateTime(payment.created_at)}
                             </span>
                         )}
                     </div>
@@ -433,7 +417,9 @@ export default function PaymentsIndex({
                         className={`amount ${payment.status === "success" ? "credit" : "debit"}`}
                     >
                         {payment.status === "success" ? "+" : ""}
-                        {formatAmount(payment.amount)}
+                        {toPersianNumber(
+                            Number(payment.amount ?? 0).toLocaleString("fa-IR"),
+                        )}
                     </span>
                     <span className="amount-date">تومان</span>
                 </div>
@@ -473,62 +459,6 @@ export default function PaymentsIndex({
                         </a>
                     )}
                 </div>
-            </div>
-        );
-    };
-
-    // ============ رندر Pagination ============
-    const renderPagination = () => {
-        if (!payments.links || payments.links.length <= 3) return null;
-
-        return (
-            <div className="pagination">
-                {payments.links.map((link, i) => {
-                    const isPrev = link.label.includes("Previous");
-                    const isNext = link.label.includes("Next");
-
-                    if (!link.url) {
-                        return (
-                            <span key={i} className="pagination-item disabled">
-                                {isPrev ? (
-                                    <ChevronRight size={14} />
-                                ) : isNext ? (
-                                    <ChevronLeft size={14} />
-                                ) : (
-                                    <span
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
-                                    />
-                                )}
-                            </span>
-                        );
-                    }
-
-                    return (
-                        <Link
-                            key={i}
-                            href={link.url}
-                            className={`pagination-item ${
-                                link.active ? "active" : ""
-                            }`}
-                            preserveScroll
-                            preserveState
-                        >
-                            {isPrev ? (
-                                <ChevronRight size={14} />
-                            ) : isNext ? (
-                                <ChevronLeft size={14} />
-                            ) : (
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            )}
-                        </Link>
-                    );
-                })}
             </div>
         );
     };

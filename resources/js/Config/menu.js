@@ -21,6 +21,8 @@ import {
     ChartColumn,
     Landmark,
     ChartCandlestick,
+    BanknoteArrowUp,
+    BanknoteArrowDown,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -115,7 +117,7 @@ export const menuConfig = [
             {
                 id: "settlements",
                 label: "تسویه ها",
-                icon: CreditCard,
+                icon: BanknoteArrowDown,
                 href: "/admin/finance/settlements",
                 permissions: ["manage-settlements", "manage-finance"],
                 scopes: ["settlements"],
@@ -123,11 +125,20 @@ export const menuConfig = [
             {
                 id: "deposits",
                 label: "شارژ ها",
-                icon: Percent,
-                href: "/admin/finance/deposits",
+                icon: BanknoteArrowUp,
+                href: "/admin/finance/wallet/deposits",
                 permissions: ["manage-deposits", "manage-finance"],
                 scopes: ["deposits"],
             },
+            {
+                id: "payments",
+                label: "پرداخت‌های درگاه",
+                icon: CreditCard,
+                href: "/admin/finance/payments",
+                permissions: ["manage-payment", "manage-finance"],
+                scopes: ["payments"],
+            },
+
             {
                 id: "commission",
                 label: "کمیسیون",

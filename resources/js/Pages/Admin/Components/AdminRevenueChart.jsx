@@ -163,9 +163,18 @@ export default function AdminRevenueChart({
                                   : value
                         }
                     />
-                    <Tooltip
+                    {/* <Tooltip
                         content={<CustomTooltip />}
                         allowEscapeViewBox={{ x: false, y: false }}
+                        wrapperStyle={{
+                            zIndex: 10000,
+                            pointerEvents: "none",
+                        }}
+                    /> */}
+                    <Tooltip
+                        content={<CustomTooltip />}
+                        isAnimationActive={false}
+                        shared={true}
                         wrapperStyle={{
                             zIndex: 10000,
                             pointerEvents: "none",

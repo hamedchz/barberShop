@@ -685,6 +685,7 @@
 .revenue-breakdown {
   display: flex;
   flex-direction: column;
+  text-align: end;
   gap: 0.75rem;
 }
 
@@ -1784,5 +1785,181 @@
 
   body {
     background: #ffffff;
+  }
+}
+
+/* ============================================
+   Stat Card Hint (راهنما)
+   ============================================ */
+.stat-label-hint-icon {
+  display: inline-block;
+  margin-right: 0.25rem;
+  color: #9ca3af;
+  vertical-align: middle;
+  opacity: 0.7;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.finance-stat-card[role="button"]:hover .stat-label-hint-icon {
+  opacity: 1;
+  color: #8b5cf6;
+}
+
+.finance-stat-card.has-hint {
+  position: relative;
+  transition: all 0.2s;
+}
+
+.finance-stat-card.has-hint::after {
+  content: attr(data-hint);
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 50;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.finance-stat-card.has-hint::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 0.125rem);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 50;
+}
+
+.finance-stat-card.has-hint:hover::after,
+.finance-stat-card.has-hint::before {
+  opacity: 1;
+}
+
+.finance-stat-card.has-hint:hover::after {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.finance-stat-card[role="button"]:focus-visible {
+  outline: 3px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+.finance-stats-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
+  border: 1px solid #ddd6fe;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  color: #5b21b6;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.finance-stats-hint svg {
+  flex-shrink: 0;
+  color: #8b5cf6;
+}
+
+@media (max-width: 640px) {
+
+  .finance-stat-card.has-hint::after,
+  .finance-stat-card.has-hint::before {
+    display: none;
+  }
+
+  .finance-stats-hint {
+    font-size: 0.6875rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* ============================================
+   Stat Card Hint — Tooltip
+   ============================================ */
+
+.finance-stat-card.has-hint {
+  position: relative;
+  transition: all 0.2s;
+}
+
+/* فلش */
+.finance-stat-card.has-hint::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% - 0.125rem);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 50;
+}
+
+/* متن */
+.finance-stat-card.has-hint::after {
+  content: attr(data-hint);
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #ffffff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s, visibility 0.2s, transform 0.2s;
+  z-index: 50;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* hover */
+.finance-stat-card.has-hint:hover::before,
+.finance-stat-card.has-hint:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.finance-stat-card.has-hint:hover::after {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* focus */
+.finance-stat-card.has-hint:focus-visible::before,
+.finance-stat-card.has-hint:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ریسپانسیو */
+@media (max-width: 640px) {
+
+  .finance-stat-card.has-hint::before,
+  .finance-stat-card.has-hint::after {
+    display: none;
   }
 }

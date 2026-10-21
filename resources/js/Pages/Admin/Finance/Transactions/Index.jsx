@@ -6,6 +6,7 @@ import PersianDatePicker from "../../../../Components/PersianDatePicker";
 import "../../Assets/css/Transactions.css";
 import Pagination from "../../Components/Pagination";
 import StatsDetailModal from "../../Components/StatsDetailModal";
+import { formatFullDateTime } from "../../../../utils/dateHelpers";
 import { formatCompactNumber } from "../../../../Constants/formatCompactNumber";
 
 import {
@@ -490,7 +491,7 @@ export default function TransactionsIndex({
                         </span>
                         <span className="transaction-meta-item">
                             <Clock size={10} />
-                            {formatDate(tx.created_at)}
+                            {formatFullDateTime(tx.created_at)}
                         </span>
                         {tx.reference?.transaction_id && (
                             <span className="transaction-meta-item ltr">
@@ -537,7 +538,6 @@ export default function TransactionsIndex({
     };
 
     // ============ State جدید: Modal جزئیات مالی ============
-    const [showStatsDetail, setShowStatsDetail] = useState(false);
 
     return (
         <Layout>

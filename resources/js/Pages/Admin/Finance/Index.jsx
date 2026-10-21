@@ -22,7 +22,9 @@ import { toPersianNumber } from "../../../utils/persianNumbers";
 import { formatFullDateTime } from "../../../utils/dateHelpers";
 import AdminRevenueChart from "../Components/AdminRevenueChart";
 import AdminFinanceStats from "../Components/AdminFinanceStats";
+
 import "../Assets/css/Finance.css";
+import "../Assets/css/FixFinanceChartTooltip.css";
 
 export default function FinanceIndex({
     stats,
@@ -106,6 +108,7 @@ export default function FinanceIndex({
                                 </div>
                                 <h2>تفکیک درآمد</h2>
                             </div>
+                            {/* TODO:نوشته ها بیا سمت راست */}
                             <div className="revenue-breakdown">
                                 {revenueByType.map((item) => (
                                     <div
@@ -225,7 +228,9 @@ export default function FinanceIndex({
                                 </Link>
 
                                 <Link
-                                    href={route("admin.finance.deposits")}
+                                    href={route(
+                                        "admin.finance.wallet.deposits.index",
+                                    )}
                                     className="quick-link-item"
                                 >
                                     <div className="quick-link-icon success">

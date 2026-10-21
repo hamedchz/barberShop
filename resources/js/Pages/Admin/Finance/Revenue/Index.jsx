@@ -22,14 +22,16 @@ import {
     ChevronDown,
     FileSpreadsheet,
     FileText,
+    Info,
 } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
-import { formatFullDateTime } from "../../../../utils/dateHelpers";
+import { formatCompactNumber } from "../../../../Constants/formatCompactNumber";
 import AdminRevenueChart from "../../Components/AdminRevenueChart";
 import AdminRevenuePie from "../../Components/AdminRevenuePie";
 import SearchComponent from "../../../../Components/Search";
 import PersianDatePicker from "../../../../Components/PersianDatePicker";
 import Select2 from "../../Components/Select2";
+import RevenueDetailModal from "./Components/RevenueDetailModal";
 import "../../Assets/css/Finance.css";
 import "../../Assets/css/RevenuePage.css";
 
@@ -50,13 +52,21 @@ const typeOptions = [
 ];
 
 export default function RevenueIndex({
-    revenueByType,
-    dailyRevenue,
-    revenueByUser,
-    stats,
-    filters = {},
     barbers = [],
+    totalCommission,
+    dailyCommission,
+    byBarber,
+    revenueByType = [],
+    dailyRevenue = [],
+    revenueByUser = [],
+    stats = {},
+
+    filters = {},
 }) {
+    const [selectedCard, setSelectedCard] = useState(null);
+    // ... آمار کارت‌ها
+    const commission = revenueByType.find((r) => r.type === "commission");
+    const penalty = revenueByType.find((r) => r.type === "penalty");
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [period, setPeriod] = useState(filters.period || "30");
@@ -70,9 +80,6 @@ export default function RevenueIndex({
     });
     const [searchTerm, setSearchTerm] = useState(filters.search || "");
     const [isSearching, setIsSearching] = useState(false);
-
-    const formatAmount = (value) =>
-        toPersianNumber(Number(value || 0).toLocaleString());
 
     const totalRevenue = revenueByType.reduce(
         (sum, item) => sum + item.total,
@@ -196,7 +203,7 @@ export default function RevenueIndex({
                             داشبورد مالی
                         </Link>
 
-                        {/* ✅ دکمه Export */}
+                        {/*  دکمه Export */}
                         <div className="export-dropdown">
                             <button
                                 type="button"
@@ -487,11 +494,29 @@ export default function RevenueIndex({
                         </div>
                     </div>
                 )}
-
+                <div className="finance-stats-hint">
+                    <Info size={14} />
+                    <span>
+                        برای مشاهده مبلغ دقیق و جزئیات، روی هر کارت کلیک کنید
+                    </span>
+                </div>
                 {/* ============ کارت‌های آماری ============ */}
                 <div className="revenue-stats-grid">
                     {/* درآمد کل */}
-                    <div className="revenue-stat-card primary">
+                    <div
+                        className="revenue-stat-card primary has-hint"
+                        onClick={() => setSelectedCard("total")}
+                        data-hint="کلیک کنید تا جزئیات کامل را ببینید"
+                        style={{ cursor: "pointer" }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setSelectedCard("total");
+                            }
+                        }}
+                    >
                         <div className="stat-icon-wrapper">
                             <Coins size={24} />
                         </div>
@@ -500,7 +525,7 @@ export default function RevenueIndex({
                                 درآمد کل این دوره
                             </span>
                             <div className="stat-value">
-                                <span>{formatAmount(totalRevenue)}</span>
+                                <span>{formatCompactNumber(totalRevenue)}</span>
                                 <span className="stat-currency">تومان</span>
                             </div>
                             {stats?.revenue_growth !== undefined && (
@@ -528,7 +553,20 @@ export default function RevenueIndex({
                     </div>
 
                     {/* کمیسیون */}
-                    <div className="revenue-stat-card commission">
+                    <div
+                        className="revenue-stat-card commission has-hint"
+                        onClick={() => setSelectedCard("commission")}
+                        data-hint="کلیک کنید تا جزئیات کامل را ببینید"
+                        style={{ cursor: "pointer" }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setSelectedCard("commission");
+                            }
+                        }}
+                    >
                         <div className="stat-icon-wrapper">
                             <Percent size={24} />
                         </div>
@@ -536,7 +574,7 @@ export default function RevenueIndex({
                             <span className="stat-label">کمیسیون</span>
                             <div className="stat-value">
                                 <span>
-                                    {formatAmount(
+                                    {formatCompactNumber(
                                         revenueByType.find(
                                             (r) => r.type === "commission",
                                         )?.total || 0,
@@ -556,7 +594,20 @@ export default function RevenueIndex({
                     </div>
 
                     {/* جریمه */}
-                    <div className="revenue-stat-card penalty">
+                    <div
+                        className="revenue-stat-card penalty has-hint"
+                        onClick={() => setSelectedCard("penalty")}
+                        data-hint="کلیک کنید تا جزئیات کامل را ببینید"
+                        style={{ cursor: "pointer" }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setSelectedCard("penalty");
+                            }
+                        }}
+                    >
                         <div className="stat-icon-wrapper">
                             <AlertTriangle size={24} />
                         </div>
@@ -564,7 +615,7 @@ export default function RevenueIndex({
                             <span className="stat-label">جریمه‌ها</span>
                             <div className="stat-value">
                                 <span>
-                                    {formatAmount(
+                                    {formatCompactNumber(
                                         revenueByType.find(
                                             (r) => r.type === "penalty",
                                         )?.total || 0,
@@ -584,7 +635,20 @@ export default function RevenueIndex({
                     </div>
 
                     {/* میانگین درآمد روزانه */}
-                    <div className="revenue-stat-card average">
+                    <div
+                        className="revenue-stat-card average has-hint"
+                        onClick={() => setSelectedCard("average")}
+                        data-hint="کلیک کنید تا جزئیات کامل را ببینید"
+                        style={{ cursor: "pointer" }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setSelectedCard("average");
+                            }
+                        }}
+                    >
                         <div className="stat-icon-wrapper">
                             <TrendingUp size={24} />
                         </div>
@@ -594,7 +658,7 @@ export default function RevenueIndex({
                             </span>
                             <div className="stat-value">
                                 <span>
-                                    {formatAmount(
+                                    {formatCompactNumber(
                                         Math.round(
                                             totalRevenue /
                                                 (dailyRevenue.length || 1),
@@ -618,9 +682,9 @@ export default function RevenueIndex({
                                     <TrendingUp size={20} />
                                 </div>
                                 <h2>روند درآمد</h2>
-                                <span className="card-subtitle">
+                                {/* <span className="card-subtitle">
                                     درآمد روزانه پلتفرم
-                                </span>
+                                </span> */}
                             </div>
                             <AdminRevenueChart
                                 revenue={dailyRevenue}
@@ -683,7 +747,9 @@ export default function RevenueIndex({
                                                     </span>
                                                 </div>
                                                 <span className="detail-amount">
-                                                    {formatAmount(item.total)}{" "}
+                                                    {formatCompactNumber(
+                                                        item.total,
+                                                    )}{" "}
                                                     تومان
                                                 </span>
                                             </div>
@@ -763,7 +829,13 @@ export default function RevenueIndex({
 
                                             <div className="barber-revenue">
                                                 <span className="revenue-amount">
-                                                    {formatAmount(item.total)}
+                                                    {toPersianNumber(
+                                                        Number(
+                                                            item.total ?? 0,
+                                                        ).toLocaleString(
+                                                            "fa-IR",
+                                                        ),
+                                                    )}
                                                 </span>
                                                 <span className="revenue-currency">
                                                     تومان
@@ -801,7 +873,8 @@ export default function RevenueIndex({
                                         درآمد کل
                                     </span>
                                     <span className="summary-value">
-                                        {formatAmount(totalRevenue)} تومان
+                                        {formatCompactNumber(totalRevenue)}{" "}
+                                        تومان
                                     </span>
                                 </div>
 
@@ -812,7 +885,7 @@ export default function RevenueIndex({
                                         کمیسیون
                                     </span>
                                     <span className="summary-value green">
-                                        {formatAmount(
+                                        {formatCompactNumber(
                                             revenueByType.find(
                                                 (r) => r.type === "commission",
                                             )?.total || 0,
@@ -824,7 +897,7 @@ export default function RevenueIndex({
                                 <div className="summary-row">
                                     <span className="summary-label">جریمه</span>
                                     <span className="summary-value red">
-                                        {formatAmount(
+                                        {formatCompactNumber(
                                             revenueByType.find(
                                                 (r) => r.type === "penalty",
                                             )?.total || 0,
@@ -840,7 +913,7 @@ export default function RevenueIndex({
                                         میانگین روزانه
                                     </span>
                                     <span className="summary-value">
-                                        {formatAmount(
+                                        {formatCompactNumber(
                                             Math.round(
                                                 totalRevenue /
                                                     (dailyRevenue.length || 1),
@@ -883,6 +956,31 @@ export default function RevenueIndex({
                     </div>
                 </div>
             </div>
+
+            {/* ============ Modal ============ */}
+            <RevenueDetailModal
+                isOpen={!!selectedCard}
+                onClose={() => setSelectedCard(null)}
+                cardKey={selectedCard}
+                amount={
+                    selectedCard === "total"
+                        ? totalRevenue
+                        : selectedCard === "commission"
+                          ? (commission?.total ?? 0)
+                          : selectedCard === "penalty"
+                            ? (penalty?.total ?? 0)
+                            : selectedCard === "average"
+                              ? Math.round(
+                                    totalRevenue / (dailyRevenue.length || 1),
+                                )
+                              : 0
+                }
+                stats={stats}
+                revenueByType={revenueByType}
+                dailyRevenue={dailyRevenue}
+                revenueByUser={revenueByUser}
+                period={filters.period ?? "30"}
+            />
         </Layout>
     );
 }
