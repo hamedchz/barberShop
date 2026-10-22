@@ -73,7 +73,8 @@ Route::prefix('/barbers')
 Route::prefix('bookings')
   ->name('bookings.')->controller(BarberBookingController::class)
   ->group(function () {
-
+    Route::get('/', 'AllBookings')->name('all');
+    Route::get('/{booking}/detail', 'showDetail')->name('show.detail');
     // رزروهای آرایشگر
     Route::get('/barber/{barber:slug}',  'index')
       ->name('index');
@@ -103,16 +104,18 @@ Route::prefix('disputes')->controller(DisputeController::class)
   });
 
 // review
-Route::prefix('/reviews')
+Route::prefix('reviews')
   ->name('reviews.')->controller(ReviewController::class)
   ->group(function () {
-
+    Route::get('/', 'index')->name('index');
+    Route::get('/{review:id}/show', 'show')->name('show');
 
     Route::patch('/{review:id}/approve', 'approve')->name('approve');
     Route::patch('/{review:id}/reject', 'reject')->name('reject');
+    Route::delete('/{review}', 'destroy')->name('destroy');
 
-    // Route::delete('/barber/{barber}/cancel/{booking}',  'cancel')
-    //   ->name('cancel');
+    Route::patch('/{id}/restore', 'restore')->name('restore');
+    Route::delete('/{id}/force-delete', 'forceDelete')->name('force-delete');
   });
 
 // finances

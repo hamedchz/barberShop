@@ -251,6 +251,7 @@ class BarberBookingController extends Controller
                 'date_from' => $request->input('date_from', ''),
                 'date_to' => $request->input('date_to', ''),
             ],
+            'scopes' => ['bookings']
         ]);
     }
 
@@ -341,6 +342,7 @@ class BarberBookingController extends Controller
 
                 ] : null,
             ],
+            'scopes' => ['bookings']
         ]);
     }
 
@@ -471,5 +473,197 @@ class BarberBookingController extends Controller
 
             return redirect()->back();
         }
+    }
+
+    public function AllBookings(Request $request)
+    {
+        $query = Booking::query()
+            ->with([
+                'user:id,name,phone,avatar',
+                'barber:id,name,phone,avatar,slug',
+                'service:id,name,duration,price',
+                'timeSlot:id,date,start_time,end_time',
+            ])
+            ->withCount('disputes');
+
+        // ============ فیلترها ============
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($barberId = $request->input('barber_id')) {
+            $query->where('barber_id', $barberId);
+        }
+
+        if ($customerId = $request->input('customer_id')) {
+            $query->where('user_id', $customerId);
+        }
+
+        if ($dateFrom = $request->input('date_from')) {
+            $query->whereHas('timeSlot', fn($q) => $q->whereDate('date', '>=', $dateFrom));
+        }
+
+        if ($dateTo = $request->input('date_to')) {
+            $query->whereHas('timeSlot', fn($q) => $q->whereDate('date', '<=', $dateTo));
+        }
+
+        if ($minAmount = $request->input('min_amount')) {
+            $query->where('amount', '>=', $minAmount);
+        }
+
+        if ($maxAmount = $request->input('max_amount')) {
+            $query->where('amount', '<=', $maxAmount);
+        }
+
+        if ($search = trim($request->input('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%"))
+                    ->orWhereHas('barber', fn($b) => $b->where('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%"));
+            });
+        }
+
+        $bookings = $query->latest()->paginate(33)->withQueryString();
+
+        $bookings->through(fn($b) => $this->mapBooking($b));
+
+        return Inertia::render('Admin/Bookings/Index', [
+            'bookings' => $bookings,
+            'filters'  => [
+                'status'      => $request->input('status', ''),
+                'barber_id'   => $request->input('barber_id', ''),
+                'customer_id' => $request->input('customer_id', ''),
+                'date_from'   => $request->input('date_from', ''),
+                'date_to'     => $request->input('date_to', ''),
+                'min_amount'  => $request->input('min_amount', ''),
+                'max_amount'  => $request->input('max_amount', ''),
+                'search'      => $request->input('search', ''),
+            ],
+            'stats' => $this->buildStats(),
+            'statuses' => collect(BookingStatus::cases())
+                ->map(fn($s) => ['value' => $s->value, 'label' => $s->label() ?? $s->value])
+                ->values(),
+            'barbers' => User::role('آرایشگر')
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->limit(100)
+                ->get(),
+            'scopes' => ['bookings', 'bookings-list']
+        ]);
+    }
+
+    public function showDetail(Booking $booking)
+    {
+        $booking->load([
+            'user:id,name,phone,avatar',
+            'barber:id,name,phone,avatar,slug',
+            'service:id,name,duration,price,description',
+            'timeSlot:id,date,start_time,end_time',
+            'payment',
+            'review',
+            'disputes',
+            'latestDispute',
+        ]);
+        $booking->loadCount('disputes');
+
+        return Inertia::render('Admin/Bookings/Show', [
+            'booking' => $this->mapBooking($booking, detailed: true),
+            'scopes' => ['bookings']
+        ]);
+    }
+
+    private function mapBooking(Booking $b, bool $detailed = false): array
+    {
+        $data = [
+            'id'         => $b->id,
+            'status'     => $b->status?->value,
+            'status_label' => $b->status?->label() ?? $b->status?->value,
+            'amount'     => (float) $b->amount,
+            'notes'      => $b->notes,
+            'created_at' => $b->created_at?->toIso8601String(),
+            'confirmed_at' => $b->confirmed_at?->toIso8601String(),
+            'completed_at' => $b->completed_at?->toIso8601String(),
+            'cancelled_at' => $b->cancelled_at?->toIso8601String(),
+
+            'has_disputes'      => $b->disputes_count > 0,
+            'disputes_count'    => $b->disputes_count,
+            'has_active_dispute' => $b->has_active_dispute,
+            'can_dispute'       => $b->can_dispute,
+
+            'user' => $b->user ? [
+                'id'     => $b->user->id,
+                'name'   => $b->user->name,
+                'phone'  => $b->user->phone,
+                'avatar' => $b->user->avatarUrl(),
+            ] : null,
+
+            'barber' => $b->barber ? [
+                'id'     => $b->barber->id,
+                'name'   => $b->barber->name,
+                'phone'  => $b->barber->phone,
+                'avatar' => $b->barber->avatarUrl(),
+                'slug'   => $b->barber->slug,
+            ] : null,
+
+            'service' => $b->service ? [
+                'id'       => $b->service->id,
+                'name'     => $b->service->name,
+                'duration' => $b->service->duration,
+                'price'    => (float) $b->service->price,
+            ] : null,
+
+            'time_slot' => $b->timeSlot ? [
+                'date'       => $b->timeSlot->date,
+                'start_time' => $b->timeSlot->start_time,
+                'end_time'   => $b->timeSlot->end_time,
+            ] : null,
+        ];
+
+        if ($detailed) {
+            $data['payment'] = $b->payment ? [
+                'id'         => $b->payment->id,
+                'gateway'    => $b->payment->gateway,
+                'transaction_id' => $b->payment->transaction_id,
+                'amount'     => (float) $b->payment->amount,
+                'status'     => $b->payment->status?->value,
+                'paid_at'    => $b->payment->paid_at?->toIso8601String(),
+            ] : null;
+
+            $data['review'] = $b->review ? [
+                'id'      => $b->review->id,
+                'rating'  => $b->review->rating,
+                'comment' => $b->review->comment,
+                'status'  => $b->review->status?->value,
+            ] : null;
+
+            $data['disputes'] = $b->disputes->map(fn($d) => [
+                'id'           => $d->id,
+                'status'       => $d->status?->value,
+                'disputed_by'  => $d->disputed_by,
+                'reason'       => $d->reason,
+                'created_at'   => $d->created_at?->toIso8601String(),
+                'resolved_at'  => $d->resolved_at?->toIso8601String(),
+            ])->toArray();
+        }
+
+        return $data;
+    }
+
+    private function buildStats(): array
+    {
+        return [
+            'total'      => Booking::count(),
+            'pending'    => Booking::where('status', BookingStatus::pending->value)->count(),
+            'confirmed'  => Booking::where('status', BookingStatus::confirmed->value)->count(),
+            'completed'  => Booking::where('status', BookingStatus::completed->value)->count(),
+            'cancelled'  => Booking::where('status', BookingStatus::cancelled->value)->count(),
+            'disputed'   => Booking::whereHas('disputes')->count(),
+
+            'total_amount'     => (float) Booking::sum('amount'),
+            'today_count'      => Booking::whereHas('timeSlot', fn($q) => $q->whereDate('date', today()))->count(),
+            'today_amount'     => (float) Booking::whereHas('timeSlot', fn($q) => $q->whereDate('date', today()))->sum('amount'),
+        ];
     }
 }

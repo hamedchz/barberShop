@@ -183,6 +183,7 @@ class DisputeController extends Controller
                 'sort' => $sort,
                 'urgent' => $request->boolean('urgent'),
             ],
+            'scopes' => ['disputes']
         ]);
     }
 
@@ -333,6 +334,7 @@ class DisputeController extends Controller
             ],
             'other_disputes' => $otherDisputes,
             'suggestedAmounts' => $service->previewAmounts($dispute),
+            'scopes' => ['disputes']
         ]);
     }
 
@@ -446,46 +448,5 @@ class DisputeController extends Controller
         }
         StickyAlert::alert('درخواست پاسخ ارسال شد.', 'success');
         return back();
-    }
-
-    // ============================================
-    // توابع کمکی
-    // ============================================
-
-    private function refundToCustomer(User $user, float $amount, Dispute $dispute): void
-    {
-        $user->increment('wallet_balance', $amount);
-
-        \App\Models\WalletTransaction::create([
-            'user_id' => $user->id,
-            'type' => 'credit',
-            'amount' => $amount,
-            'reference_type' => Dispute::class,
-            'reference_id' => $dispute->id,
-            'description' => "بازگشت مبلغ به دلیل تایید اعتراض #{$dispute->id}",
-            'status' => 'completed',
-        ]);
-    }
-
-    private function penalizeBarber(User $barber, float $amount, Dispute $dispute): void
-    {
-        $barber->decrement('wallet_balance', $amount);
-        $barber->decrement('rating_points', 10);
-
-        \App\Models\WalletTransaction::create([
-            'user_id' => $barber->id,
-            'type' => 'debit',
-            'amount' => $amount,
-            'reference_type' => Dispute::class,
-            'reference_id' => $dispute->id,
-            'description' => "جریمه به دلیل تایید اعتراض #{$dispute->id}",
-            'status' => 'completed',
-        ]);
-    }
-
-    private function penalizeCustomer(User $customer, float $amount, Dispute $dispute): void
-    {
-        $customer->decrement('wallet_balance', $amount);
-        $customer->decrement('rating_points', 5);
     }
 }

@@ -1,0 +1,575 @@
+/* ============================================
+   Approve Review Modal — Complete Styles
+   ============================================ */
+
+/* ============================================
+   Overlay
+   ============================================ */
+.approve-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+  animation: approveModalFade 0.25s ease-out;
+}
+
+@keyframes approveModalFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Modal
+   ============================================ */
+.approve-modal {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  animation: approveModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes approveModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.approve-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border-bottom: 1.5px solid #a7f3d0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.approve-modal-header::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: #10b981;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.approve-modal-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+  position: relative;
+  z-index: 1;
+}
+
+.approve-modal-header-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.approve-modal-header-content h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.approve-modal-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.approve-modal-close {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.approve-modal-close:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+  transform: rotate(90deg);
+}
+
+.approve-modal-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Body
+   ============================================ */
+.approve-modal-body {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+/* ============================================
+   Review Preview
+   ============================================ */
+.approve-review-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 1.5px solid #f3f4f6;
+  border-radius: 0.875rem;
+  position: relative;
+}
+
+.approve-review-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.approve-review-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.approve-review-user-name {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.approve-review-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.approve-review-rating-stars {
+  display: inline-flex;
+  gap: 0.125rem;
+}
+
+.approve-review-rating-value {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #92400e;
+  font-variant-numeric: tabular-nums;
+}
+
+.approve-review-comment {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  max-height: 8rem;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.approve-review-comment::-webkit-scrollbar {
+  width: 4px;
+}
+
+.approve-review-comment::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.approve-review-comment-empty {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* ============================================
+   Info Box (توضیح تایید)
+   ============================================ */
+.approve-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #1e40af;
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.approve-info-box svg {
+  flex-shrink: 0;
+  color: #3b82f6;
+  margin-top: 0.125rem;
+}
+
+/* ============================================
+   Form Group
+   ============================================ */
+.approve-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.approve-form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.approve-form-label .optional {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.approve-form-textarea {
+  width: 100%;
+  min-height: 5rem;
+  padding: 0.75rem 0.875rem;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  line-height: 1.7;
+  resize: vertical;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.approve-form-textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.approve-form-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.approve-form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.approve-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.approve-form-counter {
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   Error
+   ============================================ */
+.approve-form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 0.375rem;
+}
+
+.approve-form-error svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+.approve-modal-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  background: #fafbfc;
+  border-radius: 0 0 1.25rem 1.25rem;
+}
+
+.approve-modal-footer .btn-confirm {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+
+.approve-modal-footer .btn-confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+}
+
+.approve-modal-footer .btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.approve-modal-footer .btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  color: #374151;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+
+.approve-modal-footer .btn-cancel:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.approve-modal-footer .btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Spinner
+   ============================================ */
+.approve-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: approveSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes approveSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Responsive — تبلت (≤768px)
+   ============================================ */
+@media (max-width: 768px) {
+  .approve-modal {
+    max-width: 100%;
+    border-radius: 1rem;
+  }
+
+  .approve-modal-header {
+    padding: 1rem 1.25rem;
+    gap: 0.75rem;
+  }
+
+  .approve-modal-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .approve-modal-header-content h3 {
+    font-size: 1rem;
+  }
+
+  .approve-modal-body {
+    padding: 1rem 1.25rem;
+  }
+
+  .approve-modal-footer {
+    padding: 0.875rem 1.25rem 1rem;
+  }
+}
+
+/* ============================================
+   Responsive — موبایل (≤640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .approve-modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .approve-modal {
+    max-height: 95vh;
+    border-radius: 1.25rem 1.25rem 0 0;
+  }
+
+  .approve-modal-header {
+    padding: 1rem;
+    border-radius: 1.25rem 1.25rem 0 0;
+  }
+
+  .approve-modal-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .approve-modal-header-content h3 {
+    font-size: 0.9375rem;
+  }
+
+  .approve-modal-desc {
+    font-size: 0.6875rem;
+  }
+
+  .approve-modal-body {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .approve-review-preview {
+    padding: 0.75rem;
+  }
+
+  .approve-review-comment {
+    font-size: 0.75rem;
+  }
+
+  .approve-modal-footer {
+    padding: 0.75rem 1rem 1rem;
+    flex-direction: column-reverse;
+  }
+
+  .approve-modal-footer .btn-confirm,
+  .approve-modal-footer .btn-cancel {
+    width: 100%;
+    flex: none;
+  }
+}
+
+/* ============================================
+   Print
+   ============================================ */
+@media print {
+  .approve-modal-overlay {
+    position: static;
+    background: none;
+    padding: 0;
+  }
+
+  .approve-modal {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    max-height: none;
+  }
+
+  .approve-modal-close,
+  .approve-modal-footer {
+    display: none !important;
+  }
+}

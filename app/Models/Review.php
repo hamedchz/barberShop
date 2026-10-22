@@ -6,6 +6,7 @@ use App\Enums\Casts\ReviewStatus;
 use App\Services\ReviewService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Review extends Model
 {
@@ -144,5 +145,93 @@ class Review extends Model
     public function getStatusIconAttribute(): string
     {
         return $this->status?->icon() ?? 'Clock4';
+    }
+
+    /**
+     * تاریخچه تغییرات moderation
+     */
+    public function moderationHistory()
+    {
+        return $this->hasMany(ReviewModerationHistory::class)
+            ->latest();
+    }
+
+    // ============ متدهای جدید ============
+
+    public function canChangeStatusTo(ReviewStatus $newStatus): bool
+    {
+        // pending → approved/rejected: OK (اولین بررسی)
+        if ($this->status === ReviewStatus::pending) {
+            return in_array($newStatus, [
+                ReviewStatus::approved,
+                ReviewStatus::rejected,
+            ], true);
+        }
+
+        // approved ↔ rejected: OK (تغییر تصمیم)
+        if (in_array($this->status, [
+            ReviewStatus::approved,
+            ReviewStatus::rejected,
+        ], true)) {
+            return in_array($newStatus, [
+                ReviewStatus::approved,
+                ReviewStatus::rejected,
+            ], true);
+        }
+
+        return false;
+    }
+
+    /**
+     * تغییر وضعیت با ثبت تاریخچه و دلیل
+     * ترکیب محدودیت ۱ + ۳ + ۴
+     */
+    public function changeStatus(
+        User $admin,
+        ReviewStatus $newStatus,
+        string $reason,
+        ?string $note = null,
+    ): void {
+        // ============ اعتبارسنجی ============
+        if (!$this->canChangeStatusTo($newStatus)) {
+            throw new \InvalidArgumentException(
+                "تغییر وضعیت از '{$this->status?->label()}' به '{$newStatus->label()}' مجاز نیست."
+            );
+        }
+
+        if (empty(trim($reason))) {
+            throw new \InvalidArgumentException('دلیل تغییر الزامی است.');
+        }
+
+        // ============ اجرا در تراکنش ============
+        DB::transaction(function () use ($admin, $newStatus, $reason, $note) {
+            $previousStatus = $this->status;
+
+            // ۱. ثبت تاریخچه (محدودیت ۱)
+            $this->moderationHistory()->create([
+                'admin_id'        => $admin->id,
+                'previous_status' => $previousStatus->value,
+                'new_status'      => $newStatus->value,
+                'reason'          => trim($reason),
+                'note'            => $note,
+            ]);
+
+            // ۲. آپدیت نظر
+            $this->update([
+                'status'           => $newStatus->value,
+                'moderated_by'     => $admin->id,
+                'moderated_at'     => now(),
+                'moderation_note'  => $note,
+                'rejection_reason' => $newStatus === ReviewStatus::rejected
+                    ? $reason
+                    : null,
+            ]);
+
+            // ۳. بازمحاسبه امتیاز آرایشگر
+            if ($this->barber) {
+                app(ReviewService::class)
+                    ->recalculateBarberRating($this->barber);
+            }
+        });
     }
 }

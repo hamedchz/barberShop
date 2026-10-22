@@ -175,8 +175,12 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
 
                         <div className="stat-detail-breakdown-list">
                             {breakdown.map((item, i) => {
+                                const key = `b-${i}`;
+                                const isItemCount = item.isCount === true;
+                                const itemUnit =
+                                    item.unit ?? (isItemCount ? "مورد" : unit);
                                 const percent =
-                                    breakdownTotal > 0
+                                    !isItemCount && breakdownTotal > 0
                                         ? (Number(item.value) /
                                               breakdownTotal) *
                                           100
@@ -184,7 +188,7 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
 
                                 return (
                                     <div
-                                        key={i}
+                                        key={key}
                                         className="stat-detail-breakdown-row"
                                     >
                                         <div className="stat-detail-breakdown-info">
@@ -196,7 +200,7 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
                                                     <span
                                                         className="stat-detail-breakdown-percent"
                                                         style={{
-                                                            color: color,
+                                                            color,
                                                             background: bg,
                                                         }}
                                                     >
@@ -209,7 +213,7 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
                                             </div>
 
                                             {item.count !== undefined &&
-                                                !isCount && (
+                                                !isItemCount && (
                                                     <span className="stat-detail-breakdown-count">
                                                         {toPersianNumber(
                                                             item.count,
@@ -221,7 +225,7 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
 
                                         <div className="stat-detail-breakdown-value">
                                             <span style={{ color }}>
-                                                {isCount
+                                                {isItemCount
                                                     ? toPersianNumber(
                                                           item.value,
                                                       )
@@ -230,20 +234,17 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
                                                       )}
                                             </span>
                                             <span className="stat-detail-unit">
-                                                {unit}
+                                                {itemUnit}
                                             </span>
                                             <button
                                                 type="button"
                                                 className="stat-detail-copy small"
                                                 onClick={() =>
-                                                    handleCopy(
-                                                        `b-${i}`,
-                                                        item.value,
-                                                    )
+                                                    handleCopy(key, item.value)
                                                 }
                                                 title="کپی"
                                             >
-                                                {copied === `b-${i}` ? (
+                                                {copied === key ? (
                                                     <Check
                                                         size={12}
                                                         style={{
@@ -256,13 +257,12 @@ export default function StatDetailModal({ isOpen, onClose, config }) {
                                             </button>
                                         </div>
 
-                                        {/* نوار درصد */}
                                         {percent > 0 && (
                                             <div className="stat-detail-progress">
                                                 <div
                                                     className="stat-detail-progress-bar"
                                                     style={{
-                                                        width: `${percent}%`,
+                                                        width: `${Math.min(percent, 100)}%`,
                                                         background: color,
                                                     }}
                                                 />

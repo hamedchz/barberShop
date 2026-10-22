@@ -1,0 +1,215 @@
+/* ============================================
+   Review Comment Box
+   ============================================ */
+
+.review-comment-box {
+  margin-top: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.review-comment-text {
+  font-size: 0.75rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  /* محدودیت ارتفاع برای امنیت بیشتر */
+  max-height: 6.5rem;
+  /* حدود ۴ خط */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.review-comment-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #8b5cf6;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.review-comment-more:hover {
+  color: #7c3aed;
+  gap: 0.375rem;
+}
+
+.review-comment-more svg {
+  transition: transform 0.15s;
+}
+
+.review-comment-more:hover svg {
+  transform: translateX(-2px);
+}
+
+/* ============ یادداشت و دلیل رد ============ */
+.review-moderation-note {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  margin-top: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.375rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.review-moderation-note strong {
+  color: #1e40af;
+  font-weight: 800;
+}
+
+.review-rejection-note {
+  font-size: 0.6875rem;
+  color: #991b1b;
+  margin-top: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.375rem;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.review-rejection-note strong {
+  color: #7f1d1d;
+  font-weight: 800;
+}
+
+/* ============================================
+   Compact Action Buttons (برای Index)
+   ============================================ */
+.review-actions-compact {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.review-action-btn-compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+  line-height: 1.2;
+  min-height: 1.75rem;
+}
+
+.review-action-btn-compact svg {
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+}
+
+/* ============ رنگ‌ها ============ */
+.review-action-btn-compact.approve {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.review-action-btn-compact.approve:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.review-action-btn-compact.reject {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.review-action-btn-compact.reject:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.review-action-btn-compact.change {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-color: #ddd6fe;
+}
+
+.review-action-btn-compact.change:hover {
+  background: #8b5cf6;
+  color: #ffffff;
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.review-action-btn-compact.delete {
+  background: #ffffff;
+  color: #991b1b;
+  border-color: #fecaca;
+  padding: 0.375rem;
+  min-width: 1.75rem;
+}
+
+.review-action-btn-compact.delete:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.review-action-btn-compact.view {
+  background: #f9fafb;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.review-action-btn-compact.view:hover {
+  background: #ffffff;
+  color: #374151;
+  border-color: #9ca3af;
+}
+
+.review-action-btn-compact.restore {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border-color: #ddd6fe;
+}
+
+.review-action-btn-compact.restore:hover {
+  background: #8b5cf6;
+  color: #ffffff;
+  border-color: #8b5cf6;
+}
+
+/* ============ موبایل: آیکون فقط ============ */
+@media (max-width: 640px) {
+  .review-action-btn-compact span {
+    display: none;
+  }
+
+  .review-action-btn-compact {
+    padding: 0.375rem;
+    min-width: 1.75rem;
+  }
+}

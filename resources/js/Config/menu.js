@@ -23,6 +23,9 @@ import {
     ChartCandlestick,
     BanknoteArrowUp,
     BanknoteArrowDown,
+    UserRoundGroup,
+    StarCheck,
+    CalendarClock,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -38,44 +41,57 @@ export const menuConfig = [
     },
 
     // ============ مدیریت ادمین‌ها ============
-    {
-        id: "admins",
-        label: "ادمین‌ها",
-        icon: Shield,
-        href: "/admin/admins",
-        scopes: ["admins", "admin-list", "admin-create", "admin-edit"],
-        permissions: ["manage-admins"],
-    },
 
-    // ============ آرایشگران ============
-    {
-        id: "barbers",
-        label: "آرایشگران",
-        icon: Scissors,
-        href: "/admin/barbers",
-        scopes: ["barbers", "barber-list", "barber-show"],
-        permissions: ["manage-barber"],
-    },
-
-    // ============ کاربران ============
     {
         id: "users",
-        label: "کاربران",
-        icon: Users,
-        href: "/admin/customers",
-        scopes: ["users", "user-list"],
-        permissions: ["manage-users"],
-    },
-    // ============ نقشها ============
-    {
-        id: "roles",
-        label: "نقش ها",
-        icon: UserShield,
-        href: "/admin/roles",
-        scopes: ["roles", "role-list"],
-        permissions: ["manage-roles"],
-    },
+        label: "مدیریت کاربران",
+        icon: UserRoundGroup,
+        childrenPermissions: [
+            "manage-admins",
+            "manage-barber",
+            "manage-users",
+            "manage-roles",
+        ],
+        children: [
+            {
+                id: "admins",
+                label: "ادمین‌ها",
+                icon: Shield,
+                href: "/admin/admins",
+                scopes: ["admins", "admin-list", "admin-create", "admin-edit"],
+                permissions: ["manage-admins"],
+            },
 
+            // ============ آرایشگران ============
+            {
+                id: "barbers",
+                label: "آرایشگران",
+                icon: Scissors,
+                href: "/admin/barbers",
+                scopes: ["barbers", "barber-list", "barber-show"],
+                permissions: ["manage-barber"],
+            },
+
+            // ============ کاربران ============
+            {
+                id: "customers",
+                label: "مشتریان",
+                icon: Users,
+                href: "/admin/customers",
+                scopes: ["users", "user-list"],
+                permissions: ["manage-users"],
+            },
+            // ============ نقشها ============
+            {
+                id: "roles",
+                label: "نقش ها",
+                icon: UserShield,
+                href: "/admin/roles",
+                scopes: ["roles", "role-list"],
+                permissions: ["manage-roles"],
+            },
+        ],
+    },
     // ============ مالی ============
 
     {
@@ -161,20 +177,28 @@ export const menuConfig = [
     // ============ رزروهای آرایشگر ============
     {
         id: "bookings",
-        label: "رزروها",
-        icon: CalendarCheck2,
-        href: "",
-        scopes: ["bookings"],
-        permissions: [],
-    },
+        label: "مدیریت رزروها",
+        icon: CalendarClock,
+        childrenPermissions: ["manage-bookings", "manage-disputes"],
+        children: [
+            {
+                id: "bookings",
+                label: "رزروها",
+                icon: CalendarCheck2,
+                href: "/admin/bookings",
+                scopes: ["bookings-list"],
+                permissions: ["manage-bookings"],
+            },
 
-    {
-        id: "disputes",
-        label: "اعتراض ها",
-        icon: Scale,
-        href: "admin/disputes",
-        scopes: ["disputes"],
-        permissions: [],
+            {
+                id: "disputes",
+                label: "اعتراض ها",
+                icon: Scale,
+                href: "/admin/disputes",
+                scopes: ["disputes"],
+                permissions: ["manage-disputes"],
+            },
+        ],
     },
 
     // ============ تنظیمات ============
@@ -237,7 +261,7 @@ export const menuConfig = [
         icon: Calendar,
         href: "/barber/availabilities",
         scopes: ["availabilities", "availability-list"],
-        permissions: [],
+        permissions: ["barber-dashboard-panel"],
     },
 
     // ============ زمان‌بندی نوبت‌ها ============
@@ -247,6 +271,6 @@ export const menuConfig = [
         icon: Clock,
         href: "/barber/time-slots",
         scopes: ["time-slots", "time-slot-list"],
-        permissions: [],
+        permissions: ["barber-dashboard-panel"],
     },
 ];
