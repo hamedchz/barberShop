@@ -259,7 +259,7 @@ export default function Roles({ auth, roles, filters, scope }) {
                 ))}
 
                 {/* ============ صفحه‌بندی (Pagination) ============ */}
-                <Pagination links={roles.links} />
+                <Pagination links={roles.links} only={roles} />
             </div>
 
             {/* ============ Modal تایید حذف ============ */}

@@ -44,7 +44,7 @@ export default function Layout({ children }) {
             },
         });
     }, [flash?.alert?.id]);
-    const { toast } = useAlert();
+    // const { toast } = useAlert();
     return (
         <div
             className={`admin-layout ${isCollapsed ? "sidebar-collapsed" : ""}`}

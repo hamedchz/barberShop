@@ -3,6 +3,10 @@ import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import ConfirmModal from "../Components/ConfirmModal";
 import RatingStars from "../../Customer/Components/RatingStars";
+import ApproveReviewModal from "../Reviews/Components/ApproveReviewModal";
+import RejectReviewModal from "../Reviews/Components/RejectReviewModal";
+import DeleteReviewModal from "../Reviews/Components/DeleteReviewModal";
+import RestoreReviewModal from "../Reviews/Components/RestoreReviewModal";
 import "../Assets/css/AdminBookingShow.css";
 import {
     ArrowRight,
@@ -35,6 +39,8 @@ import {
     X,
     RefreshCw,
     AlertTriangle,
+    Trash2,
+    RotateCcw,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -211,15 +217,70 @@ const reviewStatusIcons = {
 };
 
 export default function BarberBookingShow({ auth, barber, booking }) {
-    // ============ Modal states ============
+    const isPending =
+        booking.review.status === "pending" && !booking.review.is_deleted;
+    const isApproved =
+        booking.review.status === "approved" && !booking.review.is_deleted;
+    const isRejected =
+        booking.review.status === "rejected" && !booking.review.is_deleted;
+    const isDeleted = booking.review.is_deleted;
+
+    // ============ Modals ============
+    const [approveModal, setApproveModal] = useState({
+        isOpen: false,
+        review: null,
+        isLoading: false,
+    });
     const [rejectModal, setRejectModal] = useState({
         isOpen: false,
         review: null,
-        reason: "",
-        note: "",
         isLoading: false,
-        errors: {},
     });
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        review: null,
+        isLoading: false,
+    });
+    const [restoreModal, setRestoreModal] = useState({
+        isOpen: false,
+        review: null,
+        isLoading: false,
+    });
+
+    // ============ helpers ============
+    const openApprove = () =>
+        setApproveModal({
+            isOpen: true,
+            review: booking.review,
+            isLoading: false,
+        });
+    const openReject = () =>
+        setRejectModal({
+            isOpen: true,
+            review: booking.review,
+            isLoading: false,
+        });
+    const openDelete = () =>
+        setDeleteModal({
+            isOpen: true,
+            review: booking.review,
+            isLoading: false,
+        });
+    const openRestore = () =>
+        setRestoreModal({
+            isOpen: true,
+            review: booking.review,
+            isLoading: false,
+        });
+    // ============ Modal states ============
+    // const [rejectModal, setRejectModal] = useState({
+    //     isOpen: false,
+    //     review: null,
+    //     reason: "",
+    //     note: "",
+    //     isLoading: false,
+    //     errors: {},
+    // });
 
     const [cancelModal, setCancelModal] = useState({
         isOpen: false,
@@ -257,9 +318,9 @@ export default function BarberBookingShow({ auth, barber, booking }) {
     const reviewStatus = booking.review?.status; // ← optional chaining
 
     const ReviewStatusIcon = reviewStatusIcons[reviewStatus] ?? Clock4;
-    const isPending = reviewStatus === "pending";
-    const isApproved = reviewStatus === "approved";
-    const isRejected = reviewStatus === "rejected";
+    // const isPending = reviewStatus === "pending";
+    // const isApproved = reviewStatus === "approved";
+    // const isRejected = reviewStatus === "rejected";
     const isFlagged = reviewStatus === "flagged";
     const isFinalized = isApproved || isRejected;
 
@@ -795,136 +856,183 @@ export default function BarberBookingShow({ auth, barber, booking }) {
 
                         {/* کارت نظر */}
                         {booking.review && (
-                            <div className="admin-booking-show-card">
-                                <div className="admin-booking-show-card-header">
-                                    <div className="card-icon-box yellow">
+                            <div className="booking-review-card">
+                                {/* ============ هدر ============ */}
+                                <div className="booking-review-card-header">
+                                    <div className="booking-review-card-icon">
                                         <Star
                                             size={20}
                                             fill="#fbbf24"
                                             color="#fbbf24"
                                         />
                                     </div>
-                                    <h2 className="card-title">نظر مشتری</h2>
-                                </div>
-
-                                {/* ============ وضعیت نظر ============ */}
-                                <div
-                                    className="review-status-section"
-                                    style={{ marginBottom: "10px" }}
-                                >
-                                    <div className="review-status-main">
-                                        <div
-                                            className={`review-status-badge status-${reviewStatus ?? "unknown"}`}
-                                        >
-                                            <ReviewStatusIcon size={14} />
-                                            <span>
-                                                {booking.review.status_label ??
-                                                    booking.review.status ??
-                                                    "نامشخص"}
+                                    <div className="booking-review-card-title">
+                                        <h2>نظر مشتری</h2>
+                                        <div className="booking-review-card-meta">
+                                            <span className="booking-review-card-date">
+                                                <Calendar size={11} />
+                                                {formatFullDateTime(
+                                                    booking.review.created_at,
+                                                )}
                                             </span>
                                         </div>
+                                    </div>
 
-                                        {isFinalized &&
-                                            booking.review.moderated_at && (
-                                                <div className="review-moderated-info">
+                                    {/* badge وضعیت */}
+                                    <div
+                                        className={`booking-review-status status-${reviewStatus ?? "unknown"}`}
+                                    >
+                                        <ReviewStatusIcon size={12} />
+                                        <span>
+                                            {booking.review.status_label ??
+                                                booking.review.status ??
+                                                "نامشخص"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* ============ امتیاز و متن ============ */}
+                                <div className="booking-review-card-body">
+                                    <div className="booking-review-card-rating">
+                                        <div className="booking-review-card-stars">
+                                            <RatingStars
+                                                rating={booking.review.rating}
+                                                size={20}
+                                                showNumber={false}
+                                                showTotal={false}
+                                            />
+                                        </div>
+                                        <div className="booking-review-card-score">
+                                            <strong>
+                                                {toPersianNumber(
+                                                    booking.review.rating,
+                                                )}
+                                            </strong>
+                                            <span>از ۵</span>
+                                        </div>
+                                    </div>
+
+                                    {booking.review.comment ? (
+                                        <blockquote className="booking-review-card-comment">
+                                            {booking.review.comment}
+                                        </blockquote>
+                                    ) : (
+                                        <div className="booking-review-card-empty">
+                                            <MessageSquare size={16} />
+                                            <span>این نظر بدون متن است</span>
+                                        </div>
+                                    )}
+
+                                    {/* اطلاعات بررسی */}
+                                    {isFinalized &&
+                                        booking.review.moderated_at && (
+                                            <div className="booking-review-card-moderation">
+                                                <div className="booking-review-card-moderation-icon">
                                                     <Shield size={12} />
-                                                    <span className="moderated-action">
+                                                </div>
+                                                <div className="booking-review-card-moderation-content">
+                                                    <span
+                                                        className={`booking-review-card-moderation-action ${isApproved ? "approved" : "rejected"}`}
+                                                    >
                                                         {isApproved
                                                             ? "تایید شده"
                                                             : "رد شده"}
                                                     </span>
                                                     {booking.review.moderated_by
                                                         ?.name && (
-                                                        <>
-                                                            <span className="moderated-separator">
-                                                                •
-                                                            </span>
-                                                            <span className="moderated-by">
-                                                                {
-                                                                    booking
-                                                                        .review
-                                                                        .moderated_by
-                                                                        .name
-                                                                }
-                                                            </span>
-                                                        </>
+                                                        <span className="booking-review-card-moderation-by">
+                                                            توسط{" "}
+                                                            {
+                                                                booking.review
+                                                                    .moderated_by
+                                                                    .name
+                                                            }
+                                                        </span>
                                                     )}
-                                                    <span className="moderated-separator">
-                                                        •
-                                                    </span>
-                                                    <span className="moderated-date">
+                                                    <span className="booking-review-card-moderation-date">
                                                         {formatFullDateTime(
                                                             booking.review
                                                                 .moderated_at,
                                                         )}
                                                     </span>
                                                 </div>
-                                            )}
-                                    </div>
-                                </div>
+                                            </div>
+                                        )}
 
-                                <div className="review-display">
-                                    <div className="review-display-header">
-                                        <RatingStars
-                                            rating={booking.review.rating}
-                                            size={16}
-                                            showNumber={false}
-                                            showTotal={false}
-                                        />
-                                        <span className="review-display-date">
-                                            {formatFullDateTime(
-                                                booking.review.created_at,
-                                            )}
-                                        </span>
-                                    </div>
+                                    {/* دلیل رد */}
+                                    {booking.review.rejection_reason && (
+                                        <div className="booking-review-card-rejection">
+                                            <AlertCircle size={14} />
+                                            <div>
+                                                <strong>دلیل رد:</strong>{" "}
+                                                {
+                                                    booking.review
+                                                        .rejection_reason
+                                                }
+                                            </div>
+                                        </div>
+                                    )}
 
-                                    {booking.review.comment && (
-                                        <p className="review-display-comment">
-                                            {booking.review.comment}
-                                        </p>
+                                    {/* یادداشت */}
+                                    {booking.review.moderation_note && (
+                                        <div className="booking-review-card-note">
+                                            <Info size={14} />
+                                            <div>
+                                                <strong>یادداشت:</strong>{" "}
+                                                {booking.review.moderation_note}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="review-actions">
+                                {/* ============ پیام حذف ============ */}
+                                {isDeleted && (
+                                    <div className="booking-review-card-deleted">
+                                        <AlertTriangle size={16} />
+                                        <div>
+                                            <strong>
+                                                این نظر حذف شده است.
+                                            </strong>
+                                            <p>
+                                                با بازیابی، به وضعیت «در انتظار
+                                                بررسی» برمی‌گردد و باید دوباره
+                                                بررسی شود.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ============ اکشن‌ها ============ */}
+                                <div className="booking-review-card-actions">
                                     {isPending && (
                                         <>
                                             <button
                                                 type="button"
-                                                className="review-action-btn approve"
-                                                onClick={() =>
-                                                    handleApprove(
-                                                        booking.review.id,
-                                                    )
-                                                }
+                                                className="booking-review-btn approve"
+                                                onClick={openApprove}
                                                 disabled={loading === "approve"}
                                             >
                                                 {loading === "approve" ? (
                                                     <>
-                                                        <span className="spinner"></span>
-                                                        <span>
-                                                            در حال تایید...
-                                                        </span>
+                                                        <span className="booking-review-spinner" />
+                                                        در حال تایید...
                                                     </>
                                                 ) : (
                                                     <>
                                                         <CheckCircle
                                                             size={14}
                                                         />
-                                                        <span>تایید نظر</span>
+                                                        تایید نظر
                                                     </>
                                                 )}
                                             </button>
                                             <button
                                                 type="button"
-                                                className="review-action-btn reject"
-                                                onClick={() =>
-                                                    openRejectModal(
-                                                        booking.review,
-                                                    )
-                                                }
+                                                className="booking-review-btn reject"
+                                                onClick={openReject}
                                             >
                                                 <XCircle size={14} />
-                                                <span>رد نظر</span>
+                                                رد نظر
                                             </button>
                                         </>
                                     )}
@@ -932,32 +1040,44 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                                     {isApproved && (
                                         <button
                                             type="button"
-                                            className="review-action-btn change-decision"
-                                            onClick={() =>
-                                                handleChangeDecision(
-                                                    booking.review,
-                                                    "reject",
-                                                )
-                                            }
+                                            className="booking-review-btn change-reject"
+                                            onClick={openReject}
                                         >
                                             <RefreshCw size={14} />
-                                            <span>تغییر تصمیم به رد</span>
+                                            تغییر به رد
                                         </button>
                                     )}
 
                                     {isRejected && (
                                         <button
                                             type="button"
-                                            className="review-action-btn change-decision"
-                                            onClick={() =>
-                                                handleChangeDecision(
-                                                    booking.review,
-                                                    "approve",
-                                                )
-                                            }
+                                            className="booking-review-btn change-approve"
+                                            onClick={openApprove}
                                         >
                                             <RefreshCw size={14} />
-                                            <span>تغییر تصمیم به تایید</span>
+                                            تغییر به تایید
+                                        </button>
+                                    )}
+
+                                    {!isDeleted && (
+                                        <button
+                                            type="button"
+                                            className="booking-review-btn delete"
+                                            onClick={openDelete}
+                                            title="حذف نظر"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
+
+                                    {isDeleted && (
+                                        <button
+                                            type="button"
+                                            className="booking-review-btn restore"
+                                            onClick={openRestore}
+                                        >
+                                            <RotateCcw size={14} />
+                                            بازیابی
                                         </button>
                                     )}
                                 </div>
@@ -1303,256 +1423,69 @@ export default function BarberBookingShow({ auth, barber, booking }) {
                 isLoading={cancelModal.isLoading}
             />
 
-            {/* ============ Modal رد نظر ============ */}
-            {rejectModal.isOpen && rejectModal.review && (
-                <div
-                    className="reject-modal-overlay"
-                    onClick={() => !rejectModal.isLoading && closeRejectModal()}
-                >
-                    <div
-                        className="reject-modal"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* ============ هدر ============ */}
-                        <div className="reject-modal-header">
-                            <div className="reject-modal-icon">
-                                <XCircle size={28} />
-                            </div>
-                            <h3>رد نظر</h3>
-                            <button
-                                type="button"
-                                className="reject-modal-close"
-                                onClick={closeRejectModal}
-                                disabled={rejectModal.isLoading}
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        {/* ============ هشدار ============ */}
-                        <div className="reject-modal-warning">
-                            <AlertTriangle size={16} />
-                            <p>
-                                با رد این نظر، از دید عمومی مخفی می‌شود و امتیاز
-                                آرایشگر بازمحاسبه خواهد شد. این عملیات قابل
-                                بازگشت است.
-                            </p>
-                        </div>
-
-                        {/* ============ پیش‌نمایش نظر ============ */}
-                        <div className="reject-modal-preview">
-                            <div className="preview-header">
-                                <div className="preview-user">
-                                    {booking.customer?.thumbnail ? (
-                                        <img
-                                            src={booking.customer.thumbnail}
-                                            alt={booking.customer.name}
-                                        />
-                                    ) : (
-                                        <span>
-                                            {booking.customer?.name
-                                                ?.charAt(0)
-                                                .toUpperCase()}
-                                        </span>
-                                    )}
-                                    <span className="preview-user-name">
-                                        {booking.customer?.name}
-                                    </span>
-                                </div>
-
-                                <RatingStars
-                                    rating={rejectModal.review.rating}
-                                    size={14}
-                                    showNumber={false}
-                                    showTotal={false}
-                                />
-                            </div>
-
-                            {rejectModal.review.comment && (
-                                <p className="preview-comment">
-                                    {rejectModal.review.comment.length > 200
-                                        ? rejectModal.review.comment.substring(
-                                              0,
-                                              200,
-                                          ) + "..."
-                                        : rejectModal.review.comment}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* ============ انتخاب دلیل ============ */}
-                        <div className="reject-form-group">
-                            <label className="form-label">
-                                دلیل رد نظر
-                                <span className="required">*</span>
-                            </label>
-
-                            <div className="reject-reasons-list">
-                                {rejectionReasons.map((reasonOption) => {
-                                    const isSelected =
-                                        rejectModal.reason ===
-                                        reasonOption.value;
-
-                                    return (
-                                        <button
-                                            key={reasonOption.value}
-                                            type="button"
-                                            className={`reject-reason-option ${
-                                                isSelected ? "selected" : ""
-                                            }`}
-                                            onClick={() =>
-                                                setRejectModal((prev) => ({
-                                                    ...prev,
-                                                    reason: reasonOption.value,
-                                                    errors: {
-                                                        ...prev.errors,
-                                                        reason: undefined,
-                                                    },
-                                                }))
-                                            }
-                                            disabled={rejectModal.isLoading}
-                                        >
-                                            <span className="reason-radio">
-                                                {isSelected && (
-                                                    <Check size={12} />
-                                                )}
-                                            </span>
-                                            <div className="reason-content">
-                                                <span className="reason-label">
-                                                    {reasonOption.label}
-                                                </span>
-                                                <span className="reason-description">
-                                                    {reasonOption.description}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            {rejectModal.errors?.reason && (
-                                <div className="form-error">
-                                    <AlertCircle size={12} />
-                                    <span>{rejectModal.errors.reason}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* ============ توضیحات ============ */}
-                        <div className="reject-form-group">
-                            <label className="form-label">
-                                توضیحات
-                                {rejectModal.reason === "other" && (
-                                    <span className="required">*</span>
-                                )}
-                            </label>
-                            <textarea
-                                className={`form-textarea ${
-                                    rejectModal.errors?.note ? "error" : ""
-                                }`}
-                                value={rejectModal.note}
-                                onChange={(e) =>
-                                    setRejectModal((prev) => ({
-                                        ...prev,
-                                        note: e.target.value,
-                                        errors: {
-                                            ...prev.errors,
-                                            note: undefined,
-                                        },
-                                    }))
-                                }
-                                placeholder={
-                                    rejectModal.reason === "other"
-                                        ? "لطفاً دلیل رد نظر را بنویسید..."
-                                        : "توضیحات تکمیلی (اختیاری)..."
-                                }
-                                rows={3}
-                                maxLength={500}
-                                disabled={rejectModal.isLoading}
-                            />
-                            <div className="form-footer">
-                                {rejectModal.errors?.note ? (
-                                    <span className="form-error">
-                                        <AlertCircle size={12} />
-                                        {rejectModal.errors.note}
-                                    </span>
-                                ) : (
-                                    <span className="form-hint">
-                                        حداکثر ۵۰۰ کاراکتر
-                                    </span>
-                                )}
-                                <span className="form-counter" dir="ltr">
-                                    {toPersianNumber(rejectModal.note.length)} /
-                                    ۵۰۰
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* ============ دکمه‌ها ============ */}
-                        <div className="reject-modal-actions">
-                            <button
-                                type="button"
-                                className="btn-cancel"
-                                onClick={closeRejectModal}
-                                disabled={rejectModal.isLoading}
-                            >
-                                انصراف
-                            </button>
-                            <button
-                                type="button"
-                                className="btn-confirm reject"
-                                onClick={handleReject}
-                                disabled={
-                                    rejectModal.isLoading || !rejectModal.reason
-                                }
-                            >
-                                {rejectModal.isLoading ? (
-                                    <>
-                                        <span className="spinner"></span>
-                                        در حال رد...
-                                    </>
-                                ) : (
-                                    <>
-                                        <XCircle size={16} />
-                                        رد نظر
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ============ Modal تغییر تصمیم ============ */}
-            <ConfirmModal
-                isOpen={changeDecisionModal.isOpen}
+            {/* ============ Modals ============ */}
+            <ApproveReviewModal
+                isOpen={approveModal.isOpen}
+                review={approveModal.review}
+                isLoading={approveModal.isLoading}
                 onClose={() =>
-                    setChangeDecisionModal({
+                    setApproveModal({
                         isOpen: false,
                         review: null,
-                        newDecision: null,
                         isLoading: false,
                     })
                 }
-                onConfirm={confirmChangeDecision}
-                title={
-                    changeDecisionModal.newDecision === "approve"
-                        ? "تغییر به تایید"
-                        : "تغییر به رد"
+                setIsLoading={(v) =>
+                    setApproveModal((p) => ({ ...p, isLoading: v }))
                 }
-                message={
-                    changeDecisionModal.newDecision === "approve"
-                        ? "آیا از تغییر تصمیم به «تایید» مطمئن هستید؟ نظر دوباره در دید عمومی نمایش داده می‌شود و امتیاز آرایشگر بازمحاسبه می‌شود."
-                        : "آیا از تغییر تصمیم به «رد» مطمئن هستید؟ نظر از دید عمومی مخفی می‌شود و امتیاز آرایشگر بازمحاسبه می‌شود."
+            />
+
+            <RejectReviewModal
+                isOpen={rejectModal.isOpen}
+                review={rejectModal.review}
+                isLoading={rejectModal.isLoading}
+                onClose={() =>
+                    setRejectModal({
+                        isOpen: false,
+                        review: null,
+                        isLoading: false,
+                    })
                 }
-                confirmText="بله، تغییر بده"
-                cancelText="انصراف"
-                type={
-                    changeDecisionModal.newDecision === "approve"
-                        ? "success"
-                        : "danger"
+                setIsLoading={(v) =>
+                    setRejectModal((p) => ({ ...p, isLoading: v }))
                 }
-                isLoading={changeDecisionModal.isLoading}
+            />
+
+            <DeleteReviewModal
+                isOpen={deleteModal.isOpen}
+                review={deleteModal.review}
+                isLoading={deleteModal.isLoading}
+                onClose={() =>
+                    setDeleteModal({
+                        isOpen: false,
+                        review: null,
+                        isLoading: false,
+                    })
+                }
+                setIsLoading={(v) =>
+                    setDeleteModal((p) => ({ ...p, isLoading: v }))
+                }
+            />
+
+            <RestoreReviewModal
+                isOpen={restoreModal.isOpen}
+                review={restoreModal.review}
+                isLoading={restoreModal.isLoading}
+                onClose={() =>
+                    setRestoreModal({
+                        isOpen: false,
+                        review: null,
+                        isLoading: false,
+                    })
+                }
+                setIsLoading={(v) =>
+                    setRestoreModal((p) => ({ ...p, isLoading: v }))
+                }
             />
         </Layout>
     );

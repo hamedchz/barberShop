@@ -1,7 +1,7 @@
 import React from "react";
 import { Star } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
-
+import "../Assets/RatingStar.css";
 export default function RatingStars({
     rating = 0,
     total = 0,
@@ -53,8 +53,8 @@ export default function RatingStars({
 
             {showNumber && (
                 <span className="rating-number">
-                    {/* {parseFloat(rating || 0).toFixed(1)} */}
                     {toPersianNumber(parseFloat(rating || 0).toFixed(1))}
+                    <span className="rating-max"> از ۵</span>
                 </span>
             )}
 

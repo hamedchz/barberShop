@@ -310,6 +310,13 @@
   margin-right: 16rem;
 }
 
+@media (max-width:1023px) {
+  .admin-layout:not(.sidebar-collapsed) .main-content {
+    margin-right: 0 !important;
+  }
+
+}
+
 /* ============ مدیا کوئری‌ها ============ */
 @media (min-width: 1024px) {
   .sidebar {

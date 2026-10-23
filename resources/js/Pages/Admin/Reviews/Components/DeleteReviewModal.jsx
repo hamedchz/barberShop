@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
 import "../Assets/css/DeleteReviewModal.css";
+import RatingStars from "../../../Customer/Components/RatingStars";
 
 export default function DeleteReviewModal({
     isOpen,
@@ -93,25 +94,12 @@ export default function DeleteReviewModal({
                             </span>
                             <span className="delete-info-rating">
                                 <span className="delete-info-rating-stars">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <Star
-                                            key={i}
-                                            size={12}
-                                            fill={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                            color={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                        />
-                                    ))}
-                                </span>
-                                <span className="delete-info-value">
-                                    {toPersianNumber(review.rating)}/۵
+                                    <RatingStars
+                                        rating={review.rating}
+                                        size={20}
+                                        showNumber={true}
+                                        showTotal={false}
+                                    />
                                 </span>
                             </span>
                         </div>

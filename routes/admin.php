@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DisputeController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\FinanceExportController;
+use App\Http\Controllers\Admin\NeedsAttentionController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
@@ -220,4 +222,23 @@ Route::prefix('/search')
   ->group(function () {
     Route::get('/users',  'UserSearch')
       ->name('users.search');
+  });
+
+Route::prefix('notifications')
+  ->name('notifications.')
+  ->controller(NotificationController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/{id}', 'show')->name('show');
+    Route::patch('/{id}/read', 'markAsRead')->name('read');
+    Route::patch('/mark-all-read', 'markAllAsRead')->name('read-all');
+    Route::delete('/{id}', 'destroy')->name('destroy');
+    Route::delete('/clear-read/delete', 'clearRead')->name('clear-read');
+  });
+
+Route::prefix('needs-attention')
+  ->name('needs-attention.')
+  ->controller(NeedsAttentionController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
   });

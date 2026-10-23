@@ -3965,3 +3965,10 @@ body {
     opacity: 1;
   }
 }
+
+@media (max-width:650px) {
+  .status-filters {
+    flex-direction: column;
+    width: 100% !important;
+  }
+}

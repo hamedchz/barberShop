@@ -9,6 +9,7 @@ import {
     AlertCircle,
 } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
+import RatingStars from "../../../Customer/Components/RatingStars";
 
 import "../Assets/css/RejectReviewModal.css";
 
@@ -152,26 +153,13 @@ export default function RejectReviewModal({
                             </div>
                             <div className="reject-preview-rating">
                                 <div className="reject-preview-rating-stars">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <Star
-                                            key={i}
-                                            size={14}
-                                            fill={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                            color={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                        />
-                                    ))}
+                                    <RatingStars
+                                        rating={review.rating}
+                                        size={20}
+                                        showNumber={true}
+                                        showTotal={false}
+                                    />
                                 </div>
-                                <span className="reject-preview-rating-value">
-                                    {toPersianNumber(review.rating)}/۵
-                                </span>
                             </div>
                         </div>
                         {review.comment ? (

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { AlertTriangle, X, Trash2, CheckCircle, Info } from "lucide-react";
 import "../Assets/css/confirm-modal.css";
+
 export default function ConfirmModal({
     isOpen,
     onClose,
@@ -9,9 +10,10 @@ export default function ConfirmModal({
     message = "این عملیات قابل بازگشت نیست.",
     confirmText = "بله، ادامه بده",
     cancelText = "انصراف",
-    type = "danger", // danger | warning | info | success
+    type = "danger",
     isLoading = false,
     icon: CustomIcon,
+    children, // ← اضافه شد
 }) {
     // جلوگیری از اسکرول صفحه وقتی Modal باز است
     useEffect(() => {
@@ -118,7 +120,12 @@ export default function ConfirmModal({
                 {/* محتوا */}
                 <div className="modal-body">
                     <h3 className="modal-title">{title}</h3>
-                    <p className="modal-message">{message}</p>
+                    {message && <p className="modal-message">{message}</p>}
+
+                    {/* ============ children ============ */}
+                    {children && (
+                        <div className="modal-children">{children}</div>
+                    )}
                 </div>
 
                 {/* دکمه‌های عملیات */}

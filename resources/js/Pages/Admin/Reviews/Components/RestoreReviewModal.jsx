@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
 import "../Assets/css/RestoreReviewModal.css";
+import RatingStars from "../../../Customer/Components/RatingStars";
 
 export default function RestoreReviewModal({
     isOpen,
@@ -99,26 +100,13 @@ export default function RestoreReviewModal({
                             </div>
                             <div className="restore-preview-rating">
                                 <div className="restore-preview-rating-stars">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <Star
-                                            key={i}
-                                            size={14}
-                                            fill={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                            color={
-                                                i <= review.rating
-                                                    ? "#fbbf24"
-                                                    : "#e5e7eb"
-                                            }
-                                        />
-                                    ))}
+                                    <RatingStars
+                                        rating={review.rating}
+                                        size={20}
+                                        showNumber={true}
+                                        showTotal={false}
+                                    />
                                 </div>
-                                <span className="restore-preview-rating-value">
-                                    {toPersianNumber(review.rating)}/۵
-                                </span>
                             </div>
                         </div>
 

@@ -260,89 +260,110 @@ class BarberBookingController extends Controller
      */
     public function show(User $barber, Booking $booking)
     {
-
-
         // بررسی ارتباط رزرو با آرایشگر
         if ($booking->barber_id !== $barber->id) {
             abort(404);
         }
 
         $booking->load([
-            'user:id,name,avatar,phone,slug',
+            'user:id,name,avatar,phone,slug,email',
             'service:id,name,description,image,duration,price',
             'timeSlot:id,date,start_time,end_time',
             'payment',
-            'review',
+            // ============ review با soft delete ============
+            'review' => fn($q) => $q->withTrashed()->with([
+                'user:id,name,avatar,phone,slug',
+                'moderatedBy:id,name',
+            ]),
         ]);
-
-
 
         return Inertia::render('Admin/Barbers/BookingShow', [
             'barber' => [
-                'id' => $barber->id,
-                'name' => $barber->name,
-                'slug' => $barber->slug,
-                'avatar' => $barber->avatar,
+                'id'        => $barber->id,
+                'name'      => $barber->name,
+                'slug'      => $barber->slug,
+                'avatar'    => $barber->avatar,
                 'thumbnail' => $barber->avatarUrl(),
             ],
             'booking' => [
-                'id' => $booking->id,
-                'status' => $booking->status->value,
-                'amount' => (float) $booking->amount,
-                'notes' => $booking->notes,
-                'created_at' => $booking->created_at,
-                'confirmed_at' => $booking->confirmed_at,
-                'cancelled_at' => $booking->cancelled_at,
-                'cancelled_by' => $booking->cancelled_by,
+                'id'                  => $booking->id,
+                'status'              => $booking->status->value,
+                'amount'              => (float) $booking->amount,
+                'notes'               => $booking->notes,
+                'created_at'          => $booking->created_at,
+                'confirmed_at'        => $booking->confirmed_at,
+                'cancelled_at'        => $booking->cancelled_at,
+                'cancelled_by'        => $booking->cancelled_by,
                 'cancellation_reason' => $booking->cancellation_reason,
 
                 'customer' => $booking->user ? [
-                    'id' => $booking->user->id,
-                    'name' => $booking->user->name,
-                    'avatar' => $booking->user->avatar,
+                    'id'        => $booking->user->id,
+                    'name'      => $booking->user->name,
+                    'avatar'    => $booking->user->avatar,
                     'thumbnail' => $booking->user->avatarUrl(),
-                    'phone' => $booking->user->phone,
-                    'email' => $booking->user->email,
+                    'phone'     => $booking->user->phone,
+                    'email'     => $booking->user->email,
                 ] : null,
 
                 'service' => $booking->service ? [
-                    'id' => $booking->service->id,
-                    'name' => $booking->service->name,
+                    'id'          => $booking->service->id,
+                    'name'        => $booking->service->name,
                     'description' => $booking->service->description,
-                    'image' => $booking->service->image
+                    'image'       => $booking->service->image
                         ? asset('storage/' . $booking->service->image)
                         : null,
-                    'duration' => $booking->service->duration,
-                    'price' => (float) $booking->service->price,
+                    'duration'    => $booking->service->duration,
+                    'price'       => (float) $booking->service->price,
                 ] : null,
 
-                'date' => Carbon::parse($booking->timeSlot?->date)->format('Y-m-d'),
+                'date'       => $booking->timeSlot?->date
+                    ? Carbon::parse($booking->timeSlot->date)->format('Y-m-d')
+                    : null,
                 'start_time' => $booking->timeSlot?->start_time,
-                'end_time' => $booking->timeSlot?->end_time,
+                'end_time'   => $booking->timeSlot?->end_time,
 
                 'payment' => $booking->payment ? [
-                    'gateway' => $booking->payment->gateway,
-                    'status' => $booking->payment->status,
-                    'amount' => (float) $booking->payment->amount,
+                    'gateway'        => $booking->payment->gateway,
+                    'status'         => $booking->payment->status,
+                    'amount'         => (float) $booking->payment->amount,
                     'transaction_id' => $booking->payment->transaction_id,
-                    'paid_at' => $booking->payment->paid_at,
+                    'paid_at'        => $booking->payment->paid_at,
                 ] : null,
 
+                // ============ review (شامل soft delete) ============
                 'review' => $booking->review ? [
-                    'id' => $booking->review->id,
-                    'rating' => (int) $booking->review->rating,
-                    'comment' => $booking->review->comment,
-                    'status' => $booking->review->status->value,
-                    'status_label' => $booking->review->status->label(),
-                    'status_color' => $booking->review->status->color(),
-                    'status_icon' => $booking->review->status->icon(),
-                    'created_at' => $booking->review->created_at,
-                    'moderated_at' => $booking->review->moderated_at,
-                    'moderated_by' => $booking->review->moderatedBy,
+                    'id'            => $booking->review->id,
+                    'rating'        => (int) $booking->review->rating,
+                    'comment'       => $booking->review->comment,
+                    'status'        => $booking->review->status?->value,
+                    'status_label'  => $booking->review->status?->label(),
+                    'status_color'  => $booking->review->status?->color(),
+                    'status_icon'   => $booking->review->status?->icon(),
+                    'created_at'    => $booking->review->created_at,
+                    'moderated_at'  => $booking->review->moderated_at,
+                    'is_deleted'    => $booking->review->trashed(),
+                    'deleted_at'    => $booking->review->deleted_at,
 
+                    'moderation_note'  => $booking->review->moderation_note,
+
+                    'rejection_reason' => $booking->review->rejection_reason,
+
+                    'user' => $booking->review->user ? [
+                        'id'        => $booking->review->user->id,
+                        'name'      => $booking->review->user->name,
+                        'avatar'    => $booking->review->user->avatar,
+                        'thumbnail' => $booking->review->user->avatarUrl(),
+                        'phone'     => $booking->review->user->phone,
+                        'slug'      => $booking->review->user->slug,
+                    ] : null,
+
+                    'moderated_by' => $booking->review->moderatedBy ? [
+                        'id'   => $booking->review->moderatedBy->id,
+                        'name' => $booking->review->moderatedBy->name,
+                    ] : null,
                 ] : null,
             ],
-            'scopes' => ['bookings']
+            'scopes' => ['bookings'],
         ]);
     }
 

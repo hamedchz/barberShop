@@ -81,7 +81,7 @@ class Booking extends Model
 
     public function review()
     {
-        return $this->hasOne(Review::class, 'booking_id');
+        return $this->hasOne(Review::class, 'booking_id')->withTrashed();
     }
 
     public function disputes()

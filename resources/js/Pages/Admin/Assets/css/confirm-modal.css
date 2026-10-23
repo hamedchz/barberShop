@@ -221,3 +221,126 @@
     max-width: 460px;
   }
 }
+
+/* ============================================
+   Modal Children (پشتیبانی از children)
+   ============================================ */
+
+.modal-children {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: modalChildrenIn 0.3s ease-out 0.1s both;
+}
+
+@keyframes modalChildrenIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   Preview Box (پیش‌نمایش اعلان)
+   ============================================ */
+
+.modal-preview {
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.modal-preview-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 0.375rem;
+  line-height: 1.4;
+}
+
+.modal-preview-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* ============================================
+   Warning Box (اخطار غیرقابل بازگشت)
+   ============================================ */
+
+.modal-warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  line-height: 1.7;
+  font-weight: 600;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.modal-warning-box svg {
+  flex-shrink: 0;
+  color: #ef4444;
+  margin-top: 0.125rem;
+}
+
+.modal-warning-box strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #7f1d1d;
+  font-weight: 800;
+  font-size: 0.8125rem;
+}
+
+.modal-warning-box p {
+  margin: 0;
+  font-weight: 600;
+  color: #991b1b;
+}
+
+/* ============================================
+   Info Box (اطلاعات)
+   ============================================ */
+
+.modal-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #1e40af;
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.modal-info-box svg {
+  flex-shrink: 0;
+  color: #3b82f6;
+  margin-top: 0.125rem;
+}
+
+.modal-info-box strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #1e3a8a;
+  font-weight: 800;
+}
