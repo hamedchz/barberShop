@@ -59,6 +59,7 @@ class NotificationController extends Controller
                 'search'    => $request->input('search', ''),
             ],
             'types' => $this->getNotificationTypes($user),
+            'scopes' => ['notifications']
         ]);
     }
 

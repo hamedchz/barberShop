@@ -12,6 +12,8 @@ use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\SettlementStatus;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class NeedsAttentionController extends Controller
 {
@@ -114,7 +116,7 @@ class NeedsAttentionController extends Controller
                     'phone' => $r->barber->phone,
                 ] : null,
                 'created_at' => $r->created_at?->toIso8601String(),
-                'action_url' => "/admin/reviews/{$r->id}",
+                'action_url' => "/admin/reviews/{$r->id}/show",
             ]);
 
         // ============ گزارش‌های باز ============
@@ -123,27 +125,75 @@ class NeedsAttentionController extends Controller
 
         // ============ ترکیب بر اساس tab ============
         $items = collect();
-        if ($tab === 'all' || $tab === 'disputes') $items = $items->merge($disputes);
-        if ($tab === 'all' || $tab === 'settlements') $items = $items->merge($settlements);
-        if ($tab === 'all' || $tab === 'reviews') $items = $items->merge($reviews);
-        if ($tab === 'all' || $tab === 'reports') $items = $items->merge($reports);
 
-        $items = $items->sortByDesc('created_at')->values();
+        if ($tab === 'all' || $tab === 'disputes') {
+            $items = $items->merge($disputes);
+        }
+
+        if ($tab === 'all' || $tab === 'settlements') {
+            $items = $items->merge($settlements);
+        }
+
+        if ($tab === 'all' || $tab === 'reviews') {
+            $items = $items->merge($reviews);
+        }
+
+        if ($tab === 'all' || $tab === 'reports') {
+            $items = $items->merge($reports);
+        }
+
+        // مرتب‌سازی تمام موارد بر اساس تاریخ
+        $items = $items
+            ->sortByDesc('created_at')
+            ->values();
+
+        // ============ آمار کل موارد فیلترشده ============
+        $stats = [
+            'total'         => $items->count(),
+            'disputes'      => $disputes->count(),
+            'settlements'   => $settlements->count(),
+            'reviews'       => $reviews->count(),
+            'reports'       => $reports->count(),
+            'high_priority' => $items->where('priority', 'high')->count(),
+            'total_amount'  => $items->sum('amount'),
+        ];
+
+        // ============ صفحه‌بندی ============
+        $perPage = 33;
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+        $paginatedItems = new LengthAwarePaginator(
+            $items->forPage($currentPage, $perPage)->values(),
+            $items->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $request->query(),
+            ]
+        );
 
         return Inertia::render('Admin/NeedsAttention/Index', [
-            'items' => $items,
-            'stats' => [
-                'total'       => $items->count(),
-                'disputes'    => $disputes->count(),
-                'settlements' => $settlements->count(),
-                'reviews'     => $reviews->count(),
-                'reports'     => $reports->count(),
-                'high_priority' => $items->where('priority', 'high')->count(),
-                'total_amount'  => $items->sum('amount'),
+            'items' => $paginatedItems->items(),
+
+            'pagination' => [
+                'current_page' => $paginatedItems->currentPage(),
+                'last_page'    => $paginatedItems->lastPage(),
+                'per_page'     => $paginatedItems->perPage(),
+                'total'        => $paginatedItems->total(),
+                'from'         => $paginatedItems->firstItem(),
+                'to'           => $paginatedItems->lastItem(),
+                'links'        => $paginatedItems->linkCollection(),
             ],
+
+            'stats' => $stats,
+
             'filters' => [
                 'tab' => $tab,
             ],
+
+            'scopes' => ['needs-attention']
         ]);
     }
 }

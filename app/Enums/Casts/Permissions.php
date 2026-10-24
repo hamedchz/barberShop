@@ -28,6 +28,8 @@ enum Permissions: string
   case manageDeposits = 'manage-deposits';
   case manageBookings = 'manage-bookings';
   case manageDisputes = 'manage-disputes';
+  case manageNeedsAttention = 'manage-needs-attention';
+  case manageNotifications = 'manage-notifications';
 
 
   public function description(): string
@@ -57,6 +59,8 @@ enum Permissions: string
       self::manageDeposits => 'مدیریت شارژها',
       self::manageBookings => 'مدیریت رزروها',
       self::manageDisputes => 'مدیریت اعتراض  ها',
+      self::manageNeedsAttention => 'مدیریت موارد نیازمند رسیدگی',
+      self::manageNotifications => 'مدیریت اعلان ها',
     };
   }
 

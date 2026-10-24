@@ -2,10 +2,12 @@
 
 import React from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../../Layouts/Layout";
+import Layout from "../Layouts/Layout";
 import "../Assets/css/Finance.css";
 import "../Assets/css/Transactions.css";
 import "../Notifications/Assets/css/Notification.css";
+import "./Assets/css/NeedsAttention.css";
+import Pagination from "../Components/Pagination";
 
 import {
     AlertTriangle,
@@ -63,7 +65,12 @@ const priorityConfig = {
     low: { label: "کم", color: "#065f46", bg: "#ecfdf5" },
 };
 
-export default function NeedsAttentionIndex({ items, stats, filters }) {
+export default function NeedsAttentionIndex({
+    items,
+    stats,
+    filters,
+    pagination,
+}) {
     const activeTab = filters.tab || "all";
 
     const setTab = (tab) => {
@@ -388,6 +395,7 @@ export default function NeedsAttentionIndex({ items, stats, filters }) {
                         </div>
                     )}
                 </div>
+                <Pagination links={pagination.links} only={pagination} />
             </div>
         </Layout>
     );

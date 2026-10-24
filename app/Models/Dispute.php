@@ -64,7 +64,10 @@ class Dispute extends Model
     {
         return $this->belongsTo(Booking::class);
     }
-
+    public function disputedBy()
+    {
+        return $this->belongsTo(User::class, 'disputed_by');
+    }
     public function disputedByUser()
     {
         return $this->belongsTo(User::class, 'disputed_by_user_id');

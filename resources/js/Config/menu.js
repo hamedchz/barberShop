@@ -26,6 +26,8 @@ import {
     UserRoundGroup,
     StarCheck,
     CalendarClock,
+    SquareText,
+    BellRing,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -174,7 +176,23 @@ export const menuConfig = [
         scopes: [],
         permissions: [],
     },
-    // ============ رزروهای آرایشگر ============
+    {
+        id: "needs-attention",
+        label: "موارد نیازمند رسیدگی",
+        icon: SquareText,
+        href: "/admin/needs-attention",
+        scopes: ["needs-attention"],
+        permissions: ["manage-needs-attention"],
+    },
+    {
+        id: "notifications",
+        label: "مرکز اعلان ها",
+        icon: BellRing,
+        href: "/admin/notifications",
+        scopes: ["notifications"],
+        permissions: ["manage-notifications"],
+    },
+    // ============ رزروها============
     {
         id: "bookings",
         label: "مدیریت رزروها",
