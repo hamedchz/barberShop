@@ -29,6 +29,8 @@ import {
     toPersianTimeRange,
 } from "../../../utils/persianNumbers";
 
+import "../Bookings/Assets/css/BookingCard.css";
+
 // ============ وضعیت‌های رزرو ============
 const statusConfig = {
     pending: {
@@ -569,12 +571,39 @@ export default function BookingCard({
                     </div>
 
                     {/* ============ پیام منقضی ============ */}
+                    {/* ============ اعلان انقضای مهلت پرداخت ============ */}
                     {booking.status === "pending" &&
                         booking.is_expired &&
                         !booking.can_pay && (
-                            <div className="booking-expired-notice">
-                                <XCircle size={12} />
-                                <span>مهلت پرداخت منقضی شده است</span>
+                            <div
+                                className="booking-expired-notice"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                {/* <div className="booking-expired-icon">
+                                    <Hourglass size={19} strokeWidth={1.8} />
+                                </div> */}
+
+                                <div className="booking-expired-content">
+                                    <div className="booking-expired-title">
+                                        مهلت پرداخت به پایان رسیده است
+                                    </div>
+
+                                    {/* <p className="booking-expired-description">
+                                        زمان پرداخت این رزرو تمام شده و امکان
+                                        پرداخت آن وجود ندارد.
+                                    </p> */}
+
+                                    {/* <div className="booking-expired-status">
+                                        <span className="booking-expired-status-dot" />
+                                        رزرو در انتظار پرداخت
+                                    </div> */}
+                                </div>
+
+                                <div className="booking-expired-badge">
+                                    <XCircle size={15} />
+                                    <span>منقضی شده</span>
+                                </div>
                             </div>
                         )}
                 </div>

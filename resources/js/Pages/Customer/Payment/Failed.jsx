@@ -1,15 +1,21 @@
 import React from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
-import { XCircle, Home, RefreshCw, AlertCircle, Phone } from "lucide-react";
+import {
+    XCircle,
+    Home,
+    RefreshCw,
+    AlertCircle,
+    Phone,
+    Calendar1,
+} from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import "../Assets/Payment.css";
+import { Calendar } from "react-multi-date-picker";
 export default function PaymentFailed({ auth, booking }) {
     // ============ تلاش مجدد ============
     const handleRetry = () => {
-        router.get(
-            `/customer/booking/create?time_slot_id=${booking.time_slot_id}`,
-        );
+        router.get(`/customer/bookings`);
     };
 
     return (
@@ -58,8 +64,8 @@ export default function PaymentFailed({ auth, booking }) {
                             onClick={handleRetry}
                             className="result-btn primary"
                         >
-                            <RefreshCw size={18} />
-                            تلاش مجدد
+                            <Calendar1 size={18} />
+                            نوبت های من
                         </button>
                         <Link href="/" className="result-btn outline">
                             <Home size={18} />

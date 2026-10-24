@@ -1,0 +1,241 @@
+/* ============================================
+   Gateway Toggle (فعال/غیرفعال)
+   ============================================ */
+
+.gateway-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.875rem;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.gateway-toggle-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  transition: background 0.2s;
+}
+
+/* ============ فعال ============ */
+.gateway-toggle-wrapper.active {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  border-color: #a7f3d0;
+}
+
+.gateway-toggle-wrapper.active::before {
+  background: linear-gradient(180deg, #10b981, #059669);
+}
+
+.gateway-toggle-wrapper.active:hover {
+  border-color: #6ee7b7;
+  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.15);
+}
+
+/* ============ غیرفعال ============ */
+.gateway-toggle-wrapper.inactive {
+  background: linear-gradient(135deg, #f9fafb 0%, #fef2f2 100%);
+  border-color: #fecaca;
+}
+
+.gateway-toggle-wrapper.inactive::before {
+  background: linear-gradient(180deg, #ef4444, #dc2626);
+}
+
+.gateway-toggle-wrapper.inactive:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.1);
+}
+
+/* ============ آیکون ============ */
+.gateway-toggle-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.gateway-toggle-wrapper.active .gateway-toggle-icon {
+  background: #d1fae5;
+  color: #065f46;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.gateway-toggle-wrapper.inactive .gateway-toggle-icon {
+  background: #fee2e2;
+  color: #991b1b;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
+/* ============ محتوا ============ */
+.gateway-toggle-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.gateway-toggle-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+
+.gateway-toggle-wrapper.active .gateway-toggle-title {
+  color: #065f46;
+}
+
+.gateway-toggle-wrapper.inactive .gateway-toggle-title {
+  color: #991b1b;
+}
+
+.gateway-toggle-desc {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  transition: color 0.2s;
+}
+
+.gateway-toggle-wrapper.active .gateway-toggle-desc {
+  color: #047857;
+  opacity: 0.8;
+}
+
+.gateway-toggle-wrapper.inactive .gateway-toggle-desc {
+  color: #b91c1c;
+  opacity: 0.8;
+}
+
+/* ============================================
+   Switch (کلید کشویی)
+   ============================================ */
+.gateway-switch {
+  position: relative;
+  width: 3rem;
+  height: 1.625rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.gateway-switch.on {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.gateway-switch.off {
+  background: #d1d5db;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(156, 163, 175, 0.1);
+}
+
+.gateway-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ دستگیره ============ */
+.gateway-switch-thumb {
+  position: absolute;
+  top: 0.1875rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gateway-switch.on .gateway-switch-thumb {
+  left: 0.1875rem;
+  transform: translateX(0);
+}
+
+.gateway-switch.off .gateway-switch-thumb {
+  left: calc(100% - 1.4375rem);
+  transform: translateX(0);
+}
+
+.gateway-switch:not(:disabled):active .gateway-switch-thumb {
+  width: 1.5rem;
+}
+
+.gateway-switch.on:not(:disabled):active .gateway-switch-thumb {
+  left: 0.1875rem;
+}
+
+.gateway-switch.off:not(:disabled):active .gateway-switch-thumb {
+  left: calc(100% - 1.6875rem);
+}
+
+/* ============ فوکوس ============ */
+.gateway-switch:focus-visible {
+  outline: 3px solid rgba(139, 92, 246, 0.3);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .gateway-toggle-wrapper {
+    padding: 0.75rem 0.875rem;
+    gap: 0.75rem;
+  }
+
+  .gateway-toggle-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .gateway-toggle-title {
+    font-size: 0.8125rem;
+  }
+
+  .gateway-toggle-desc {
+    font-size: 0.625rem;
+  }
+
+  .gateway-switch {
+    width: 2.75rem;
+    height: 1.5rem;
+  }
+
+  .gateway-switch-thumb {
+    width: 1.125rem;
+    height: 1.125rem;
+    top: 0.1875rem;
+  }
+
+  .gateway-switch.on .gateway-switch-thumb {
+    left: 0.1875rem;
+  }
+
+  .gateway-switch.off .gateway-switch-thumb {
+    left: calc(100% - 1.3125rem);
+  }
+}

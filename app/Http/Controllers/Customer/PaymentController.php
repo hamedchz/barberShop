@@ -10,10 +10,12 @@ use App\Enums\Casts\TimeSlotStatus;
 use App\Models\Payment;
 use App\Models\Booking;
 use App\Models\WalletDeposit;
+use App\Services\PaymentGatewayService;
 use App\Services\WalletDepositService;
 use App\Supports\StickyAlert;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Shetabit\Multipay\Exceptions\PurchaseFailedException;
 use Shetabit\Multipay\Invoice as ShInvoice;
 use Shetabit\Payment\Facade\Payment as ShPayment;
 
@@ -27,47 +29,85 @@ class PaymentController extends Controller
      * مرحله ۲: ریدایرکت به درگاه پرداخت
      */
 
+
+
+
     public function pay(Request $request)
     {
         $validated = $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
-            'gateway' => 'required|string',
+            'booking_id' => 'required|integer|exists:bookings,id',
+            'gateway' => 'required|string|in:zarinpal',
         ]);
 
-        $booking = Booking::findOrFail($validated['booking_id']);
+        // بررسی مالکیت رزرو
+        $booking = Booking::where('user_id', auth()->id())
+            ->findOrFail($validated['booking_id']);
 
-        // ساخت Payment
-        $payment = Payment::updateOrCreate([
-            'booking_id' => $booking->id,
+        // بررسی وضعیت رزرو را نیز مطابق منطق پروژه اضافه کن.
+        // مثلاً فقط رزروهایی که مجاز به پرداخت هستند.
 
-        ], [
-            'booking_id' => $booking->id,
-            'user_id' => auth()->id(),
-            'amount' => $booking->amount,
-            'gateway' => $validated['gateway'],
-            'status' => 'pending',
-        ]);
+        try {
+            // بررسی فعال بودن و ساخت درگاه
+            PaymentGatewayService::driver($validated['gateway']);
 
-        // درگاه انتخاب‌شده
-        config([
-            'payment.default' => $validated['gateway'],
-        ]);
+            config([
+                'payment.default' => $validated['gateway'],
+            ]);
 
-        return ShPayment::purchase(
-            (new ShInvoice)
-                ->amount($payment->amount)
-                ->detail([
-                    'booking' => $payment->booking_id,
-                    'Description' => "پرداخت رزرو #{$payment->booking_id}",
-                ]),
-            function ($driver, $transactionId) use ($payment) {
-                $payment->update([
-                    'transaction_id' => $transactionId,
-                    'authority' => $transactionId,
-                ]);
-            }
-        )->pay()->render();
+            $payment = Payment::updateOrCreate(
+                [
+                    'booking_id' => $booking->id,
+                ],
+                [
+                    'user_id' => auth()->id(),
+                    'amount' => $booking->amount,
+                    'gateway' => $validated['gateway'],
+                    'status' => 'pending',
+                ]
+            );
+
+            return ShPayment::purchase(
+                (new ShInvoice)
+                    ->amount($payment->amount)
+                    ->detail([
+                        'booking' => $payment->booking_id,
+                        'Description' => "پرداخت رزرو #{$payment->booking_id}",
+                    ]),
+                function ($driver, $transactionId) use ($payment) {
+                    $payment->update([
+                        'transaction_id' => $transactionId,
+                        'authority' => $transactionId,
+                    ]);
+                }
+            )->pay()->render();
+        } catch (PurchaseFailedException $e) {
+            Log::error('Payment purchase failed', [
+                'user_id' => auth()->id(),
+                'booking_id' => $booking->id,
+                'gateway' => $validated['gateway'],
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('customer.payment.failed', [
+                $booking->id,
+                'reason' => 'gateway_unavailable',
+            ]);
+        } catch (\RuntimeException $e) {
+            Log::warning('Payment gateway unavailable', [
+                'user_id' => auth()->id(),
+                'booking_id' => $booking->id,
+                'gateway' => $validated['gateway'],
+                'message' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('customer.payment.failed', [
+                $booking->id,
+                'reason' => 'gateway_unavailable',
+            ]);
+        }
     }
+
 
     /**
      * مرحله ۳: بازگشت از درگاه (Callback)

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\FinanceExportController;
 use App\Http\Controllers\Admin\NeedsAttentionController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
@@ -241,4 +242,16 @@ Route::prefix('needs-attention')
   ->controller(NeedsAttentionController::class)
   ->group(function () {
     Route::get('/', 'index')->name('index');
+  });
+
+// routes/admin.php
+Route::prefix('payment-settings')
+  ->name('payment-settings.')
+  ->controller(PaymentSettingController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/{gateway}', 'show')->name('show');
+    Route::patch('/{gateway}', 'update')->name('update');
+    Route::patch('/{gateway}/toggle', 'toggle')->name('toggle');
+    Route::post('/{gateway}/test', 'testConnection')->name('test');
   });

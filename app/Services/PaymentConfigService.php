@@ -11,7 +11,8 @@ class PaymentConfigService
    */
   public static function apply(): void
   {
-    $settings = PaymentSetting::all();
+    // فقط درگاه‌های فعال
+    $settings = PaymentSetting::where('is_active', true)->get();
 
     foreach ($settings as $setting) {
       $driver = "payment.drivers.{$setting->gateway}";
@@ -43,15 +44,24 @@ class PaymentConfigService
     $config = config("payment.drivers.{$gateway}", []);
 
     return [
-      'gateway'      => $gateway,
-      'gateway_label' => PaymentSetting::GATEWAYS[$gateway] ?? $gateway,
-      'mode'         => $setting?->mode ?? ($config['mode'] ?? 'normal'),
-      'merchant_id'  => $setting?->merchant_id ?? ($config['merchantId'] ?? ''),
-      'callback_url' => $setting?->callback_url ?? ($config['callbackUrl'] ?? ''),
-      'description'  => $setting?->description ?? ($config['description'] ?? ''),
-      'currency'     => $setting?->currency ?? ($config['currency'] ?? 'T'),
-      'is_active'    => $setting?->is_active ?? true,
-      'source'       => $setting ? 'database' : 'config',
+      'gateway'        => $gateway,
+      'gateway_label'  => PaymentSetting::GATEWAYS[$gateway] ?? $gateway,
+      'mode'           => $setting?->mode ?? ($config['mode'] ?? 'normal'),
+      'merchant_id'    => $setting?->merchant_id ?? ($config['merchantId'] ?? ''),
+      'callback_url'   => $setting?->callback_url ?? ($config['callbackUrl'] ?? ''),
+      'description'    => $setting?->description ?? ($config['description'] ?? ''),
+      'currency'       => $setting?->currency ?? ($config['currency'] ?? 'T'),
+      'is_active'      => $setting?->is_active ?? true,
+      'source'         => $setting ? 'database' : 'config',
     ];
+  }
+
+  /**
+   * آیا درگاه فعال است؟
+   */
+  public static function isActive(string $gateway): bool
+  {
+    $setting = PaymentSetting::where('gateway', $gateway)->first();
+    return $setting?->is_active ?? true;
   }
 }

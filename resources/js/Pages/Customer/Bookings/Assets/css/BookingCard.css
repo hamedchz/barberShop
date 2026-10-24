@@ -1,0 +1,177 @@
+/* =========================================
+   Booking Expired Notice
+========================================= */
+
+.booking-expired-notice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 16px;
+  direction: rtl;
+  text-align: right;
+
+  background: linear-gradient(135deg,
+      #fffafa 0%,
+      #fff5f5 100%);
+
+  border: 1px solid #fee2e2;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px rgba(185, 28, 28, 0.035);
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.booking-expired-notice:hover {
+  border-color: #fecaca;
+  box-shadow: 0 5px 16px rgba(185, 28, 28, 0.07);
+}
+
+/* آیکون */
+.booking-expired-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+
+  color: #dc2626;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 13px;
+}
+
+/* محتوای اعلان */
+.booking-expired-content {
+  flex: 1;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.booking-expired-title {
+  color: #991b1b;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+.booking-expired-description {
+  margin: 5px 0 0;
+  color: #78716c;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 2;
+}
+
+/* وضعیت رزرو */
+.booking-expired-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 5px 9px;
+
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.booking-expired-status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  background: #f59e0b;
+  border-radius: 50%;
+}
+
+/* برچسب انقضا */
+.booking-expired-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+
+  padding: 6px 9px;
+  color: #b91c1c;
+  background: rgba(254, 226, 226, 0.75);
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 576px) {
+  .booking-expired-notice {
+    gap: 10px;
+    padding: 13px;
+    border-radius: 13px;
+  }
+
+  .booking-expired-icon {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+  }
+
+  .booking-expired-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .booking-expired-title {
+    font-size: 12px;
+  }
+
+  .booking-expired-description {
+    font-size: 11px;
+    line-height: 1.9;
+  }
+
+  .booking-expired-status {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+
+  .booking-expired-badge {
+    gap: 4px;
+    padding: 5px 7px;
+    font-size: 9px;
+  }
+
+  .booking-expired-badge svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .booking-expired-notice {
+    flex-wrap: wrap;
+  }
+
+  .booking-expired-content {
+    flex-basis: calc(100% - 55px);
+  }
+
+  .booking-expired-badge {
+    margin-right: 48px;
+  }
+}
