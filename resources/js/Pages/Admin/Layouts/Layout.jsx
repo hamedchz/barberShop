@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 export default function Layout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-
+    const { site } = usePage().props;
     // ============ بازیابی وضعیت از localStorage ============
     useEffect(() => {
         const saved = localStorage.getItem("sidebar_collapsed");

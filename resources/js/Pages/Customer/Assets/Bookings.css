@@ -546,23 +546,28 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  /* background: linear-gradient(135deg, #10b981, #059669); */
   color: white;
   border-radius: 0.875rem;
   font-size: 0.875rem;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  /* box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); */
   transition: all 0.2s;
   border: none;
   cursor: pointer;
   font-family: inherit;
+
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light)
 }
 
 .clear-filters-btn-primary:hover,
 .empty-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+  /* box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4); */
+  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
+
 }
 
 /* ============================================

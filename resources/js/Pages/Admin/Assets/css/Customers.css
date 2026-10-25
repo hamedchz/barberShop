@@ -370,14 +370,17 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  /* background: linear-gradient(135deg, #3b82f6, #2563eb); */
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  /* box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); */
+  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
+  background: var(--gradient-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4);
+  /* box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4); */
+  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
 }
 
 .btn-success {

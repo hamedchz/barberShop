@@ -30,6 +30,9 @@ enum Permissions: string
   case manageDisputes = 'manage-disputes';
   case manageNeedsAttention = 'manage-needs-attention';
   case manageNotifications = 'manage-notifications';
+  case managePaymentSettings = 'manage-payment-settings';
+  case manageReviews = 'manage-reviews';
+  case manageBanks = 'manage-banks';
 
 
   public function description(): string
@@ -61,6 +64,9 @@ enum Permissions: string
       self::manageDisputes => 'مدیریت اعتراض  ها',
       self::manageNeedsAttention => 'مدیریت موارد نیازمند رسیدگی',
       self::manageNotifications => 'مدیریت اعلان ها',
+      self::managePaymentSettings => 'مدیریت درگاه پرداخت',
+      self::manageReviews => 'مدیریت نظرات',
+      self::manageBanks => 'مدیریت بانک ها',
     };
   }
 

@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SettlementController;
 use App\Http\Controllers\Admin\WalletDepositController;
 use Illuminate\Support\Facades\Route;
@@ -254,4 +255,14 @@ Route::prefix('payment-settings')
     Route::patch('/{gateway}', 'update')->name('update');
     Route::patch('/{gateway}/toggle', 'toggle')->name('toggle');
     Route::post('/{gateway}/test', 'testConnection')->name('test');
+  });
+
+Route::prefix('settings')
+  ->name('settings.')
+  ->controller(SettingController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::patch('/', 'update')->name('update');
+    Route::post('/logo', 'uploadLogo')->name('upload-logo');
+    Route::post('/favicon', 'uploadFavicon')->name('upload-favicon');
   });

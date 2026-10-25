@@ -929,14 +929,17 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  /* background: linear-gradient(135deg, #8b5cf6, #7c3aed); */
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  /* box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); */
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(139, 92, 246, 0.4);
+  /* box-shadow: 0 8px 18px rgba(139, 92, 246, 0.4); */
+  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
 }
 
 .btn-success {

@@ -98,6 +98,7 @@ class ReviewController extends Controller
                 ->orderBy('name')
                 ->limit(100)
                 ->get(),
+            'scopes' => ['reviews']
         ]);
     }
 

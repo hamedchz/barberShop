@@ -28,10 +28,16 @@ export default function Sidebar({ isOpen, closeSidebar }) {
         <aside className={`sidebar ${isOpen ? "open" : ""}`}>
             <div>
                 <div className="sidebar-header">
-                    <div className="logo-container">
-                        <div className="logo-icon">S</div>
-                        <span className="logo-text">SCHOOLUS</span>
-                    </div>
+                    <Link href="/" className="logo-container">
+                        <div className="logo-icon">
+                            {site.logo ? (
+                                <img src={site.logo} alt={site.name} />
+                            ) : (
+                                site.name?.charAt(0) || "آ"
+                            )}
+                        </div>
+                        <span className="logo-text">{site.name}</span>
+                    </Link>
                     <button
                         className="close-sidebar-btn"
                         onClick={closeSidebar}

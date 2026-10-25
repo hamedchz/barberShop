@@ -1,0 +1,741 @@
+/* ============================================
+   Admin Dashboard
+   ============================================ */
+
+.admin-dashboard {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  direction: rtl;
+}
+
+/* ============ هدر ============ */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 50%, #ffffff 100%);
+  border: 1.5px solid #ddd6fe;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.06);
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #5b21b6;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.dashboard-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 600;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-period-filter {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+}
+
+.dashboard-period-btn {
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.dashboard-period-btn:hover {
+  color: #374151;
+}
+
+.dashboard-period-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+/* ============ آمار ============ */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.dashboard-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--card-bg) 0%, #ffffff 100%);
+  border: 1.5px solid var(--card-border);
+  border-radius: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-color: var(--card-color);
+}
+
+.dashboard-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--card-color);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.dashboard-stat-card:hover::before {
+  opacity: 1;
+}
+
+.dashboard-stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-stat-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dashboard-stat-label {
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.dashboard-stat-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--card-color);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.dashboard-stat-unit {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+  font-weight: 700;
+}
+
+.dashboard-stat-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 0.125rem;
+}
+
+.dashboard-stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+}
+
+.dashboard-stat-change.positive {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.dashboard-stat-change.negative {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.dashboard-stat-subtitle {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.dashboard-stat-arrow {
+  color: var(--card-color);
+  opacity: 0.3;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.dashboard-stat-card:hover .dashboard-stat-arrow {
+  opacity: 1;
+  transform: translateX(-3px);
+}
+
+/* ============ گرید اصلی ============ */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-main-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* ============ کارت‌های اصلی ============ */
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  min-width: 0;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.dashboard-card-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 0.25rem;
+}
+
+.dashboard-card-header h2 svg {
+  color: #8b5cf6;
+}
+
+.dashboard-card-header p {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ============ نمودار ============ */
+.dashboard-chart-card {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-chart-card {
+    grid-column: span 1;
+  }
+}
+
+.dashboard-chart-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.legend-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.legend-dot.revenue {
+  background: #10b981;
+}
+
+.legend-dot.bookings {
+  background: #3b82f6;
+}
+
+.dashboard-chart {
+  padding: 1rem 0 0;
+}
+
+.dashboard-chart-svg {
+  width: 100%;
+  height: 200px;
+  overflow: visible;
+}
+
+.dashboard-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ============ نیازمند رسیدگی ============ */
+.dashboard-attention-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  animation: attentionPulse 2s infinite;
+}
+
+@keyframes attentionPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.5);
+  }
+}
+
+.dashboard-attention-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-attention-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.dashboard-attention-item:hover {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  transform: translateX(-2px);
+}
+
+.dashboard-attention-item.active {
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+  border-color: #fde68a;
+}
+
+.dashboard-attention-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-attention-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.dashboard-attention-count {
+  font-size: 0.9375rem;
+  font-weight: 900;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5rem;
+  text-align: left;
+}
+
+.dashboard-attention-item.active .dashboard-attention-count {
+  color: #92400e;
+}
+
+.dashboard-attention-arrow {
+  color: #d1d5db;
+  flex-shrink: 0;
+}
+
+.dashboard-view-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8b5cf6;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.dashboard-view-all:hover {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+}
+
+/* ============ آخرین فعالیت‌ها ============ */
+.dashboard-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.dashboard-recent-item:hover {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  transform: translateX(-2px);
+}
+
+.dashboard-recent-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-recent-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dashboard-recent-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-recent-subtitle {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-recent-time {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ============ برترین آرایشگرها ============ */
+.dashboard-barbers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-barber-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.dashboard-barber-item:hover {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  transform: translateX(-2px);
+}
+
+.dashboard-barber-rank {
+  width: 1.75rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 900;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.dashboard-barber-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-barber-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dashboard-barber-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dashboard-barber-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-barber-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-barber-rating,
+.dashboard-barber-bookings {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.dashboard-barber-rating {
+  color: #92400e;
+}
+
+.dashboard-barber-arrow {
+  color: #d1d5db;
+  flex-shrink: 0;
+}
+
+/* ============ خالی ============ */
+.dashboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.dashboard-empty svg {
+  color: #d1d5db;
+}
+
+/* ============ دسترسی سریع ============ */
+.dashboard-quick-links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard-quick-links {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-quick-links {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.dashboard-quick-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1.5px solid #f3f4f6;
+  border-radius: 1rem;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.dashboard-quick-link svg {
+  color: #8b5cf6;
+  transition: transform 0.2s;
+}
+
+.dashboard-quick-link:hover {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+  border-color: #ddd6fe;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.1);
+}
+
+.dashboard-quick-link:hover svg {
+  transform: scale(1.1);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .admin-dashboard {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .dashboard-header {
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-title {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-header-actions {
+    width: 100%;
+  }
+
+  .dashboard-period-filter {
+    flex: 1;
+  }
+
+  .dashboard-stat-card {
+    padding: 1rem;
+  }
+
+  .dashboard-stat-value {
+    font-size: 1.125rem;
+  }
+
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+
+  .dashboard-chart-svg {
+    height: 150px;
+  }
+}

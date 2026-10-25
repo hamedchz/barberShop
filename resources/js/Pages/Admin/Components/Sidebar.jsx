@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import {
     LogOut,
     X,
@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { menuConfig } from "../../../Config/menu";
 import "../Assets/css/SideBar.css";
+import ConfirmModal from "../../Admin/Components/ConfirmModal";
 // ============ فیلتر منوها بر اساس دسترسی ============
 const filterMenuItems = (items, hasPermission) => {
     return items.reduce((result, item) => {
@@ -178,6 +179,7 @@ export default function Sidebar({
     isCollapsed,
     toggleCollapse,
 }) {
+    const { site } = usePage().props;
     const { auth, scopes: scope } = usePage().props;
     const currentPath =
         typeof window !== "undefined" ? window.location.pathname : "";
@@ -186,7 +188,7 @@ export default function Sidebar({
     const hasPermission = (permission) => {
         if (!auth?.user) return false;
 
-        if (auth.user.roles?.includes("super-admin")) {
+        if (auth.user.roles?.includes("سوپر ادمین")) {
             return true;
         }
 
@@ -203,13 +205,35 @@ export default function Sidebar({
     // تشخیص فعال بودن یک منو، با توجه به زیرمنوهای آن
     const isItemActive = (item) => checkItemActive(item, scope, currentPath);
 
-    // خروج
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    // باز کردن مدال خروج
     const handleLogout = () => {
-        if (confirm("آیا می‌خواهید از حساب خود خارج شوید؟")) {
-            window.location.href = "/logout";
-        }
+        setLogoutModalOpen(true);
     };
 
+    // بستن مدال
+    const closeLogoutModal = () => {
+        if (isLoggingOut) return;
+
+        setLogoutModalOpen(false);
+    };
+
+    // تأیید خروج
+    const handleConfirmLogout = () => {
+        setIsLoggingOut(true);
+
+        router.post(
+            route("auth.logout"),
+            {},
+            {
+                onFinish: () => {
+                    setIsLoggingOut(false);
+                },
+            },
+        );
+    };
     return (
         <aside
             className={`sidebar ${isOpen ? "open" : ""} ${
@@ -218,13 +242,16 @@ export default function Sidebar({
         >
             {/* هدر */}
             <div className="sidebar-header">
-                <div className="logo-container">
-                    <div className="logo-icon">S</div>
-
-                    {!isCollapsed && (
-                        <span className="logo-text">SCHOOLUS</span>
-                    )}
-                </div>
+                <Link href="/" className="logo-container">
+                    <div className="logo-icon">
+                        {site.logo ? (
+                            <img src={site.logo} alt={site.name} />
+                        ) : (
+                            site.name?.charAt(0) || "آ"
+                        )}
+                    </div>
+                    <span className="logo-text">{site.name}</span>
+                </Link>
 
                 <button
                     type="button"
@@ -284,7 +311,7 @@ export default function Sidebar({
                         <div className="sidebar-user-avatar">
                             {auth.user.avatar ? (
                                 <img
-                                    src={auth.user.avatarUrl}
+                                    src={auth.user.thumbnail}
                                     alt={auth.user.name}
                                 />
                             ) : (
@@ -306,6 +333,17 @@ export default function Sidebar({
                     </div>
                 )}
             </div>
+            <ConfirmModal
+                isOpen={logoutModalOpen}
+                onClose={closeLogoutModal}
+                onConfirm={handleConfirmLogout}
+                title="خروج از حساب کاربری"
+                message="آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟"
+                confirmText="بله، خارج شو"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={isLoggingOut}
+            />
         </aside>
     );
 }

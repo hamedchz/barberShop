@@ -28,6 +28,9 @@ import {
     CalendarClock,
     SquareText,
     BellRing,
+    CreditCardReader,
+    MessageSquareCode,
+    Quote,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -106,6 +109,7 @@ export const menuConfig = [
             "manage-revenue",
             "manage-settlements",
             "manage-commission",
+            "manage-banks",
         ],
         children: [
             {
@@ -165,17 +169,17 @@ export const menuConfig = [
                 permissions: ["manage-commission", "manage-finance"],
                 scopes: ["commission"],
             },
+            {
+                id: "banks",
+                label: "لیست بانک ها",
+                icon: Landmark,
+                href: "/admin/banks",
+                permissions: ["manage-banks", "manage-finance"],
+                scopes: ["banks-list"],
+            },
         ],
     },
-    // ============ گزارش‌ها ============
-    {
-        id: "banks",
-        label: "بانک ها",
-        icon: Landmark,
-        href: "/admin/banks",
-        scopes: [],
-        permissions: [],
-    },
+
     {
         id: "needs-attention",
         label: "موارد نیازمند رسیدگی",
@@ -197,7 +201,11 @@ export const menuConfig = [
         id: "bookings",
         label: "مدیریت رزروها",
         icon: CalendarClock,
-        childrenPermissions: ["manage-bookings", "manage-disputes"],
+        childrenPermissions: [
+            "manage-bookings",
+            "manage-disputes",
+            "manage-reviews",
+        ],
         children: [
             {
                 id: "bookings",
@@ -213,8 +221,16 @@ export const menuConfig = [
                 label: "اعتراض ها",
                 icon: Scale,
                 href: "/admin/disputes",
-                scopes: ["disputes"],
+                scopes: ["reviews"],
                 permissions: ["manage-disputes"],
+            },
+            {
+                id: "reviews",
+                label: "نظرات",
+                icon: Quote,
+                href: "/admin/reviews",
+                scopes: ["reviews"],
+                permissions: ["manage-reviews"],
             },
         ],
     },
@@ -225,7 +241,7 @@ export const menuConfig = [
         id: "settings",
         label: "تنظیمات",
         icon: Settings,
-        permissions: [],
+        permissions: ["manage-payment-settings", "manage-general-settings"],
         children: [
             {
                 id: "general-settings",
@@ -236,28 +252,12 @@ export const menuConfig = [
                 scopes: ["manage-general-settings"],
             },
             {
-                id: "commission-settings",
-                label: "تنظیمات کمیسیون",
-                icon: Percent,
-                href: "/admin/settings/commission",
-                permissions: [],
-                scopes: ["commission-settings"],
-            },
-            {
-                id: "payment-settings",
-                label: "تنظیمات پرداخت",
-                icon: CreditCard,
-                href: "/admin/settings/payment",
-                permissions: [],
+                id: "gatway",
+                label: "تنظیمات درگاه پرداخت",
+                icon: CreditCardReader,
+                href: "/admin/payment-settings/zarinpal",
+                permissions: ["manage-payment-settings"],
                 scopes: ["payment-settings"],
-            },
-            {
-                id: "notification-settings",
-                label: "تنظیمات اعلان‌ها",
-                icon: Bell,
-                href: "/admin/settings/notifications",
-                permissions: [],
-                scopes: [],
             },
         ],
     },

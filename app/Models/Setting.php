@@ -15,6 +15,48 @@ class Setting extends Model
         'description',
     ];
 
+    // اضافه کن:
+    public const GROUPS = [
+        'general' => 'عمومی',
+        'theme'   => 'ظاهر و رنگ',
+        'contact' => 'تماس',
+        'social'  => 'شبکه‌های اجتماعی',
+    ];
+
+    public const TYPES = [
+        'string'  => 'متن',
+        'integer' => 'عدد',
+        'decimal' => 'اعشار',
+        'boolean' => 'بله/خیر',
+        'json'    => 'JSON',
+    ];
+
+    public static function getByGroup(string $group): array
+    {
+        return static::where('group', $group)
+            ->orderBy('id')
+            ->get()
+            ->mapWithKeys(fn($s) => [$s->key => static::castValue($s->value, $s->type)])
+            ->toArray();
+    }
+
+    public static function getSettingsWithMeta(): array
+    {
+        return static::orderBy('group')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('group')
+            ->map(fn($items) => $items->map(fn($s) => [
+                'key'         => $s->key,
+                'value'       => static::castValue($s->value, $s->type),
+                'type'        => $s->type,
+                'label'       => $s->label,
+                'description' => $s->description,
+                'group'       => $s->group,
+            ])->values())
+            ->toArray();
+    }
+
     /**
      * گرفتن مقدار با cast
      */
@@ -88,5 +130,42 @@ class Setting extends Model
                 'description' => 'درصد کمیسیون پلتفرم از درآمد آرایشگر',
             ]
         );
+    }
+
+    /**
+     * رنگ tint خودکار از رنگ اصلی
+     */
+    public static function getTintFromPrimary(string $primaryHex): string
+    {
+        // تبدیل hex به RGB
+        $hex = ltrim($primaryHex, '#');
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+
+        // مخلوط با سفید (۱۰٪ رنگ اصلی + ۹۰٪ سفید)
+        $tintR = (int) round($r * 0.1 + 255 * 0.9);
+        $tintG = (int) round($g * 0.1 + 255 * 0.9);
+        $tintB = (int) round($b * 0.1 + 255 * 0.9);
+
+        return sprintf('#%02X%02X%02X', $tintR, $tintG, $tintB);
+    }
+
+    /**
+     * رنگ hover از رنگ اصلی
+     */
+    public static function getHoverFromPrimary(string $primaryHex): string
+    {
+        $hex = ltrim($primaryHex, '#');
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
+
+        // تیره‌تر (۸۰٪ رنگ اصلی)
+        $hoverR = (int) round($r * 0.8);
+        $hoverG = (int) round($g * 0.8);
+        $hoverB = (int) round($b * 0.8);
+
+        return sprintf('#%02X%02X%02X', $hoverR, $hoverG, $hoverB);
     }
 }

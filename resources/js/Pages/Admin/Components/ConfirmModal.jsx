@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AlertTriangle, X, Trash2, CheckCircle, Info } from "lucide-react";
 import "../Assets/css/confirm-modal.css";
 
@@ -13,34 +14,39 @@ export default function ConfirmModal({
     type = "danger",
     isLoading = false,
     icon: CustomIcon,
-    children, // ← اضافه شد
+    children,
 }) {
-    // جلوگیری از اسکرول صفحه وقتی Modal باز است
+    // جلوگیری از اسکرول صفحه هنگام باز بودن مدال
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
+        if (!isOpen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
         return () => {
-            document.body.style.overflow = "unset";
+            document.body.style.overflow = previousOverflow;
         };
     }, [isOpen]);
 
-    // بستن با کلید Escape
+    // بستن مدال با Escape
     useEffect(() => {
+        if (!isOpen) return;
+
         const handleEscape = (e) => {
-            if (e.key === "Escape" && isOpen && !isLoading) {
+            if (e.key === "Escape" && !isLoading) {
                 onClose();
             }
         };
+
         document.addEventListener("keydown", handleEscape);
-        return () => document.removeEventListener("keydown", handleEscape);
+
+        return () => {
+            document.removeEventListener("keydown", handleEscape);
+        };
     }, [isOpen, isLoading, onClose]);
 
     if (!isOpen) return null;
 
-    // تنظیمات ظاهری بر اساس type
     const typeConfig = {
         danger: {
             icon: Trash2,
@@ -48,7 +54,6 @@ export default function ConfirmModal({
             bgColor: "#fef2f2",
             borderColor: "#fee2e2",
             buttonColor: "#ef4444",
-            buttonHoverColor: "#dc2626",
             shadowColor: "rgba(239, 68, 68, 0.2)",
         },
         warning: {
@@ -57,7 +62,6 @@ export default function ConfirmModal({
             bgColor: "#fffbeb",
             borderColor: "#fef3c7",
             buttonColor: "#f59e0b",
-            buttonHoverColor: "#d97706",
             shadowColor: "rgba(245, 158, 11, 0.2)",
         },
         info: {
@@ -66,7 +70,6 @@ export default function ConfirmModal({
             bgColor: "#eff6ff",
             borderColor: "#dbeafe",
             buttonColor: "#3b82f6",
-            buttonHoverColor: "#2563eb",
             shadowColor: "rgba(59, 130, 246, 0.2)",
         },
         success: {
@@ -75,7 +78,6 @@ export default function ConfirmModal({
             bgColor: "#ecfdf5",
             borderColor: "#d1fae5",
             buttonColor: "#10b981",
-            buttonHoverColor: "#059669",
             shadowColor: "rgba(16, 185, 129, 0.2)",
         },
     };
@@ -83,19 +85,20 @@ export default function ConfirmModal({
     const config = typeConfig[type] || typeConfig.danger;
     const IconComponent = CustomIcon || config.icon;
 
-    return (
+    return createPortal(
         <div
             className="modal-overlay"
             onClick={() => !isLoading && onClose()}
             role="dialog"
             aria-modal="true"
+            aria-labelledby="confirm-modal-title"
         >
             <div
                 className="modal-content"
                 onClick={(e) => e.stopPropagation()}
                 style={{ animation: "modalSlideUp 0.3s ease" }}
             >
-                {/* هدر با آیکون */}
+                {/* هدر */}
                 <div className="modal-header">
                     <div
                         className="modal-icon-wrapper"
@@ -107,7 +110,9 @@ export default function ConfirmModal({
                     >
                         <IconComponent size={28} />
                     </div>
+
                     <button
+                        type="button"
                         className="modal-close"
                         onClick={onClose}
                         disabled={isLoading}
@@ -119,16 +124,18 @@ export default function ConfirmModal({
 
                 {/* محتوا */}
                 <div className="modal-body">
-                    <h3 className="modal-title">{title}</h3>
+                    <h3 id="confirm-modal-title" className="modal-title">
+                        {title}
+                    </h3>
+
                     {message && <p className="modal-message">{message}</p>}
 
-                    {/* ============ children ============ */}
                     {children && (
                         <div className="modal-children">{children}</div>
                     )}
                 </div>
 
-                {/* دکمه‌های عملیات */}
+                {/* دکمه‌ها */}
                 <div className="modal-actions">
                     <button
                         type="button"
@@ -138,6 +145,7 @@ export default function ConfirmModal({
                     >
                         {cancelText}
                     </button>
+
                     <button
                         type="button"
                         className="modal-btn modal-btn-confirm"
@@ -150,7 +158,7 @@ export default function ConfirmModal({
                     >
                         {isLoading ? (
                             <>
-                                <span className="spinner"></span>
+                                <span className="spinner" />
                                 در حال انجام...
                             </>
                         ) : (
@@ -162,6 +170,7 @@ export default function ConfirmModal({
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }
