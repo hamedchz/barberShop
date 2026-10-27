@@ -1985,6 +1985,20 @@ body {
   box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
 }
 
+.admin-card-btn.warning {
+  background-color: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.admin-card-btn.warning:hover {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.2);
+}
+
 /* ============ Edit Button (Info Style) ============ */
 .admin-card-btn.info {
   background-color: #f0f9ff;

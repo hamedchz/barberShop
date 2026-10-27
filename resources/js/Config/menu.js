@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 
 export const menuConfig = [
+    // admin menus
     // ============ داشبورد ============
     {
         id: "dashboard",
@@ -41,8 +42,24 @@ export const menuConfig = [
         icon: LayoutDashboard,
         href: "/admin/dashboard",
         scopes: ["dashboard"],
-        // اگر permissions خالی باشد، یعنی برای همه نمایش داده می‌شود
-        permissions: [],
+        permissions: [
+            "manage-admins",
+            "manage-barber",
+            "manage-users",
+            "manage-roles",
+            "manage-finance",
+            "manage-transactions",
+            "manage-revenue",
+            "manage-settlements",
+            "manage-commission",
+            "manage-banks",
+            "manage-needs-attention",
+            "manage-bookings",
+            "manage-disputes",
+            "manage-reviews",
+            "manage-payment-settings",
+            "manage-general-settings",
+        ],
     },
 
     // ============ مدیریت ادمین‌ها ============
@@ -221,7 +238,7 @@ export const menuConfig = [
                 label: "اعتراض ها",
                 icon: Scale,
                 href: "/admin/disputes",
-                scopes: ["reviews"],
+                scopes: ["disputes"],
                 permissions: ["manage-disputes"],
             },
             {
@@ -261,7 +278,7 @@ export const menuConfig = [
             },
         ],
     },
-
+    // barber menus
     // ============ خدمات من (آرایشگر) ============
     {
         id: "services",
@@ -269,7 +286,7 @@ export const menuConfig = [
         icon: Package,
         href: "/barber/services",
         scopes: ["services", "service-list", "service-create", "service-edit"],
-        permissions: ["services.view", "services.manage"],
+        permissions: ["barber-dashboard-panel"],
     },
 
     // ============ برنامه هفتگی ============
@@ -282,13 +299,39 @@ export const menuConfig = [
         permissions: ["barber-dashboard-panel"],
     },
 
-    // ============ زمان‌بندی نوبت‌ها ============
+    // ============ رزروها ============
+
     {
-        id: "time-slots",
-        label: "زمان‌بندی نوبت‌ها",
-        icon: Clock,
-        href: "/barber/time-slots",
-        scopes: ["time-slots", "time-slot-list"],
-        permissions: ["barber-dashboard-panel"],
+        id: "bookings",
+        label: "مدیریت رزروها",
+        icon: CalendarClock,
+        childrenPermissions: ["barber-dashboard-panel"],
+        children: [
+            {
+                id: "bookings",
+                label: "رزروها",
+                icon: CalendarCheck2,
+                href: "/barber/bookings",
+                scopes: ["bookings-list"],
+                permissions: ["barber-dashboard-panel"],
+            },
+
+            {
+                id: "disputes",
+                label: "اعتراض ها",
+                icon: Scale,
+                href: "/barber/disputes",
+                scopes: ["disputes"],
+                permissions: ["barber-dashboard-panel"],
+            },
+            {
+                id: "reviews",
+                label: "نظرات",
+                icon: Quote,
+                href: "/barber/reviews",
+                scopes: ["reviews"],
+                permissions: ["barber-dashboard-panel"],
+            },
+        ],
     },
 ];

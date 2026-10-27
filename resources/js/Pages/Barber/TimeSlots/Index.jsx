@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import JalaliCalendar from "../Components/JalaliCalendar";
 import { toJalaali } from "jalaali-js";

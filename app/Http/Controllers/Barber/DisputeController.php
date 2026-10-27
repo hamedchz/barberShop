@@ -28,6 +28,94 @@ use Inertia\Inertia;
 
 class DisputeController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+
+        $query = Dispute::forBarber($user->id)
+            ->with([
+                'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status',
+                'booking.user:id,name,avatar,phone',
+                'booking.service:id,name',
+                'booking.timeSlot:id,date,start_time,end_time',
+                'disputedByUser:id,name,avatar',
+                'respondedByUser:id,name',
+            ]);
+
+        // ============ فیلتر وضعیت ============
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->active();
+            } else {
+                $query->where('status', $status);
+            }
+        }
+
+        // ============ فیلتر نوع ============
+        if ($type = $request->input('type')) {
+            $query->where('dispute_type', $type);
+        }
+
+        // ============ جستجو ============
+        if ($search = trim($request->input('search', ''))) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%")
+                    ->orWhereHas('booking.user', fn($u) => $u->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        $disputes = $query->latest()->paginate(33)->withQueryString();
+
+        $disputes->through(fn($d) => $this->mapDispute($d));
+
+        return Inertia::render('Barber/Disputes/Index', [
+            'disputes' => $disputes,
+            'stats'    => $this->buildStats($user),
+            'filters'  => [
+                'status' => $request->input('status', ''),
+                'type'   => $request->input('type', ''),
+                'search' => $request->input('search', ''),
+            ],
+            'types'    => collect(DisputeTypes::cases())
+                ->map(fn($t) => [
+                    'value' => $t->value,
+                    'label' => $t->label() ?? $t->value,
+                ])
+                ->values(),
+            'statuses' => collect(DisputedStatus::cases())
+                ->map(fn($s) => [
+                    'value' => $s->value,
+                    'label' => $s->label() ?? $s->value,
+                ])
+                ->values(),
+        ]);
+    }
+
+    public function show(Dispute $dispute)
+    {
+        $user = auth()->user();
+
+        // بررسی مالکیت
+        if ($dispute->booking?->barber_id !== $user->id) {
+            abort(403);
+        }
+
+        $dispute->load([
+            'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status,notes',
+            'booking.user:id,name,avatar,phone',
+            'booking.service:id,name,price,duration',
+            'booking.timeSlot:id,date,start_time,end_time',
+            'disputedByUser:id,name,avatar,phone',
+            'respondedByUser:id,name',
+            'resolvedByUser:id,name',
+        ]);
+
+        return Inertia::render('Barber/Disputes/Show', [
+            'dispute' => $this->mapDispute($dispute, detailed: true),
+        ]);
+    }
     /**
      * ثبت اعتراض آرایشگر
      */
@@ -597,5 +685,93 @@ class DisputeController extends Controller
             StickyAlert::alert('خطا در ثبت پاسخ', 'error');
             return redirect()->back();
         }
+    }
+
+    private function mapDispute(Dispute $d, bool $detailed = false): array
+    {
+        $data = [
+            'id'          => $d->id,
+            'status'      => $d->status?->value,
+            'status_label' => $d->status?->label() ?? $d->status?->value,
+            'dispute_type' => $d->dispute_type?->value,
+            'dispute_type_label' => $d->dispute_type?->label() ?? $d->dispute_type?->value,
+            'disputed_by' => $d->disputed_by?->value,
+            'disputed_by_label' => $d->disputer_role_label,
+            'reason'      => $d->reason,
+            'response'    => $d->response,
+            'responded_at' => $d->responded_at?->toIso8601String(),
+            'created_at'  => $d->created_at?->toIso8601String(),
+
+            'can_respond' => $d->can_respond,
+            'can_edit'    => $d->can_edit,
+            'can_delete'  => $d->can_delete,
+
+            'booking' => $d->booking ? [
+                'id'     => $d->booking->id,
+                'amount' => (float) $d->booking->amount,
+                'status' => $d->booking->status?->value,
+                'customer' => $d->booking->user ? [
+                    'id'        => $d->booking->user->id,
+                    'name'      => $d->booking->user->name,
+                    'avatar'    => $d->booking->user->avatar ? $d->booking->user->avatarUrl() : null,
+                    'phone'     => $d->booking->user->phone,
+                ] : null,
+                'service' => $d->booking->service ? [
+                    'name'     => $d->booking->service->name,
+                    'price'    => (float) $d->booking->service->price,
+                    'duration' => $d->booking->service->duration,
+                ] : null,
+                'time_slot' => $d->booking->timeSlot ? [
+                    'date'  => $d->booking->timeSlot->date,
+                    'start' => $d->booking->timeSlot->start_time,
+                    'end'   => $d->booking->timeSlot->end_time,
+                ] : null,
+            ] : null,
+
+            'disputed_by_user' => $d->disputedByUser ? [
+                'id'     => $d->disputedByUser->id,
+                'name'   => $d->disputedByUser->name,
+                'avatar' => $d->disputedByUser->avatar ? $d->disputedByUser->avatarUrl() : null,
+            ] : null,
+        ];
+
+        if ($detailed) {
+            $data['refund_amount']   = (float) ($d->refund_amount ?? 0);
+            $data['penalty_amount']  = (float) ($d->penalty_amount ?? 0);
+            $data['compensation_amount'] = (float) ($d->compensation_amount ?? 0);
+            $data['resolution']      = $d->resolution;
+            $data['resolved_at']     = $d->resolved_at?->toIso8601String();
+            $data['admin_notes']     = $d->admin_notes;
+            $data['attachments']     = $d->attachments ?? [];
+            $data['responded_by_user'] = $d->respondedByUser ? [
+                'id'   => $d->respondedByUser->id,
+                'name' => $d->respondedByUser->name,
+            ] : null;
+            $data['resolved_by_user'] = $d->resolvedByUser ? [
+                'id'   => $d->resolvedByUser->id,
+                'name' => $d->resolvedByUser->name,
+            ] : null;
+        }
+
+        return $data;
+    }
+
+    private function buildStats($user): array
+    {
+        $base = Dispute::forBarber($user->id);
+
+        return [
+            'total'      => (clone $base)->count(),
+            'pending'    => (clone $base)->where('status', DisputedStatus::pending->value)->count(),
+            'investigating' => (clone $base)->where('status', DisputedStatus::investigating->value)->count(),
+            'awaiting'   => (clone $base)->where('status', DisputedStatus::awaitingResponse->value)->count(),
+            'resolved'   => (clone $base)->where('status', DisputedStatus::resolved->value)->count(),
+            'rejected'   => (clone $base)->where('status', DisputedStatus::rejected->value)->count(),
+            'active'     => (clone $base)->active()->count(),
+            'needs_response' => (clone $base)
+                ->where('status', DisputedStatus::awaitingResponse->value)
+                ->where('disputed_by_user_id', '!=', $user->id)
+                ->count(),
+        ];
     }
 }

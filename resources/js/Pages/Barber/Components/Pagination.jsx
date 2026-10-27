@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
+import { toPersianNumber } from "../../../utils/persianNumbers";
 
 const Pagination = ({ links = [] }) => {
     if (!links || links.length <= 3) {
@@ -38,30 +39,25 @@ const Pagination = ({ links = [] }) => {
         >
             {links.map((link, index) => (
                 <Link
-                    key={index}
-                    href={link.url || "#"}
-                    className={`btn-outline ${link.active ? "active" : ""}`}
                     style={{
                         padding: "0.5rem 1rem",
                         fontSize: "0.875rem",
                         textDecoration: "none",
-
                         opacity: link.url ? 1 : 0.5,
-
                         pointerEvents: link.url ? "auto" : "none",
-
-                        backgroundColor: link.active
-                            ? "var(--primary)"
+                        background: link.active
+                            ? "var(--gradient-primary)"
                             : "transparent",
-
-                        color: link.active ? "white" : "var(--primary)",
-
+                        color: link.active ? "white" : "var(--color-primary)",
+                        borderColor: "var(--color-primary)",
+                        borderWidth: "1.5px",
+                        borderStyle: "solid",
                         width: "auto",
-
-                        borderRadius: "6px",
+                        borderRadius: "0.5rem",
+                        fontWeight: 700,
                     }}
                 >
-                    {getLabel(link.label)}
+                    {toPersianNumber(getLabel(link.label))}
                 </Link>
             ))}
         </div>

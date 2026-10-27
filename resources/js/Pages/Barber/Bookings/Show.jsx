@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../../Customer/Components/RatingStars";
 import "../Assets/css/BarberBookingShow.css";

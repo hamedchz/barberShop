@@ -1202,3 +1202,18 @@
     width: 100%;
   }
 }
+
+.finance-stats-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
+  border: 1px solid #ddd6fe;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  color: #5b21b6;
+  font-weight: 600;
+  line-height: 1.5;
+}

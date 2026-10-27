@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import "../Assets/css/DisputeEdit.css";
 import DisputeCountdown from "../../Customer/Components/DisputeCountdown";
 import Swal from "sweetalert2";

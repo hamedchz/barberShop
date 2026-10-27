@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import "./Assets/css/BarberDashboard.css";
 
 import {
@@ -171,7 +171,12 @@ export default function BarberDashboardIndex({
                         </Link>
                     </div>
                 </div>
-
+                <div className="finance-stats-hint">
+                    <Info size={14} />
+                    <span>
+                        برای مشاهده مبلغ دقیق و جزئیات، روی هر کارت کلیک کنید
+                    </span>
+                </div>
                 {/* ============ کارت‌های آماری ============ */}
                 <div className="barber-stats-grid">
                     {/* درآمد */}

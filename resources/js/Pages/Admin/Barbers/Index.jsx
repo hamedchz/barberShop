@@ -707,7 +707,7 @@ export default function AdminsIndex({
                 )}
 
                 {/* صفحه‌بندی */}
-                <Pagination links={barbers.links} />
+                <Pagination links={barbers.links} only={barbers} />
             </div>
 
             {/* Modalها */}

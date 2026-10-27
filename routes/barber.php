@@ -74,6 +74,13 @@ Route::prefix('disputes')
 
     Route::post('/{dispute}/respond',  'respond')
       ->name('respond');
+
+    // new
+
+    Route::get('/', 'index')->name('index');
+    Route::get('/{dispute}/show', 'show')->name('show');
+    // Route::post('/{dispute}/respond', 'respond')->name('respond');
+    Route::post('/{dispute}/attachments', 'uploadAttachment')->name('upload-attachment');
   });
 
 // wallet finance

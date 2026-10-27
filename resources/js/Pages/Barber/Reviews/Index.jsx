@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import "../Dashboard/Assets/css/BarberDashboard.css";
 import "./Assets/css/BarberReviews.css";
 import Pagination from "../../Admin/Components/Pagination";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, useForm } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
+import Layout from "../../Admin/Layouts/Layout";
 import {
     ArrowRight,
     Save,

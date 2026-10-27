@@ -1,0 +1,862 @@
+/* ============================================
+   Barber Disputes
+   صفحه اعتراضات آرایشگر
+   ============================================ */
+
+/* ============ تب‌ها و بج ============ */
+
+.barber-tab.urgent {
+  color: #ef4444;
+}
+
+.barber-tab.urgent.active {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.barber-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ============ نوار جستجو ============ */
+
+.barber-search-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+}
+
+.barber-search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 15rem;
+  min-width: 0;
+  padding: 0.625rem 0.875rem;
+  background: var(--color-bg-card, #fff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.75rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.barber-search-form:focus-within {
+  border-color: var(--color-primary, #10b981);
+  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(16, 185, 129, 0.1));
+}
+
+.barber-search-icon {
+  color: var(--color-text-muted, #9ca3af);
+  flex-shrink: 0;
+}
+
+.barber-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text, #1f2937);
+}
+
+.barber-search-input::placeholder {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.barber-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--color-bg, #f3f4f6);
+  border: none;
+  border-radius: 50%;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.barber-search-clear:hover {
+  background: var(--color-border, #e5e7eb);
+}
+
+.barber-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  padding: 0.625rem 1rem;
+  background: var(--color-bg-card, #fff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text, #374151);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.barber-filter-btn:hover,
+.barber-filter-btn.active {
+  border-color: var(--color-primary, #10b981);
+  color: var(--color-primary, #10b981);
+  background: var(--color-primary-tint, #ecfdf5);
+}
+
+/* ============ پنل فیلتر ============ */
+
+.barber-filters-panel {
+  animation: disputeSlideDown 0.2s ease-out;
+}
+
+@keyframes disputeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.barber-filters-horizontal {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+}
+
+.barber-filters-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text, #374151);
+}
+
+.barber-filter-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.barber-filter-inline-label {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.barber-filter-inline-select {
+  min-width: 8rem;
+  max-width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: var(--color-bg, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text, #1f2937);
+  cursor: pointer;
+}
+
+.barber-filter-inline-select:focus {
+  outline: none;
+  border-color: var(--color-primary, #10b981);
+}
+
+.barber-filter-inline-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.55rem 0.875rem;
+  background: transparent;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.barber-filter-inline-reset:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+/* سازگاری با کلاس‌های فیلتر قدیمی */
+
+.barber-filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.barber-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.barber-filter-group label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.barber-filter-select {
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg, #f9fafb);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text, #1f2937);
+  cursor: pointer;
+}
+
+.barber-filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary, #10b981);
+}
+
+.barber-filters-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.barber-filter-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.barber-filter-reset:hover {
+  background: var(--color-bg, #f9fafb);
+  color: var(--color-danger, #ef4444);
+  border-color: var(--color-danger, #ef4444);
+}
+
+/* ============================================
+   لیست اعتراضات
+   هر کارت در یک ردیف مستقل و تمام‌عرض
+   ============================================ */
+
+.barber-disputes-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ============ کارت اعتراض ============ */
+
+.barber-dispute-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  padding: 1.125rem 1.25rem 1.125rem 1.5rem;
+
+  background: var(--color-bg-card, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.875rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.035);
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+}
+
+.barber-dispute-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+  transform: translateY(-2px);
+}
+
+.barber-dispute-card.needs-response {
+  border-color: #fca5a5;
+  background: linear-gradient(135deg, #fff7f7 0%, var(--color-bg-card, #fff) 70%);
+}
+
+@keyframes disputePulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.18);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+}
+
+.barber-dispute-card.needs-response {
+  animation: disputePulse 2.5s ease-in-out infinite;
+}
+
+.barber-dispute-card-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 0 0.875rem 0.875rem 0;
+}
+
+/* ============ هدر کارت ============ */
+
+.barber-dispute-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.barber-dispute-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+}
+
+.barber-dispute-card-header-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.barber-dispute-card-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.barber-dispute-card-title {
+  margin: 0;
+  color: var(--color-text, #1f2937);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.barber-dispute-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.barber-dispute-card-urgent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  white-space: nowrap;
+  animation: urgentBlink 1.5s ease-in-out infinite;
+}
+
+@keyframes urgentBlink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.barber-dispute-card-subtitle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.barber-dispute-card-type,
+.barber-dispute-card-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.barber-dispute-card-separator {
+  opacity: 0.5;
+}
+
+/* ============ متن اعتراض ============ */
+
+.barber-dispute-card-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-right: 3px solid #f59e0b;
+  border-radius: 0.625rem;
+  color: #78350f;
+  font-size: 0.8125rem;
+  line-height: 2;
+}
+
+.barber-dispute-card-reason svg {
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+  color: #d97706;
+}
+
+.barber-dispute-card-reason p {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ============ اطلاعات مشتری ============ */
+
+.barber-dispute-card-customer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+}
+
+.barber-dispute-card-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.barber-dispute-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-dispute-card-customer-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.barber-dispute-card-customer-name {
+  overflow: hidden;
+  color: var(--color-text, #1f2937);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barber-dispute-card-customer-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+/* ============ اطلاعات رزرو ============ */
+
+.barber-dispute-card-booking {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.625rem;
+}
+
+.barber-dispute-card-booking-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.barber-dispute-card-booking-row svg {
+  flex-shrink: 0;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.barber-dispute-card-booking-row.amount {
+  margin-right: auto;
+  color: var(--color-primary, #10b981);
+  font-weight: 800;
+}
+
+/* ============ پاسخ اعتراض ============ */
+
+.barber-dispute-card-response {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.875rem 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.625rem;
+  color: #1e40af;
+  font-size: 0.8125rem;
+  line-height: 2;
+}
+
+.barber-dispute-card-response-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
+  color: #1e3a8a;
+}
+
+.barber-dispute-card-response-header strong {
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.barber-dispute-card-response p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ============ دکمه‌های عملیات کارت ============ */
+
+.barber-dispute-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  width: 100%;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.barber-dispute-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+  min-height: 2.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.barber-dispute-card-btn.primary {
+  background: #fff;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.barber-dispute-card-btn.primary:hover {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #10b981;
+}
+
+.barber-dispute-card-btn.urgent {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.15);
+}
+
+.barber-dispute-card-btn.urgent:hover {
+  background: #b91c1c;
+}
+
+/* ============================================
+   صفحه‌بندی
+   ============================================ */
+
+.barber-reviews-pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.barber-reviews-pagination-info {
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.barber-reviews-pagination-wrapper .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+}
+
+.barber-reviews-pagination-wrapper .pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.625rem;
+  box-sizing: border-box;
+  background: #fff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.barber-reviews-pagination-wrapper .pagination-item:hover:not(.disabled) {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #10b981;
+}
+
+.barber-reviews-pagination-wrapper .pagination-item.active {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+}
+
+.barber-reviews-pagination-wrapper .pagination-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============ نمایش در تبلت ============ */
+
+@media (min-width: 640px) {
+  .barber-filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============ نمایش در موبایل ============ */
+
+@media (max-width: 640px) {
+  .barber-search-bar {
+    flex-direction: column;
+  }
+
+  .barber-search-form,
+  .barber-filter-btn {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .barber-filter-btn {
+    justify-content: center;
+  }
+
+  .barber-filters-horizontal {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .barber-filter-inline {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .barber-filter-inline-select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .barber-filter-inline-reset {
+    width: 100%;
+  }
+
+  .barber-disputes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .barber-dispute-card {
+    padding: 0.875rem 0.875rem 0.875rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .barber-dispute-card-header {
+    gap: 0.625rem;
+  }
+
+  .barber-dispute-card-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .barber-dispute-card-title {
+    font-size: 0.8125rem;
+  }
+
+  .barber-dispute-card-subtitle {
+    font-size: 0.6875rem;
+  }
+
+  .barber-dispute-card-reason {
+    padding: 0.75rem;
+  }
+
+  .barber-dispute-card-booking {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .barber-dispute-card-booking-row.amount {
+    margin-right: 0;
+  }
+
+  .barber-dispute-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .barber-dispute-card-btn {
+    width: 100%;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+  }
+
+  .barber-reviews-pagination-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .barber-reviews-pagination-wrapper .pagination {
+    gap: 0.25rem;
+  }
+}
+
+/* ============ کاهش انیمیشن برای کاربران حساس ============ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .barber-dispute-card,
+  .barber-dispute-card-urgent,
+  .barber-dispute-card.needs-response {
+    animation: none;
+    transition: none;
+  }
+}

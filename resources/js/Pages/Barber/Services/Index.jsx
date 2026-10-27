@@ -304,6 +304,13 @@ export default function ServicesIndex({ auth, services, filters }) {
                                 {/* دکمه‌ها */}
                                 <div className="service-card-actions">
                                     <Link
+                                        href={`/barber/time-slots?service_id=${service.id}/`}
+                                        className="admin-card-btn warning"
+                                    >
+                                        <Clock size={16} />
+                                        زمان بندی نوبت ها
+                                    </Link>
+                                    <Link
                                         href={`/barber/services/${service.id}/edit`}
                                         className="admin-card-btn edit"
                                     >
