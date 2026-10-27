@@ -1,5 +1,3 @@
-// resources/js/Pages/Admin/Finance/WalletDeposits/Components/CreateDepositModal.jsx
-
 import React, { useState } from "react";
 import { router } from "@inertiajs/react";
 import { Plus, X, AlertTriangle, ArrowLeft, CheckCircle } from "lucide-react";

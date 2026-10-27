@@ -13,11 +13,11 @@ import {
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import { formatFullDateTime } from "../../../utils/dateHelpers";
-import "../Assets/Wallet.css";
+import "../Assets/css/Wallet.css";
 import Pagination from "../../Admin/Components/Pagination";
 import SearchComponent from "../../../Components/Search";
 import PersianDatePicker from "../../../Components/PersianDatePicker";
-import "../Assets/Payments.css";
+// import "../Assets/css/Payments.css";
 const statusConfig = {
     pending: { label: "در انتظار پرداخت", color: "yellow" },
     success: { label: "موفق", color: "green" },

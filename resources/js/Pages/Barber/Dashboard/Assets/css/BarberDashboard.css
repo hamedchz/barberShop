@@ -1,0 +1,1204 @@
+/* ============================================
+   Barber Dashboard
+   ============================================ */
+
+.barber-dashboard {
+  /* max-width: 1400px; */
+  /* margin: 0 auto; */
+  /* padding: 1.5rem 1rem 3rem; */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  direction: rtl;
+}
+
+/* ============ Hero ============ */
+.barber-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  background: linear-gradient(135deg, var(--color-primary-tint) 0%, var(--color-bg-card) 60%, var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 1.5rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px var(--color-primary-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.barber-hero::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.barber-hero-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.barber-hero-greeting {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.greeting-time {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.greeting-name {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.barber-hero-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0;
+  font-weight: 600;
+}
+
+.barber-hero-subtitle strong {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.barber-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.barber-period-filter {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.barber-period-btn {
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.barber-period-btn.active {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--color-primary-light);
+}
+
+.barber-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px var(--color-primary-light);
+  white-space: nowrap;
+}
+
+.barber-hero-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+}
+
+/* ============ آمار ============ */
+.barber-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .barber-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .barber-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.barber-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 1.25rem;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.barber-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px var(--color-shadow);
+}
+
+.barber-stat-card.revenue {
+  background: linear-gradient(135deg, #ecfdf5 0%, var(--color-bg-card) 100%);
+  border-color: #a7f3d0;
+}
+
+.barber-stat-card.bookings {
+  background: linear-gradient(135deg, #eff6ff 0%, var(--color-bg-card) 100%);
+  border-color: #bfdbfe;
+}
+
+.barber-stat-card.wallet {
+  background: linear-gradient(135deg, #f5f3ff 0%, var(--color-bg-card) 100%);
+  border-color: #ddd6fe;
+}
+
+.barber-stat-card.rating {
+  background: linear-gradient(135deg, #fffbeb 0%, var(--color-bg-card) 100%);
+  border-color: #fde68a;
+}
+
+.barber-stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-stat-icon.revenue {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.barber-stat-icon.bookings {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.barber-stat-icon.wallet {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.barber-stat-icon.rating {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.barber-stat-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+}
+
+.barber-stat-label {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.barber-stat-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.barber-stat-card.revenue .barber-stat-value {
+  color: #065f46;
+}
+
+.barber-stat-card.bookings .barber-stat-value {
+  color: #1e40af;
+}
+
+.barber-stat-card.wallet .barber-stat-value {
+  color: #5b21b6;
+}
+
+.barber-stat-card.rating .barber-stat-value {
+  color: #92400e;
+}
+
+.barber-stat-unit {
+  font-size: 0.625rem;
+  opacity: 0.7;
+  font-weight: 700;
+}
+
+.barber-stat-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 0.125rem;
+}
+
+.barber-stat-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+}
+
+.barber-stat-change.positive {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.barber-stat-change.negative {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.barber-stat-subtitle {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* ============ کارت عمومی ============ */
+.barber-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.barber-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--color-border);
+  flex-wrap: wrap;
+}
+
+.barber-card-header>div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.barber-card-header h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 0.125rem;
+}
+
+.barber-card-header p {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 600;
+}
+
+.barber-card-header-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-card-header-icon.green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.barber-card-header-icon.blue {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.barber-card-header-icon.purple {
+  background: #f5f3ff;
+  color: #8b5cf6;
+}
+
+.barber-card-header-icon.yellow {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.barber-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.barber-card-link:hover {
+  gap: 0.375rem;
+}
+
+/* ============ رزروهای امروز ============ */
+.barber-today-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-today-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.875rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+}
+
+.barber-today-item:hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.barber-today-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.5rem 0.625rem;
+  background: var(--color-primary-tint);
+  border-radius: 0.5rem;
+  min-width: 4.5rem;
+  flex-shrink: 0;
+  direction: ltr;
+}
+
+.barber-today-time .time-start,
+.barber-today-time .time-end {
+  font-size: 0.8125rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.barber-today-time .time-separator {
+  font-size: 0.625rem;
+  color: var(--color-primary);
+  opacity: 0.5;
+}
+
+.barber-today-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.875rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.barber-today-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-today-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barber-today-name {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-today-service {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.barber-today-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.barber-today-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.barber-today-amount {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.barber-today-arrow {
+  color: var(--color-text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.barber-today-item:hover .barber-today-arrow {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+/* ============ حالت خالی ============ */
+.barber-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.barber-empty-state.small {
+  padding: 1.5rem 1rem;
+}
+
+.barber-empty-state svg {
+  color: var(--color-border);
+}
+
+.barber-empty-state p {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.barber-empty-state span {
+  font-size: 0.6875rem;
+  opacity: 0.7;
+}
+
+/* ============ گرید اصلی ============ */
+.barber-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .barber-main-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.barber-chart-card {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 1024px) {
+  .barber-chart-card {
+    grid-column: span 1;
+  }
+}
+
+/* ============ نمودار ============ */
+.barber-chart-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--color-bg);
+  border-radius: 0.625rem;
+}
+
+.barber-chart-tab {
+  padding: 0.375rem 0.625rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.barber-chart-tab.active {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.barber-chart-wrapper {
+  position: relative;
+  width: 100%;
+  cursor: crosshair;
+  padding: 0.5rem 0;
+}
+
+.barber-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.barber-chart-tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #ffffff;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  pointer-events: none;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  min-width: 180px;
+  direction: rtl;
+}
+
+.barber-chart-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+}
+
+.barber-chart-tooltip .tooltip-date {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.625rem;
+  color: #9ca3af;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.barber-chart-tooltip .tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.barber-chart-tooltip .tooltip-row:last-child {
+  margin-bottom: 0;
+}
+
+.barber-chart-tooltip .tooltip-row span {
+  color: #9ca3af;
+}
+
+.barber-chart-tooltip .tooltip-row.earnings strong {
+  color: #34d399;
+}
+
+.barber-chart-tooltip .tooltip-row.bookings strong {
+  color: #60a5fa;
+}
+
+/* ============ برنامه هفتگی ============ */
+.barber-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.barber-schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.625rem;
+}
+
+.barber-schedule-item.inactive {
+  opacity: 0.5;
+}
+
+.barber-schedule-day-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-schedule-day-icon.active {
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.barber-schedule-day-icon.inactive {
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+}
+
+.barber-schedule-day-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  min-width: 4rem;
+}
+
+.barber-schedule-shifts {
+  flex: 1;
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.barber-schedule-shift {
+  display: inline-flex;
+  padding: 0.125rem 0.5rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+
+.barber-schedule-off {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* ============ نظرات ============ */
+.barber-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.barber-review-item {
+  padding: 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.barber-review-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+
+.barber-review-avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.6875rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.barber-review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-review-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barber-review-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-review-stars {
+  display: flex;
+  gap: 0.0625rem;
+}
+
+.barber-review-date {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.barber-review-comment {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  background: var(--color-bg-card);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+/* ============ خدمات برتر ============ */
+.barber-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.barber-service-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.625rem;
+}
+
+.barber-service-rank {
+  width: 1.75rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 900;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.barber-service-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barber-service-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-service-count {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.barber-service-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.barber-service-price .currency {
+  font-size: 0.5625rem;
+  opacity: 0.7;
+}
+
+/* ============ رزروهای آینده ============ */
+.barber-upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.15s;
+  flex-wrap: wrap;
+}
+
+.barber-upcoming-item:hover {
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
+  transform: translateX(-2px);
+}
+
+.barber-upcoming-date,
+.barber-upcoming-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.barber-upcoming-date svg,
+.barber-upcoming-time svg {
+  color: var(--color-primary);
+}
+
+.barber-upcoming-customer {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  min-width: 6rem;
+}
+
+.barber-upcoming-customer img,
+.barber-upcoming-customer>span:first-child:not(:last-child) {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.625rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.barber-upcoming-service {
+  flex: 1;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barber-upcoming-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ============ تراکنش‌ها ============ */
+.barber-transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.625rem;
+}
+
+.barber-transaction-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-transaction-icon.credit {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.barber-transaction-icon.debit {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.barber-transaction-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barber-transaction-type {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.barber-transaction-desc {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-transaction-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.125rem;
+  flex-shrink: 0;
+}
+
+.barber-transaction-amount .amount {
+  font-size: 0.75rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+
+.barber-transaction-amount .amount.credit {
+  color: #065f46;
+}
+
+.barber-transaction-amount .amount.debit {
+  color: #991b1b;
+}
+
+.barber-transaction-amount .amount-date {
+  font-size: 0.5625rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* ============ لینک‌های سریع ============ */
+.barber-quick-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .barber-quick-links {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.barber-quick-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 1rem;
+  text-decoration: none;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.barber-quick-link svg {
+  color: var(--color-primary);
+  transition: transform 0.2s;
+}
+
+.barber-quick-link:hover {
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+}
+
+.barber-quick-link:hover svg {
+  transform: scale(1.1);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .barber-dashboard {
+    padding: 1rem 0.75rem 2rem;
+    gap: 1rem;
+  }
+
+  .barber-hero {
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .greeting-name {
+    font-size: 1.375rem;
+  }
+
+  .barber-hero-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .barber-period-filter {
+    width: 100%;
+  }
+
+  .barber-period-btn {
+    flex: 1;
+  }
+
+  .barber-hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .barber-card {
+    padding: 1rem;
+  }
+
+  .barber-today-item {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .barber-today-meta {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.375rem;
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .barber-upcoming-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .barber-quick-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .barber-chart-tabs {
+    width: 100%;
+  }
+}

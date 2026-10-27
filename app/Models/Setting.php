@@ -168,4 +168,14 @@ class Setting extends Model
 
         return sprintf('#%02X%02X%02X', $hoverR, $hoverG, $hoverB);
     }
+
+    public static function getGroupedKeyValue(): array
+    {
+        return static::all()
+            ->groupBy('group')
+            ->map(fn($items) => $items->mapWithKeys(fn($s) => [
+                $s->key => static::castValue($s->value, $s->type),
+            ])->toArray())
+            ->toArray();
+    }
 }

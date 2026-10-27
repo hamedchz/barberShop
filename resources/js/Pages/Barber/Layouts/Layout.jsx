@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "../../Admin/Components/Sidebar";
 import { Menu } from "lucide-react";
-import "../Assets/css/styles.css"; // ایمپورت استایل‌ها
-import "../../Admin/Assets/css/styles.css"; // ایمپورت استایل‌ها
+import "../Assets/css/styles.css";
+import "../../Admin/Assets/css/styles.css";
 import { usePage } from "@inertiajs/react";
 import Swal from "sweetalert2";
 
@@ -53,7 +53,9 @@ export default function Layout({ children }) {
             />
 
             {/* محتوای اصلی که صفحات درون آن قرار می‌گیرند */}
-            <main className="main-content">{children}</main>
+            <main className="main-content">
+                <div className="main-content-inner">{children}</div>
+            </main>
         </div>
     );
 }

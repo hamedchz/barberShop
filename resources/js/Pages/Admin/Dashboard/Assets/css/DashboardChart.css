@@ -107,11 +107,16 @@
 }
 
 /* ============ Container ============ */
-.dashboard-chart-container {
+/* .dashboard-chart-container {
   position: relative;
   width: 100%;
   cursor: crosshair;
   padding: 0.5rem 0;
+} */
+
+.dashboard-chart-container {
+  position: relative;
+  overflow: visible;
 }
 
 .dashboard-chart-svg {
@@ -133,10 +138,11 @@
   font-weight: 700;
   pointer-events: none;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-  z-index: 10;
   min-width: 180px;
   animation: chartTooltipIn 0.15s ease-out;
   direction: rtl;
+  z-index: 20;
+  white-space: nowrap;
 }
 
 .dashboard-chart-tooltip::after {

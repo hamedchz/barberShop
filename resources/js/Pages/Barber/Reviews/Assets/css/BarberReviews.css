@@ -1,0 +1,836 @@
+/* ============================================
+   Barber Reviews Page
+   ============================================ */
+
+/* ============ تب‌ها ============ */
+.barber-tabs {
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.375rem;
+  background: var(--color-bg, #f3f4f6);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.875rem;
+  margin-bottom: 1.25rem;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.barber-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.barber-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.625rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.barber-tab:hover {
+  color: var(--color-text, #374151);
+}
+
+.barber-tab.active {
+  background: var(--color-bg-card, #ffffff);
+  color: var(--color-primary, #10b981);
+  box-shadow: 0 2px 6px var(--color-shadow, rgba(0, 0, 0, 0.06));
+}
+
+.barber-tab svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   توزیع امتیاز (نمودار ستاره‌ها)
+   ============================================ */
+.barber-rating-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.5rem 0;
+}
+
+.barber-rating-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.barber-rating-bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text, #1f2937);
+  min-width: 2.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.barber-rating-bar-track {
+  flex: 1;
+  height: 0.625rem;
+  background: var(--color-bg, #f3f4f6);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.barber-rating-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 9999px;
+  transition: width 0.5s ease-out;
+  min-width: 2px;
+}
+
+.barber-rating-bar-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #6b7280);
+  min-width: 2rem;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   گرید نظرات
+   ============================================ */
+.barber-reviews-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .barber-reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   کارت نظر
+   ============================================ */
+.barber-review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--color-bg, #f9fafb);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.875rem;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.barber-review-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.barber-review-card.status-approved::before {
+  background: linear-gradient(180deg, #10b981, #059669);
+}
+
+.barber-review-card.status-rejected::before {
+  background: linear-gradient(180deg, #ef4444, #dc2626);
+}
+
+.barber-review-card:hover {
+  background: var(--color-bg-card, #ffffff);
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--color-primary-light, rgba(16, 185, 129, 0.1));
+}
+
+/* ============ هدر کارت ============ */
+.barber-review-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.barber-review-card-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9375rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.barber-review-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-review-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.barber-review-card-name {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text, #1f2937);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.barber-review-card-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1875rem;
+  flex-wrap: wrap;
+}
+
+.barber-review-card-rating {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: #92400e;
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.25rem;
+}
+
+.barber-review-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.barber-review-card-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.barber-review-card-date {
+  font-size: 0.625rem;
+  color: var(--color-text-muted, #9ca3af);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ============ متن نظر ============ */
+.barber-review-card-comment {
+  font-size: 0.8125rem;
+  color: var(--color-text, #4b5563);
+  line-height: 1.8;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #f3f4f6);
+  border-radius: 0.625rem;
+  position: relative;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  /* white-space: pre-wrap; */
+}
+
+.barber-review-card-comment::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.375rem;
+  right: 0.625rem;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--color-primary, #10b981);
+  line-height: 1;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ============ اطلاعات رد ============ */
+.barber-review-card-rejection {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  color: #991b1b;
+  line-height: 1.6;
+}
+
+.barber-review-card-rejection svg {
+  flex-shrink: 0;
+  color: #ef4444;
+  margin-top: 0.125rem;
+}
+
+.barber-review-card-rejection strong {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  color: #7f1d1d;
+  font-size: 0.8125rem;
+}
+
+.barber-review-card-rejection p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.barber-review-card-rejection .moderation-note {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: #b91c1c;
+  opacity: 0.85;
+}
+
+/* ============ اکشن‌ها ============ */
+.barber-review-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  border-top: 1px dashed var(--color-border, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+.barber-review-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.625rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text, #374151);
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.barber-review-card-btn:hover {
+  background: var(--color-primary-tint, #ecfdf5);
+  border-color: var(--color-primary, #10b981);
+  color: var(--color-primary, #10b981);
+  transform: translateY(-1px);
+}
+
+.barber-review-card-booking-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: var(--color-text-muted, #9ca3af);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ============================================
+   حالت خالی
+   ============================================ */
+.barber-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted, #9ca3af);
+  text-align: center;
+}
+
+.barber-empty-state svg {
+  color: var(--color-border, #d1d5db);
+}
+
+.barber-empty-state p {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.625rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text, #374151);
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.pagination-item:hover:not(.disabled):not(.active) {
+  background: var(--color-bg, #f9fafb);
+  border-color: var(--color-primary, #10b981);
+  color: var(--color-primary, #10b981);
+}
+
+.pagination-item.active {
+  background: var(--gradient-primary, linear-gradient(135deg, #10b981, #059669));
+  color: #ffffff;
+  border-color: var(--color-primary, #10b981);
+  box-shadow: 0 2px 8px var(--color-primary-light, rgba(16, 185, 129, 0.3));
+}
+
+.pagination-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Responsive — موبایل (≤640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .barber-reviews-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .barber-review-card {
+    padding: 0.875rem;
+  }
+
+  .barber-review-card-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.8125rem;
+  }
+
+  .barber-review-card-name {
+    font-size: 0.75rem;
+  }
+
+  .barber-review-card-comment {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .barber-review-card-header {
+    flex-wrap: wrap;
+  }
+
+  .barber-review-card-meta {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 0.375rem;
+    border-top: 1px dashed var(--color-border, #e5e7eb);
+  }
+
+  .barber-rating-bar-track {
+    height: 0.5rem;
+  }
+
+  .barber-rating-bar-label {
+    min-width: 2rem;
+    font-size: 0.75rem;
+  }
+
+  .barber-rating-bar-count {
+    min-width: 1.5rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+.dark .barber-review-card {
+  background: var(--color-bg, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .barber-review-card:hover {
+  background: var(--color-bg-card, #0f172a);
+}
+
+.dark .barber-review-card-comment {
+  background: var(--color-bg-card, #0f172a);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .barber-tabs {
+  background: var(--color-bg, #1e293b);
+}
+
+.dark .barber-tab.active {
+  background: var(--color-bg-card, #0f172a);
+}
+
+.dark .pagination-item {
+  background: var(--color-bg-card, #1e293b);
+}
+
+/* ============================================
+   Print
+   ============================================ */
+@media print {
+
+  .barber-tabs,
+  .pagination,
+  .barber-review-card-actions,
+  .barber-hero-actions {
+    display: none !important;
+  }
+
+  .barber-review-card {
+    box-shadow: none;
+    border: 1px solid #d1d5db;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    transform: none !important;
+  }
+
+  .barber-review-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+
+/* =========================================
+   Barber Reviews
+========================================= */
+
+.barber-reviews-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.barber-reviews-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-color, #f0edf5);
+}
+
+.barber-reviews-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.barber-reviews-heading h2 {
+  margin: 0 0 5px;
+  color: var(--text-primary, #211a2c);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.barber-reviews-heading p {
+  margin: 0;
+  color: var(--text-secondary, #8b8496);
+  font-size: 12px;
+}
+
+.barber-reviews-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid #e9ddff;
+  border-radius: 12px;
+  background: #f7f2ff;
+  color: #7942c6;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Reviews list */
+
+.barber-reviews-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+  padding-top: 22px;
+}
+
+/* Results footer */
+
+.barber-reviews-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color, #f0edf5);
+}
+
+.barber-reviews-range {
+  margin: 0;
+  color: var(--text-secondary, #81798d);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.barber-reviews-range strong {
+  color: var(--text-primary, #30273d);
+  font-weight: 800;
+}
+
+/* =========================================
+   Pagination
+========================================= */
+
+.barber-reviews-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  direction: rtl;
+}
+
+.barber-page-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--border-color, #eae6f0);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--text-primary, #51465f);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+a.barber-page-item:hover {
+  border-color: #cdb4ff;
+  background: #f8f4ff;
+  color: #7842c6;
+}
+
+.barber-page-item.active {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(124 58 237 / 20%);
+  cursor: default;
+}
+
+.barber-page-item.disabled {
+  border-color: #f0edf3;
+  background: #faf9fc;
+  color: #c5bfce;
+  cursor: not-allowed;
+}
+
+.barber-page-item.page-navigation {
+  padding-inline: 12px;
+}
+
+.barber-page-item.page-ellipsis {
+  min-width: 22px;
+  padding: 0 2px;
+  border-color: transparent;
+  background: transparent;
+  color: #9991a6;
+}
+
+.barber-page-item:focus-visible {
+  outline: 3px solid rgb(124 58 237 / 25%);
+  outline-offset: 3px;
+}
+
+/* Empty state */
+
+.barber-reviews-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+.barber-reviews-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 18px;
+  border-radius: 22px;
+  background: #f5efff;
+  color: #8854d8;
+}
+
+.barber-reviews-empty h3 {
+  margin: 0 0 9px;
+  color: var(--text-primary, #30273d);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.barber-reviews-empty p {
+  max-width: 340px;
+  margin: 0;
+  color: var(--text-secondary, #898194);
+  font-size: 13px;
+  line-height: 2;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 768px) {
+  .barber-reviews-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .barber-reviews-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .barber-reviews-range {
+    text-align: center;
+  }
+
+  .barber-reviews-pagination {
+    gap: 5px;
+  }
+
+  .barber-page-item {
+    min-width: 35px;
+    height: 36px;
+    padding-inline: 9px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .barber-page-item.page-navigation {
+    padding-inline: 9px;
+  }
+}
+
+@media (max-width: 380px) {
+  .barber-reviews-header {
+    gap: 10px;
+  }
+
+  .barber-reviews-heading h2 {
+    font-size: 16px;
+  }
+
+  .barber-reviews-count {
+    gap: 5px;
+    padding: 7px 9px;
+  }
+
+  .barber-reviews-pagination {
+    gap: 4px;
+  }
+
+  .barber-page-item {
+    min-width: 32px;
+    height: 34px;
+    padding-inline: 7px;
+  }
+}
+
+
+/* نمایش نظرات به‌صورت عمودی */
+.barber-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 22px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* جلوگیری از بیرون‌زدگی کارت‌ها */
+.barber-reviews-list>* {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 768px) {
+  .barber-reviews-list {
+    gap: 12px;
+    padding-top: 16px;
+  }
+}

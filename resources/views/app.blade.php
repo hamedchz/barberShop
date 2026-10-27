@@ -125,11 +125,11 @@
     @routes
     @viteReactRefresh
     @vite('resources/js/app.jsx')
-    <x-inertia::head />
+    @inertiaHead
 </head>
 
 <body>
-    <x-inertia::app />
+    @inertia
 </body>
 
 </html>

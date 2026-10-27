@@ -1,0 +1,367 @@
+/* ============================================
+   Barber Stat Modal
+   ============================================ */
+
+.barber-stat-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+  animation: barberStatModalFade 0.25s ease-out;
+}
+
+@keyframes barberStatModalFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.barber-stat-modal {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+  animation: barberStatModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes barberStatModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============ هدر ============ */
+.barber-stat-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid;
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+.barber-stat-modal-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.barber-stat-modal-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.barber-stat-modal-header-content h3 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem;
+  line-height: 1.3;
+}
+
+.barber-stat-modal-desc {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.barber-stat-modal-close {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.barber-stat-modal-close:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+/* ============ مبلغ دقیق ============ */
+.barber-stat-modal-amount-box {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
+}
+
+.barber-stat-modal-amount-label {
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.barber-stat-modal-amount-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.barber-stat-modal-amount-value>span:first-child {
+  font-size: 1.75rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: plaintext;
+  line-height: 1.1;
+}
+
+.barber-stat-modal-unit {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.barber-stat-modal-copy {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+
+.barber-stat-modal-copy:hover {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+  color: #8b5cf6;
+}
+
+.barber-stat-modal-copy.copied {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #10b981;
+}
+
+.barber-stat-modal-copy.small {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* ============ تغییر ============ */
+.barber-stat-modal-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.barber-stat-modal-change.positive {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.barber-stat-modal-change.negative {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* ============ Breakdown ============ */
+.barber-stat-modal-breakdown {
+  padding: 1rem 1.5rem;
+}
+
+.barber-stat-modal-section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #6b7280;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.barber-stat-modal-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-stat-modal-breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.75rem;
+}
+
+.barber-stat-modal-breakdown-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.barber-stat-modal-breakdown-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.barber-stat-modal-breakdown-hint {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.barber-stat-modal-breakdown-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.barber-stat-modal-breakdown-value>span:first-child {
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: plaintext;
+  white-space: nowrap;
+}
+
+/* ============ فوتر ============ */
+.barber-stat-modal-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+
+.barber-stat-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid transparent;
+  white-space: nowrap;
+}
+
+.barber-stat-modal-btn.primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.barber-stat-modal-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(139, 92, 246, 0.4);
+}
+
+.barber-stat-modal-btn.secondary {
+  background: #ffffff;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.barber-stat-modal-btn.secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .barber-stat-modal {
+    max-height: 95vh;
+    border-radius: 1rem;
+  }
+
+  .barber-stat-modal-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .barber-stat-modal-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .barber-stat-modal-header-content h3 {
+    font-size: 1rem;
+  }
+
+  .barber-stat-modal-amount-box {
+    padding: 1rem 1.25rem;
+  }
+
+  .barber-stat-modal-amount-value>span:first-child {
+    font-size: 1.5rem;
+  }
+
+  .barber-stat-modal-breakdown {
+    padding: 0.875rem 1.25rem;
+  }
+
+  .barber-stat-modal-footer {
+    padding: 0.875rem 1.25rem 1rem;
+    flex-direction: column-reverse;
+  }
+
+  .barber-stat-modal-btn {
+    width: 100%;
+    flex: none;
+  }
+}

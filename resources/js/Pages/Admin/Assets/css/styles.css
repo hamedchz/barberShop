@@ -126,18 +126,7 @@ body {
   gap: 0.5rem;
 }
 
-.logo-icon {
-  width: 2rem;
-  height: 2rem;
-  background-color: var(--primary);
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  font-weight: bold;
-  font-size: 1.25rem;
-}
+
 
 .logo-text {
   font-weight: bold;
@@ -239,7 +228,7 @@ body {
 }
 
 /* --- محتوای اصلی --- */
-.main-content {
+/* .main-content {
   flex: 1;
   padding: 5rem 1rem 1rem 1rem;
   display: flex;
@@ -248,6 +237,66 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+} */
+
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+
+  /* فاصله از سایدبار ثابت سمت راست (16rem = 256px) */
+  margin-right: 16rem;
+
+  /* اگه سایدبار collapsed بشه (5rem) */
+  transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* وقتی سایدبار جمع شده */
+.admin-layout.sidebar-collapsed .main-content {
+  margin-right: 5rem;
+}
+
+/* ============ Wrapper داخلی برای max-width و وسط‌چینی ============ */
+.main-content-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 5rem 1rem 1rem 1rem;
+  box-sizing: border-box;
+}
+
+/* ============ Wide mode (برای جدول‌های عریض) ============ */
+.main-content-inner.wide {
+  max-width: 1600px;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 1023px) {
+  .main-content {
+    margin-right: 0;
+    /* در موبایل سایدبار overlay می‌شه */
+  }
+
+  .main-content-inner {
+    padding: 4rem 0.75rem 1rem 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-content-inner {
+    padding: 3.5rem 0.5rem 1rem 0.5rem;
+    gap: 1rem;
+  }
 }
 
 .center-column {
@@ -3620,20 +3669,7 @@ body {
   flex: 1;
 }
 
-.logo-icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-radius: 0.625rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 800;
-  font-size: 1.125rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-}
+
 
 .logo-text {
   font-weight: 800;
@@ -3643,26 +3679,8 @@ body {
   white-space: nowrap;
 }
 
-.collapse-sidebar-btn {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 0.5rem;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
-  color: #6b7280;
-  cursor: pointer;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
 
-.collapse-sidebar-btn:hover {
-  background-color: #ecfdf5;
-  color: #10b981;
-  border-color: #d1fae5;
-}
+
 
 .close-sidebar-btn {
   display: flex;
@@ -3867,9 +3885,6 @@ body {
     display: none;
   }
 
-  .collapse-sidebar-btn {
-    display: flex;
-  }
 
   .mobile-menu-btn {
     display: none;

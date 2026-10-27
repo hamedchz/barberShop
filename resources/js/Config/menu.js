@@ -247,7 +247,7 @@ export const menuConfig = [
                 id: "general-settings",
                 label: "تنظیمات عمومی",
                 icon: SlidersHorizontal,
-                href: "/admin/settings/general",
+                href: "/admin/settings",
                 permissions: [],
                 scopes: ["manage-general-settings"],
             },

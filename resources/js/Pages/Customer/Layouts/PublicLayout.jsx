@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
-import "../Assets/public.css"; // ایمپورت استایل‌ها
+import "../Assets/public.css";
 import { usePage } from "@inertiajs/react";
 import Swal from "sweetalert2";
 

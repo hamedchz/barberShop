@@ -72,7 +72,9 @@ export default function Layout({ children }) {
             />
 
             {/* محتوای اصلی که صفحات درون آن قرار می‌گیرند */}
-            <main className="main-content">{children}</main>
+            <main className="main-content">
+                <div className="main-content-inner">{children}</div>
+            </main>
         </div>
     );
 }

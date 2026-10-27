@@ -5,10 +5,16 @@ use App\Http\Controllers\Barber\AvailabilityController;
 use App\Http\Controllers\Barber\BankInfoController;
 use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\CustomerController;
+use App\Http\Controllers\Barber\DashboardController;
 use App\Http\Controllers\Barber\DisputeController;
+use App\Http\Controllers\Barber\ReviewController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
 use App\Http\Controllers\Barber\WalletController;
+
+Route::controller(DashboardController::class)->group(function () {
+  Route::get('/dashboard',  'index')->name('dashboard');
+});
 
 // خدمات
 // Route::resource('services', ServiceController::class)->except(['show'])
@@ -97,3 +103,7 @@ Route::prefix('customers')->name('customers.')->controller(CustomerController::c
   Route::get('/', 'index')->name('index');
   Route::get('/{customer}', 'show')->name('show');
 });
+
+// routes/barber.php
+Route::get('/reviews', [ReviewController::class, 'index'])
+  ->name('reviews.index');

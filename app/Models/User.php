@@ -392,4 +392,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class, 'user_id');
     }
+    /**
+     * برنامه‌های کاری هفتگی آرایشگر
+     */
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class);
+    }
 }

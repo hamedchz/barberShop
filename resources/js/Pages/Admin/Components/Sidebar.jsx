@@ -135,7 +135,7 @@ const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
                     )}
                 </button>
             ) : (
-                <Link
+                <a
                     href={item.href}
                     className={`sidebar-item ${active ? "active" : ""}`}
                     title={isCollapsed ? item.label : ""}
@@ -151,7 +151,7 @@ const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
                     {active && !isCollapsed && (
                         <span className="sidebar-item-indicator" />
                     )}
-                </Link>
+                </a>
             )}
 
             {hasChildren && !isCollapsed && isExpanded && (
@@ -242,7 +242,7 @@ export default function Sidebar({
         >
             {/* هدر */}
             <div className="sidebar-header">
-                <Link href="/" className="logo-container">
+                <a href="/" className="logo-container">
                     <div className="logo-icon">
                         {site.logo ? (
                             <img src={site.logo} alt={site.name} />
@@ -251,7 +251,7 @@ export default function Sidebar({
                         )}
                     </div>
                     <span className="logo-text">{site.name}</span>
-                </Link>
+                </a>
 
                 <button
                     type="button"
@@ -311,7 +311,7 @@ export default function Sidebar({
                         <div className="sidebar-user-avatar">
                             {auth.user.avatar ? (
                                 <img
-                                    src={auth.user.thumbnail}
+                                    src={auth.user.avatar_url}
                                     alt={auth.user.name}
                                 />
                             ) : (

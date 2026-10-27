@@ -312,18 +312,22 @@ export default function DashboardChart({
                 </svg>
 
                 {/* ============ Tooltip ============ */}
+                {/* ============ Tooltip ============ */}
                 {hoveredPoint && (
                     <div
                         className="dashboard-chart-tooltip"
                         style={{
                             left: `${(hoveredPoint.x / W) * 100}%`,
-                            top: "10px",
+                            top: "0px",
+                            transform: "translate(-50%, -100%)",
+                            marginTop: "-12px",
                         }}
                     >
                         <div className="tooltip-date">
                             <Calendar size={11} />
                             {formatFullDateWithoutTime(hoveredPoint.label)}
                         </div>
+
                         <div className="tooltip-row revenue">
                             <span>درآمد:</span>
                             <strong>
@@ -335,6 +339,7 @@ export default function DashboardChart({
                                 تومان
                             </strong>
                         </div>
+
                         <div className="tooltip-row bookings">
                             <span>رزرو:</span>
                             <strong>

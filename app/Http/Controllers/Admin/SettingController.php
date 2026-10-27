@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -16,10 +17,25 @@ class SettingController extends Controller
      */
     public function index()
     {
+        $settings = Setting::all();
+
+        $values = $settings->mapWithKeys(fn($s) => [
+            $s->key => Setting::castValue($s->value, $s->type),
+        ])->toArray();
+
+        $meta = $settings->groupBy('group')->map(fn($items) => $items->map(fn($s) => [
+            'key'         => $s->key,
+            'type'        => $s->type,
+            'label'       => $s->label,
+            'description' => $s->description,
+            'group'       => $s->group,
+        ])->values()->toArray())->toArray();
+
         return Inertia::render('Admin/Settings/Index', [
-            'settings' => Setting::getSettingsWithMeta(),
-            'groups'   => Setting::GROUPS,
-            'types'    => Setting::TYPES,
+            'values' => $values,
+            'meta'   => $meta,
+            'groups' => Setting::GROUPS,
+            'types'  => Setting::TYPES,
         ]);
     }
 
@@ -37,12 +53,14 @@ class SettingController extends Controller
             'settings.*.key.exists' => 'کلید تنظیم معتبر نیست.',
         ]);
 
+
+
         // ============ Validation اختصاصی بر اساس نوع ============
         $errors = $this->validateSpecificSettings($validated['settings']);
         if (!empty($errors)) {
             return redirect()->back()->withErrors($errors);
         }
-
+        // dd($request->all());
         // ============ ذخیره ============
         foreach ($validated['settings'] as $item) {
             $setting = Setting::where('key', $item['key'])->firstOrFail();
@@ -62,7 +80,9 @@ class SettingController extends Controller
         // ============ پاک کردن کش ============
         $this->clearCache();
 
-        return redirect()->back()->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+        StickyAlert::toast('تنظیمات با موفقیت ذخیره شد.', 'success');
+
+        return redirect()->back();
     }
 
     /**
@@ -94,8 +114,9 @@ class SettingController extends Controller
         ]);
 
         $this->clearCache();
+        StickyAlert::toast('لوگو با موفقیت آپلود شد.', 'success');
 
-        return redirect()->back()->with('success', 'لوگو با موفقیت آپلود شد.');
+        return redirect()->back();
     }
 
     /**
@@ -103,6 +124,7 @@ class SettingController extends Controller
      */
     public function uploadFavicon(Request $request)
     {
+
         $request->validate([
             'favicon' => 'required|image|mimes:png,ico,svg|max:512',
         ], [
@@ -110,7 +132,6 @@ class SettingController extends Controller
             'favicon.mimes'    => 'فرمت‌های مجاز: PNG, ICO, SVG.',
             'favicon.max'      => 'حداکثر ۵۱۲ کیلوبایت.',
         ]);
-
         $oldFavicon = Setting::get('site_favicon');
         if ($oldFavicon && Storage::disk('public')->exists($oldFavicon)) {
             Storage::disk('public')->delete($oldFavicon);
@@ -125,8 +146,9 @@ class SettingController extends Controller
         ]);
 
         $this->clearCache();
+        StickyAlert::toast('فاوآیکون با موفقیت آپلود شد.', 'success');
 
-        return redirect()->back()->with('success', 'فاوآیکون با موفقیت آپلود شد.');
+        return redirect()->back();
     }
 
     // ============================================
@@ -189,6 +211,6 @@ class SettingController extends Controller
     {
         Cache::forget('site_theme');
         Cache::forget('site_info');
-        Cache::forget('site_settings'); // برای سازگاری با کد قدیمی
+        Cache::forget('site_settings');
     }
 }

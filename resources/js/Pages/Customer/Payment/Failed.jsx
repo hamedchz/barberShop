@@ -1,5 +1,5 @@
 import React from "react";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
 import {
     XCircle,
@@ -13,6 +13,7 @@ import { toPersianNumber } from "../../../utils/persianNumbers";
 import "../Assets/Payment.css";
 import { Calendar } from "react-multi-date-picker";
 export default function PaymentFailed({ auth, booking }) {
+    const { site } = usePage().props;
     // ============ تلاش مجدد ============
     const handleRetry = () => {
         router.get(`/customer/bookings`);
@@ -54,7 +55,9 @@ export default function PaymentFailed({ auth, booking }) {
                         <Phone size={16} />
                         <p>
                             در صورت نیاز به کمک با پشتیبانی تماس بگیرید:{" "}
-                            <strong dir="ltr">۰۲۱-۱۲۳۴۵۶۷۸</strong>
+                            <strong dir="ltr">
+                                {toPersianNumber(site.phone)}
+                            </strong>
                         </p>
                     </div>
 

@@ -62,7 +62,7 @@
 .logo-icon {
   width: 2.25rem;
   height: 2.25rem;
-  background: var(--gradient-primary, linear-gradient(135deg, #10b981, #059669));
+  /* background: var(--gradient-primary, linear-gradient(135deg, #10b981, #059669)); */
   border-radius: 0.625rem;
   display: flex;
   align-items: center;
