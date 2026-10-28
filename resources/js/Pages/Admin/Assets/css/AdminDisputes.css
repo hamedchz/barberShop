@@ -2453,3 +2453,39 @@
   color: #9ca3af;
   flex-shrink: 0;
 }
+
+
+.admin-note-group {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.admin-note-group .form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.optional-label {
+  color: #0dcaf0;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.admin-note-textarea {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #78350f;
+}
+
+.admin-note-textarea::placeholder {
+  color: #a8a29e;
+}
+
+.admin-note-textarea:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgb(245 158 11 / 12%);
+  outline: none;
+}

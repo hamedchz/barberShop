@@ -4406,3 +4406,179 @@
     width: 100%;
   }
 }
+
+/* =========================================
+   پیام مدیریت به مشتری
+========================================= */
+
+.dispute-admin-message {
+  position: relative;
+  margin: 18px 0;
+  padding: 18px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-right: 4px solid #0ea5e9;
+  border-radius: 12px;
+  direction: rtl;
+  overflow: hidden;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.dispute-admin-message-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.dispute-admin-message-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  color: #0284c7;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+}
+
+.dispute-admin-message-title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.dispute-admin-message-title strong {
+  color: #075985;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.dispute-admin-message-title span {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.dispute-admin-message-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dispute-admin-message-body {
+  padding: 14px 15px;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 2.1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.dispute-admin-message-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  color: #0369a1;
+  border-top: 1px solid #bae6fd;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.dispute-admin-message-footer svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* =========================================
+   پیام نیازمند اقدام مشتری
+========================================= */
+
+.dispute-admin-message.is-action-required {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  border-right-color: #f59e0b;
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-icon {
+  color: #b45309;
+  background: #fef3c7;
+  border-color: #fde68a;
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-title strong {
+  color: #92400e;
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-body {
+  border-color: #fde68a;
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-footer {
+  color: #92400e;
+  border-top-color: #fde68a;
+}
+
+/* =========================================
+   نمایش در موبایل
+========================================= */
+
+@media (max-width: 576px) {
+  .dispute-admin-message {
+    margin: 14px 0;
+    padding: 13px;
+    border-radius: 10px;
+  }
+
+  .dispute-admin-message-header {
+    gap: 9px;
+  }
+
+  .dispute-admin-message-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dispute-admin-message-title strong {
+    font-size: 13px;
+  }
+
+  .dispute-admin-message-badge {
+    width: 100%;
+    justify-content: flex-start;
+    white-space: normal;
+  }
+
+  .dispute-admin-message-body {
+    padding: 12px;
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .dispute-admin-message-footer {
+    font-size: 11px;
+  }
+}

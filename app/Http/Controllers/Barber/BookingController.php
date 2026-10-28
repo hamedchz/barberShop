@@ -601,6 +601,8 @@ class BookingController extends Controller
                     'thumbnail' => $dispute->disputedByUser->avatarUrl(),
                 ] : null,
                 'reason'               => $dispute->reason,
+                'admin_request_message'               => $dispute->admin_request_message,
+
                 'status'               => $dispute->status->value,
                 'status_label'         => $dispute->status->label(),
                 'response'             => $dispute->response,

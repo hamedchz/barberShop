@@ -42,6 +42,7 @@ import {
     MessageSquare,
     LoaderCircle,
     Send,
+    Bot,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import {
@@ -889,7 +890,60 @@ export default function BookingShow({ auth, booking }) {
                                         "cancelled" &&
                                         "اعتراض شما لغو شده است."}
                                 </p>
+                                <div
+                                    className={`dispute-admin-message ${
+                                        booking.latest_dispute.status ===
+                                        "awaiting_response"
+                                            ? "is-action-required"
+                                            : ""
+                                    }`}
+                                >
+                                    <div className="dispute-admin-message-header">
+                                        <div className="dispute-admin-message-icon">
+                                            <MessageSquare size={20} />
+                                        </div>
 
+                                        <div className="dispute-admin-message-title">
+                                            <strong>پیام مدیریت به شما</strong>
+
+                                            <span>
+                                                {booking.latest_dispute
+                                                    .status ===
+                                                "awaiting_response"
+                                                    ? "اقدام شما لازم است"
+                                                    : "اطلاع‌رسانی مدیریت"}
+                                            </span>
+                                        </div>
+
+                                        {booking.latest_dispute.status ===
+                                            "awaiting_response" && (
+                                            <span className="dispute-admin-message-badge">
+                                                <AlertCircle size={14} />
+                                                نیازمند پاسخ
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="dispute-admin-message-body">
+                                        {
+                                            booking.latest_dispute
+                                                .admin_request_message
+                                        }
+                                    </div>
+
+                                    {booking.latest_dispute.status ===
+                                        "awaiting_response" && (
+                                        <div className="dispute-admin-message-footer">
+                                            <Info size={16} />
+                                            <span>
+                                                لطفاً پیام مدیریت را با دقت
+                                                مطالعه کرده و پاسخ یا مدارک
+                                                درخواستی را از طریق بخش ثبت پاسخ
+                                                ارسال کنید.
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                                 {/* ============ جزئیات اعتراض ============ */}
                                 <div className="dispute-banner-details">
                                     <div className="detail-item">

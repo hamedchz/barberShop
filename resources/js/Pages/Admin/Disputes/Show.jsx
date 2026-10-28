@@ -74,7 +74,7 @@ export default function DisputeShow({
 }) {
     const [decisionModal, setDecisionModal] = useState({
         isOpen: false,
-        decision: null, // "approve" | "reject"
+        decision: null,
         isLoading: false,
         resolution: "",
         refundAmount: 0,
@@ -177,28 +177,48 @@ export default function DisputeShow({
     };
 
     // ============ اعتبارسنجی پیام درخواست ============
-    const validateRequestMessage = (message) => {
-        const errors = {};
-        const trimmed = message.trim();
 
+    const validateRequestMessage = (message, admin_note = "") => {
+        const errors = {};
+
+        const trimmed = message.trim();
+        const adminNoteTrimmed = admin_note.trim();
+
+        // اعتبارسنجی پیام ارسالی به کاربر
         if (!trimmed) {
             errors.message = "لطفاً متن پیام را وارد کنید.";
         } else if (trimmed.length < 10) {
             errors.message = "پیام باید حداقل ۱۰ کاراکتر باشد.";
         } else if (trimmed.length > 1000) {
-            errors.message = "پیام نمیتواند بیشتر از ۱۰۰۰ کاراکتر باشد.";
+            errors.message = "پیام نمی‌تواند بیشتر از ۱۰۰۰ کاراکتر باشد.";
+        }
+
+        if (adminNoteTrimmed.length > 2000) {
+            errors.admin_note =
+                "یادداشت داخلی نمی‌تواند بیشتر از ۲۰۰۰ کاراکتر باشد.";
         }
 
         return errors;
     };
 
     // ============ ارسال درخواست اطلاعات بیشتر ============
+
     const handleRequestInfo = () => {
         const message = requestModal.message.trim();
+        const admin_note = (requestModal.admin_note ?? "").trim();
+
         const clientErrors = validateRequestMessage(message);
 
+        if (admin_note.length > 2000) {
+            clientErrors.admin_note =
+                "یادداشت داخلی نمی‌تواند بیشتر از ۲۰۰۰ کاراکتر باشد.";
+        }
+
         if (Object.keys(clientErrors).length > 0) {
-            setRequestModal((prev) => ({ ...prev, errors: clientErrors }));
+            setRequestModal((prev) => ({
+                ...prev,
+                errors: clientErrors,
+            }));
             return;
         }
 
@@ -210,16 +230,22 @@ export default function DisputeShow({
 
         router.post(
             `/admin/disputes/${dispute.id}/request-response`,
-            { message },
+            {
+                message,
+                admin_note: admin_note || null,
+            },
             {
                 preserveScroll: true,
+
                 onSuccess: () =>
                     setRequestModal({
                         isOpen: false,
                         isLoading: false,
                         message: "",
+                        admin_note: "",
                         errors: {},
                     }),
+
                 onError: (errors) =>
                     setRequestModal((prev) => ({
                         ...prev,
@@ -359,19 +385,39 @@ export default function DisputeShow({
                             <div className="dispute-reason-full">
                                 <p>{dispute.reason}</p>
                             </div>
-                            {dispute.admin_notes && (
+                            {(dispute.admin_notes ||
+                                dispute.admin_request_message) && (
                                 <div className="dispute-conversation">
-                                    <div className="conversation-block">
-                                        <h2 className="card-title">
-                                            <span className="card-icon-box blue">
-                                                <MessageSquare size={14} />
-                                            </span>
-                                            پیام شما
-                                        </h2>
-                                        <div className="dispute-reason-full">
-                                            <p>{dispute.admin_notes}</p>
+                                    {dispute.admin_notes && (
+                                        <div className="conversation-block">
+                                            <h2 className="card-title">
+                                                <span className="card-icon-box blue">
+                                                    <MessageSquare size={14} />
+                                                </span>
+                                                پیام داخلی ادمین
+                                            </h2>
+                                            <div className="dispute-reason-full">
+                                                <p>{dispute.admin_notes}</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+                                    {dispute.admin_request_message && (
+                                        <div className="conversation-block">
+                                            <h2 className="card-title">
+                                                <span className="card-icon-box blue">
+                                                    <MessageSquare size={14} />
+                                                </span>
+                                                پیام ادمین به کاربر
+                                            </h2>
+                                            <div className="dispute-reason-full">
+                                                <p>
+                                                    {
+                                                        dispute.admin_request_message
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                     {dispute.response && (
                                         <div className="conversation-block">
                                             <h2 className="card-title">
@@ -1208,7 +1254,14 @@ export default function DisputeShow({
                             بیشتری ارسال کند.
                         </p>
                         <div className="form-group">
-                            <label className="form-label">پیام شما:</label>
+                            <label className="form-label">
+                                {" "}
+                                پیام شما:
+                                <span className="optional-label">
+                                    {" "}
+                                    (این پیام به کاربر نمایش داده میشود)
+                                </span>
+                            </label>
                             <textarea
                                 className={`form-textarea ${requestModal.errors?.message ? "has-error" : ""}`}
                                 value={requestModal.message}
@@ -1216,7 +1269,6 @@ export default function DisputeShow({
                                     setRequestModal((prev) => ({
                                         ...prev,
                                         message: e.target.value,
-                                        // پاک کردن خطا هنگام تایپ
                                         errors: {
                                             ...prev.errors,
                                             message: undefined,
@@ -1246,6 +1298,60 @@ export default function DisputeShow({
                                 </span>
                             </div>
                         </div>
+
+                        <div className="form-group admin-note-group">
+                            <label className="form-label">
+                                یادداشت داخلی ادمین
+                                <span className="optional-label">
+                                    {" "}
+                                    (این پیام اختیاری و فقط به ادمین نمایش داده
+                                    میشود)
+                                </span>
+                            </label>
+
+                            <textarea
+                                className={`form-textarea admin-note-textarea ${
+                                    requestModal.errors?.admin_note
+                                        ? "has-error"
+                                        : ""
+                                }`}
+                                value={requestModal.admin_note ?? ""}
+                                onChange={(e) => {
+                                    setRequestModal((prev) => ({
+                                        ...prev,
+                                        admin_note: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            admin_note: undefined,
+                                        },
+                                    }));
+                                }}
+                                placeholder="یادداشتی برای پیگیری این اعتراض بنویسید؛ این متن برای کاربر ارسال نمی‌شود..."
+                                rows={3}
+                                maxLength={2000}
+                            />
+
+                            <div className="form-textarea-footer">
+                                {requestModal.errors?.admin_note ? (
+                                    <span className="form-error">
+                                        <AlertCircle size={12} />
+                                        {requestModal.errors.admin_note}
+                                    </span>
+                                ) : (
+                                    <span className="form-hint">
+                                        فقط برای استفاده داخلی ادمین
+                                    </span>
+                                )}
+
+                                <span className="form-counter" dir="ltr">
+                                    {toPersianNumber(
+                                        (requestModal.admin_note ?? "").length,
+                                    )}{" "}
+                                    / ۲۰۰۰
+                                </span>
+                            </div>
+                        </div>
+
                         <div className="request-modal-actions">
                             <button
                                 className="btn-cancel"

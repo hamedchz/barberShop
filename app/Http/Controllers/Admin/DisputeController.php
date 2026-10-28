@@ -233,6 +233,7 @@ class DisputeController extends Controller
                 'dispute_type' => $dispute->dispute_type->value,
                 'reason' => $dispute->reason,
                 'admin_notes' => $dispute->admin_notes,
+                'admin_request_message' => $dispute->admin_request_message,
                 'status' => $dispute->status->value,
                 'response' => $dispute->response,
                 'responded_at' => $dispute->responded_at,
@@ -422,6 +423,7 @@ class DisputeController extends Controller
     public function requestResponse(Request $request, Dispute $dispute)
     {
 
+
         if (!in_array($dispute->status->value, [DisputedStatus::pending->value, DisputedStatus::investigating->value])) {
             StickyAlert::alert('این اعتراض قابل درخواست پاسخ نیست.', 'error');
             return back();
@@ -429,11 +431,13 @@ class DisputeController extends Controller
 
         $validated = $request->validate([
             'message' => 'required|string|min:10|max:1000',
+            'admin_note' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $dispute->update([
             'status' => DisputedStatus::awaitingResponse->value,
             'admin_request_message' => $validated['message'],
+            'admin_notes' => $validated['admin_note'],
             'admin_request_at'      => now(),
             'admin_request_by_user_id' => auth()->id(),
         ]);

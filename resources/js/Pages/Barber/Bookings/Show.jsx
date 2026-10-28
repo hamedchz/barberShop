@@ -465,16 +465,14 @@ export default function BarberBookingShow({ auth, booking }) {
         );
     };
 
-    // جواب به درخواست اطلاعات بیشتر اعتراض
     const [responseModal, setResponseModal] = useState({
         isOpen: false,
         isLoading: false,
-        dispute: null, // اعتراضی که بهش پاسخ میدیم
-        response: "", // متن پاسخ
-        attachments: [], // فایلهای پیوست
+        dispute: null,
+        response: "",
+        attachments: [],
         errors: {},
     });
-    // ============ باز کردن مدال ============
     const openResponseModal = (dispute) => {
         setResponseModal({
             isOpen: true,
@@ -745,7 +743,393 @@ export default function BarberBookingShow({ auth, booking }) {
                             showScrollButton
                         />
                     )}
+                {/* ============ بنر وضعیت اعتراض ============ */}
+                {booking.has_disputes &&
+                    booking.latest_dispute &&
+                    booking.latest_dispute.disputed_by === "barber" && (
+                        <div
+                            className={`customer-dispute-banner status-${booking.latest_dispute.status}`}
+                        >
+                            <div className="dispute-banner-icon">
+                                {booking.latest_dispute.status ===
+                                    "pending" && <Clock4 size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "investigating" && (
+                                    <LoaderCircle size={24} />
+                                )}
+                                {booking.latest_dispute.status ===
+                                    "awaiting_response" && (
+                                    <MessageSquare size={24} />
+                                )}
+                                {booking.latest_dispute.status ===
+                                    "resolved" && <CheckCircle size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "rejected" && <XCircle size={24} />}
+                                {booking.latest_dispute.status ===
+                                    "cancelled" && <Ban size={24} />}
+                            </div>
 
+                            <div className="dispute-banner-content">
+                                <div className="dispute-banner-header">
+                                    <h3>
+                                        {booking.latest_dispute.status ===
+                                            "pending" &&
+                                            "اعتراض شما در صف بررسی"}
+                                        {booking.latest_dispute.status ===
+                                            "investigating" &&
+                                            "اعتراض شما در حال بررسی"}
+                                        {booking.latest_dispute.status ===
+                                            "awaiting_response" &&
+                                            "در انتظار پاسخ شما"}
+                                        {booking.latest_dispute.status ===
+                                            "resolved" && "اعتراض شما تایید شد"}
+                                        {booking.latest_dispute.status ===
+                                            "rejected" && "اعتراض شما رد شد"}
+                                        {booking.latest_dispute.status ===
+                                            "cancelled" && "اعتراض شما لغو شد"}
+                                    </h3>
+
+                                    <span className="dispute-banner-date">
+                                        ثبت:{" "}
+                                        {formatFullDateTime(
+                                            booking.latest_dispute.created_at,
+                                        )}
+                                    </span>
+                                </div>
+
+                                <p className="dispute-banner-message">
+                                    {booking.latest_dispute.status ===
+                                        "pending" &&
+                                        (isMyDispute
+                                            ? "اعتراض شما ثبت شده و در انتظار بررسی ادمین است. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد."
+                                            : "مشتری از شما اعتراض کرده است. ادمین در حال بررسی است. لطفاً منتظر بمانید.")}
+
+                                    {booking.latest_dispute.status ===
+                                        "investigating" &&
+                                        (isMyDispute
+                                            ? "ادمین در حال بررسی اعتراض شماست. لطفاً منتظر بمانید."
+                                            : "ادمین در حال بررسی اعتراض مشتری علیه شماست. لطفاً منتظر بمانید.")}
+
+                                    {booking.latest_dispute.status ===
+                                        "awaiting_response" &&
+                                        (isMyDispute
+                                            ? "ادمین نیاز به اطلاعات بیشتری دارد. لطفاً پاسخ خود را ثبت کنید."
+                                            : "ادمین نیاز به اطلاعات بیشتری درباره اعتراض مشتری دارد. لطفاً پاسخ خود را ثبت کنید.")}
+
+                                    {booking.latest_dispute.status ===
+                                        "resolved" &&
+                                        (isMyDispute
+                                            ? "اعتراض شما تایید شد."
+                                            : "اعتراض مشتری تایید شد.")}
+
+                                    {booking.latest_dispute.status ===
+                                        "rejected" &&
+                                        (isMyDispute
+                                            ? "پس از بررسی، اعتراض شما رد شد. برای اطلاعات بیشتر با پشتیبانی تماس بگیرید."
+                                            : "پس از بررسی، اعتراض مشتری رد شد. رزرو در وضعیت تکمیل باقی می‌ماند.")}
+
+                                    {booking.latest_dispute.status ===
+                                        "cancelled" &&
+                                        (isMyDispute
+                                            ? "اعتراض شما لغو شده است."
+                                            : "اعتراض مشتری لغو شده است.")}
+                                </p>
+                                {booking.latest_dispute
+                                    .admin_request_message && (
+                                    <div
+                                        className={`dispute-admin-message ${
+                                            booking.latest_dispute.status ===
+                                            "awaiting_response"
+                                                ? "is-action-required"
+                                                : ""
+                                        }`}
+                                    >
+                                        <div className="dispute-admin-message-header">
+                                            <div className="dispute-admin-message-icon">
+                                                <MessageSquare size={20} />
+                                            </div>
+
+                                            <div className="dispute-admin-message-title">
+                                                <strong>
+                                                    پیام مدیریت به شما
+                                                </strong>
+
+                                                <span>
+                                                    {booking.latest_dispute
+                                                        .status ===
+                                                    "awaiting_response"
+                                                        ? "اقدام شما لازم است"
+                                                        : "اطلاع‌رسانی مدیریت"}
+                                                </span>
+                                            </div>
+
+                                            {booking.latest_dispute.status ===
+                                                "awaiting_response" && (
+                                                <span className="dispute-admin-message-badge">
+                                                    <AlertCircle size={14} />
+                                                    نیازمند پاسخ
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="dispute-admin-message-body">
+                                            {
+                                                booking.latest_dispute
+                                                    .admin_request_message
+                                            }
+                                        </div>
+
+                                        {booking.latest_dispute.status ===
+                                            "awaiting_response" && (
+                                            <div className="dispute-admin-message-footer">
+                                                <Info size={16} />
+                                                <span>
+                                                    لطفاً پیام مدیریت را با دقت
+                                                    مطالعه کرده و پاسخ یا مدارک
+                                                    درخواستی را از طریق بخش ثبت
+                                                    پاسخ ارسال کنید.
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                {/* ============ جزئیات اعتراض ============ */}
+                                <div className="dispute-banner-details">
+                                    <div className="detail-item">
+                                        <span className="detail-label">
+                                            متن اعتراض:
+                                        </span>
+                                        <span className="detail-value">
+                                            {booking.latest_dispute.reason}
+                                        </span>
+                                    </div>
+                                    <div className="detail-item">
+                                        <span className="detail-label">
+                                            نوع اعتراض:
+                                        </span>
+                                        <span className="detail-value">
+                                            {
+                                                getDisputeTypeConfig(
+                                                    booking.latest_dispute
+                                                        .dispute_type,
+                                                )["label"]
+                                            }
+                                        </span>
+                                    </div>
+
+                                    {booking.latest_dispute.refund_amount >
+                                        0 && (
+                                        <div className="detail-item success">
+                                            <span className="detail-label">
+                                                مبلغ بازگشتی:
+                                            </span>
+                                            <span className="detail-value">
+                                                {toPersianNumber(
+                                                    booking.latest_dispute.refund_amount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </div>
+                                    )}
+                                    {booking.latest_dispute.penalty_amount >
+                                        0 && (
+                                        <div className="detail-item penalty">
+                                            <span className="detail-label">
+                                                جریمه آرایشگر:
+                                            </span>
+                                            <span className="detail-value">
+                                                {toPersianNumber(
+                                                    booking.latest_dispute.penalty_amount.toLocaleString(),
+                                                )}{" "}
+                                                تومان
+                                            </span>
+                                        </div>
+                                    )}
+                                    {booking.latest_dispute.resolution && (
+                                        <div className="detail-item resolution">
+                                            <span className="detail-label">
+                                                پاسخ ادمین:
+                                            </span>
+                                            <span className="detail-value">
+                                                {
+                                                    booking.latest_dispute
+                                                        .resolution
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
+                                    {booking.latest_dispute.response && (
+                                        <div className="detail-item response">
+                                            <span className="detail-label">
+                                                پاسخ شما:
+                                            </span>
+                                            <span className="detail-value">
+                                                {
+                                                    booking.latest_dispute
+                                                        .response
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
+                                    {/* ============ پیوست‌ها ============ */}
+                                    {booking.latest_dispute.attachments &&
+                                        booking.latest_dispute.attachments
+                                            .length > 0 && (
+                                            <div className="detail-item attachments">
+                                                <span className="detail-label">
+                                                    <Paperclip size={12} />
+                                                    پیوست‌ها:
+                                                </span>
+                                                <div className="dispute-attachments-mini-grid">
+                                                    {booking.latest_dispute.attachments.map(
+                                                        (att, index) => (
+                                                            <a
+                                                                key={index}
+                                                                href={att.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="dispute-attachment-mini"
+                                                                title={att.name}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        att.url
+                                                                    }
+                                                                    alt={`پیوست ${
+                                                                        index +
+                                                                        1
+                                                                    }`}
+                                                                />
+                                                                <div className="attachment-mini-overlay">
+                                                                    <Eye
+                                                                        size={
+                                                                            14
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            </a>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                </div>
+
+                                {/* ============ اطلاعات اضافی ============ */}
+                                {booking.latest_dispute.status ===
+                                    "pending" && (
+                                    <div className="dispute-banner-info">
+                                        <Info size={14} />
+                                        <span>
+                                            می‌توانید تا زمان بررسی، اطلاعات
+                                            بیشتری ارسال کنید.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {booking.latest_dispute.status ===
+                                    "awaiting_response" && (
+                                    <div className="dispute-banner-warning">
+                                        <AlertCircle size={14} />
+                                        <span>
+                                            لطفاً پاسخ خود را در اسرع وقت ثبت
+                                            کنید.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* ============ نمایش تعداد اعتراضات ============ */}
+                                {booking.disputes_count > 1 && (
+                                    <div className="dispute-banner-info">
+                                        <Info size={14} />
+                                        <span>
+                                            این رزرو{" "}
+                                            {toPersianNumber(
+                                                booking.disputes_count,
+                                            )}{" "}
+                                            اعتراض دارد.
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* ============ دکمه‌های عملیات اعتراض ============ */}
+                                <div className="dispute-banner-actions">
+                                    {/* ویرایش */}
+                                    {booking.latest_dispute.can_edit && (
+                                        <Link
+                                            href={`/barber/disputes/${booking.latest_dispute.id}/edit`}
+                                            className="dispute-action-btn edit"
+                                            title="ویرایش اعتراض"
+                                        >
+                                            <Edit3 size={14} />
+                                            <span>ویرایش</span>
+                                            {/* {booking.latest_dispute
+                                                .edit_hours_remaining && (
+                                                <span className="time-remaining">
+                                                    {toPersianNumber(
+                                                        booking.latest_dispute
+                                                            .edit_hours_remaining,
+                                                    )}{" "}
+                                                    ساعت
+                                                </span>
+                                            )} */}
+                                        </Link>
+                                    )}
+
+                                    {/* حذف */}
+                                    {booking.latest_dispute.can_delete && (
+                                        <button
+                                            type="button"
+                                            className="dispute-action-btn delete"
+                                            onClick={() =>
+                                                setDeleteDisputeModal({
+                                                    isOpen: true,
+                                                    isLoading: false,
+                                                    dispute:
+                                                        booking.latest_dispute,
+                                                })
+                                            }
+                                            title="حذف اعتراض"
+                                        >
+                                            <Trash2 size={14} />
+                                            <span>حذف</span>
+                                        </button>
+                                    )}
+
+                                    {/* پاسخ */}
+                                    {booking.latest_dispute.can_respond && (
+                                        <button
+                                            type="button"
+                                            className="dispute-action-btn respond"
+                                            onClick={() =>
+                                                openResponseModal(latestDispute)
+                                            }
+                                            title="ثبت پاسخ"
+                                        >
+                                            <MessageSquare size={14} />
+                                            <span>ثبت پاسخ</span>
+                                        </button>
+                                    )}
+
+                                    {/* مشاهده جزئیات */}
+                                    {/* <button
+                                        type="button"
+                                        className="dispute-action-btn view"
+                                        onClick={() =>
+                                            setDetailsModal({
+                                                isOpen: true,
+                                                dispute: booking.latest_dispute,
+                                            })
+                                        }
+                                        title="مشاهده جزئیات"
+                                    >
+                                        <Eye size={14} />
+                                        <span>جزئیات</span>
+                                    </button> */}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 {/* ============ گرید اصلی ============ */}
                 <div className="barber-booking-show-grid">
                     {/* ============ ستون راست ============ */}
@@ -817,372 +1201,7 @@ export default function BarberBookingShow({ auth, booking }) {
                                 </p>
                             )}
                         </div>
-                        {/* ============ بنر وضعیت اعتراض ============ */}
-                        {booking.has_disputes &&
-                            booking.latest_dispute &&
-                            booking.latest_dispute.disputed_by === "barber" && (
-                                <div
-                                    className={`customer-dispute-banner status-${booking.latest_dispute.status}`}
-                                >
-                                    <div className="dispute-banner-icon">
-                                        {booking.latest_dispute.status ===
-                                            "pending" && <Clock4 size={24} />}
-                                        {booking.latest_dispute.status ===
-                                            "investigating" && (
-                                            <LoaderCircle size={24} />
-                                        )}
-                                        {booking.latest_dispute.status ===
-                                            "awaiting_response" && (
-                                            <MessageSquare size={24} />
-                                        )}
-                                        {booking.latest_dispute.status ===
-                                            "resolved" && (
-                                            <CheckCircle size={24} />
-                                        )}
-                                        {booking.latest_dispute.status ===
-                                            "rejected" && <XCircle size={24} />}
-                                        {booking.latest_dispute.status ===
-                                            "cancelled" && <Ban size={24} />}
-                                    </div>
 
-                                    <div className="dispute-banner-content">
-                                        <div className="dispute-banner-header">
-                                            <h3>
-                                                {booking.latest_dispute
-                                                    .status === "pending" &&
-                                                    "اعتراض شما در صف بررسی"}
-                                                {booking.latest_dispute
-                                                    .status ===
-                                                    "investigating" &&
-                                                    "اعتراض شما در حال بررسی"}
-                                                {booking.latest_dispute
-                                                    .status ===
-                                                    "awaiting_response" &&
-                                                    "در انتظار پاسخ شما"}
-                                                {booking.latest_dispute
-                                                    .status === "resolved" &&
-                                                    "اعتراض شما تایید شد"}
-                                                {booking.latest_dispute
-                                                    .status === "rejected" &&
-                                                    "اعتراض شما رد شد"}
-                                                {booking.latest_dispute
-                                                    .status === "cancelled" &&
-                                                    "اعتراض شما لغو شد"}
-                                            </h3>
-
-                                            <span className="dispute-banner-date">
-                                                ثبت:{" "}
-                                                {formatFullDateTime(
-                                                    booking.latest_dispute
-                                                        .created_at,
-                                                )}
-                                            </span>
-                                        </div>
-
-                                        <p className="dispute-banner-message">
-                                            {booking.latest_dispute.status ===
-                                                "pending" &&
-                                                (isMyDispute
-                                                    ? "اعتراض شما ثبت شده و در انتظار بررسی ادمین است. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد."
-                                                    : "مشتری از شما اعتراض کرده است. ادمین در حال بررسی است. لطفاً منتظر بمانید.")}
-
-                                            {booking.latest_dispute.status ===
-                                                "investigating" &&
-                                                (isMyDispute
-                                                    ? "ادمین در حال بررسی اعتراض شماست. لطفاً منتظر بمانید."
-                                                    : "ادمین در حال بررسی اعتراض مشتری علیه شماست. لطفاً منتظر بمانید.")}
-
-                                            {booking.latest_dispute.status ===
-                                                "awaiting_response" &&
-                                                (isMyDispute
-                                                    ? "ادمین نیاز به اطلاعات بیشتری دارد. لطفاً پاسخ خود را ثبت کنید."
-                                                    : "ادمین نیاز به اطلاعات بیشتری درباره اعتراض مشتری دارد. لطفاً پاسخ خود را ثبت کنید.")}
-
-                                            {booking.latest_dispute.status ===
-                                                "resolved" &&
-                                                (isMyDispute
-                                                    ? "اعتراض شما تایید شد."
-                                                    : "اعتراض مشتری تایید شد.")}
-
-                                            {booking.latest_dispute.status ===
-                                                "rejected" &&
-                                                (isMyDispute
-                                                    ? "پس از بررسی، اعتراض شما رد شد. برای اطلاعات بیشتر با پشتیبانی تماس بگیرید."
-                                                    : "پس از بررسی، اعتراض مشتری رد شد. رزرو در وضعیت تکمیل باقی می‌ماند.")}
-
-                                            {booking.latest_dispute.status ===
-                                                "cancelled" &&
-                                                (isMyDispute
-                                                    ? "اعتراض شما لغو شده است."
-                                                    : "اعتراض مشتری لغو شده است.")}
-                                        </p>
-
-                                        {/* ============ جزئیات اعتراض ============ */}
-                                        <div className="dispute-banner-details">
-                                            <div className="detail-item">
-                                                <span className="detail-label">
-                                                    متن اعتراض:
-                                                </span>
-                                                <span className="detail-value">
-                                                    {
-                                                        booking.latest_dispute
-                                                            .reason
-                                                    }
-                                                </span>
-                                            </div>
-                                            <div className="detail-item">
-                                                <span className="detail-label">
-                                                    نوع اعتراض:
-                                                </span>
-                                                <span className="detail-value">
-                                                    {
-                                                        getDisputeTypeConfig(
-                                                            booking
-                                                                .latest_dispute
-                                                                .dispute_type,
-                                                        )["label"]
-                                                    }
-                                                </span>
-                                            </div>
-
-                                            {booking.latest_dispute
-                                                .refund_amount > 0 && (
-                                                <div className="detail-item success">
-                                                    <span className="detail-label">
-                                                        مبلغ بازگشتی:
-                                                    </span>
-                                                    <span className="detail-value">
-                                                        {toPersianNumber(
-                                                            booking.latest_dispute.refund_amount.toLocaleString(),
-                                                        )}{" "}
-                                                        تومان
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            {booking.latest_dispute
-                                                .penalty_amount > 0 && (
-                                                <div className="detail-item penalty">
-                                                    <span className="detail-label">
-                                                        جریمه آرایشگر:
-                                                    </span>
-                                                    <span className="detail-value">
-                                                        {toPersianNumber(
-                                                            booking.latest_dispute.penalty_amount.toLocaleString(),
-                                                        )}{" "}
-                                                        تومان
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            {booking.latest_dispute
-                                                .resolution && (
-                                                <div className="detail-item resolution">
-                                                    <span className="detail-label">
-                                                        پاسخ ادمین:
-                                                    </span>
-                                                    <span className="detail-value">
-                                                        {
-                                                            booking
-                                                                .latest_dispute
-                                                                .resolution
-                                                        }
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            {booking.latest_dispute
-                                                .response && (
-                                                <div className="detail-item response">
-                                                    <span className="detail-label">
-                                                        پاسخ شما:
-                                                    </span>
-                                                    <span className="detail-value">
-                                                        {
-                                                            booking
-                                                                .latest_dispute
-                                                                .response
-                                                        }
-                                                    </span>
-                                                </div>
-                                            )}
-
-                                            {/* ============ پیوست‌ها ============ */}
-                                            {booking.latest_dispute
-                                                .attachments &&
-                                                booking.latest_dispute
-                                                    .attachments.length > 0 && (
-                                                    <div className="detail-item attachments">
-                                                        <span className="detail-label">
-                                                            <Paperclip
-                                                                size={12}
-                                                            />
-                                                            پیوست‌ها:
-                                                        </span>
-                                                        <div className="dispute-attachments-mini-grid">
-                                                            {booking.latest_dispute.attachments.map(
-                                                                (
-                                                                    att,
-                                                                    index,
-                                                                ) => (
-                                                                    <a
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        href={
-                                                                            att.url
-                                                                        }
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="dispute-attachment-mini"
-                                                                        title={
-                                                                            att.name
-                                                                        }
-                                                                    >
-                                                                        <img
-                                                                            src={
-                                                                                att.url
-                                                                            }
-                                                                            alt={`پیوست ${
-                                                                                index +
-                                                                                1
-                                                                            }`}
-                                                                        />
-                                                                        <div className="attachment-mini-overlay">
-                                                                            <Eye
-                                                                                size={
-                                                                                    14
-                                                                                }
-                                                                            />
-                                                                        </div>
-                                                                    </a>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                        </div>
-
-                                        {/* ============ اطلاعات اضافی ============ */}
-                                        {booking.latest_dispute.status ===
-                                            "pending" && (
-                                            <div className="dispute-banner-info">
-                                                <Info size={14} />
-                                                <span>
-                                                    می‌توانید تا زمان بررسی،
-                                                    اطلاعات بیشتری ارسال کنید.
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {booking.latest_dispute.status ===
-                                            "awaiting_response" && (
-                                            <div className="dispute-banner-warning">
-                                                <AlertCircle size={14} />
-                                                <span>
-                                                    لطفاً پاسخ خود را در اسرع
-                                                    وقت ثبت کنید.
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {/* ============ نمایش تعداد اعتراضات ============ */}
-                                        {booking.disputes_count > 1 && (
-                                            <div className="dispute-banner-info">
-                                                <Info size={14} />
-                                                <span>
-                                                    این رزرو{" "}
-                                                    {toPersianNumber(
-                                                        booking.disputes_count,
-                                                    )}{" "}
-                                                    اعتراض دارد.
-                                                </span>
-                                            </div>
-                                        )}
-
-                                        {/* ============ دکمه‌های عملیات اعتراض ============ */}
-                                        <div className="dispute-banner-actions">
-                                            {/* ویرایش */}
-                                            {booking.latest_dispute
-                                                .can_edit && (
-                                                <Link
-                                                    href={`/barber/disputes/${booking.latest_dispute.id}/edit`}
-                                                    className="dispute-action-btn edit"
-                                                    title="ویرایش اعتراض"
-                                                >
-                                                    <Edit3 size={14} />
-                                                    <span>ویرایش</span>
-                                                    {/* {booking.latest_dispute
-                                                .edit_hours_remaining && (
-                                                <span className="time-remaining">
-                                                    {toPersianNumber(
-                                                        booking.latest_dispute
-                                                            .edit_hours_remaining,
-                                                    )}{" "}
-                                                    ساعت
-                                                </span>
-                                            )} */}
-                                                </Link>
-                                            )}
-
-                                            {/* حذف */}
-                                            {booking.latest_dispute
-                                                .can_delete && (
-                                                <button
-                                                    type="button"
-                                                    className="dispute-action-btn delete"
-                                                    onClick={() =>
-                                                        setDeleteDisputeModal({
-                                                            isOpen: true,
-                                                            isLoading: false,
-                                                            dispute:
-                                                                booking.latest_dispute,
-                                                        })
-                                                    }
-                                                    title="حذف اعتراض"
-                                                >
-                                                    <Trash2 size={14} />
-                                                    <span>حذف</span>
-                                                </button>
-                                            )}
-
-                                            {/* پاسخ */}
-                                            {booking.latest_dispute
-                                                .can_respond && (
-                                                <button
-                                                    type="button"
-                                                    className="dispute-action-btn respond"
-                                                    onClick={() =>
-                                                        openResponseModal(
-                                                            latestDispute,
-                                                        )
-                                                    }
-                                                    title="ثبت پاسخ"
-                                                >
-                                                    <MessageSquare size={14} />
-                                                    <span>ثبت پاسخ</span>
-                                                </button>
-                                            )}
-
-                                            {/* مشاهده جزئیات */}
-                                            {/* <button
-                                        type="button"
-                                        className="dispute-action-btn view"
-                                        onClick={() =>
-                                            setDetailsModal({
-                                                isOpen: true,
-                                                dispute: booking.latest_dispute,
-                                            })
-                                        }
-                                        title="مشاهده جزئیات"
-                                    >
-                                        <Eye size={14} />
-                                        <span>جزئیات</span>
-                                    </button> */}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         {/* کارت زمان و خدمت */}
                         <div className="barber-booking-show-card">
                             <div className="barber-booking-show-card-header">

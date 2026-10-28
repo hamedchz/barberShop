@@ -483,14 +483,11 @@ class BookingController extends Controller
         if ($booking->status->value === BookingStatus::completed->value) {
             // ============ امکان ثبت نظر ============
             if (!$review) {
-                // هیچ نظری ثبت نشده → می‌تونه نظر بده
                 $canReview = true;
             } elseif ($review->trashed()) {
-                // نظر soft delete شده → نمی‌تونه دوباره نظر بده
                 $canReview = false;
-                $reviewRemovedReason = $review->deletion_reason; // برای نمایش به کاربر
+                $reviewRemovedReason = $review->deletion_reason;
             } else {
-                // نظر فعال داره → نمی‌تونه دوباره نظر بده
                 $canReview = false;
             }
 
@@ -611,13 +608,16 @@ class BookingController extends Controller
                 'compensation_amount'  => (float) ($dispute->compensation_amount ?? 0),
                 'edited_at'            => $dispute->edited_at,
                 'edit_count'           => $dispute->edit_count,
-                'attachments'          => collect($dispute->attachments ?? [])->map(
-                    fn($path) => [
+                'admin_request_message'               => $dispute->admin_request_message,
+
+                'attachments'          => collect($dispute->attachments ?? [])
+                    ->map(fn($path) => [
                         'path' => $path,
                         'url'  => asset('storage/' . $path),
                         'name' => basename($path),
-                    ]
-                )->values()->toArray(),
+                    ])
+                    ->values()
+                    ->toArray(),
                 'created_at'           => $dispute->created_at,
                 'updated_at'           => $dispute->updated_at,
 
