@@ -33,10 +33,10 @@ class Dispute extends Model
         'edited_at',
         'edit_count',
         'can_be_edited',
-        'compensation_amount'
-        // اگه این فیلدها رو داری:
-        // 'admin_request_message',
-        // 'admin_request_at',
+        'compensation_amount',
+        'admin_request_message',
+        'admin_request_at',
+        'admin_request_by_user_id'
     ];
 
     protected $casts = [
@@ -47,6 +47,7 @@ class Dispute extends Model
         'responded_at'    => 'datetime',
         'created_at'      => 'datetime',
         'updated_at'      => 'datetime',
+        'admin_request_at'      => 'datetime',
         'status'          => DisputedStatus::class,
         'dispute_type'    => DisputeTypes::class,
         'disputed_by'     => DisputedBy::class,
@@ -60,6 +61,11 @@ class Dispute extends Model
     ];
 
     // ============ روابط ============
+
+    public function adminRequestBy()
+    {
+        return $this->belongsTo(User::class, 'admin_request_by_user_id');
+    }
     public function booking()
     {
         return $this->belongsTo(Booking::class);

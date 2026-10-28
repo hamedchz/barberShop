@@ -103,11 +103,12 @@ class DisputeController extends Controller
         }
 
         $dispute->load([
-            'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status,notes',
-            'booking.user:id,name,avatar,phone',
+            'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status,notes,created_at,completed_at,completed_by',
+            'booking.user:id,name,avatar,phone,slug',
             'booking.service:id,name,price,duration',
             'booking.timeSlot:id,date,start_time,end_time',
-            'disputedByUser:id,name,avatar,phone',
+            'booking.payment:id,booking_id,gateway,status,amount,transaction_id,paid_at',
+            'disputedByUser:id,name,avatar,phone,slug',
             'respondedByUser:id,name',
             'resolvedByUser:id,name',
         ]);
@@ -550,8 +551,9 @@ class DisputeController extends Controller
     /**
      * حذف اعتراض آرایشگر
      */
-    public function destroy(Dispute $dispute)
+    public function destroy(Request $request, Dispute $dispute)
     {
+
         // ============ بررسی مالکیت ============
         if ($dispute->disputed_by_user_id !== auth()->id()) {
             abort(403);
@@ -593,11 +595,17 @@ class DisputeController extends Controller
 
             DB::commit();
             StickyAlert::alert('اعتراض شما حذف شد', 'success');
+            if ($request->has('from_disputes_list') && $request->boolean('from_disputes_list')) {
+                return to_route('barber.disputes.index');
+            }
             return to_route('barber.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();
             StickyAlert::alert('خطا در حذف اعتراض', 'error');
-            return redirect()->back();
+            if ($request->has('from_disputes_list') && $request->boolean('from_disputes_list')) {
+                return to_route('barber.disputes.index');
+            }
+            return to_route('barber.bookings.show', $dispute->booking_id);
         }
     }
 
@@ -689,68 +697,204 @@ class DisputeController extends Controller
 
     private function mapDispute(Dispute $d, bool $detailed = false): array
     {
-        $data = [
-            'id'          => $d->id,
-            'status'      => $d->status?->value,
-            'status_label' => $d->status?->label() ?? $d->status?->value,
-            'dispute_type' => $d->dispute_type?->value,
-            'dispute_type_label' => $d->dispute_type?->label() ?? $d->dispute_type?->value,
-            'disputed_by' => $d->disputed_by?->value,
-            'disputed_by_label' => $d->disputer_role_label,
-            'reason'      => $d->reason,
-            'response'    => $d->response,
-            'responded_at' => $d->responded_at?->toIso8601String(),
-            'created_at'  => $d->created_at?->toIso8601String(),
-
-            'can_respond' => $d->can_respond,
-            'can_edit'    => $d->can_edit,
-            'can_delete'  => $d->can_delete,
-
-            'booking' => $d->booking ? [
-                'id'     => $d->booking->id,
-                'amount' => (float) $d->booking->amount,
-                'status' => $d->booking->status?->value,
-                'customer' => $d->booking->user ? [
-                    'id'        => $d->booking->user->id,
-                    'name'      => $d->booking->user->name,
-                    'avatar'    => $d->booking->user->avatar ? $d->booking->user->avatarUrl() : null,
-                    'phone'     => $d->booking->user->phone,
-                ] : null,
-                'service' => $d->booking->service ? [
-                    'name'     => $d->booking->service->name,
-                    'price'    => (float) $d->booking->service->price,
-                    'duration' => $d->booking->service->duration,
-                ] : null,
-                'time_slot' => $d->booking->timeSlot ? [
-                    'date'  => $d->booking->timeSlot->date,
-                    'start' => $d->booking->timeSlot->start_time,
-                    'end'   => $d->booking->timeSlot->end_time,
-                ] : null,
-            ] : null,
-
-            'disputed_by_user' => $d->disputedByUser ? [
-                'id'     => $d->disputedByUser->id,
-                'name'   => $d->disputedByUser->name,
-                'avatar' => $d->disputedByUser->avatar ? $d->disputedByUser->avatarUrl() : null,
-            ] : null,
+        // ============ تنظیمات وضعیت ============
+        $statusLabels = [
+            'pending'           => 'در انتظار بررسی',
+            'investigating'     => 'در حال بررسی',
+            'awaiting_response' => 'در انتظار پاسخ',
+            'resolved'          => 'حل شده',
+            'rejected'          => 'رد شده',
+            'cancelled'         => 'لغو شده',
         ];
 
-        if ($detailed) {
-            $data['refund_amount']   = (float) ($d->refund_amount ?? 0);
-            $data['penalty_amount']  = (float) ($d->penalty_amount ?? 0);
-            $data['compensation_amount'] = (float) ($d->compensation_amount ?? 0);
-            $data['resolution']      = $d->resolution;
-            $data['resolved_at']     = $d->resolved_at?->toIso8601String();
-            $data['admin_notes']     = $d->admin_notes;
-            $data['attachments']     = $d->attachments ?? [];
+        $statusColors = [
+            'pending'           => ['color' => '#92400e', 'bg' => '#fffbeb', 'border' => '#fde68a'],
+            'investigating'     => ['color' => '#1e40af', 'bg' => '#eff6ff', 'border' => '#bfdbfe'],
+            'awaiting_response' => ['color' => '#9a3412', 'bg' => '#fff7ed', 'border' => '#fed7aa'],
+            'resolved'          => ['color' => '#065f46', 'bg' => '#ecfdf5', 'border' => '#a7f3d0'],
+            'rejected'          => ['color' => '#991b1b', 'bg' => '#fef2f2', 'border' => '#fecaca'],
+            'cancelled'         => ['color' => '#6b7280', 'bg' => '#f3f4f6', 'border' => '#e5e7eb'],
+        ];
+
+        $status = $d->status?->value;
+        $statusLabel = $statusLabels[$status] ?? $d->status?->label() ?? 'نامشخص';
+        $statusColor = $statusColors[$status] ?? ['color' => '#6b7280', 'bg' => '#f3f4f6', 'border' => '#e5e7eb'];
+
+        $canEditDispute = false;
+        $canDeleteDispute = false;
+        $canRespondDispute = false;
+        $editHoursRemaining = null;
+
+        if ($d->disputed_by_user_id === auth()->id()) {
+            // ویرایش/حذف فقط در وضعیت pending و تا ۲ ساعت
+            if ($d->status->value === DisputedStatus::pending->value) {
+                $hoursSinceCreation = $d->created_at->diffInHours(now());
+                $hoursRemaining = 2 - $hoursSinceCreation;
+
+                if ($hoursRemaining > 0) {
+                    $canEditDispute = true;
+                    $canDeleteDispute = true;
+                    $editHoursRemaining = $hoursRemaining;
+                }
+            }
+
+            // پاسخ فقط در وضعیت awaiting_response
+            if ($d->status->value === DisputedStatus::awaitingResponse->value) {
+                $canRespondDispute = true;
+            }
+        }
+
+        // ============ داده پایه ============
+        $data = [
+            'id'                 => $d->id,
+            'status'             => $status,
+            'status_label'       => $statusLabel,
+            'status_color'       => $statusColor['color'],
+            'status_bg'          => $statusColor['bg'],
+            'status_border'      => $statusColor['border'],
+
+            'dispute_type'       => $d->dispute_type?->value,
+            'dispute_type_label' => $d->dispute_type?->label() ?? $d->dispute_type?->value,
+
+            'disputed_by'        => $d->disputed_by?->value,
+            'disputed_by_label'  => $d->disputer_role_label,
+
+            'reason'             => $d->reason,
+            'response'           => $d->response,
+            'responded_at'       => $d->responded_at?->toIso8601String(),
+            'resolution'         => $d->resolution,
+            'resolved_at'        => $d->resolved_at?->toIso8601String(),
+
+            'refund_amount'       => (float) ($d->refund_amount ?? 0),
+            'penalty_amount'      => (float) ($d->penalty_amount ?? 0),
+            'compensation_amount' => (float) ($d->compensation_amount ?? 0),
+
+            'edited_at'    => $d->edited_at?->toIso8601String(),
+            'edit_count'   => (int) ($d->edit_count ?? 0),
+            'can_be_edited' => (bool) ($d->can_be_edited ?? false),
+
+            'created_at'   => $d->created_at?->toIso8601String(),
+            'updated_at'   => $d->updated_at?->toIso8601String(),
+
+            // ============ دسترسی‌ها (از accessor های مدل) ============
+            'can_edit'    => $canEditDispute,
+            'can_delete'  => $canDeleteDispute,
+            'can_respond' => $canRespondDispute,
+            'edit_hours_remaining' => $editHoursRemaining,
+
+            // ============ کاربر معترض ============
+            'disputed_by_user' => $d->disputedByUser ? [
+                'id'        => $d->disputedByUser->id,
+                'name'      => $d->disputedByUser->name,
+                'avatar'    => $d->disputedByUser->avatar ? $d->disputedByUser->avatarUrl() : null,
+                'phone'     => $d->disputedByUser->phone,
+                'slug'      => $d->disputedByUser->slug,
+            ] : null,
+
+            // ============ پیوست‌های اعتراض ============
+            'attachments' => collect($d->attachments ?? [])
+                ->map(fn($path) => [
+                    'path' => $path,
+                    'url'  => asset('storage/' . $path),
+                    'name' => basename($path),
+                ])
+                ->values()
+                ->toArray(),
+
+
+        ];
+
+        // ============ اطلاعات پاسخ‌دهنده (اگه پاسخ داده) ============
+        if ($d->responded_by_user_id) {
             $data['responded_by_user'] = $d->respondedByUser ? [
                 'id'   => $d->respondedByUser->id,
                 'name' => $d->respondedByUser->name,
             ] : null;
+        }
+
+        // ============ اطلاعات حل‌کننده (اگه حل شده) ============
+        if ($d->resolved_by_user_id) {
             $data['resolved_by_user'] = $d->resolvedByUser ? [
                 'id'   => $d->resolvedByUser->id,
                 'name' => $d->resolvedByUser->name,
             ] : null;
+        }
+
+        // ============ اطلاعات رزرو ============
+        if ($d->booking) {
+            $booking = $d->booking;
+
+            $data['booking'] = [
+                'id'     => $booking->id,
+                'amount' => (float) $booking->amount,
+                'status' => $booking->status?->value,
+
+                'customer' => $booking->user ? [
+                    'id'        => $booking->user->id,
+                    'name'      => $booking->user->name,
+                    'avatar'    => $booking->user->avatar ? $booking->user->avatarUrl() : null,
+                    'phone'     => $booking->user->phone,
+                    'slug'      => $booking->user->slug,
+                ] : null,
+
+                'service' => $booking->service ? [
+                    'id'       => $booking->service->id,
+                    'name'     => $booking->service->name,
+                    'price'    => (float) $booking->service->price,
+                    'duration' => $booking->service->duration,
+                ] : null,
+
+                'time_slot' => $booking->timeSlot ? [
+                    'date'  => $booking->timeSlot->date,
+                    'start' => $booking->timeSlot->start_time,
+                    'end'   => $booking->timeSlot->end_time,
+                ] : null,
+            ];
+        } else {
+            $data['booking'] = null;
+        }
+
+        // ============ اطلاعات تکمیلی (فقط در حالت detailed) ============
+        if ($detailed) {
+            // ============ پیوست‌های پاسخ ============
+            $data['response_attachments'] = collect($d->response_attachments ?? [])
+                ->map(fn($att) => [
+                    'path' => $att['path'] ?? null,
+                    'url'  => isset($att['path']) ? asset('storage/' . $att['path']) : null,
+                    'name' => $att['name'] ?? basename($att['path'] ?? ''),
+                    'size' => $att['size'] ?? 0,
+                    'mime' => $att['mime'] ?? null,
+                ])
+                ->values()
+                ->toArray();
+
+            // ============ یادداشت ادمین ============
+            $data['admin_notes'] = $d->admin_notes;
+
+            // ============ IP (فقط برای ادمین) ============
+            // اگه می‌خوای به آرایشگر نشون ندی، این خط رو حذف کن
+            // $data['ip_address'] = $d->ip_address;
+
+            // ============ اطلاعات کامل رزرو (detailed) ============
+            if ($d->booking) {
+                $booking = $d->booking;
+
+                $data['booking']['notes'] = $booking->notes;
+                $data['booking']['created_at'] = $booking->created_at?->toIso8601String();
+                $data['booking']['completed_at'] = $booking->completed_at?->toIso8601String();
+                $data['booking']['completed_by'] = $booking->completed_by?->value;
+
+                // ============ اطلاعات پرداخت ============
+                if ($booking->payment) {
+                    $data['booking']['payment'] = [
+                        'gateway'        => $booking->payment->gateway,
+                        'status'         => $booking->payment->status?->value,
+                        'amount'         => (float) $booking->payment->amount,
+                        'transaction_id' => $booking->payment->transaction_id,
+                        'paid_at'        => $booking->payment->paid_at?->toIso8601String(),
+                    ];
+                }
+            }
         }
 
         return $data;

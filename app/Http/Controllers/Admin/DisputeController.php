@@ -433,7 +433,9 @@ class DisputeController extends Controller
 
         $dispute->update([
             'status' => DisputedStatus::awaitingResponse->value,
-            'admin_notes' => $validated['message'],
+            'admin_request_message' => $validated['message'],
+            'admin_request_at'      => now(),
+            'admin_request_by_user_id' => auth()->id(),
         ]);
 
         // Notification به معترض

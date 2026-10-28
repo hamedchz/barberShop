@@ -587,6 +587,8 @@ class BookingController extends Controller
                 }
             }
 
+
+
             return [
                 'id'                   => $dispute->id,
                 'disputed_by'          => $dispute->disputed_by?->value,

@@ -2296,19 +2296,7 @@ export default function BarberBookingShow({ auth, booking }) {
                 title="حذف اعتراض"
                 message={
                     deleteDisputeModal.dispute
-                        ? `آیا از حذف اعتراض خود مطمئن هستید؟ این عملیات قابل بازگشت نیست و اعتراض شما به طور کامل از سیستم حذف می‌شود.${
-                              deleteDisputeModal.dispute.reason
-                                  ? `\n\nمتن اعتراض: "${deleteDisputeModal.dispute.reason.substring(
-                                        0,
-                                        100,
-                                    )}${
-                                        deleteDisputeModal.dispute.reason
-                                            .length > 100
-                                            ? "..."
-                                            : ""
-                                    }"`
-                                  : ""
-                          }`
+                        ? `آیا از حذف اعتراض خود مطمئن هستید؟ این عملیات قابل بازگشت نیست و اعتراض شما به طور کامل از سیستم حذف می‌شود.`
                         : ""
                 }
                 confirmText="بله، حذف کن"
