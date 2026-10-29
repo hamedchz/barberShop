@@ -56,15 +56,16 @@ const checkItemActive = (item, scope, currentPath) => {
 
     const path = normalizePath(currentPath);
 
-    // آیتم دارای مسیر: ابتدا تطبیق مسیر
+    // آیتم دارای مسیر
     if (item.href) {
         const href = normalizePath(item.href);
 
-        // برای منوی مالی، مسیر دقیق بررسی شود
-        if (item.id === "finance-index") {
+        // مدیریت مالی فقط در صفحه اصلی کیف پول فعال باشد
+        if (item.id === "barber-finance-index" || item.id === "finance-index") {
             return path === href;
         }
 
+        // سایر آیتم‌ها
         if (path === href || path.startsWith(`${href}/`)) {
             return true;
         }
@@ -72,11 +73,12 @@ const checkItemActive = (item, scope, currentPath) => {
         return false;
     }
 
-    // آیتم بدون مسیر: Scope یا فرزندان
+    // آیتم بدون مسیر: بررسی Scope
     if (item.scopes?.some((s) => (scope || []).includes(s))) {
         return true;
     }
 
+    // بررسی فرزندان برای فعال شدن والد
     return (
         item.children?.some((child) =>
             checkItemActive(child, scope, currentPath),
@@ -311,7 +313,7 @@ export default function Sidebar({
                         <div className="sidebar-user-avatar">
                             {auth.user.avatar ? (
                                 <img
-                                    src={auth.user.avatar_url}
+                                    src={auth.user.thumbnail}
                                     alt={auth.user.name}
                                 />
                             ) : (

@@ -1,0 +1,405 @@
+/* ============================================
+   Barber Customers
+   ============================================ */
+
+/* ============ Toolbar ============ */
+.barber-customers-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+
+
+.barber-customers-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 0.875rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.barber-customers-sort-select {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text, #374151);
+  cursor: pointer;
+  outline: none;
+}
+
+/* ============ لیست ============ */
+.barber-customers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ============ کارت مشتری ============ */
+.barber-customer-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--color-bg, #f9fafb);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 1rem;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.barber-customer-card:hover {
+  background: var(--color-bg-card, #ffffff);
+  border-color: var(--color-primary, #10b981);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--color-shadow, rgba(0, 0, 0, 0.08));
+}
+
+/* ============ آواتار ============ */
+.barber-customer-card-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #5b21b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.barber-customer-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============ محتوا ============ */
+.barber-customer-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.barber-customer-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.barber-customer-card-name {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--color-text, #1f2937);
+  margin: 0;
+}
+
+.barber-customer-card-vip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.barber-customer-card-contact {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.barber-customer-card-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted, #6b7280);
+  font-weight: 600;
+}
+
+.barber-customer-card-contact-item svg {
+  flex-shrink: 0;
+}
+
+/* ============ آمار ============ */
+.barber-customer-card-stats {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.barber-customer-card-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+}
+
+.barber-customer-card-stat svg {
+  color: var(--color-text-muted, #9ca3af);
+  flex-shrink: 0;
+}
+
+.barber-customer-card-stat.amount svg {
+  color: var(--color-primary, #10b981);
+}
+
+.barber-customer-card-stat.rating svg {
+  color: #fbbf24;
+}
+
+.barber-customer-card-stat .stat-value {
+  font-weight: 800;
+  color: var(--color-text, #1f2937);
+  font-variant-numeric: tabular-nums;
+}
+
+.barber-customer-card-stat.amount .stat-value {
+  color: var(--color-primary, #10b981);
+}
+
+.barber-customer-card-stat .stat-label {
+  font-size: 0.625rem;
+  color: var(--color-text-muted, #9ca3af);
+  font-weight: 600;
+}
+
+/* ============ آخرین رزرو ============ */
+.barber-customer-card-last-booking {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--color-border, #e5e7eb);
+  font-size: 0.6875rem;
+}
+
+.last-booking-label {
+  color: var(--color-text-muted, #9ca3af);
+  font-weight: 700;
+}
+
+.last-booking-service,
+.last-booking-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text, #4b5563);
+  font-weight: 600;
+}
+
+.last-booking-service svg {
+  color: #8b5cf6;
+}
+
+.last-booking-date svg {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+/* ============ نرخ تکمیل ============ */
+.barber-customer-card-completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  min-width: 4rem;
+}
+
+.completion-ring {
+  position: relative;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.completion-ring-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+
+.completion-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 900;
+  color: var(--color-primary, #10b981);
+  font-variant-numeric: tabular-nums;
+}
+
+.completion-label {
+  font-size: 0.5625rem;
+  color: var(--color-text-muted, #9ca3af);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ============ فلش ============ */
+.barber-customer-card-arrow {
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.4;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.barber-customer-card:hover .barber-customer-card-arrow {
+  opacity: 1;
+  color: var(--color-primary, #10b981);
+  transform: translateX(-3px);
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 768px) {
+  .barber-customer-card {
+    flex-wrap: wrap;
+  }
+
+  .barber-customer-card-avatar {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+  }
+
+  .barber-customer-card-content {
+    flex: 1 1 calc(100% - 4rem);
+  }
+
+  .barber-customer-card-completion {
+    margin-right: auto;
+  }
+
+  .barber-customer-card-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .barber-customers-toolbar {
+    flex-direction: column;
+  }
+
+  .barber-customers-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .barber-customer-card-stats {
+    width: 100%;
+  }
+
+  .barber-customer-card-stat {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* ============ Dark Mode ============ */
+.dark .barber-customer-card {
+  background: var(--color-bg, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+.dark .barber-customer-card:hover {
+  background: var(--color-bg-card, #0f172a);
+}
+
+.dark .barber-customer-card-stat {
+  background: var(--color-bg-card, #0f172a);
+}
+
+
+.dark .barber-customers-sort {
+  background: var(--color-bg-card, #1e293b);
+  border-color: var(--color-border, #334155);
+}
+
+/* ============================================
+   Barber Customers Toolbar
+   ============================================ */
+
+.barber-customers-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+/* SearchComponent فضای باقی‌مانده رو بگیره */
+.barber-customers-toolbar> :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.barber-customers-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 0.875rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 1.5px solid var(--color-border, #e5e7eb);
+  border-radius: 0.75rem;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.barber-customers-sort-select {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text, #374151);
+  cursor: pointer;
+  outline: none;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .barber-customers-toolbar {
+    flex-direction: column;
+  }
+
+  .barber-customers-toolbar> :first-child {
+    width: 100%;
+    flex: none;
+  }
+
+  .barber-customers-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

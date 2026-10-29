@@ -40,6 +40,9 @@ import {
     Timer,
     UserCheck,
     Hash,
+    Bot,
+    Upload,
+    LoaderCircle,
 } from "lucide-react";
 
 import { toPersianNumber } from "../../../utils/persianNumbers";
@@ -48,7 +51,10 @@ import {
     formatFullDateWithoutTime,
 } from "../../../utils/dateHelpers";
 import { formatCompactNumber } from "../../../Constants/formatCompactNumber";
-
+import {
+    getDisputeTypesByRole,
+    getDisputeTypeConfig,
+} from "../../../Constants/disputeTypes";
 // ============ تنظیمات وضعیت ============
 const statusConfig = {
     pending: {
@@ -126,7 +132,8 @@ const formatRemainingTime = (hours) => {
     return `${toPersianNumber(m)} دقیقه`;
 };
 
-export default function BarberDisputeShow({ dispute }) {
+export default function BarberDisputeShow({ dispute, auth }) {
+    const isMyDispute = dispute?.disputed_by_user_id === auth.user.id;
     // ============ State حذف اعتراض ============
     const [deleteDisputeModal, setDeleteDisputeModal] = useState({
         isOpen: false,
@@ -370,6 +377,163 @@ export default function BarberDisputeShow({ dispute }) {
         });
     };
 
+    const [responseModal, setResponseModal] = useState({
+        isOpen: false,
+        isLoading: false,
+        dispute: null,
+        response: "",
+        attachments: [],
+        errors: {},
+    });
+    const openResponseModal = (dispute) => {
+        setResponseModal({
+            isOpen: true,
+            isLoading: false,
+            dispute,
+            response: "",
+            attachments: [],
+            errors: {},
+        });
+    };
+
+    // ============ بستن مدال ============
+    const closeResponseModal = () => {
+        // آزادسازی preview ها
+        responseModal.attachments?.forEach((att) => {
+            if (att.preview) URL.revokeObjectURL(att.preview);
+        });
+
+        setResponseModal({
+            isOpen: false,
+            isLoading: false,
+            dispute: null,
+            response: "",
+            attachments: [],
+            errors: {},
+        });
+    };
+
+    // ============ انتخاب فایل ============
+    // const handleResponseAttachmentChange = (e) => {
+    //     const files = Array.from(e.target.files);
+    //     const totalFiles = responseModal.attachments.length + files.length;
+
+    //     if (totalFiles > 5) {
+    //         setResponseModal((prev) => ({
+    //             ...prev,
+    //             errors: {
+    //                 ...prev.errors,
+    //                 attachments: "حداکثر ۵ فایل می‌توانید آپلود کنید.",
+    //             },
+    //         }));
+    //         e.target.value = "";
+    //         return;
+    //     }
+
+    //     const validFiles = [];
+    //     const fileErrors = [];
+
+    //     for (const file of files) {
+    //         if (file.size > 2 * 1024 * 1024) {
+    //             fileErrors.push(`«${file.name}» بیش از ۲ مگابایت است`);
+    //             continue;
+    //         }
+    //         if (!file.type.startsWith("image/")) {
+    //             fileErrors.push(`«${file.name}» تصویر نیست`);
+    //             continue;
+    //         }
+    //         validFiles.push(file);
+    //     }
+
+    //     const newAttachments = validFiles.map((file) => ({
+    //         file,
+    //         preview: URL.createObjectURL(file),
+    //     }));
+
+    //     setResponseModal((prev) => ({
+    //         ...prev,
+    //         attachments: [...prev.attachments, ...newAttachments],
+    //         errors: {
+    //             ...prev.errors,
+    //             attachments:
+    //                 fileErrors.length > 0
+    //                     ? "⚠️ " + fileErrors.join(" • ")
+    //                     : null,
+    //         },
+    //     }));
+
+    //     e.target.value = "";
+    // };
+
+    // ============ حذف پیوست ============
+    // const handleRemoveResponseAttachment = (index) => {
+    //     setResponseModal((prev) => {
+    //         const newAttachments = [...prev.attachments];
+    //         if (newAttachments[index]?.preview) {
+    //             URL.revokeObjectURL(newAttachments[index].preview);
+    //         }
+    //         newAttachments.splice(index, 1);
+    //         return { ...prev, attachments: newAttachments };
+    //     });
+    // };
+
+    // ============ اعتبارسنجی ============
+    const validateResponse = (response) => {
+        const errors = {};
+        const trimmed = response.trim();
+
+        if (!trimmed) {
+            errors.response = "لطفاً متن پاسخ را وارد کنید.";
+        } else if (trimmed.length < 10) {
+            errors.response = "پاسخ باید حداقل ۱۰ کاراکتر باشد.";
+        } else if (trimmed.length > 1000) {
+            errors.response = "پاسخ نمی‌تواند بیشتر از ۱۰۰۰ کاراکتر باشد.";
+        }
+
+        return errors;
+    };
+
+    // ============ ارسال پاسخ ============
+    const handleSubmitResponse = () => {
+        const response = responseModal.response.trim();
+        const clientErrors = validateResponse(response);
+
+        if (Object.keys(clientErrors).length > 0) {
+            setResponseModal((prev) => ({ ...prev, errors: clientErrors }));
+            return;
+        }
+
+        setResponseModal((prev) => ({ ...prev, isLoading: true, errors: {} }));
+
+        const formData = new FormData();
+        formData.append("response", response);
+        responseModal.attachments.forEach((att, index) => {
+            formData.append(`attachments[${index}]`, att.file);
+        });
+
+        router.post(
+            `/barber/disputes/${responseModal.dispute.id}/respond`,
+            formData,
+            {
+                preserveScroll: true,
+                forceFormData: true,
+                onSuccess: () => {
+                    responseModal.attachments.forEach((att) => {
+                        if (att.preview) URL.revokeObjectURL(att.preview);
+                    });
+                    closeResponseModal();
+                },
+                onError: (errors) => {
+                    setResponseModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                        errors,
+                    }));
+                },
+            },
+        );
+    };
+
     return (
         <Layout>
             <Head title={`اعتراض #${dispute.id}`} />
@@ -442,70 +606,6 @@ export default function BarberDisputeShow({ dispute }) {
                     </div>
                 </div>
 
-                {/* درخواست توضیحات و مدارک بیشتر از طرف ادمین */}
-                {dispute.can_respond && (
-                    <div className="dispute-deadline-card dispute-response-required">
-                        {/* هدر درخواست */}
-                        <div className="dispute-deadline-header">
-                            <div className="dispute-deadline-icon">
-                                <MessageSquare size={24} />
-                            </div>
-
-                            <div className="dispute-deadline-content">
-                                <h3>
-                                    ادمین به توضیحات و مدارک بیشتر نیاز دارد
-                                </h3>
-                                <p>
-                                    برای ادامه بررسی اعتراض، لازم است توضیحات
-                                    تکمیلی خود را ارسال کنید. در صورت نیاز،
-                                    مدارک و تصاویر مرتبط را نیز ضمیمه کنید.
-                                </p>
-                            </div>
-
-                            <div className="dispute-response-badge">
-                                <AlertCircle size={15} />
-                                نیاز به پاسخ
-                            </div>
-                        </div>
-
-                        {/* جداکننده */}
-                        <div className="dispute-deadline-divider" />
-
-                        {/* راهنمای اقدام */}
-                        <div className="dispute-deadline-footer">
-                            <div className="dispute-deadline-footer-title">
-                                <Paperclip size={17} />
-                                <span>اقدام موردنیاز شما</span>
-                            </div>
-
-                            <div className="dispute-response-actions">
-                                <span className="dispute-response-hint">
-                                    لطفاً به بخش پاسخ مراجعه کرده و اطلاعات
-                                    تکمیلی را ارسال کنید.
-                                </span>
-
-                                <button
-                                    type="button"
-                                    className="dispute-response-btn"
-                                    onClick={() => {
-                                        document
-                                            .getElementById(
-                                                "dispute-response-form",
-                                            )
-                                            ?.scrollIntoView({
-                                                behavior: "smooth",
-                                                block: "center",
-                                            });
-                                    }}
-                                >
-                                    <Send size={15} />
-                                    ارسال توضیحات و مدارک
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* edit delete */}
                 {(dispute.can_edit || dispute.can_delete) &&
                     remainingSeconds > 0 && (
@@ -573,6 +673,355 @@ export default function BarberDisputeShow({ dispute }) {
                             </div>
                         </div>
                     )}
+                {/* dispute.can_respond && */}
+                {/* ============ بنر وضعیت اعتراض ============ */}
+                {dispute.disputed_by === "barber" && (
+                    <div
+                        className={`customer-dispute-banner status-${dispute.status}`}
+                    >
+                        <div className="dispute-banner-icon">
+                            {dispute.status === "pending" && (
+                                <Clock4 size={24} />
+                            )}
+                            {dispute.status === "investigating" && (
+                                <LoaderCircle size={24} />
+                            )}
+                            {dispute.status === "awaiting_response" && (
+                                <MessageSquare size={24} />
+                            )}
+                            {dispute.status === "resolved" && (
+                                <CheckCircle size={24} />
+                            )}
+                            {dispute.status === "rejected" && (
+                                <XCircle size={24} />
+                            )}
+                            {dispute.status === "cancelled" && (
+                                <Ban size={24} />
+                            )}
+                        </div>
+
+                        <div className="dispute-banner-content">
+                            <div className="dispute-banner-header">
+                                <h3>
+                                    {dispute.status === "pending" &&
+                                        "اعتراض شما در صف بررسی"}
+                                    {dispute.status === "investigating" &&
+                                        "اعتراض شما در حال بررسی"}
+                                    {dispute.status === "awaiting_response" &&
+                                        "در انتظار پاسخ شما"}
+                                    {dispute.status === "resolved" &&
+                                        "اعتراض شما تایید شد"}
+                                    {dispute.status === "rejected" &&
+                                        "اعتراض شما رد شد"}
+                                    {dispute.status === "cancelled" &&
+                                        "اعتراض شما لغو شد"}
+                                </h3>
+
+                                <span className="dispute-banner-date">
+                                    ثبت:{" "}
+                                    {formatFullDateTime(dispute.created_at)}
+                                </span>
+                            </div>
+
+                            <p className="dispute-banner-message">
+                                {dispute.status === "pending" &&
+                                    (isMyDispute
+                                        ? "اعتراض شما ثبت شده و در انتظار بررسی ادمین است. ادمین تا ۴۸ ساعت آینده بررسی خواهد کرد."
+                                        : "مشتری از شما اعتراض کرده است. ادمین در حال بررسی است. لطفاً منتظر بمانید.")}
+
+                                {dispute.status === "investigating" &&
+                                    (isMyDispute
+                                        ? "ادمین در حال بررسی اعتراض شماست. لطفاً منتظر بمانید."
+                                        : "ادمین در حال بررسی اعتراض مشتری علیه شماست. لطفاً منتظر بمانید.")}
+
+                                {dispute.status === "awaiting_response" &&
+                                    (isMyDispute
+                                        ? "ادمین نیاز به اطلاعات بیشتری دارد. لطفاً پاسخ خود را ثبت کنید."
+                                        : "ادمین نیاز به اطلاعات بیشتری درباره اعتراض مشتری دارد. لطفاً پاسخ خود را ثبت کنید.")}
+
+                                {dispute.status === "resolved" &&
+                                    (isMyDispute
+                                        ? "اعتراض شما تایید شد."
+                                        : "اعتراض مشتری تایید شد.")}
+
+                                {dispute.status === "rejected" &&
+                                    (isMyDispute
+                                        ? "پس از بررسی، اعتراض شما رد شد. برای اطلاعات بیشتر با پشتیبانی تماس بگیرید."
+                                        : "پس از بررسی، اعتراض مشتری رد شد. رزرو در وضعیت تکمیل باقی می‌ماند.")}
+
+                                {dispute.status === "cancelled" &&
+                                    (isMyDispute
+                                        ? "اعتراض شما لغو شده است."
+                                        : "اعتراض مشتری لغو شده است.")}
+                            </p>
+                            {dispute.admin_request_message && (
+                                <div
+                                    className={`dispute-admin-message ${
+                                        dispute.status === "awaiting_response"
+                                            ? "is-action-required"
+                                            : ""
+                                    }`}
+                                >
+                                    <div className="dispute-admin-message-header">
+                                        <div className="dispute-admin-message-icon">
+                                            <MessageSquare size={20} />
+                                        </div>
+
+                                        <div className="dispute-admin-message-title">
+                                            <strong>پیام مدیریت به شما</strong>
+
+                                            <span>
+                                                {dispute.status ===
+                                                "awaiting_response"
+                                                    ? "اقدام شما لازم است"
+                                                    : "اطلاع‌رسانی مدیریت"}
+                                            </span>
+                                        </div>
+
+                                        {dispute.status ===
+                                            "awaiting_response" && (
+                                            <span className="dispute-admin-message-badge">
+                                                <AlertCircle size={14} />
+                                                نیازمند پاسخ
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="dispute-admin-message-body">
+                                        {dispute.admin_request_message}
+                                    </div>
+
+                                    {dispute.status === "awaiting_response" && (
+                                        <div className="dispute-admin-message-footer">
+                                            <Info size={16} />
+                                            <span>
+                                                لطفاً پیام مدیریت را با دقت
+                                                مطالعه کرده و پاسخ یا مدارک
+                                                درخواستی را از طریق بخش ثبت پاسخ
+                                                ارسال کنید.
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {/* ============ جزئیات اعتراض ============ */}
+                            <div className="dispute-banner-details">
+                                <div className="detail-item">
+                                    <span className="detail-label">
+                                        متن اعتراض:
+                                    </span>
+                                    <span className="detail-value">
+                                        {dispute.reason}
+                                    </span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="detail-label">
+                                        نوع اعتراض:
+                                    </span>
+                                    <span className="detail-value">
+                                        {
+                                            getDisputeTypeConfig(
+                                                dispute.dispute_type,
+                                            )["label"]
+                                        }
+                                    </span>
+                                </div>
+
+                                {dispute.refund_amount > 0 && (
+                                    <div className="detail-item success">
+                                        <span className="detail-label">
+                                            مبلغ بازگشتی:
+                                        </span>
+                                        <span className="detail-value">
+                                            {toPersianNumber(
+                                                dispute.refund_amount.toLocaleString(),
+                                            )}{" "}
+                                            تومان
+                                        </span>
+                                    </div>
+                                )}
+                                {dispute.penalty_amount > 0 && (
+                                    <div className="detail-item penalty">
+                                        <span className="detail-label">
+                                            جریمه آرایشگر:
+                                        </span>
+                                        <span className="detail-value">
+                                            {toPersianNumber(
+                                                dispute.penalty_amount.toLocaleString(),
+                                            )}{" "}
+                                            تومان
+                                        </span>
+                                    </div>
+                                )}
+                                {dispute.resolution && (
+                                    <div className="detail-item resolution">
+                                        <span className="detail-label">
+                                            پاسخ ادمین:
+                                        </span>
+                                        <span className="detail-value">
+                                            {dispute.resolution}
+                                        </span>
+                                    </div>
+                                )}
+                                {dispute.response && (
+                                    <div className="detail-item response">
+                                        <span className="detail-label">
+                                            پاسخ شما:
+                                        </span>
+                                        <span className="detail-value">
+                                            {dispute.response}
+                                        </span>
+                                    </div>
+                                )}
+                                {/* ============ پیوست‌ها ============ */}
+                                {dispute.attachments &&
+                                    dispute.attachments.length > 0 && (
+                                        <div className="detail-item attachments">
+                                            <span className="detail-label">
+                                                <Paperclip size={12} />
+                                                پیوست‌ها:
+                                            </span>
+                                            <div className="dispute-attachments-mini-grid">
+                                                {dispute.attachments.map(
+                                                    (att, index) => (
+                                                        <a
+                                                            key={index}
+                                                            href={att.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="dispute-attachment-mini"
+                                                            title={att.name}
+                                                        >
+                                                            <img
+                                                                src={att.url}
+                                                                alt={`پیوست ${
+                                                                    index + 1
+                                                                }`}
+                                                            />
+                                                            <div className="attachment-mini-overlay">
+                                                                <Eye
+                                                                    size={14}
+                                                                />
+                                                            </div>
+                                                        </a>
+                                                    ),
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                            </div>
+
+                            {/* ============ اطلاعات اضافی ============ */}
+                            {dispute.status === "pending" && (
+                                <div className="dispute-banner-info">
+                                    <Info size={14} />
+                                    <span>
+                                        می‌توانید تا زمان بررسی، اطلاعات بیشتری
+                                        ارسال کنید.
+                                    </span>
+                                </div>
+                            )}
+
+                            {dispute.status === "awaiting_response" && (
+                                <div className="dispute-banner-warning">
+                                    <AlertCircle size={14} />
+                                    <span>
+                                        لطفاً پاسخ خود را در اسرع وقت ثبت کنید.
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* ============ نمایش تعداد اعتراضات ============ */}
+                            {/* {booking.disputes_count > 1 && (
+                                <div className="dispute-banner-info">
+                                    <Info size={14} />
+                                    <span>
+                                        این رزرو{" "}
+                                        {toPersianNumber(
+                                            booking.disputes_count,
+                                        )}{" "}
+                                        اعتراض دارد.
+                                    </span>
+                                </div>
+                            )} */}
+
+                            {/* ============ دکمه‌های عملیات اعتراض ============ */}
+                            <div className="dispute-banner-actions">
+                                {/* ویرایش */}
+                                {dispute.can_edit && (
+                                    <Link
+                                        href={`/barber/disputes/${dispute.id}/edit`}
+                                        className="dispute-action-btn edit"
+                                        title="ویرایش اعتراض"
+                                    >
+                                        <Edit3 size={14} />
+                                        <span>ویرایش</span>
+                                        {/* {dispute
+                                                .edit_hours_remaining && (
+                                                <span className="time-remaining">
+                                                    {toPersianNumber(
+                                                        dispute
+                                                            .edit_hours_remaining,
+                                                    )}{" "}
+                                                    ساعت
+                                                </span>
+                                            )} */}
+                                    </Link>
+                                )}
+
+                                {/* حذف */}
+                                {dispute.can_delete && (
+                                    <button
+                                        type="button"
+                                        className="dispute-action-btn delete"
+                                        onClick={() =>
+                                            setDeleteDisputeModal({
+                                                isOpen: true,
+                                                isLoading: false,
+                                                dispute: dispute,
+                                            })
+                                        }
+                                        title="حذف اعتراض"
+                                    >
+                                        <Trash2 size={14} />
+                                        <span>حذف</span>
+                                    </button>
+                                )}
+
+                                {/* پاسخ */}
+                                {dispute.can_respond && (
+                                    <button
+                                        type="button"
+                                        className="dispute-action-btn respond"
+                                        onClick={() =>
+                                            openResponseModal(dispute)
+                                        }
+                                        title="ثبت پاسخ"
+                                    >
+                                        <MessageSquare size={14} />
+                                        <span>ثبت پاسخ</span>
+                                    </button>
+                                )}
+
+                                {/* مشاهده جزئیات */}
+                                {/* <button
+                                        type="button"
+                                        className="dispute-action-btn view"
+                                        onClick={() =>
+                                            setDetailsModal({
+                                                isOpen: true,
+                                                dispute: dispute,
+                                            })
+                                        }
+                                        title="مشاهده جزئیات"
+                                    >
+                                        <Eye size={14} />
+                                        <span>جزئیات</span>
+                                    </button> */}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* ============ گرید ============ */}
                 <div className="dispute-show-grid">
@@ -635,35 +1084,6 @@ export default function BarberDisputeShow({ dispute }) {
                                     </div>
                                 )}
                             </div>
-
-                            {/* پیوست‌های اعتراض */}
-                            {dispute.attachments?.length > 0 && (
-                                <div className="dispute-show-attachments-section">
-                                    <div className="dispute-show-attachments-label">
-                                        <Paperclip size={12} />
-                                        پیوست‌های اعتراض (
-                                        {toPersianNumber(
-                                            dispute.attachments.length,
-                                        )}
-                                        )
-                                    </div>
-                                    <div className="dispute-show-attachments-list">
-                                        {dispute.attachments.map((att, i) => (
-                                            <a
-                                                key={i}
-                                                href={att.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="dispute-show-attachment"
-                                            >
-                                                <ImageIcon size={16} />
-                                                <span>{att.name}</span>
-                                                <Download size={12} />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* پاسخ */}
@@ -774,215 +1194,6 @@ export default function BarberDisputeShow({ dispute }) {
                                     )}
                                 </div>
                             )}
-                        {dispute.attachments?.length > 0 && (
-                            <div className="dispute-show-card">
-                                <div className="dispute-show-card-header">
-                                    <div className="dispute-show-card-icon info">
-                                        <Paperclip size={20} />
-                                    </div>
-                                    <h2>
-                                        مدارک پیوست پاسخ (
-                                        {toPersianNumber(
-                                            dispute.attachments.length,
-                                        )}
-                                        )
-                                    </h2>
-                                </div>
-
-                                <div className="dispute-show-attachments-list">
-                                    {dispute.attachments.map((att, index) => (
-                                        <a
-                                            key={att.path ?? index}
-                                            href={att.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="dispute-show-attachment"
-                                        >
-                                            <FileText size={16} />
-                                            <span>
-                                                {att.name ?? "فایل پیوست"}
-                                            </span>
-                                            <Download size={12} />
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        {/* فرم پاسخ */}
-                        {dispute.can_respond && (
-                            <div className="dispute-show-card dispute-show-respond-card">
-                                <div className="dispute-show-card-header">
-                                    <div className="dispute-show-card-icon primary">
-                                        <MessageSquare size={20} />
-                                    </div>
-                                    <h2>پاسخ شما</h2>
-                                </div>
-
-                                <p className="dispute-show-respond-hint">
-                                    <Info size={14} />
-                                    ادمین از شما درخواست مدارک یا توضیح کرده
-                                    است. لطفاً با دقت پاسخ دهید و در صورت نیاز،
-                                    مدارک را ضمیمه کنید.
-                                </p>
-
-                                <form onSubmit={handleRespond}>
-                                    {/* متن پاسخ */}
-                                    <textarea
-                                        className="dispute-show-respond-textarea"
-                                        value={response}
-                                        onChange={(e) =>
-                                            setResponse(e.target.value)
-                                        }
-                                        placeholder="پاسخ خود را دقیق و کامل بنویسید..."
-                                        rows={5}
-                                        maxLength={2000}
-                                        disabled={isSubmitting}
-                                    />
-
-                                    <div className="dispute-show-respond-counter-row">
-                                        <span className="dispute-show-respond-counter">
-                                            {toPersianNumber(response.length)} /
-                                            ۲۰۰۰
-                                        </span>
-                                        {response.trim().length < 10 &&
-                                            response.length > 0 && (
-                                                <span className="dispute-show-respond-error">
-                                                    حداقل ۱۰ کاراکتر
-                                                </span>
-                                            )}
-                                    </div>
-
-                                    {/* آپلود پیوست */}
-                                    <div className="dispute-show-attachments-section">
-                                        <label className="dispute-show-attachments-label">
-                                            <Paperclip size={14} />
-                                            مدارک (اختیاری)
-                                            <span className="dispute-show-attachments-hint">
-                                                حداکثر ۵ فایل — JPG, PNG, PDF,
-                                                DOC, MP4 — هر فایل ۵MB
-                                            </span>
-                                        </label>
-
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handleFilesChange}
-                                            accept="image/*,application/pdf,.doc,.docx,video/mp4"
-                                            multiple
-                                            hidden
-                                            disabled={isSubmitting}
-                                        />
-
-                                        <button
-                                            type="button"
-                                            className="dispute-show-attachments-add-btn"
-                                            onClick={() =>
-                                                fileInputRef.current?.click()
-                                            }
-                                            disabled={
-                                                isSubmitting ||
-                                                attachments.length >= 5
-                                            }
-                                        >
-                                            <Plus size={14} />
-                                            افزودن فایل (
-                                            {toPersianNumber(
-                                                attachments.length,
-                                            )}{" "}
-                                            از ۵)
-                                        </button>
-
-                                        {/* پیش‌نمایش */}
-                                        {attachments.length > 0 && (
-                                            <div className="dispute-show-attachments-list">
-                                                {attachments.map(
-                                                    (file, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="dispute-show-attachment-item"
-                                                        >
-                                                            <div className="dispute-show-attachment-icon">
-                                                                {file.type.startsWith(
-                                                                    "image/",
-                                                                ) ? (
-                                                                    <ImageIcon
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
-                                                                ) : (
-                                                                    <FileText
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
-                                                                )}
-                                                            </div>
-                                                            <div className="dispute-show-attachment-info">
-                                                                <span className="dispute-show-attachment-name">
-                                                                    {file.name}
-                                                                </span>
-                                                                <span className="dispute-show-attachment-size">
-                                                                    {formatFileSize(
-                                                                        file.size,
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                className="dispute-show-attachment-remove"
-                                                                onClick={() =>
-                                                                    removeAttachment(
-                                                                        index,
-                                                                    )
-                                                                }
-                                                                disabled={
-                                                                    isSubmitting
-                                                                }
-                                                            >
-                                                                <X size={14} />
-                                                            </button>
-                                                        </div>
-                                                    ),
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* دکمه ارسال */}
-                                    <div className="dispute-show-respond-footer">
-                                        <div></div>
-                                        <button
-                                            type="submit"
-                                            className="dispute-show-respond-btn"
-                                            disabled={
-                                                isSubmitting ||
-                                                response.trim().length < 10
-                                            }
-                                        >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <span className="spinner"></span>
-                                                    در حال ارسال...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Send size={16} />
-                                                    ارسال پاسخ
-                                                    {attachments.length > 0 && (
-                                                        <span className="dispute-show-respond-badge">
-                                                            {toPersianNumber(
-                                                                attachments.length,
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        )}
                     </div>
 
                     {/* ============ ستون چپ ============ */}
@@ -1238,6 +1449,265 @@ export default function BarberDisputeShow({ dispute }) {
                 type="danger"
                 isLoading={deleteDisputeModal.isLoading}
             />
+
+            {/* مدال پاسخ به اعتراض از ادمین */}
+            {responseModal.isOpen && responseModal.dispute && (
+                <div
+                    className="response-modal-overlay"
+                    onClick={() =>
+                        !responseModal.isLoading && closeResponseModal()
+                    }
+                >
+                    <div
+                        className="response-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* ============ هدر ============ */}
+                        <div className="response-modal-header">
+                            <div className="response-modal-icon">
+                                <MessageSquare size={28} />
+                            </div>
+                            <h3>پاسخ به درخواست ادمین</h3>
+                            <button
+                                type="button"
+                                className="response-modal-close"
+                                onClick={closeResponseModal}
+                                disabled={responseModal.isLoading}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* ============ هشدار ============ */}
+                        <div className="response-modal-warning">
+                            <AlertCircle size={16} />
+                            <p>
+                                ادمین برای بررسی دقیق‌تر اعتراض، نیاز به اطلاعات
+                                بیشتری دارد. لطفاً پاسخ خود را کامل و دقیق وارد
+                                کنید.
+                            </p>
+                        </div>
+
+                        {/* ============ پیام ادمین ============ */}
+                        {responseModal.dispute.admin_request_message && (
+                            <div className="admin-request-box">
+                                <div className="admin-request-header">
+                                    <Bot size={16} />
+                                    <span>درخواست ادمین:</span>
+                                </div>
+                                <p>
+                                    {
+                                        responseModal.dispute
+                                            .admin_request_message
+                                    }
+                                </p>
+                                {responseModal.dispute.admin_request_at && (
+                                    <span className="admin-request-date">
+                                        {formatFullDateTime(
+                                            responseModal.dispute
+                                                .admin_request_at,
+                                        )}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ============ متن اعتراض (خلاصه) ============ */}
+                        <div className="response-modal-info">
+                            <div className="info-row">
+                                <span>نوع اعتراض:</span>
+                                <strong>
+                                    {getDisputeTypeConfig(
+                                        responseModal.dispute.dispute_type,
+                                    )?.label || "-"}
+                                </strong>
+                            </div>
+                            <div className="info-row">
+                                <span>اعتراض‌کننده:</span>
+                                <strong>
+                                    {responseModal.dispute.disputed_by ===
+                                    "customer"
+                                        ? "مشتری"
+                                        : "آرایشگر"}
+                                </strong>
+                            </div>
+                            <div className="info-row">
+                                <span>کد اعتراض:</span>
+                                <strong dir="ltr">
+                                    #{toPersianNumber(responseModal.dispute.id)}
+                                </strong>
+                            </div>
+                        </div>
+
+                        {/* ============ فیلد پاسخ ============ */}
+                        <div className="response-form-group">
+                            <label className="form-label">
+                                پاسخ شما
+                                <span className="required">*</span>
+                            </label>
+                            <textarea
+                                className={`form-textarea ${
+                                    responseModal.errors.response ? "error" : ""
+                                }`}
+                                value={responseModal.response}
+                                onChange={(e) =>
+                                    setResponseModal((prev) => ({
+                                        ...prev,
+                                        response: e.target.value,
+                                        errors: {
+                                            ...prev.errors,
+                                            response: undefined,
+                                        },
+                                    }))
+                                }
+                                placeholder="لطفاً پاسخ خود را با جزئیات بنویسید..."
+                                rows={5}
+                                maxLength={1000}
+                                disabled={responseModal.isLoading}
+                            />
+                            <div className="form-footer">
+                                {responseModal.errors.response ? (
+                                    <span className="form-error">
+                                        <AlertCircle size={12} />
+                                        {responseModal.errors.response}
+                                    </span>
+                                ) : (
+                                    <span className="form-hint">
+                                        حداقل ۱۰ و حداکثر ۱۰۰۰ کاراکتر
+                                    </span>
+                                )}
+                                <span className="form-counter" dir="ltr">
+                                    {toPersianNumber(
+                                        responseModal.response.length,
+                                    )}{" "}
+                                    / ۱۰۰۰
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* ============ پیوست‌ها ============ */}
+                        <div className="response-form-group">
+                            <label className="form-label">
+                                <Paperclip size={14} />
+                                پیوست (اختیاری)
+                            </label>
+
+                            <div className="response-attachments">
+                                {responseModal.attachments.length > 0 && (
+                                    <div className="attachments-preview">
+                                        {responseModal.attachments.map(
+                                            (att, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="attachment-item"
+                                                >
+                                                    <img
+                                                        src={att.preview}
+                                                        alt={att.file.name}
+                                                        className="attachment-image"
+                                                    />
+                                                    <div className="attachment-info">
+                                                        <span className="attachment-name">
+                                                            {att.file.name}
+                                                        </span>
+                                                        <span className="attachment-size">
+                                                            {(
+                                                                att.file.size /
+                                                                1024
+                                                            ).toFixed(1)}{" "}
+                                                            KB
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="attachment-remove"
+                                                        onClick={() =>
+                                                            handleRemoveResponseAttachment(
+                                                                index,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            responseModal.isLoading
+                                                        }
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ),
+                                        )}
+                                    </div>
+                                )}
+
+                                {responseModal.attachments.length < 5 && (
+                                    <label className="attachment-upload-btn">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={
+                                                handleResponseAttachmentChange
+                                            }
+                                            disabled={responseModal.isLoading}
+                                            style={{ display: "none" }}
+                                        />
+                                        <Upload size={18} />
+                                        <span>افزودن عکس</span>
+                                        <span className="upload-count">
+                                            {toPersianNumber(
+                                                responseModal.attachments
+                                                    .length,
+                                            )}{" "}
+                                            / ۵
+                                        </span>
+                                    </label>
+                                )}
+                            </div>
+
+                            {responseModal.errors.attachments && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>
+                                        {responseModal.errors.attachments}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* ============ دکمه‌ها ============ */}
+                        <div className="response-modal-actions">
+                            <button
+                                type="button"
+                                className="btn-cancel"
+                                onClick={closeResponseModal}
+                                disabled={responseModal.isLoading}
+                            >
+                                انصراف
+                            </button>
+                            <button
+                                type="button"
+                                className="btn-confirm"
+                                onClick={handleSubmitResponse}
+                                disabled={
+                                    responseModal.isLoading ||
+                                    !responseModal.response.trim()
+                                }
+                            >
+                                {responseModal.isLoading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        در حال ارسال...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send size={16} />
+                                        ارسال پاسخ
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 }

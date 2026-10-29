@@ -757,9 +757,11 @@ class DisputeController extends Controller
             'dispute_type_label' => $d->dispute_type?->label() ?? $d->dispute_type?->value,
 
             'disputed_by'        => $d->disputed_by?->value,
+            'disputed_by_user_id'        => $d->disputed_by_user_id,
             'disputed_by_label'  => $d->disputer_role_label,
 
             'reason'             => $d->reason,
+            'admin_request_message'             => $d->admin_request_message,
             'response'           => $d->response,
             'responded_at'       => $d->responded_at?->toIso8601String(),
             'resolution'         => $d->resolution,

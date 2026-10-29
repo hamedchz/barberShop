@@ -602,7 +602,7 @@ export default function BookingsIndex({ auth, bookings, stats, filters }) {
                 )}
 
                 {/* ============ صفحه‌بندی ============ */}
-                <Pagination links={bookings.links} />
+                <Pagination links={bookings.links} only={bookings} />
             </div>
 
             {/* ============ Modal عملیات ============ */}

@@ -31,6 +31,7 @@ import {
     CreditCardReader,
     MessageSquareCode,
     Quote,
+    CreditCardPlus,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -279,6 +280,15 @@ export const menuConfig = [
         ],
     },
     // barber menus
+    // ============ داشبورد ============
+    {
+        id: "barber-dashboard",
+        label: "داشبورد",
+        icon: LayoutDashboard,
+        href: "/barber/dashboard",
+        scopes: ["dashboard"],
+        permissions: ["barber-dashboard-panel"],
+    },
     // ============ خدمات من (آرایشگر) ============
     {
         id: "services",
@@ -302,7 +312,7 @@ export const menuConfig = [
     // ============ رزروها ============
 
     {
-        id: "bookings",
+        id: "barber-bookings",
         label: "مدیریت رزروها",
         icon: CalendarClock,
         childrenPermissions: ["barber-dashboard-panel"],
@@ -331,6 +341,50 @@ export const menuConfig = [
                 href: "/barber/reviews",
                 scopes: ["reviews"],
                 permissions: ["barber-dashboard-panel"],
+            },
+        ],
+    },
+
+    // ============ مالی ============
+
+    {
+        id: "barber-finance",
+        label: "مالی",
+        icon: ChartCandlestick,
+        childrenPermissions: ["barber-dashboard-panel"],
+        children: [
+            {
+                id: "barber-finance-index",
+                label: "مدیریت مالی",
+                icon: Coins,
+                href: "/barber/finance/wallet",
+                permissions: ["barber-dashboard-panel"],
+                scopes: ["finance"],
+            },
+            {
+                id: "barber-transactions",
+                label: "تراکنش ها",
+                icon: Receipt,
+                href: "/barber/finance/wallet/transactions",
+                permissions: ["barber-dashboard-panel"],
+                scopes: ["transactions"],
+            },
+            {
+                id: "barber-settlements",
+                label: "تسویه ها",
+                icon: BanknoteArrowDown,
+                href: "/barber/finance/wallet/settlements",
+                permissions: ["barber-dashboard-panel"],
+                scopes: ["settlements"],
+            },
+
+            {
+                id: "barber-bank-info",
+                label: "اطلاعات بانکی",
+                icon: CreditCardPlus,
+                href: "/barber/finance/profile/bank-info",
+                permissions: ["barber-dashboard-panel"],
+                scopes: ["bank-info"],
             },
         ],
     },
