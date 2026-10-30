@@ -1,11 +1,13 @@
 /* ============================================
    Select2 Component — Complete Styles
+   Theme-aware (Light/Dark/Auto)
    ============================================ */
 
 .select2-container {
   position: relative;
   width: 100%;
   font-family: inherit;
+  color: var(--color-text);
 }
 
 /* ============ Sizes ============ */
@@ -29,18 +31,18 @@
 
 /* ============ Variants ============ */
 .select2-container.variant-default .select2-trigger {
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
 }
 
 .select2-container.variant-filled .select2-trigger {
-  background: #f9fafb;
+  background: var(--color-bg-hover);
   border: 1.5px solid transparent;
 }
 
 .select2-container.variant-outlined .select2-trigger {
   background: transparent;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--color-border);
 }
 
 /* ============ Trigger ============ */
@@ -53,31 +55,32 @@
   cursor: pointer;
   transition: all 0.2s;
   min-height: 42px;
+  color: var(--color-text);
 }
 
 .select2-trigger:hover:not(.disabled) {
-  border-color: #d1d5db;
+  border-color: var(--color-primary-light);
 }
 
 .select2-trigger.open,
 .select2-trigger:focus {
   outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .select2-trigger.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
 }
 
 .select2-trigger.has-error {
-  border-color: #ef4444;
+  border-color: var(--color-danger);
 }
 
 .select2-trigger.has-error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 /* ============ Content ============ */
@@ -94,8 +97,9 @@
 }
 
 .select2-placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 500;
+  opacity: 0.8;
 }
 
 /* ============ Single Value ============ */
@@ -104,7 +108,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -132,13 +136,14 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.5rem;
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #7c3aed;
+  color: var(--color-primary-hover);
   max-width: 100%;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .select2-tag-icon {
@@ -166,17 +171,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #7c3aed;
+  color: var(--color-primary-hover);
   flex-shrink: 0;
   transition: all 0.2s;
 }
 
 .select2-tag-remove:hover {
-  background: #7c3aed;
+  background: var(--color-primary-hover);
   color: #ffffff;
 }
 
-/* ============ Search Input (داخل trigger) ============ */
+/* ============ Search Input ============ */
 .select2-search-input {
   display: flex;
   align-items: center;
@@ -186,7 +191,7 @@
 }
 
 .select2-search-input>svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
@@ -198,14 +203,15 @@
   font-family: inherit;
   font-size: inherit;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--color-text);
   min-width: 0;
   padding: 0;
 }
 
 .select2-search-input input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 500;
+  opacity: 0.8;
 }
 
 /* ============ Actions ============ */
@@ -220,23 +226,23 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: var(--color-bg-hover);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-text-muted);
   transition: all 0.2s;
 }
 
 .select2-clear-btn:hover {
-  background: #fef2f2;
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
 }
 
 .select2-spinner {
-  color: #8b5cf6;
+  color: var(--color-primary);
   animation: select2Spin 0.7s linear infinite;
   flex-shrink: 0;
 }
@@ -248,7 +254,7 @@
 }
 
 .select2-chevron {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   transition: transform 0.2s;
   flex-shrink: 0;
 }
@@ -263,13 +269,14 @@
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 40px var(--color-shadow);
   z-index: 1000;
   overflow: hidden;
   animation: select2DropdownIn 0.2s ease-out;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .select2-dropdown.placement-top {
@@ -295,6 +302,7 @@
   overflow-y: auto;
   padding: 0.375rem;
   scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 .select2-options::-webkit-scrollbar {
@@ -302,16 +310,16 @@
 }
 
 .select2-options::-webkit-scrollbar-track {
-  background: #f9fafb;
+  background: var(--color-bg-hover);
 }
 
 .select2-options::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--color-border);
   border-radius: 9999px;
 }
 
 .select2-options::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--color-text-muted);
 }
 
 /* ============ Option ============ */
@@ -325,9 +333,9 @@
   border: none;
   border-radius: 0.5rem;
   font-family: inherit;
-  font-size: inherit;
-  font-weight: 600;
-  color: #374151;
+  font-size: 12px;
+  font-weight: 350;
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.15s;
   text-align: right;
@@ -335,13 +343,13 @@
 
 .select2-option:hover,
 .select2-option.highlighted {
-  background: #f5f3ff;
-  color: #7c3aed;
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }
 
 .select2-option.selected {
-  background: #ede9fe;
-  color: #5b21b6;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
   font-weight: 800;
 }
 
@@ -367,7 +375,7 @@
 }
 
 .select2-option-check {
-  color: #7c3aed;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -375,7 +383,7 @@
   width: 1rem;
   height: 1rem;
   border-radius: 0.25rem;
-  border: 1.5px solid #d1d5db;
+  border: 1.5px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,8 +393,8 @@
 }
 
 .select2-option.selected .select2-checkbox {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 /* ============ Group Label ============ */
@@ -394,7 +402,7 @@
   padding: 0.5rem 0.75rem;
   font-size: 0.6875rem;
   font-weight: 800;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -406,35 +414,48 @@
   align-items: center;
   gap: 0.5rem;
   padding: 2rem 1rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.8125rem;
   font-weight: 600;
   text-align: center;
 }
 
 .select2-empty svg {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .select2-empty.error {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .select2-empty.error svg {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 /* ============ Footer ============ */
 .select2-footer {
   padding: 0.5rem 1rem;
-  background: #f9fafb;
-  border-top: 1px solid #f3f4f6;
+  background: var(--color-bg-hover);
+  border-top: 1px solid var(--color-border);
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   text-align: center;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .select2-max-warning {
-  color: #92400e;
+  color: var(--color-warning);
+}
+
+/* ============ Reduced Motion ============ */
+@media (prefers-reduced-motion: reduce) {
+
+  .select2-container *,
+  .select2-container *::before,
+  .select2-container *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

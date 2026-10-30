@@ -7,6 +7,7 @@ use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\CustomerController;
 use App\Http\Controllers\Barber\DashboardController;
 use App\Http\Controllers\Barber\DisputeController;
+use App\Http\Controllers\Barber\ProfileController;
 use App\Http\Controllers\Barber\ReviewController;
 use App\Http\Controllers\Barber\ServiceController;
 use App\Http\Controllers\Barber\TimeSlotController;
@@ -84,8 +85,6 @@ Route::prefix('disputes')
   });
 
 // wallet finance
-// routes/web.php
-
 Route::prefix('finance')
   ->name('finance.')
   ->group(function () {
@@ -114,3 +113,13 @@ Route::prefix('customers')->name('customers.')->controller(CustomerController::c
 // routes/barber.php
 Route::get('/reviews', [ReviewController::class, 'index'])
   ->name('reviews.index');
+
+// profile
+Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
+  Route::get('/', 'edit')->name('edit');
+  Route::put('/', 'update')->name('update');
+  Route::post('/avatar', 'updateAvatar')->name('update-avatar');
+  Route::delete('/avatar/delete', 'deleteAvatar')->name('delete-avatar');
+  Route::put('/password', 'updatePassword')->name('update-password');
+  Route::put('/bank-info', 'updateBankInfo')->name('update-bank-info');
+});

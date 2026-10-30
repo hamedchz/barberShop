@@ -113,7 +113,7 @@ Route::prefix('finance')
   });
 
 // profile
-// routes/web.php
+
 
 Route::prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
   Route::get('/', 'edit')->name('edit');

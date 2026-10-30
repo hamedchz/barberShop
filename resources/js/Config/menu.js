@@ -388,4 +388,13 @@ export const menuConfig = [
             },
         ],
     },
+
+    {
+        id: "barber-customers",
+        label: "مشتریان من",
+        icon: UserRoundGroup,
+        href: "/barber/customers",
+        scopes: ["customers"],
+        permissions: ["barber-dashboard-panel"],
+    },
 ];

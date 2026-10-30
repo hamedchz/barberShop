@@ -1,5 +1,6 @@
 /* ============================================
    Barber Wallet — Complete Styles
+   Theme-aware (Light/Dark/Auto)
    ============================================ */
 
 /* ============================================
@@ -13,7 +14,7 @@
   padding: 1.5rem 1rem 4rem;
   box-sizing: border-box;
   overflow-x: hidden;
-  /* ✅ جلوگیری از اسکرول افقی */
+  color: var(--color-text);
 }
 
 /* ============================================
@@ -27,10 +28,13 @@
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-light);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.06);
+  box-shadow: 0 4px 16px var(--color-primary-light);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .wallet-header-content {
@@ -43,26 +47,27 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .wallet-header h1 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-text);
   margin: 0 0 0.25rem;
   line-height: 1.3;
 }
 
 .wallet-header p {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.6;
 }
@@ -83,7 +88,6 @@
   justify-content: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  /* background: linear-gradient(135deg, #10b981, #059669); */
   color: #ffffff;
   border: none;
   border-radius: 0.75rem;
@@ -93,17 +97,14 @@
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
-  /* box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); */
   background: var(--gradient-primary);
-  box-shadow: 0 4px 12px var(--color-primary-light)
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .btn-primary:hover,
 .btn-confirm:hover:not(:disabled) {
   transform: translateY(-1px);
-  /* box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4); */
-
-  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
+  box-shadow: 0 8px 18px var(--color-primary-light);
 }
 
 .btn-primary:disabled,
@@ -123,9 +124,9 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  background: #ffffff;
-  color: #374151;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.75rem;
@@ -136,9 +137,9 @@
 }
 
 .btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 
@@ -148,8 +149,8 @@
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
   background: transparent;
-  color: #6b7280;
-  border: 1.5px solid #e5e7eb;
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.625rem;
   font-family: inherit;
   font-size: 0.75rem;
@@ -160,8 +161,8 @@
 }
 
 .btn-ghost:hover {
-  background: #f9fafb;
-  color: #374151;
+  background: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
 .spinner {
@@ -190,10 +191,11 @@
   display: flex;
   gap: 0.25rem;
   padding: 0.25rem;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border-radius: 0.75rem;
   margin-bottom: 1rem;
   width: fit-content;
+  transition: background-color 0.3s;
 }
 
 .period-btn {
@@ -204,19 +206,19 @@
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .period-btn:hover {
-  color: #374151;
+  color: var(--color-text);
 }
 
 .period-btn.active {
-  background: #ffffff;
-  color: #065f46;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background: var(--color-bg-card);
+  color: var(--color-primary-hover);
+  box-shadow: 0 2px 6px var(--color-shadow);
 }
 
 .wallet-stats-grid {
@@ -242,35 +244,47 @@
   align-items: center;
   gap: 0.875rem;
   padding: 1.25rem;
-  background: #ffffff;
-  border: 1.5px solid;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1.25rem;
   transition: all 0.3s;
 }
 
 .wallet-stat-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px var(--color-shadow);
 }
 
+/* کارت سبز (موفقیت) */
 .wallet-stat-card.green {
-  border-color: #a7f3d0;
-  background: linear-gradient(135deg, #ecfdf5, #ffffff);
+  border-color: var(--color-primary-light);
+  background: linear-gradient(135deg,
+      var(--color-primary-tint),
+      var(--color-bg-card));
 }
 
+/* کارت نارنجی (هشدار) */
 .wallet-stat-card.orange {
-  border-color: #fed7aa;
-  background: linear-gradient(135deg, #fff7ed, #ffffff);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
 }
 
+/* کارت آبی (اطلاعات) */
 .wallet-stat-card.blue {
-  border-color: #bfdbfe;
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
 }
 
+/* کارت قرمز (خطر) */
 .wallet-stat-card.red {
-  border-color: #fecaca;
-  background: linear-gradient(135deg, #fef2f2, #ffffff);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
 }
 
 .wallet-stat-card .stat-icon-box {
@@ -281,26 +295,27 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .wallet-stat-card.green .stat-icon-box {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .wallet-stat-card.orange .stat-icon-box {
-  background: #fed7aa;
-  color: #9a3412;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .wallet-stat-card.blue .stat-icon-box {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, transparent);
+  color: var(--color-info);
 }
 
 .wallet-stat-card.red .stat-icon-box {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .wallet-stat-card .stat-content {
@@ -313,7 +328,7 @@
 
 .wallet-stat-card .stat-label {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
@@ -326,19 +341,19 @@
 }
 
 .wallet-stat-card.green .stat-value {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .wallet-stat-card.orange .stat-value {
-  color: #9a3412;
+  color: var(--color-warning);
 }
 
 .wallet-stat-card.blue .stat-value {
-  color: #1e40af;
+  color: var(--color-info);
 }
 
 .wallet-stat-card.red .stat-value {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .wallet-stat-card .stat-currency {
@@ -373,13 +388,14 @@
    Cards
    ============================================ */
 .wallet-card {
-  background: #ffffff;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
   min-width: 0;
   box-sizing: border-box;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .wallet-card-header {
@@ -388,21 +404,22 @@
   gap: 0.625rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed var(--color-border);
   flex-wrap: wrap;
+  transition: border-color 0.3s;
 }
 
 .wallet-card-header h2 {
   font-size: 1rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
   flex: 1;
 }
 
 .wallet-card-header .card-subtitle {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -412,13 +429,13 @@
   gap: 0.25rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #10b981;
+  color: var(--color-primary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .wallet-card-header .card-link:hover {
-  color: #059669;
+  color: var(--color-primary-hover);
 }
 
 .card-icon-box {
@@ -429,36 +446,37 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .card-icon-box.blue {
-  background: #eff6ff;
-  color: #3b82f6;
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .card-icon-box.green {
-  background: #ecfdf5;
-  color: #10b981;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .card-icon-box.yellow {
-  background: #fffbeb;
-  color: #f59e0b;
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .card-icon-box.purple {
-  background: #f5f3ff;
+  background: color-mix(in srgb, #8b5cf6 12%, var(--color-bg-card));
   color: #8b5cf6;
 }
 
 .card-icon-box.red {
-  background: #fef2f2;
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .card-icon-box.gray {
-  background: #f9fafb;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 /* ============================================
@@ -469,17 +487,19 @@
 }
 
 .chart-tooltip {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   padding: 0.625rem 0.875rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px var(--color-shadow);
+  color: var(--color-text);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .chart-tooltip .tooltip-date {
   display: block;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
   margin-bottom: 0.25rem;
 }
@@ -490,7 +510,7 @@
   gap: 0.25rem;
   font-size: 0.875rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .chart-tooltip .currency {
@@ -504,7 +524,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.8125rem;
   font-weight: 600;
 }
@@ -515,12 +535,12 @@
   align-items: center;
   gap: 1rem;
   padding: 3rem 1rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .empty-state-large svg {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .empty-state-large p {
@@ -554,20 +574,21 @@
 .breakdown-label {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .breakdown-value {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .breakdown-bar-wrapper {
   height: 8px;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border-radius: 9999px;
   overflow: hidden;
+  transition: background-color 0.3s;
 }
 
 .breakdown-bar {
@@ -577,7 +598,9 @@
 }
 
 .breakdown-bar.green {
-  background: linear-gradient(90deg, #10b981, #059669);
+  background: linear-gradient(90deg,
+      var(--color-primary),
+      var(--color-primary-hover));
 }
 
 .breakdown-bar.blue {
@@ -593,11 +616,15 @@
 }
 
 .breakdown-bar.orange {
-  background: linear-gradient(90deg, #f59e0b, #d97706);
+  background: linear-gradient(90deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
 }
 
 .breakdown-bar.red {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
+  background: linear-gradient(90deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 80%, black));
 }
 
 .breakdown-bar.gray {
@@ -608,7 +635,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -626,15 +653,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 0.875rem;
   transition: all 0.2s;
 }
 
 .transaction-item:hover {
-  background: #ffffff;
-  border-color: #e5e7eb;
+  background: var(--color-bg-card);
+  border-color: var(--color-primary-light);
   transform: translateX(-3px);
 }
 
@@ -651,16 +678,17 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .transaction-icon.credit {
-  background: #ecfdf5;
-  color: #10b981;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .transaction-icon.debit {
-  background: #fef2f2;
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .transaction-content {
@@ -678,7 +706,7 @@
   flex-wrap: wrap;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .lock-badge {
@@ -686,8 +714,8 @@
   align-items: center;
   gap: 0.1875rem;
   padding: 0.125rem 0.375rem;
-  background: #fed7aa;
-  color: #9a3412;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
   border-radius: 9999px;
   font-size: 0.5625rem;
   font-weight: 800;
@@ -703,28 +731,28 @@
 }
 
 .transaction-status.status-completed {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .transaction-status.status-pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .transaction-status.status-failed {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .transaction-status.status-cancelled {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 .transaction-desc {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -737,13 +765,13 @@
   gap: 0.375rem;
   flex-wrap: wrap;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   margin-top: 0.25rem;
 }
 
 .meta-separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .transaction-amount {
@@ -766,23 +794,18 @@
 }
 
 .amount-value.credit {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .amount-value.debit {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
-.amount-date {
-  font-size: 0.625rem;
-  color: #9ca3af;
-  font-weight: 600;
-}
-
+.amount-date,
 .amount-currency {
   font-size: 0.625rem;
-  color: #9ca3af;
-  font-weight: 700;
+  color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 /* ============================================
@@ -798,13 +821,22 @@
   box-sizing: border-box;
 }
 
+.transactions-toolbar>*:first-child {
+  flex: 1;
+  min-width: 200px;
+}
+
+.transactions-toolbar .filter-toggle {
+  flex-shrink: 0;
+}
+
 .search-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   flex: 1;
   min-width: 200px;
@@ -812,12 +844,12 @@
 }
 
 .search-wrapper:focus-within {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .search-wrapper svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
@@ -827,31 +859,32 @@
   background: transparent;
   font-family: inherit;
   font-size: 0.8125rem;
-  color: #1f2937;
+  color: var(--color-text);
   outline: none;
 }
 
 .search-input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 
 .search-clear {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-text-muted);
   transition: all 0.2s;
 }
 
 .search-clear:hover {
-  background: #e5e7eb;
-  color: #374151;
+  background: var(--color-border);
+  color: var(--color-text);
 }
 
 .filter-toggle {
@@ -860,29 +893,29 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-toggle:hover,
 .filter-toggle.active {
-  border-color: #10b981;
-  color: #065f46;
-  background: #ecfdf5;
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+  background: var(--color-primary-tint);
 }
 
 .filter-dot {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--color-danger);
   position: absolute;
   top: 0.375rem;
   left: 0.375rem;
@@ -892,14 +925,16 @@
    Filters Panel
    ============================================ */
 .filters-panel {
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.25rem;
   margin-bottom: 1rem;
   animation: walletPanelIn 0.25s ease-out;
+  animation-fill-mode: forwards;
   min-width: 0;
   box-sizing: border-box;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 @keyframes walletPanelIn {
@@ -944,32 +979,31 @@
 .filter-group label {
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .filter-select,
 .filter-input {
   width: 100%;
   max-width: 100%;
-  /* ✅ جلوگیری از پهن شدن */
   min-width: 0;
   padding: 0.625rem 0.75rem;
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.8125rem;
-  color: #1f2937;
+  color: var(--color-text);
   transition: all 0.2s;
   box-sizing: border-box;
-  /* ✅ مهم */
 }
 
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
-  border-color: #10b981;
-  background: #ffffff;
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .filters-actions {
@@ -997,28 +1031,28 @@
   min-width: 2rem;
   height: 2rem;
   padding: 0 0.625rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
   text-decoration: none;
   transition: all 0.2s;
   direction: ltr;
 }
 
 .pagination-item:hover:not(.disabled):not(.active) {
-  background: #f9fafb;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .pagination-item.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .pagination-item.disabled {
@@ -1030,8 +1064,10 @@
    Withdraw Section
    ============================================ */
 .withdraw-card {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border-color: #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
 }
 
 .withdraw-balance {
@@ -1039,16 +1075,17 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #d1fae5;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.875rem;
   margin-bottom: 1rem;
   text-align: center;
+  opacity: 0.95;
 }
 
 .withdraw-balance .balance-label {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
@@ -1059,7 +1096,7 @@
   gap: 0.375rem;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .withdraw-balance .currency {
@@ -1072,10 +1109,10 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 0.75rem;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
   border-radius: 0.75rem;
-  color: #92400e;
+  color: var(--color-warning);
   font-size: 0.6875rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -1088,11 +1125,12 @@
   gap: 0.75rem;
   padding: 1.5rem 1rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .no-bank-info svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 
 .no-bank-info p {
@@ -1106,17 +1144,17 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 0.75rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
   margin-bottom: 1rem;
 }
 
 .bank-info-preview .separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 /* ============================================
@@ -1135,40 +1173,42 @@
   gap: 0.25rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .form-group label .required {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .form-input {
   width: 100%;
   padding: 0.75rem 0.875rem;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1f2937;
-  background: #f9fafb;
+  color: var(--color-text);
+  background: var(--color-bg-hover);
   transition: all 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #10b981;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .form-input.error {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+  background: color-mix(in srgb,
+      var(--color-danger) 5%,
+      var(--color-bg-card));
 }
 
 .form-input.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .form-input.ltr {
@@ -1185,8 +1225,9 @@
 .input-with-icon>svg:first-child {
   position: absolute;
   right: 0.875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   pointer-events: none;
+
   z-index: 1;
 }
 
@@ -1199,15 +1240,16 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.6875rem;
-  color: #ef4444;
+  color: var(--color-danger);
   font-weight: 700;
 }
 
 .form-hint {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   line-height: 1.6;
+  opacity: 0.85;
 }
 
 /* ============================================
@@ -1225,27 +1267,29 @@
   gap: 0.75rem;
   padding: 0.75rem;
   border-radius: 0.875rem;
-  border: 1px solid;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
+/* وضعیت‌های رنگی — با color-mix */
 .settlement-item.status-yellow {
-  background: #fffbeb;
-  border-color: #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 .settlement-item.status-blue {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 }
 
 .settlement-item.status-green {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
 .settlement-item.status-red {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .settlement-icon {
@@ -1256,26 +1300,27 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-icon.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .settlement-icon.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, transparent);
+  color: var(--color-info);
 }
 
 .settlement-icon.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-icon.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .settlement-content {
@@ -1297,7 +1342,7 @@
 .settlement-amount {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .settlement-status {
@@ -1308,34 +1353,34 @@
 }
 
 .settlement-status.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .settlement-status.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, transparent);
+  color: var(--color-info);
 }
 
 .settlement-status.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-status.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .settlement-date,
 .settlement-failure {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .settlement-failure {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 /* ============================================
@@ -1346,11 +1391,12 @@
   gap: 0.375rem;
   margin-bottom: 1rem;
   padding: 0.375rem;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border-radius: 0.875rem;
   width: fit-content;
   overflow-x: auto;
   scrollbar-width: none;
+  transition: background-color 0.3s;
 }
 
 .settlement-filters::-webkit-scrollbar {
@@ -1365,20 +1411,20 @@
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .filter-btn:hover {
-  color: #374151;
+  color: var(--color-text);
 }
 
 .filter-btn.active {
-  background: #ffffff;
-  color: #065f46;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  background: var(--color-bg-card);
+  color: var(--color-primary-hover);
+  box-shadow: 0 2px 6px var(--color-shadow);
 }
 
 .settlements-list-detailed {
@@ -1391,35 +1437,45 @@
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1rem;
   transition: all 0.2s;
 }
 
 .settlement-card.status-yellow {
-  background: linear-gradient(135deg, #fffbeb, #ffffff);
-  border-color: #fde68a;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 .settlement-card.status-blue {
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
-  border-color: #bfdbfe;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 }
 
 .settlement-card.status-green {
-  background: linear-gradient(135deg, #ecfdf5, #ffffff);
-  border-color: #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint),
+      var(--color-bg-card));
+  border-color: var(--color-primary-light);
 }
 
 .settlement-card.status-red {
-  background: linear-gradient(135deg, #fef2f2, #ffffff);
-  border-color: #fecaca;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .settlement-card.status-gray {
-  background: linear-gradient(135deg, #f9fafb, #ffffff);
-  border-color: #e5e7eb;
+  background: linear-gradient(135deg,
+      var(--color-bg-hover),
+      var(--color-bg-card));
+  border-color: var(--color-border);
 }
 
 .settlement-card-icon {
@@ -1430,31 +1486,32 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-card-icon.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .settlement-card-icon.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, transparent);
+  color: var(--color-info);
 }
 
 .settlement-card-icon.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-icon.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .settlement-card-icon.gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 .settlement-card-body {
@@ -1483,7 +1540,7 @@
 .settlement-card-amount {
   font-size: 1rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .settlement-card-status {
@@ -1497,40 +1554,40 @@
 }
 
 .settlement-card-status.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+  color: var(--color-warning);
 }
 
 .settlement-card-status.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, transparent);
+  color: var(--color-info);
 }
 
 .settlement-card-status.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-status.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
 }
 
 .settlement-card-status.gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 .settlement-card-id {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   direction: ltr;
 }
 
 .settlement-card-desc {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
@@ -1546,23 +1603,23 @@
 }
 
 .settlement-card-bank {
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .settlement-card-bank .separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .settlement-card-reference {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-error {
-  color: #991b1b;
-  background: #fef2f2;
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid #fecaca;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .settlement-card-dates {
@@ -1571,7 +1628,8 @@
   gap: 0.25rem;
   margin-top: 0.375rem;
   padding-top: 0.5rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .settlement-card-dates .date-item {
@@ -1579,48 +1637,50 @@
   align-items: center;
   gap: 0.375rem;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .settlement-card-dates .date-item.success {
-  color: #059669;
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-dates .date-item.danger {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 /* ============================================
-   Bank Info Page
+   Bank Info Section
    ============================================ */
 .security-notice {
   display: flex;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
-  border: 1.5px solid #bfdbfe;
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-info) 25%, transparent);
   border-radius: 1rem;
   margin-bottom: 1.5rem;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .security-notice svg {
-  color: #3b82f6;
+  color: var(--color-info);
   flex-shrink: 0;
 }
 
 .security-notice h3 {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1e40af;
+  color: var(--color-info);
   margin: 0 0 0.25rem;
 }
 
 .security-notice p {
   font-size: 0.75rem;
-  color: #3b82f6;
+  color: var(--color-text);
   line-height: 1.7;
   margin: 0;
+  opacity: 0.85;
 }
 
 .bank-info-grid {
@@ -1640,13 +1700,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.75rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-size: 0.75rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .bank-info-sidebar {
@@ -1664,7 +1725,10 @@
 
 .bank-card-gradient {
   aspect-ratio: 1.586;
-  background: linear-gradient(135deg, #065f46 0%, #10b981 50%, #34d399 100%);
+  background: linear-gradient(135deg,
+      var(--color-secondary) 0%,
+      var(--color-primary) 50%,
+      var(--color-primary-hover) 100%);
   border-radius: 1.25rem;
   padding: 1.5rem;
   display: flex;
@@ -1672,10 +1736,11 @@
   justify-content: space-between;
   color: #ffffff;
   box-shadow:
-    0 20px 40px rgba(16, 185, 129, 0.3),
+    0 20px 40px var(--color-primary-light),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   position: relative;
   overflow: hidden;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .bank-card-gradient::before {
@@ -1766,19 +1831,20 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #4b5563;
+  color: var(--color-text);
   line-height: 1.7;
   font-weight: 600;
+  opacity: 0.9;
 }
 
 .tips-list li svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 3px;
 }
 
 .tips-list li svg.text-warning {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 /* ============================================
@@ -1857,7 +1923,7 @@
    PersianDatePicker Z-Index & Overflow Fix
    ============================================ */
 
-/* ============ والدها باید overflow visible باشن ============ */
+/* والدها باید overflow visible باشن */
 .filters-panel,
 .filters-grid,
 .filter-group,
@@ -1866,16 +1932,7 @@
   overflow: visible !important;
 }
 
-/* ============ حذف stacking context از والدها ============ */
-.filters-panel {
-  /* اگه transform یا animation داری، بعد از اتمام، حذفش کن */
-  animation: walletPanelIn 0.25s ease-out;
-  animation-fill-mode: forwards;
-  /* بعد از انیمیشن transform حذف میشه */
-}
-
-/* ============ تقویم ============ */
-/* اسم کلاسها رو از فایل PersianDatePicker.jsx چک کن */
+/* تقویم‌ها با z-index بالا */
 .persian-date-picker__popup,
 .persian-date-picker__calendar,
 .date-picker-popup,
@@ -1884,22 +1941,21 @@
 .pdp-calendar {
   z-index: 99999 !important;
   position: absolute;
-  /* یا fixed، بسته به پیادهسازی */
 }
 
-/* ============ اگه از react-datepicker استفاده میکنه ============ */
 .react-datepicker-popper {
   z-index: 99999 !important;
 }
 
 .react-datepicker {
   z-index: 99999 !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 40px var(--color-shadow) !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 1rem !important;
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-text) !important;
 }
 
-/* ============ اگه از material-ui date picker استفاده میکنه ============ */
 .MuiPickersPopper-root {
   z-index: 99999 !important;
 }
@@ -1907,33 +1963,22 @@
 /* ============================================
    Search Component در Transactions Toolbar
    ============================================ */
-.transactions-toolbar>*:first-child {
-  flex: 1;
-  min-width: 200px;
-}
-
-/* اگه Search خودش یه کلاس خاص داره */
 .transactions-toolbar .search-component,
 .transactions-toolbar .search-wrapper {
   flex: 1;
-  min-width: 200px;
   min-width: 0;
 }
 
-.transactions-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  min-width: 0;
-}
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
 
-.transactions-toolbar>*:first-child {
-  flex: 1;
-  min-width: 0;
-}
-
-.transactions-toolbar .filter-toggle {
-  flex-shrink: 0;
+  .barber-wallet-page *,
+  .barber-wallet-page *::before,
+  .barber-wallet-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

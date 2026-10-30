@@ -211,7 +211,7 @@ export default function BankInfo({ auth, bankInfo }) {
 
                                 <Select2
                                     isAsync
-                                    asyncUrl={route("customer.banks.search")}
+                                    asyncUrl={route("user.banks.search")}
                                     asyncMethod="GET"
                                     asyncParams={{ limit: 5 }}
                                     value={formData.bank_id}
