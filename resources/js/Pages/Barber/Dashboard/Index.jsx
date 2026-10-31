@@ -220,7 +220,6 @@ export default function BarberDashboardIndex({
                         onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
-                                // همون منطق onClick
                             }
                         }}
                     >

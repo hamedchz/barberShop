@@ -1,0 +1,72 @@
+.earnings-chart-wrapper {
+    position: relative;
+    width: 100%;
+    direction: ltr;
+    overflow: visible;
+}
+
+.earnings-chart-wrapper .barber-chart-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.earnings-chart-wrapper .barber-chart-tooltip {
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.earnings-chart-wrapper .barber-chart-tooltip {
+    position: absolute;
+    z-index: 50;
+    min-width: 150px;
+    max-width: 220px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    background: #1e293b;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.18);
+    pointer-events: none;
+    white-space: nowrap;
+    direction: rtl;
+    transform: translate(-50%, -100%);
+    margin-top: -12px;
+}
+
+.earnings-chart-wrapper .tooltip-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.earnings-chart-wrapper .tooltip-date svg {
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+.earnings-chart-wrapper .tooltip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.earnings-chart-wrapper .tooltip-row span {
+    color: #cbd5e1;
+}
+
+.earnings-chart-wrapper .tooltip-row strong {
+    color: #34d399;
+    font-size: 12px;
+    font-weight: 700;
+}

@@ -126,7 +126,7 @@ export default function WalletIndex({
                             pendingSettlements={pendingSettlements}
                         />
 
-                        {/* تسویههای در انتظار */}
+                        {/* تسویه های در انتظار */}
                         <PendingSettlements settlements={pendingSettlements} />
                     </div>
                 </div>
