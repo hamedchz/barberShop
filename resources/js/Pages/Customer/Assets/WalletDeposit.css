@@ -1,10 +1,8 @@
 /* ============================================
-   Customer Deposit Page — Complete Styles
+   Customer Deposit Page — Theme-aware
    ============================================ */
 
-/* ============================================
-   Page Container
-   ============================================ */
+/* ============ Page Container ============ */
 .customer-wallet-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -12,11 +10,11 @@
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
+  color: var(--color-text);
+  transition: color 0.3s;
 }
 
-/* ============================================
-   Header
-   ============================================ */
+/* ============ Header ============ */
 .wallet-header {
   display: flex;
   align-items: center;
@@ -25,15 +23,20 @@
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-light);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.06);
+  box-shadow: 0 4px 16px var(--color-primary-light);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .deposit-header {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border-color: #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
 }
 
 .wallet-header-content {
@@ -53,22 +56,23 @@
 }
 
 .deposit-header .wallet-header-icon {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .wallet-header h1 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-text);
   margin: 0 0 0.25rem;
   line-height: 1.3;
 }
 
 .wallet-header p {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.6;
 }
@@ -79,16 +83,13 @@
   flex-wrap: wrap;
 }
 
-/* ============================================
-   Buttons
-   ============================================ */
+/* ============ Buttons ============ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  /* background: linear-gradient(135deg, #10b981, #059669); */
   color: #ffffff;
   border: none;
   border-radius: 0.75rem;
@@ -98,18 +99,14 @@
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
-  /* box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); */
   white-space: nowrap;
-
   background: var(--gradient-primary);
   box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  /* box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4); */
-  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
-
+  box-shadow: 0 8px 18px var(--color-primary-light);
 }
 
 .btn-primary:disabled {
@@ -127,9 +124,9 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  background: #ffffff;
-  color: #374151;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.75rem;
@@ -141,15 +138,13 @@
 }
 
 .btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 
-/* ============================================
-   Spinner
-   ============================================ */
+/* ============ Spinner ============ */
 .spinner {
   width: 14px;
   height: 14px;
@@ -165,27 +160,30 @@
   }
 }
 
-/* ============================================
-   Security Notice
-   ============================================ */
+/* ============ Security Notice ============ */
 .security-notice {
   display: flex;
   gap: 0.875rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
-  border: 1.5px solid #bfdbfe;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-info) 25%, transparent);
   border-radius: 1rem;
   margin-bottom: 1.5rem;
   align-items: flex-start;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .deposit-security {
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
-  border-color: #bfdbfe;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .security-notice svg {
-  color: #3b82f6;
+  color: var(--color-info);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -193,20 +191,19 @@
 .security-notice h3 {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1e40af;
+  color: var(--color-info);
   margin: 0 0 0.25rem;
 }
 
 .security-notice p {
   font-size: 0.75rem;
-  color: #3b82f6;
+  color: var(--color-info);
   line-height: 1.7;
   margin: 0;
+  opacity: 0.9;
 }
 
-/* ============================================
-   Grid Layout
-   ============================================ */
+/* ============ Grid Layout ============ */
 .deposit-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -214,23 +211,16 @@
   min-width: 0;
 }
 
-@media (min-width: 1024px) {
-  .deposit-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ============================================
-   Wallet Card
-   ============================================ */
+/* ============ Wallet Card ============ */
 .wallet-card {
-  background: #ffffff;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
   min-width: 0;
   box-sizing: border-box;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .wallet-card-header {
@@ -239,14 +229,15 @@
   gap: 0.625rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed var(--color-border);
   flex-wrap: wrap;
+  transition: border-color 0.3s;
 }
 
 .wallet-card-header h2 {
   font-size: 1rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
   flex: 1;
 }
@@ -259,24 +250,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .card-icon-box.green {
-  background: #ecfdf5;
-  color: #10b981;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .card-icon-box.blue {
-  background: #eff6ff;
-  color: #3b82f6;
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
-/* ============================================
-   Deposit Form Card
-   ============================================ */
+/* ============ Deposit Form Card ============ */
 .deposit-form-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  border-color: #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-bg-card) 0%,
+      var(--color-primary-tint) 100%);
+  border-color: var(--color-primary-light);
 }
 
 /* ============ Current Balance ============ */
@@ -285,13 +277,16 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 1.25rem 1rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-light);
   border-radius: 1rem;
   text-align: center;
   margin-bottom: 1.25rem;
   position: relative;
   overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .current-balance-box::before {
@@ -302,14 +297,14 @@
   width: 200%;
   height: 200%;
   background: radial-gradient(circle,
-      rgba(16, 185, 129, 0.08) 0%,
+      color-mix(in srgb, var(--color-primary) 8%, transparent) 0%,
       transparent 70%);
   pointer-events: none;
 }
 
 .current-balance-box .balance-label {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -324,7 +319,7 @@
   gap: 0.375rem;
   font-size: 1.625rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-variant-numeric: tabular-nums;
   position: relative;
   z-index: 1;
@@ -347,12 +342,12 @@
   gap: 0.375rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin-bottom: 0.625rem;
 }
 
 .quick-amounts-section>label svg {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .quick-amounts-grid {
@@ -361,39 +356,33 @@
   gap: 0.5rem;
 }
 
-@media (max-width: 480px) {
-  .quick-amounts-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .quick-amount-btn {
   padding: 0.75rem 0.5rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   font-variant-numeric: tabular-nums;
 }
 
 .quick-amount-btn:hover:not(:disabled) {
-  background: #ecfdf5;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .quick-amount-btn.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .quick-amount-btn:disabled {
@@ -416,23 +405,23 @@
   gap: 0.25rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .form-group label .required {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .form-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
-  color: #1f2937;
-  background: #f9fafb;
+  color: var(--color-text);
+  background: var(--color-bg-hover);
   transition: all 0.2s;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -442,23 +431,24 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #10b981;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .form-input.error {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg-card));
 }
 
 .form-input.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .form-input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
+  opacity: 0.7;
 }
 
 /* حذف فلش‌های input number */
@@ -478,11 +468,14 @@
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.75rem 0.875rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-light);
   border-radius: 0.875rem;
   margin-top: 0.5rem;
   animation: amountFadeIn 0.25s ease-out;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 @keyframes amountFadeIn {
@@ -507,7 +500,7 @@
 .amount-display .amount-value {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
@@ -515,7 +508,7 @@
 .amount-display .amount-currency {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #059669;
+  color: var(--color-primary);
 }
 
 .amount-display .amount-meta {
@@ -525,12 +518,12 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .amount-display .amount-remaining {
-  color: #059669;
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -540,27 +533,28 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem 0.75rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 700;
   line-height: 1.5;
 }
 
 .form-error svg {
   flex-shrink: 0;
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 /* ============ Form Hint ============ */
 .form-hint {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   line-height: 1.6;
   text-align: center;
+  opacity: 0.85;
 }
 
 /* ============ Submit Button ============ */
@@ -578,7 +572,8 @@
   gap: 0.625rem;
   margin-top: 1.25rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .deposit-benefits-list .benefit-item {
@@ -586,20 +581,19 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #4b5563;
+  color: var(--color-text);
   font-weight: 600;
+  opacity: 0.85;
 }
 
 .deposit-benefits-list .benefit-item svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
-/* ============================================
-   Deposit History Card
-   ============================================ */
+/* ============ Deposit History Card ============ */
 .deposit-history-card {
-  background: #ffffff;
+  background: var(--color-bg-card);
 }
 
 /* ============ Status Filters ============ */
@@ -607,13 +601,14 @@
   display: flex;
   gap: 0.375rem;
   padding: 0.375rem;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border-radius: 0.875rem;
   margin-bottom: 1rem;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  transition: background-color 0.3s;
 }
 
 .status-filters::-webkit-scrollbar {
@@ -628,7 +623,7 @@
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -636,13 +631,13 @@
 }
 
 .filter-btn:hover {
-  color: #374151;
+  color: var(--color-text);
 }
 
 .filter-btn.active {
-  background: #ffffff;
-  color: #065f46;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  background: var(--color-bg-card);
+  color: var(--color-primary-hover);
+  box-shadow: 0 2px 6px var(--color-shadow);
 }
 
 /* ============ Deposits List ============ */
@@ -658,7 +653,7 @@
   gap: 0.75rem;
   padding: 0.875rem;
   border-radius: 0.875rem;
-  border: 1.5px solid;
+  border: 1.5px solid var(--color-border);
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
@@ -666,10 +661,9 @@
 
 .deposit-item:hover {
   transform: translateX(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
-/* نوار رنگی سمت راست */
 .deposit-item::before {
   content: "";
   position: absolute;
@@ -679,35 +673,46 @@
   width: 3px;
 }
 
+/* ============ Deposit Status Variants ============ */
+
+/* pending (warning) */
 .deposit-item.status-pending {
-  background: #fffbeb;
-  border-color: #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 .deposit-item.status-pending::before {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
+  background: linear-gradient(180deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
 }
 
+/* paid (primary) */
 .deposit-item.status-paid {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
 .deposit-item.status-paid::before {
-  background: linear-gradient(180deg, #10b981, #059669);
+  background: linear-gradient(180deg,
+      var(--color-primary),
+      var(--color-primary-hover));
 }
 
+/* failed / cancelled / expired (danger) */
 .deposit-item.status-failed,
 .deposit-item.status-cancelled,
 .deposit-item.status-expired {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .deposit-item.status-failed::before,
 .deposit-item.status-cancelled::before,
 .deposit-item.status-expired::before {
-  background: linear-gradient(180deg, #ef4444, #dc2626);
+  background: linear-gradient(180deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 80%, black));
 }
 
 /* ============ Deposit Icon ============ */
@@ -721,23 +726,24 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .deposit-icon.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .deposit-icon.paid {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .deposit-icon.failed,
 .deposit-icon.cancelled,
 .deposit-icon.expired {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 /* ============ Deposit Content ============ */
@@ -754,25 +760,25 @@
 .deposit-amount {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .deposit-date {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .deposit-tracking {
   font-size: 0.625rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .deposit-tracking strong {
   font-family: ui-monospace, "Courier New", monospace;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 800;
   direction: ltr;
   display: inline-block;
@@ -780,7 +786,7 @@
 
 .deposit-failure {
   font-size: 0.625rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 600;
   line-height: 1.5;
   margin-top: 0.125rem;
@@ -796,40 +802,39 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .deposit-status.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .deposit-status.paid {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .deposit-status.failed,
 .deposit-status.cancelled,
 .deposit-status.expired {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
-/* ============================================
-   Empty State
-   ============================================ */
+/* ============ Empty State ============ */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   padding: 3rem 1rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .empty-state svg {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .empty-state span {
@@ -839,9 +844,7 @@
   max-width: 280px;
 }
 
-/* ============================================
-   Pagination
-   ============================================ */
+/* ============ Pagination ============ */
 .pagination {
   display: flex;
   justify-content: center;
@@ -857,28 +860,28 @@
   min-width: 2rem;
   height: 2rem;
   padding: 0 0.625rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
   text-decoration: none;
   transition: all 0.2s;
   direction: ltr;
 }
 
 .pagination-item:hover:not(.disabled):not(.active) {
-  background: #f9fafb;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .pagination-item.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .pagination-item.disabled {
@@ -886,9 +889,14 @@
   cursor: not-allowed;
 }
 
-/* ============================================
-   Responsive
-   ============================================ */
+/* ============ Responsive — Desktop (min 1024px) ============ */
+@media (min-width: 1024px) {
+  .deposit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============ Responsive — Mobile (max 640px) ============ */
 @media (max-width: 640px) {
   .customer-wallet-page {
     padding: 1rem 0.75rem 3rem;
@@ -943,6 +951,7 @@
   }
 }
 
+/* ============ Responsive — Small Mobile (max 480px) ============ */
 @media (max-width: 480px) {
   .quick-amounts-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -952,5 +961,845 @@
     min-width: 1.75rem;
     height: 1.75rem;
     font-size: 0.6875rem;
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .wallet-header {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
+}
+
+html.dark .wallet-card,
+html.dark .deposit-history-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .deposit-form-card {
+  background: linear-gradient(135deg,
+      var(--color-bg-card) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+}
+
+html.dark .current-balance-box {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .form-input {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+html.dark .form-input:focus {
+  background: var(--color-bg-card);
+}
+
+html.dark .quick-amount-btn {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+html.dark .quick-amount-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .amount-display {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .status-filters {
+  background: var(--color-bg-hover);
+}
+
+html.dark .filter-btn.active {
+  background: var(--color-bg-card);
+}
+
+html.dark .deposit-item.status-pending,
+html.dark .deposit-item.status-paid,
+html.dark .deposit-item.status-failed,
+html.dark .deposit-item.status-cancelled,
+html.dark .deposit-item.status-expired {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .deposit-icon.pending,
+html.dark .deposit-status.pending {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .deposit-icon.paid,
+html.dark .deposit-status.paid {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .deposit-icon.failed,
+html.dark .deposit-icon.cancelled,
+html.dark .deposit-icon.expired,
+html.dark .deposit-status.failed,
+html.dark .deposit-status.cancelled,
+html.dark .deposit-status.expired,
+html.dark .deposit-failure {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .deposit-tracking strong {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .security-notice h3,
+html.dark .security-notice p {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .btn-secondary {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .pagination-item {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.customer-wallet-page button:focus-visible,
+.customer-wallet-page a:focus-visible,
+.customer-wallet-page input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .customer-wallet-page *,
+  .customer-wallet-page *::before,
+  .customer-wallet-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .amount-display {
+    animation: none !important;
+  }
+
+  .quick-amount-btn:hover:not(:disabled),
+  .btn-primary:hover:not(:disabled),
+  .btn-secondary:hover,
+  .deposit-item:hover,
+  .pagination-item:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .wallet-header-actions,
+  .status-filters,
+  .pagination,
+  .deposit-submit-btn,
+  .quick-amounts-section {
+    display: none !important;
+  }
+
+  .customer-wallet-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .wallet-card,
+  .wallet-header,
+  .deposit-item {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.customer-wallet-page ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   جدول نگاشت (ادامه) — Dark Mode & Extended
+   ============================================ */
+
+/* ============================================
+   Status Badges — Extended Variants
+   ============================================ */
+
+/* Deposit Status — Badge پایه */
+.deposit-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  line-height: 1.5;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* ============================================
+   Deposit Item — Animation on hover
+   ============================================ */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .deposit-item:hover .deposit-icon svg {
+    animation: depositIconPulse 0.4s ease;
+  }
+
+  .deposit-item.status-pending:hover .deposit-icon svg {
+    animation: depositIconRotate 0.6s ease;
+  }
+
+  .deposit-item.status-paid:hover .deposit-icon svg {
+    animation: depositIconBounce 0.4s ease;
+  }
+
+  .deposit-item.status-failed:hover .deposit-icon svg,
+  .deposit-item.status-cancelled:hover .deposit-icon svg,
+  .deposit-item.status-expired:hover .deposit-icon svg {
+    animation: depositIconShake 0.4s ease;
+  }
+}
+
+@keyframes depositIconPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+@keyframes depositIconRotate {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes depositIconBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes depositIconShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-2px);
+  }
+
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+/* ============================================
+   Deposit Item — Pending Pulse
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .deposit-item.status-pending {
+    animation: depositPendingPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes depositPendingPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-warning) 20%, transparent);
+    }
+
+    50% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
+}
+
+/* ============================================
+   Current Balance Box — Amount Animation
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .current-balance-box .balance-value {
+    animation: balanceValueGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes balanceValueGlow {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.85;
+    }
+  }
+}
+
+/* ============================================
+   Quick Amount Button — Selected State
+   ============================================ */
+.quick-amount-btn.active::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: var(--color-primary);
+  border: 2px solid var(--color-bg-card);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px var(--color-primary-light);
+  animation: quickAmountCheck 0.3s ease;
+}
+
+@keyframes quickAmountCheck {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.quick-amount-btn {
+  position: relative;
+  overflow: visible;
+}
+
+/* ============================================
+   Form Input — Focus Ring Enhancement
+   ============================================ */
+.form-input:focus {
+  position: relative;
+  z-index: 1;
+}
+
+.form-input[type="number"]:focus {
+  background: var(--color-bg-card);
+}
+
+/* ============================================
+   Deposit Submit Button — Loading State
+   ============================================ */
+.deposit-submit-btn.loading {
+  opacity: 0.7;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.deposit-submit-btn.loading .spinner {
+  display: inline-block;
+}
+
+/* ============================================
+   Amount Display — Special States
+   ============================================ */
+.amount-display.warning {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+.amount-display.warning .amount-value {
+  color: var(--color-warning);
+}
+
+.amount-display.warning .amount-remaining {
+  color: var(--color-warning);
+}
+
+.amount-display.error {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+.amount-display.error .amount-value {
+  color: var(--color-danger);
+}
+
+/* ============================================
+   Deposit Card — Empty State Enhanced
+   ============================================ */
+.empty-state h4 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0.5rem 0 0.375rem;
+}
+
+.empty-state .empty-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ============================================
+   Deposit Benefits — Icon Colors
+   ============================================ */
+.deposit-benefits-list .benefit-item:nth-child(1) svg {
+  color: var(--color-primary);
+}
+
+.deposit-benefits-list .benefit-item:nth-child(2) svg {
+  color: var(--color-info);
+}
+
+.deposit-benefits-list .benefit-item:nth-child(3) svg {
+  color: var(--color-warning);
+}
+
+/* ============================================
+   Deposit Item — Amount Position
+   ============================================ */
+.deposit-item .deposit-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.deposit-item .deposit-amount .currency {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  opacity: 0.75;
+}
+
+/* ============================================
+   Deposit Card Header — Icon Colors
+   ============================================ */
+.card-icon-box.green svg {
+  color: var(--color-primary);
+}
+
+.card-icon-box.blue svg {
+  color: var(--color-info);
+}
+
+/* ============================================
+   Responsive — Large Desktop (min 1280px)
+   ============================================ */
+@media (min-width: 1280px) {
+  .deposit-grid {
+    gap: 2rem;
+  }
+
+  .current-balance-box .balance-value {
+    font-size: 1.875rem;
+  }
+
+  .quick-amount-btn {
+    padding: 0.875rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ============================================
+   Responsive — Tablet (min 768px)
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .deposit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .deposit-form-card,
+  .deposit-history-card {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Deposit Tracking — Copy Button (اگر اضافه شود)
+   ============================================ */
+.deposit-tracking-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.deposit-tracking-copy {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.deposit-tracking-copy:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.deposit-tracking-copy.copied {
+  color: var(--color-primary);
+}
+
+/* ============================================
+   Deposit Item — Shimmer Effect on Paid
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .deposit-item.status-paid::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        color-mix(in srgb, var(--color-primary) 8%, transparent),
+        transparent);
+    animation: depositShimmer 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes depositShimmer {
+    0% {
+      left: -100%;
+    }
+
+    50%,
+    100% {
+      left: 100%;
+    }
+  }
+}
+
+/* ============================================
+   Reduced Motion — Extended
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .deposit-item.status-pending,
+  .deposit-item.status-paid::after,
+  .current-balance-box .balance-value,
+  .quick-amount-btn.active::after,
+  .deposit-item:hover .deposit-icon svg {
+    animation: none !important;
+  }
+
+  .deposit-item:hover .deposit-icon svg {
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   Focus Visible — Extended
+   ============================================ */
+.deposit-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 0.875rem;
+}
+
+.quick-amount-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 0.75rem;
+}
+
+.deposit-tracking-copy:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+  border-radius: 0.25rem;
+}
+
+/* ============================================
+   Selection — Extended
+   ============================================ */
+.deposit-item ::selection,
+.wallet-card ::selection,
+.current-balance-box ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Screen Reader Only
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Print — Extended
+   ============================================ */
+@media print {
+  .deposit-item:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .deposit-item::before {
+    display: none;
+  }
+
+  .deposit-item.status-paid::after {
+    display: none;
+  }
+
+  .deposit-icon {
+    border: 1px solid #ddd;
+  }
+
+  .deposit-status {
+    border: 1px solid #999;
+    background: #fff !important;
+    color: #333 !important;
+  }
+
+  .deposit-amount {
+    color: #000 !important;
+  }
+
+  .current-balance-box {
+    border: 1px solid #ddd;
+    background: #f9f9f9 !important;
+  }
+
+  .current-balance-box::before {
+    display: none;
+  }
+}
+
+/* ============================================
+   Tooltip Support
+   ============================================ */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--color-secondary);
+  color: white;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  animation: tooltipFadeIn 0.2s ease;
+  pointer-events: none;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(50%) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+  }
+}
+
+/* ============================================
+   Deposit Amount — Large Display
+   ============================================ */
+.deposit-item .deposit-amount-large {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--color-primary-hover);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   Deposit Item — Hover Border Color
+   ============================================ */
+.deposit-item.status-pending:hover {
+  border-color: var(--color-warning);
+}
+
+.deposit-item.status-paid:hover {
+  border-color: var(--color-primary);
+}
+
+.deposit-item.status-failed:hover,
+.deposit-item.status-cancelled:hover,
+.deposit-item.status-expired:hover {
+  border-color: var(--color-danger);
+}
+
+/* ============================================
+   Deposit History Card — Sticky Header
+   ============================================ */
+.deposit-history-card .wallet-card-header {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-card);
+  z-index: 2;
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+/* ============================================
+   Error State — Form Group
+   ============================================ */
+.form-group.error label {
+  color: var(--color-danger);
+}
+
+.form-group.error .form-input {
+  border-color: var(--color-danger);
+}
+
+/* ============================================
+   Success State — Form Group
+   ============================================ */
+.form-group.success .form-input {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 4%, var(--color-bg-card));
+}
+
+/* ============================================
+   Amount Input — Suffix Unit
+   ============================================ */
+.amount-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.amount-input-wrapper .form-input {
+  padding-left: 4rem;
+}
+
+.amount-input-suffix {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ============================================
+   Complete — End of Deposit Page Styles
+   ============================================ */
+@supports not (color: color-mix(in srgb, red, blue)) {
+
+  .security-notice,
+  .deposit-security {
+    background: var(--color-bg-hover);
+    border-color: var(--color-info);
+  }
+
+  .deposit-item.status-pending,
+  .deposit-icon.pending,
+  .deposit-status.pending {
+    background: var(--color-bg-hover);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+  }
+
+  .deposit-item.status-failed,
+  .deposit-item.status-cancelled,
+  .deposit-item.status-expired,
+  .deposit-icon.failed,
+  .deposit-icon.cancelled,
+  .deposit-icon.expired,
+  .deposit-status.failed,
+  .deposit-status.cancelled,
+  .deposit-status.expired {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+
+  .form-input.error,
+  .form-error,
+  .amount-display.error {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+  }
+
+  .quick-amount-btn:hover:not(:disabled) {
+    background: var(--color-bg-hover);
   }
 }

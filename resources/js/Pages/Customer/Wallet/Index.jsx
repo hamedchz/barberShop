@@ -11,7 +11,6 @@ import {
     ArrowUpRight,
     Plus,
 } from "lucide-react";
-import { toPersianNumber } from "../../../utils/persianNumbers";
 import CustomerWalletStats from "../Components/CustomerWalletStats";
 import CustomerPaymentsChart from "../Components/CustomerPaymentsChart";
 import RecentTransactions from "../Components/RecentTransactions";

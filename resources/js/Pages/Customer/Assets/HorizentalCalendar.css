@@ -1,4 +1,6 @@
-/* ============ Horizontal Calendar ============ */
+/* ============================================
+   Horizontal Calendar — Theme-aware
+   ============================================ */
 .horizontal-calendar {
   width: 100%;
 }
@@ -10,6 +12,8 @@
   padding: 0.5rem 0.25rem 1rem;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 /* اسکرول‌بار سفارشی */
@@ -18,26 +22,28 @@
 }
 
 .horizontal-calendar-scroll::-webkit-scrollbar-track {
-  background-color: #f3f4f6;
+  background-color: var(--color-bg-hover);
   border-radius: 10px;
 }
 
 .horizontal-calendar-scroll::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
+  background-color: var(--color-border);
   border-radius: 10px;
 }
 
 .horizontal-calendar-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #10b981;
+  background-color: var(--color-primary);
 }
 
-/* ============ دکمه روز ============ */
+/* ============================================
+   دکمه روز
+   ============================================ */
 .calendar-day-btn {
   position: relative;
   min-width: 90px;
   padding: 1rem 0.75rem 0.875rem;
-  background-color: #ffffff;
-  border: 2px solid #f3f4f6;
+  background-color: var(--color-bg-card);
+  border: 2px solid var(--color-border);
   border-radius: 1.25rem;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -57,15 +63,17 @@
   right: 0;
   left: 0;
   height: 3px;
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: linear-gradient(90deg,
+      var(--color-primary),
+      var(--color-primary-hover));
   transform: scaleX(0);
   transition: transform 0.3s;
 }
 
 .calendar-day-btn:hover:not(:disabled) {
-  border-color: #10b981;
+  border-color: var(--color-primary);
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 8px 20px var(--color-primary-light);
 }
 
 .calendar-day-btn:hover:not(:disabled)::before {
@@ -74,22 +82,24 @@
 
 /* حالت انتخاب شده */
 .calendar-day-btn.selected {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
-  color: white;
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.35);
+  background: var(--gradient-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 10px 24px var(--color-primary-light);
   transform: translateY(-3px);
 }
 
 .calendar-day-btn.selected::before {
   transform: scaleX(1);
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
 }
 
 /* امروز */
 .calendar-day-btn.today:not(.selected) {
-  border-color: #10b981;
-  background-color: #f0fdf4;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-tint);
 }
 
 .calendar-day-btn.today:not(.selected)::before {
@@ -100,14 +110,16 @@
 .calendar-day-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
 }
 
-/* ============ محتوای دکمه ============ */
+/* ============================================
+   محتوای دکمه
+   ============================================ */
 .calendar-day-name {
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -119,18 +131,18 @@
 .calendar-day-number {
   font-size: 1.375rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   line-height: 1;
   font-feature-settings: "tnum";
 }
 
 .calendar-day-btn.selected .calendar-day-number {
-  color: white;
+  color: #ffffff;
 }
 
 .calendar-day-month {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -138,21 +150,23 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* ============ نقطه وضعیت ============ */
+/* ============================================
+   نقطه وضعیت
+   ============================================ */
 .calendar-day-dot {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
   width: 0.5rem;
   height: 0.5rem;
-  background-color: #10b981;
+  background-color: var(--color-primary);
   border-radius: 50%;
-  box-shadow: 0 0 0 2px white;
+  box-shadow: 0 0 0 2px var(--color-bg-card);
   animation: pulseDot 2s ease-in-out infinite;
 }
 
 .calendar-day-btn.selected .calendar-day-dot {
-  background-color: #fbbf24;
+  background-color: var(--color-warning);
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
@@ -170,15 +184,45 @@
   }
 }
 
-/* ============ برچسب تعطیل ============ */
+/* ============================================
+   برچسب تعطیل
+   ============================================ */
 .calendar-day-empty-label {
   font-size: 0.5625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-style: italic;
   font-weight: 500;
+  opacity: 0.8;
 }
 
-/* ============ ریسپانسیو ============ */
+/* ============================================
+   روزهای بدون نوبت
+   ============================================ */
+.calendar-day-btn.no-slots {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.calendar-day-btn.no-slots:hover {
+  border-color: var(--color-border);
+  transform: none;
+  box-shadow: none;
+}
+
+.calendar-day-btn.no-slots .calendar-day-number {
+  color: var(--color-text-muted);
+}
+
+.calendar-day-btn.no-slots .calendar-day-name {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+/* ============================================
+   ریسپانسیو — Mobile (max 640px)
+   ============================================ */
 @media (max-width: 640px) {
   .calendar-day-btn {
     min-width: 78px;
@@ -199,25 +243,72 @@
   }
 }
 
-/* استایل روزهای بدون نوبت */
-.calendar-day-btn.no-slots {
-  background-color: #fafafa;
-  border-color: #f3f4f6;
-  cursor: not-allowed;
-  opacity: 0.55;
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .calendar-day-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
 }
 
-.calendar-day-btn.no-slots:hover {
-  /* هیچ تغییری نمی‌کند چون غیرفعال است */
-  border-color: #f3f4f6;
-  transform: none;
-  box-shadow: none;
+html.dark .calendar-day-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
 }
 
-.calendar-day-btn.no-slots .calendar-day-number {
-  color: #9ca3af;
+html.dark .calendar-day-btn.today:not(.selected) {
+  background-color: color-mix(in srgb,
+      var(--color-primary) 15%,
+      var(--color-bg-card));
+  border-color: var(--color-primary);
 }
 
-.calendar-day-btn.no-slots .calendar-day-name {
-  color: #d1d5db;
+html.dark .calendar-day-btn:disabled,
+html.dark .calendar-day-btn.no-slots {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .calendar-day-dot {
+  box-shadow: 0 0 0 2px var(--color-bg-card);
+}
+
+html.dark .calendar-day-btn.selected .calendar-day-dot {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .horizontal-calendar-scroll {
+    scroll-behavior: auto;
+  }
+
+  .calendar-day-btn,
+  .calendar-day-btn::before,
+  .calendar-day-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .calendar-day-btn:hover:not(:disabled),
+  .calendar-day-btn.selected {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.calendar-day-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 1.25rem;
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.horizontal-calendar ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }

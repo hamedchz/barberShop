@@ -20,6 +20,118 @@ use Inertia\Inertia;
 
 class DisputeController extends Controller
 {
+
+    public function show(Dispute $dispute)
+    {
+        abort_unless(
+            $dispute->booking->user_id === auth()->id(),
+            403
+        );
+
+        $dispute->load([
+            'booking.barber:id,name,avatar',
+            'booking.service:id,name,price',
+            'disputedByUser:id,name,avatar',
+            'respondedByUser:id,name,avatar',
+            'resolvedByUser:id,name',
+            'adminRequestBy:id,name',
+        ]);
+
+        // ============ محاسبه دسترسی‌ها ============
+        $canEditDispute = false;
+        $canDeleteDispute = false;
+        $canRespondDispute = false;
+        $editHoursRemaining = null;
+
+        if ($dispute->disputed_by_user_id === auth()->id()) {
+            if ($dispute->status->value === DisputedStatus::pending->value) {
+                $hoursSinceCreation = $dispute->created_at->diffInHours(now());
+                $hoursRemaining = 2 - $hoursSinceCreation;
+
+                if ($hoursRemaining > 0) {
+                    $canEditDispute = true;
+                    $canDeleteDispute = true;
+                    $editHoursRemaining = $hoursRemaining;
+                }
+            }
+
+            if ($dispute->status->value === DisputedStatus::awaitingResponse->value) {
+                $canRespondDispute = true;
+            }
+        }
+
+        return Inertia::render('Customer/Disputes/Show', [
+            'dispute' => [
+                'id' => $dispute->id,
+                'booking_id' => $dispute->booking_id,
+                'dispute_type' => $dispute->dispute_type?->value,
+                'dispute_type_label' => $dispute->dispute_type?->label(),
+                'reason' => $dispute->reason,
+                'status' => $dispute->status?->value,
+                'status_label' => $dispute->status?->label(),
+                'status_color' => $this->getStatusColor($dispute->status),
+                'disputed_by' => $dispute->disputed_by?->value,
+                'disputed_by_user' => [
+                    'id' => $dispute->disputedByUser?->id,
+                    'name' => $dispute->disputedByUser?->name,
+                    'avatar' => $dispute->disputedByUser?->avatarUrl(),
+                ],
+                'response' => $dispute->response,
+                'responded_at' => $dispute->responded_at?->toIso8601String(),
+                'responded_by_user' => $dispute->respondedByUser ? [
+                    'id' => $dispute->respondedByUser->id,
+                    'name' => $dispute->respondedByUser->name,
+                    'avatar' => $dispute->respondedByUser->avatarUrl(),
+                ] : null,
+                'resolution' => $dispute->resolution,
+                'resolved_at' => $dispute->resolved_at?->toIso8601String(),
+                'resolved_by_user' => $dispute->resolvedByUser ? [
+                    'id' => $dispute->resolvedByUser->id,
+                    'name' => $dispute->resolvedByUser->name,
+                ] : null,
+                'refund_amount' => (float) ($dispute->refund_amount ?? 0),
+                'penalty_amount' => (float) ($dispute->penalty_amount ?? 0),
+                'compensation_amount' => (float) ($dispute->compensation_amount ?? 0),
+                // 'attachments' => $dispute->attachments ?? [],
+                'created_at' => $dispute->created_at->toIso8601String(),
+                'admin_notes' => $dispute->admin_notes,
+                'admin_request_message' => $dispute->admin_request_message,
+                'admin_request_at' => $dispute->admin_request_at?->toIso8601String(),
+                'attachments' => collect($dispute->attachments ?? [])
+                    ->map(fn($path) => [
+                        'path' => $path,
+                        'url'  => asset('storage/' . $path),
+                        'name' => basename($path),
+                    ])
+                    ->values()
+                    ->toArray(),
+            ],
+            'booking' => [
+                'id' => $dispute->booking->id,
+                'booking_code' => $dispute->booking->booking_code,
+                'service_name' => $dispute->booking->service?->name,
+                'service_price' => (float) ($dispute->booking->service?->price ?? 0),
+                'barber' => [
+                    'name' => $dispute->booking->barber?->name,
+                    'avatar' => $dispute->booking->barber?->avatarUrl(),
+                ],
+            ],
+            'permissions' => [
+                'can_edit' => $canEditDispute,
+                'can_delete' => $canDeleteDispute,
+                'can_respond' => $canRespondDispute,
+                'edit_hours_remaining' => $editHoursRemaining,
+            ],
+            // فقط انواع اعتراض مشتری
+            'disputeTypes' => collect(DisputeTypes::cases())
+                ->filter(fn($t) => in_array($t->disputedBy(), ['customer', 'both']))
+                ->map(fn($t) => [
+                    'value' => $t->value,
+                    'label' => $t->label(),
+                ])
+                ->values(),
+        ]);
+    }
     public function edit(Dispute $dispute)
     {
 
@@ -30,7 +142,7 @@ class DisputeController extends Controller
         }
 
         // بررسی نقش
-        if ($dispute->disputed_by->value !== DisputedBy::barber->value) {
+        if ($dispute->disputed_by->value !== DisputedBy::customer->value) {
             abort(403);
         }
 
@@ -323,11 +435,28 @@ class DisputeController extends Controller
 
             DB::commit();
             StickyAlert::alert('پاسخ شما ثبت شد', 'success');
+            if ($request->has('from_disputes_show') && $request->boolean('from_disputes_show')) {
+                return redirect()->back();
+            }
             return to_route('customer.bookings.show', $dispute->booking_id);
         } catch (\Exception $e) {
             DB::rollBack();
             StickyAlert::alert('خطا در ثبت پاسخ', 'error');
             return redirect()->back();
         }
+    }
+
+
+    private function getStatusColor(?DisputedStatus $status): string
+    {
+        return match ($status?->value) {
+            DisputedStatus::pending->value => 'warning',
+            DisputedStatus::investigating->value => 'info',
+            DisputedStatus::awaitingResponse->value => 'warning',
+            DisputedStatus::resolved->value => 'primary',
+            DisputedStatus::rejected->value => 'danger',
+            DisputedStatus::cancelled->value => 'gray',
+            default => 'gray',
+        };
     }
 }

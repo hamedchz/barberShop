@@ -413,70 +413,6 @@ export default function BarberDisputeShow({ dispute, auth }) {
         });
     };
 
-    // ============ انتخاب فایل ============
-    // const handleResponseAttachmentChange = (e) => {
-    //     const files = Array.from(e.target.files);
-    //     const totalFiles = responseModal.attachments.length + files.length;
-
-    //     if (totalFiles > 5) {
-    //         setResponseModal((prev) => ({
-    //             ...prev,
-    //             errors: {
-    //                 ...prev.errors,
-    //                 attachments: "حداکثر ۵ فایل می‌توانید آپلود کنید.",
-    //             },
-    //         }));
-    //         e.target.value = "";
-    //         return;
-    //     }
-
-    //     const validFiles = [];
-    //     const fileErrors = [];
-
-    //     for (const file of files) {
-    //         if (file.size > 2 * 1024 * 1024) {
-    //             fileErrors.push(`«${file.name}» بیش از ۲ مگابایت است`);
-    //             continue;
-    //         }
-    //         if (!file.type.startsWith("image/")) {
-    //             fileErrors.push(`«${file.name}» تصویر نیست`);
-    //             continue;
-    //         }
-    //         validFiles.push(file);
-    //     }
-
-    //     const newAttachments = validFiles.map((file) => ({
-    //         file,
-    //         preview: URL.createObjectURL(file),
-    //     }));
-
-    //     setResponseModal((prev) => ({
-    //         ...prev,
-    //         attachments: [...prev.attachments, ...newAttachments],
-    //         errors: {
-    //             ...prev.errors,
-    //             attachments:
-    //                 fileErrors.length > 0
-    //                     ? "⚠️ " + fileErrors.join(" • ")
-    //                     : null,
-    //         },
-    //     }));
-
-    //     e.target.value = "";
-    // };
-
-    // ============ حذف پیوست ============
-    // const handleRemoveResponseAttachment = (index) => {
-    //     setResponseModal((prev) => {
-    //         const newAttachments = [...prev.attachments];
-    //         if (newAttachments[index]?.preview) {
-    //             URL.revokeObjectURL(newAttachments[index].preview);
-    //         }
-    //         newAttachments.splice(index, 1);
-    //         return { ...prev, attachments: newAttachments };
-    //     });
-    // };
-
     // ============ اعتبارسنجی ============
     const validateResponse = (response) => {
         const errors = {};
@@ -912,15 +848,16 @@ export default function BarberDisputeShow({ dispute, auth }) {
                             </div>
 
                             {/* ============ اطلاعات اضافی ============ */}
-                            {dispute.status === "pending" && (
-                                <div className="dispute-banner-info">
-                                    <Info size={14} />
-                                    <span>
-                                        می‌توانید تا زمان بررسی، اطلاعات بیشتری
-                                        ارسال کنید.
-                                    </span>
-                                </div>
-                            )}
+                            {dispute.status === "pending" &&
+                                remainingSeconds > 0 && (
+                                    <div className="dispute-banner-info">
+                                        <Info size={14} />
+                                        <span>
+                                            می‌توانید تا زمان بررسی، اطلاعات
+                                            بیشتری ارسال کنید.
+                                        </span>
+                                    </div>
+                                )}
 
                             {dispute.status === "awaiting_response" && (
                                 <div className="dispute-banner-warning">

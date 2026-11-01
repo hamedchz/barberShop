@@ -1,17 +1,21 @@
 /* ============================================
-   Customer Review Page
+   Customer Review Page — Theme-aware
    ============================================ */
 .review-page-container {
   max-width: 720px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
+  color: var(--color-text);
+  transition: color 0.3s;
 }
 
 .review-page-back {
   margin-bottom: 1.5rem;
 }
 
-/* ============ هدر ============ */
+/* ============================================
+   هدر
+   ============================================ */
 .review-page-header {
   display: flex;
   align-items: flex-start;
@@ -23,13 +27,15 @@
   width: 4rem;
   height: 4rem;
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
+  background: linear-gradient(135deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 30%, transparent);
   animation: sparkleIcon 2s ease-in-out infinite;
 }
 
@@ -48,36 +54,33 @@
 .review-page-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.375rem;
   line-height: 1.3;
 }
 
 .review-page-subtitle {
   font-size: 0.9375rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
 }
 
-/* ============ خلاصه رزرو ============ */
+/* ============================================
+   خلاصه رزرو
+   ============================================ */
 .review-booking-summary {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
-  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-  border: 1px solid #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint),
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)));
+  border: 1px solid var(--color-primary-light);
   border-radius: 1.25rem;
   margin-bottom: 1.75rem;
-}
-
-@media (min-width: 640px) {
-  .review-booking-summary {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .summary-barber {
@@ -91,15 +94,15 @@
   height: 3.5rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 1.25rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .summary-barber-avatar img {
@@ -116,7 +119,7 @@
 
 .summary-barber-label {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -125,12 +128,12 @@
 .summary-barber-name {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .summary-barber-specialty {
   font-size: 0.75rem;
-  color: #047857;
+  color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -145,16 +148,18 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8125rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 600;
 }
 
 .summary-detail-item svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
-/* ============ فرم ============ */
+/* ============================================
+   فرم
+   ============================================ */
 .review-form {
   display: flex;
   flex-direction: column;
@@ -162,11 +167,12 @@
 }
 
 .review-form-section {
-  background: white;
-  border: 1px solid var(--border-color);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .review-section-header {
@@ -175,7 +181,8 @@
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .review-section-icon {
@@ -186,32 +193,36 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .review-section-icon.yellow {
-  background-color: #fffbeb;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .review-section-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .review-section-title {
   font-size: 1.0625rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.25rem;
 }
 
 .review-section-subtitle {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.6;
 }
 
-/* ============ Rating Stars ============ */
+/* ============================================
+   Rating Stars
+   ============================================ */
 .rating-stars-container {
   display: flex;
   justify-content: center;
@@ -247,7 +258,7 @@
 }
 
 .interactive-star-btn.filled svg {
-  filter: drop-shadow(0 4px 8px rgba(251, 191, 36, 0.4));
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-warning) 40%, transparent));
 }
 
 .interactive-star-btn.hovered svg {
@@ -273,16 +284,19 @@
   font-weight: 800;
   transition: all 0.2s;
   padding: 0.5rem 1.25rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 9999px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
 }
 
 .rating-label.hovered {
   transform: scale(1.05);
 }
 
-/* ============ Textarea ============ */
+/* ============================================
+   Textarea
+   ============================================ */
 .review-textarea-wrapper {
   position: relative;
 }
@@ -291,12 +305,12 @@
   width: 100%;
   padding: 1rem;
   padding-bottom: 2.5rem;
-  background-color: #f9fafb;
-  border: 1.5px solid var(--border-color);
+  background-color: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: var(--text-main);
+  font-family: inherit;
+  color: var(--color-text);
   line-height: 1.7;
   resize: vertical;
   outline: none;
@@ -305,26 +319,27 @@
 }
 
 .review-textarea:hover {
-  border-color: #d1d5db;
+  border-color: var(--color-primary-light);
 }
 
 .review-textarea:focus {
-  background-color: white;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background-color: var(--color-bg-card);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .review-textarea.error {
-  border-color: #ef4444;
+  border-color: var(--color-danger);
 }
 
 .review-textarea.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .review-textarea::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   line-height: 1.7;
+  opacity: 0.7;
 }
 
 .review-textarea-footer {
@@ -340,7 +355,7 @@
 
 .char-counter {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   margin-right: auto;
   direction: ltr;
@@ -348,61 +363,68 @@
 }
 
 .char-counter .warning {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
-/* ============ Error Box ============ */
+/* ============================================
+   Error Box
+   ============================================ */
 .form-error-box {
   display: flex;
   align-items: center;
   gap: 0.375rem;
   margin-top: 0.75rem;
   padding: 0.625rem 0.875rem;
-  background-color: #fef2f2;
-  border: 1px solid #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
 .form-error-box svg {
-  color: #ef4444;
+  color: var(--color-danger);
   flex-shrink: 0;
 }
 
-/* ============ Info Box ============ */
+/* ============================================
+   Info Box
+   ============================================ */
 .review-info-box {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.875rem 1rem;
-  background-color: #eff6ff;
-  border: 1px solid #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
   border-radius: 0.875rem;
-  border-right: 3px solid #3b82f6;
+  border-right: 3px solid var(--color-info);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .review-info-box svg {
-  color: #3b82f6;
+  color: var(--color-info);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .review-info-box p {
   font-size: 0.75rem;
-  color: #1e40af;
+  color: var(--color-info);
   line-height: 1.7;
   margin: 0;
 }
 
 .review-info-box strong {
-  color: #1e3a8a;
+  color: var(--color-info);
   font-weight: 800;
 }
 
-/* ============ فرم Actions ============ */
+/* ============================================
+   فرم Actions
+   ============================================ */
 .review-form-actions {
   display: flex;
   flex-direction: column-reverse;
@@ -410,33 +432,26 @@
   padding-top: 1rem;
 }
 
-@media (min-width: 640px) {
-  .review-form-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-}
-
 .review-cancel-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.875rem 1.75rem;
-  background-color: white;
-  border: 1.5px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   text-decoration: none;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .review-cancel-btn:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-primary-light);
+  color: var(--color-text);
 }
 
 .review-submit-btn {
@@ -445,8 +460,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   border: none;
   border-radius: 0.875rem;
   font-size: 0.9375rem;
@@ -454,13 +469,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 20px var(--color-primary-light);
   white-space: nowrap;
 }
 
 .review-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 28px var(--color-primary-light);
 }
 
 .review-submit-btn:disabled {
@@ -477,21 +492,26 @@
   transform: translateX(-3px) scale(1.1);
 }
 
-/* ============ پیام پایین ============ */
+/* ============================================
+   پیام پایین
+   ============================================ */
 .review-footer-message {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  border: 1px solid #fecaca;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)),
+      color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card)));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: 0.875rem;
   font-size: 0.8125rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 700;
   text-align: center;
   animation: fadeInUp 0.5s ease;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 @keyframes fadeInUp {
@@ -526,13 +546,15 @@
   }
 }
 
-/* ============ Spinner ============ */
+/* ============================================
+   Spinner
+   ============================================ */
 .spinner {
   display: inline-block;
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -543,7 +565,25 @@
   }
 }
 
-/* ============ Responsive ============ */
+/* ============================================
+   Responsive — Tablet (min 640px)
+   ============================================ */
+@media (min-width: 640px) {
+  .review-booking-summary {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .review-form-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+/* ============================================
+   Responsive — Mobile (max 640px)
+   ============================================ */
 @media (max-width: 640px) {
   .review-page-container {
     padding: 1.5rem 1rem 3rem;
@@ -590,4 +630,130 @@
   .review-submit-btn {
     width: 100%;
   }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .review-form-section {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .review-booking-summary {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)),
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)));
+  border-color: var(--color-primary-light);
+}
+
+html.dark .summary-barber-avatar {
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+html.dark .review-textarea {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+html.dark .review-textarea:focus {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .rating-label {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+html.dark .review-cancel-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .review-info-box p,
+html.dark .review-info-box strong {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .review-footer-message {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.review-page-container button:focus-visible,
+.review-page-container a:focus-visible,
+.review-page-container textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.interactive-star-btn:focus-visible {
+  outline-color: var(--color-warning);
+  border-radius: 50%;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .review-page-container *,
+  .review-page-container *::before,
+  .review-page-container *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .review-header-icon,
+  .interactive-star-btn.hovered svg,
+  .review-footer-message,
+  .review-footer-message svg {
+    animation: none !important;
+  }
+
+  .interactive-star-btn:hover:not(:disabled),
+  .rating-label.hovered,
+  .review-submit-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .review-submit-btn:hover:not(:disabled) svg {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .review-page-back,
+  .review-form-actions,
+  .review-footer-message {
+    display: none !important;
+  }
+
+  .review-page-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .review-form-section,
+  .review-booking-summary {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.review-page-container ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }

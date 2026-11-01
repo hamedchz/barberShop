@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/PublicLayout";
+import Layout from "../../Admin/Layouts/Layout";
 import {
     CreditCard,
     Save,
@@ -29,7 +29,6 @@ export default function BankInfo({ auth, bankInfo }) {
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
-    // هماهنگ‌سازی فرم با اطلاعات جدید دریافتی از بک‌اند
     useEffect(() => {
         setFormData({
             bank_id: bankInfo?.bank_id != null ? String(bankInfo.bank_id) : "",

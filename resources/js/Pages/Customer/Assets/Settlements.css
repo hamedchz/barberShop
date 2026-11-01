@@ -1,10 +1,8 @@
 /* ============================================
-   Customer Settlements Page — Complete Styles
+   Customer Settlements Page — Theme-aware
    ============================================ */
 
-/* ============================================
-   Page Container
-   ============================================ */
+/* ============ Page Container ============ */
 .customer-wallet-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -12,11 +10,11 @@
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
+  color: var(--color-text);
+  transition: color 0.3s;
 }
 
-/* ============================================
-   Header
-   ============================================ */
+/* ============ Header ============ */
 .wallet-header {
   display: flex;
   align-items: center;
@@ -25,10 +23,13 @@
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border: 1.5px solid #bfdbfe;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-light);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.06);
+  box-shadow: 0 4px 16px var(--color-primary-light);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .wallet-header-content {
@@ -41,26 +42,27 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--gradient-primary);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .wallet-header h1 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #1e40af;
+  color: var(--color-text);
   margin: 0 0 0.25rem;
   line-height: 1.3;
 }
 
 .wallet-header p {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.6;
 }
@@ -71,16 +73,13 @@
   flex-wrap: wrap;
 }
 
-/* ============================================
-   Buttons
-   ============================================ */
+/* ============ Buttons ============ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  /* background: linear-gradient(135deg, #3b82f6, #2563eb); */
   color: #ffffff;
   border: none;
   border-radius: 0.75rem;
@@ -90,18 +89,14 @@
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
-  /* box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); */
   white-space: nowrap;
-
   background: var(--gradient-primary);
   box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  /* box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4); */
-  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
-
+  box-shadow: 0 8px 18px var(--color-primary-light);
 }
 
 .btn-primary.full-width {
@@ -113,9 +108,9 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 1rem;
-  background: #ffffff;
-  color: #374151;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.75rem;
@@ -127,30 +122,31 @@
 }
 
 .btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #3b82f6;
-  color: #1e40af;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 
-/* ============================================
-   No Bank Info Banner
-   ============================================ */
+/* ============ No Bank Info Banner ============ */
 .no-bank-info-banner {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
-  border: 1.5px solid #fde68a;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
   border-radius: 1.25rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-warning) 8%, transparent);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .no-bank-info-banner>svg:first-child {
-  color: #f59e0b;
+  color: var(--color-warning);
   flex-shrink: 0;
 }
 
@@ -162,45 +158,31 @@
 .no-bank-info-banner h3 {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #92400e;
+  color: var(--color-warning);
   margin: 0 0 0.25rem;
   line-height: 1.5;
 }
 
 .no-bank-info-banner p {
   font-size: 0.8125rem;
-  color: #b45309;
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
 
-.no-bank-info-banner .btn-primary {
-  /* background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); */
-  background: var(--gradient-primary);
-  box-shadow: 0 4px 12px var(--color-primary-light);
-}
-
-.no-bank-info-banner .btn-primary:hover {
-  /* box-shadow: 0 8px 18px rgba(245, 158, 11, 0.4); */
-  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
-
-}
-
-/* ============================================
-   Status Filters
-   ============================================ */
+/* ============ Status Filters ============ */
 .status-filters {
   display: flex;
   gap: 0.375rem;
   padding: 0.375rem;
-  background: #f3f4f6;
+  background: var(--color-bg-hover);
   border-radius: 0.875rem;
   margin-bottom: 1rem;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
+  transition: background-color 0.3s;
 }
 
 .status-filters::-webkit-scrollbar {
@@ -215,7 +197,7 @@
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -223,43 +205,40 @@
 }
 
 .filter-btn:hover {
-  color: #374151;
+  color: var(--color-text);
 }
 
 .filter-btn.active {
-  background: #ffffff;
-  color: #1e40af;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  background: var(--color-bg-card);
+  color: var(--color-primary-hover);
+  box-shadow: 0 2px 6px var(--color-shadow);
 }
 
-/* ============================================
-   Wallet Card
-   ============================================ */
+/* ============ Wallet Card ============ */
 .wallet-card {
-  background: #ffffff;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
   min-width: 0;
   box-sizing: border-box;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-/* ============================================
-   Empty State
-   ============================================ */
+/* ============ Empty State ============ */
 .empty-state-large {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   padding: 3rem 1rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .empty-state-large svg {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .empty-state-large p {
@@ -274,24 +253,20 @@
   margin-top: 0.5rem;
 }
 
-/* ============================================
-   Settlements List
-   ============================================ */
+/* ============ Settlements List ============ */
 .settlements-list-detailed {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
 }
 
-/* ============================================
-   Settlement Card
-   ============================================ */
+/* ============ Settlement Card ============ */
 .settlement-card {
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1rem;
   transition: all 0.25s;
   position: relative;
@@ -300,10 +275,9 @@
 
 .settlement-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px var(--color-shadow);
 }
 
-/* نوار رنگی سمت راست */
 .settlement-card::before {
   content: "";
   position: absolute;
@@ -315,53 +289,71 @@
 
 /* رنگ‌بندی بر اساس وضعیت */
 .settlement-card.status-yellow {
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
-  border-color: #fde68a;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 .settlement-card.status-yellow::before {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
+  background: linear-gradient(180deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
 }
 
 .settlement-card.status-blue {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border-color: #bfdbfe;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 }
 
 .settlement-card.status-blue::before {
-  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  background: linear-gradient(180deg,
+      var(--color-info),
+      color-mix(in srgb, var(--color-info) 80%, black));
 }
 
 .settlement-card.status-green {
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border-color: #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
 }
 
 .settlement-card.status-green::before {
-  background: linear-gradient(180deg, #10b981, #059669);
+  background: linear-gradient(180deg,
+      var(--color-primary),
+      var(--color-primary-hover));
 }
 
 .settlement-card.status-red {
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
-  border-color: #fecaca;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .settlement-card.status-red::before {
-  background: linear-gradient(180deg, #ef4444, #dc2626);
+  background: linear-gradient(180deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 80%, black));
 }
 
 .settlement-card.status-gray {
-  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-  border-color: #e5e7eb;
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-border);
 }
 
 .settlement-card.status-gray::before {
-  background: linear-gradient(180deg, #9ca3af, #6b7280);
+  background: linear-gradient(180deg,
+      var(--color-text-muted),
+      color-mix(in srgb, var(--color-text-muted) 80%, black));
 }
 
-/* ============================================
-   Settlement Icon
-   ============================================ */
+/* ============ Settlement Icon ============ */
 .settlement-card-icon {
   width: 2.75rem;
   height: 2.75rem;
@@ -372,36 +364,35 @@
   flex-shrink: 0;
   position: relative;
   z-index: 1;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-card-icon.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .settlement-card-icon.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .settlement-card-icon.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-icon.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .settlement-card-icon.gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
-/* ============================================
-   Settlement Body
-   ============================================ */
+/* ============ Settlement Body ============ */
 .settlement-card-body {
   display: flex;
   flex-direction: column;
@@ -430,27 +421,26 @@
 .settlement-card-amount {
   font-size: 1rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .settlement-card-id {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   direction: ltr;
+  opacity: 0.85;
 }
 
 .settlement-card-desc {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
 
-/* ============================================
-   Settlement Status Badge
-   ============================================ */
+/* ============ Settlement Status Badge ============ */
 .settlement-card-status {
   display: inline-flex;
   align-items: center;
@@ -460,80 +450,78 @@
   font-size: 0.625rem;
   font-weight: 800;
   white-space: nowrap;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-card-status.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .settlement-card-status.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .settlement-card-status.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-status.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .settlement-card-status.gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
-/* ============================================
-   Bank Info Row
-   ============================================ */
+/* ============ Bank Info Row ============ */
 .settlement-card-bank {
   display: flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #e5e7eb;
+  background: color-mix(in srgb, var(--color-bg-card) 70%, transparent);
+  border: 1px solid var(--color-border);
   border-radius: 0.625rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--color-text-muted);
   width: fit-content;
   max-width: 100%;
 }
 
 .settlement-card-bank svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   flex-shrink: 0;
+  opacity: 0.85;
 }
 
 .settlement-card-bank .separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
-/* ============================================
-   Bank Reference
-   ============================================ */
+/* ============ Bank Reference ============ */
 .settlement-card-reference {
   display: flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.75rem;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.625rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #065f46;
+  color: var(--color-primary-hover);
   width: fit-content;
   max-width: 100%;
 }
 
 .settlement-card-reference svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -543,39 +531,36 @@
   direction: ltr;
 }
 
-/* ============================================
-   Failure Reason
-   ============================================ */
+/* ============ Failure Reason ============ */
 .settlement-card-error {
   display: flex;
   align-items: flex-start;
   gap: 0.375rem;
   padding: 0.625rem 0.75rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: 0.625rem;
   font-size: 0.6875rem;
   font-weight: 700;
-  color: #991b1b;
+  color: var(--color-danger);
   line-height: 1.6;
 }
 
 .settlement-card-error svg {
-  color: #ef4444;
+  color: var(--color-danger);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-/* ============================================
-   Dates Section
-   ============================================ */
+/* ============ Dates Section ============ */
 .settlement-card-dates {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   margin-top: 0.375rem;
   padding-top: 0.625rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .settlement-card-dates .date-item {
@@ -583,7 +568,7 @@
   align-items: center;
   gap: 0.375rem;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   line-height: 1.6;
 }
@@ -593,20 +578,18 @@
 }
 
 .settlement-card-dates .date-item.info {
-  color: #2563eb;
+  color: var(--color-info);
 }
 
 .settlement-card-dates .date-item.success {
-  color: #059669;
+  color: var(--color-primary-hover);
 }
 
 .settlement-card-dates .date-item.danger {
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
-/* ============================================
-   Pagination
-   ============================================ */
+/* ============ Pagination ============ */
 .pagination {
   display: flex;
   justify-content: center;
@@ -622,28 +605,28 @@
   min-width: 2rem;
   height: 2rem;
   padding: 0 0.625rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
   text-decoration: none;
   transition: all 0.2s;
   direction: ltr;
 }
 
 .pagination-item:hover:not(.disabled):not(.active) {
-  background: #f9fafb;
-  border-color: #3b82f6;
-  color: #1e40af;
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .pagination-item.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--gradient-primary);
   color: #ffffff;
-  border-color: #3b82f6;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .pagination-item.disabled {
@@ -651,9 +634,206 @@
   cursor: not-allowed;
 }
 
-/* ============================================
-   Responsive
-   ============================================ */
+/* ============ Active Settlement Card ============ */
+.active-settlement-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1.5px solid var(--color-border);
+  margin-bottom: 1.25rem;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.active-settlement-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px var(--color-shadow);
+}
+
+.active-settlement-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.active-settlement-card.status-pending {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+.active-settlement-card.status-pending::before {
+  background: linear-gradient(180deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
+}
+
+.active-settlement-card.status-processing {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+}
+
+.active-settlement-card.status-processing::before {
+  background: linear-gradient(180deg,
+      var(--color-info),
+      color-mix(in srgb, var(--color-info) 80%, black));
+}
+
+/* ============ Active Settlement Icon ============ */
+.active-settlement-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  animation: activePulse 2s ease-in-out infinite;
+}
+
+.status-pending .active-settlement-icon {
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
+}
+
+.status-processing .active-settlement-icon {
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
+}
+
+@keyframes activePulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* ============ Active Settlement Content ============ */
+.active-settlement-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.active-settlement-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.active-settlement-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.active-settlement-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.5625rem;
+  font-weight: 800;
+}
+
+.active-settlement-status.pending {
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
+}
+
+.active-settlement-status.processing {
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
+}
+
+/* ============ Active Settlement Info ============ */
+.active-settlement-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+  font-size: 0.6875rem;
+}
+
+.active-settlement-info .info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.active-settlement-info .info-label {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.active-settlement-info .info-value {
+  color: var(--color-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============ Active Settlement Action ============ */
+.active-settlement-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.status-pending .active-settlement-action {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+.status-pending .active-settlement-action:hover {
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  transform: translateX(-2px);
+}
+
+.status-processing .active-settlement-action {
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+}
+
+.status-processing .active-settlement-action:hover {
+  background: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  transform: translateX(-2px);
+}
+
+/* ============ Responsive — Mobile (max 640px) ============ */
 @media (max-width: 640px) {
   .customer-wallet-page {
     padding: 1rem 0.75rem 3rem;
@@ -713,217 +893,7 @@
     width: 100%;
     justify-content: center;
   }
-}
 
-@media (max-width: 480px) {
-  .settlement-card-amount {
-    font-size: 0.9375rem;
-  }
-
-  .pagination-item {
-    min-width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.6875rem;
-  }
-}
-
-/* ============================================
-   Active Settlement Card
-   ============================================ */
-.active-settlement-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-radius: 1rem;
-  border: 1.5px solid;
-  margin-bottom: 1.25rem;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-
-.active-settlement-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-}
-
-/* نوار رنگی سمت راست */
-.active-settlement-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 4px;
-}
-
-/* رنگ‌بندی بر اساس وضعیت */
-.active-settlement-card.status-pending {
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
-  border-color: #fde68a;
-}
-
-.active-settlement-card.status-pending::before {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
-}
-
-.active-settlement-card.status-processing {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border-color: #bfdbfe;
-}
-
-.active-settlement-card.status-processing::before {
-  background: linear-gradient(180deg, #3b82f6, #2563eb);
-}
-
-/* ============ آیکون ============ */
-.active-settlement-icon {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  animation: activePulse 2s ease-in-out infinite;
-}
-
-.status-pending .active-settlement-icon {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status-processing .active-settlement-icon {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-@keyframes activePulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-/* ============ محتوا ============ */
-.active-settlement-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.active-settlement-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.active-settlement-title {
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: #1f2937;
-}
-
-.active-settlement-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.1875rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.5625rem;
-  font-weight: 800;
-}
-
-.active-settlement-status.pending {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.active-settlement-status.processing {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-/* ============ اطلاعات ============ */
-.active-settlement-info {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  flex-wrap: wrap;
-  font-size: 0.6875rem;
-}
-
-.active-settlement-info .info-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.active-settlement-info .info-label {
-  color: #9ca3af;
-  font-weight: 700;
-}
-
-.active-settlement-info .info-value {
-  color: #374151;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ============ دکمه ============ */
-.active-settlement-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  background: #ffffff;
-  border: 1.5px solid;
-  border-radius: 0.625rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.status-pending .active-settlement-action {
-  color: #92400e;
-  border-color: #fde68a;
-}
-
-.status-pending .active-settlement-action:hover {
-  background: #fef3c7;
-  transform: translateX(-2px);
-}
-
-.status-processing .active-settlement-action {
-  color: #1e40af;
-  border-color: #bfdbfe;
-}
-
-.status-processing .active-settlement-action:hover {
-  background: #dbeafe;
-  transform: translateX(-2px);
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
   .active-settlement-card {
     flex-direction: column;
     align-items: flex-start;
@@ -939,3 +909,698 @@
     justify-content: center;
   }
 }
+
+/* ============ Responsive — Small Mobile (max 480px) ============ */
+@media (max-width: 480px) {
+  .settlement-card-amount {
+    font-size: 0.9375rem;
+  }
+
+  .pagination-item {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .wallet-header {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
+}
+
+html.dark .wallet-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .no-bank-info-banner {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .no-bank-info-banner h3 {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .status-filters {
+  background: var(--color-bg-hover);
+}
+
+html.dark .filter-btn.active {
+  background: var(--color-bg-card);
+}
+
+html.dark .settlement-card.status-yellow,
+html.dark .settlement-card.status-blue,
+html.dark .settlement-card.status-green,
+html.dark .settlement-card.status-red,
+html.dark .settlement-card.status-gray {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .settlement-card-icon.yellow,
+html.dark .settlement-card-status.yellow {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .settlement-card-icon.blue,
+html.dark .settlement-card-status.blue {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .settlement-card-icon.green,
+html.dark .settlement-card-status.green {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .settlement-card-icon.red,
+html.dark .settlement-card-status.red,
+html.dark .settlement-card-error {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .settlement-card-dates .date-item.success {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .settlement-card-dates .date-item.info {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .settlement-card-dates .date-item.danger {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .settlement-card-reference {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .settlement-card-reference strong,
+html.dark .settlement-card-reference {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .active-settlement-card.status-pending,
+html.dark .active-settlement-card.status-processing {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .active-settlement-action {
+  background: var(--color-bg-card);
+}
+
+html.dark .pagination-item {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .btn-secondary {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.customer-wallet-page button:focus-visible,
+.customer-wallet-page a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .customer-wallet-page *,
+  .customer-wallet-page *::before,
+  .customer-wallet-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .active-settlement-icon {
+    animation: none !important;
+  }
+
+  .settlement-card:hover,
+  .active-settlement-card:hover,
+  .pagination-item:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .status-pending .active-settlement-action:hover,
+  .status-processing .active-settlement-action:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .wallet-header-actions,
+  .status-filters,
+  .pagination,
+  .active-settlement-action,
+  .settlement-card-bank,
+  .settlement-card-reference {
+    display: none !important;
+  }
+
+  .customer-wallet-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .settlement-card,
+  .wallet-card,
+  .wallet-header,
+  .active-settlement-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.customer-wallet-page ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   جدول نگاشت (ادامه) — Dark Mode & Responsive
+   ============================================ */
+
+/* ============================================
+   Dark Mode — تکمیلی برای موارد خاص
+   ============================================ */
+html.dark .settlement-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .settlement-card:hover {
+  box-shadow: 0 8px 20px var(--color-shadow);
+}
+
+html.dark .settlement-card.status-yellow::before {
+  background: linear-gradient(180deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 80%, black));
+}
+
+html.dark .settlement-card.status-blue::before {
+  background: linear-gradient(180deg,
+      var(--color-info),
+      color-mix(in srgb, var(--color-info) 80%, black));
+}
+
+html.dark .settlement-card.status-green::before {
+  background: linear-gradient(180deg,
+      var(--color-primary),
+      var(--color-primary-hover));
+}
+
+html.dark .settlement-card.status-red::before {
+  background: linear-gradient(180deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 80%, black));
+}
+
+html.dark .settlement-card.status-gray::before {
+  background: linear-gradient(180deg,
+      var(--color-text-muted),
+      color-mix(in srgb, var(--color-text-muted) 80%, black));
+}
+
+/* ============================================
+   Dark Mode — Empty State
+   ============================================ */
+html.dark .empty-state-large {
+  color: var(--color-text-muted);
+}
+
+html.dark .empty-state-large svg {
+  color: var(--color-border);
+}
+
+/* ============================================
+   Dark Mode — Filter Buttons
+   ============================================ */
+html.dark .filter-btn {
+  color: var(--color-text-muted);
+}
+
+html.dark .filter-btn:hover {
+  color: var(--color-text);
+}
+
+html.dark .filter-btn.active {
+  background: var(--color-bg-card);
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+/* ============================================
+   Dark Mode — Pagination
+   ============================================ */
+html.dark .pagination-item {
+  color: var(--color-text);
+}
+
+html.dark .pagination-item:hover:not(.disabled):not(.active) {
+  background: var(--color-bg-hover);
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .pagination-item.active {
+  color: #ffffff;
+}
+
+/* ============================================
+   Dark Mode — No Bank Info Banner Button
+   ============================================ */
+html.dark .no-bank-info-banner .btn-primary {
+  background: var(--gradient-primary);
+  color: #ffffff;
+}
+
+/* ============================================
+   Dark Mode — Settlement Card Desc & Amount
+   ============================================ */
+html.dark .settlement-card-amount {
+  color: var(--color-text);
+}
+
+html.dark .settlement-card-desc {
+  color: var(--color-text-muted);
+}
+
+html.dark .settlement-card-id {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Dark Mode — Bank Info Row
+   ============================================ */
+html.dark .settlement-card-bank {
+  background: color-mix(in srgb, var(--color-bg-card) 50%, transparent);
+  color: var(--color-text-muted);
+}
+
+html.dark .settlement-card-bank svg {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Dark Mode — Active Settlement Card
+   ============================================ */
+html.dark .active-settlement-title {
+  color: var(--color-text);
+}
+
+html.dark .active-settlement-info .info-value {
+  color: var(--color-text);
+}
+
+html.dark .active-settlement-info .info-label {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Dark Mode — Wallet Header Title
+   ============================================ */
+html.dark .wallet-header h1 {
+  color: var(--color-text);
+}
+
+html.dark .wallet-header p {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Responsive — Tablet (min 768px)
+   ============================================ */
+@media (min-width: 768px) {
+  .settlement-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .settlement-card-icon {
+    align-self: flex-start;
+  }
+
+  .settlement-card-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .settlement-card-bank,
+  .settlement-card-reference {
+    width: fit-content;
+  }
+
+  .active-settlement-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .active-settlement-content {
+    width: auto;
+  }
+
+  .active-settlement-action {
+    width: auto;
+  }
+}
+
+/* ============================================
+   Responsive — Large Desktop (min 1280px)
+   ============================================ */
+@media (min-width: 1280px) {
+  .settlements-list-detailed {
+    gap: 1rem;
+  }
+
+  .settlement-card {
+    padding: 1.25rem;
+  }
+
+  .settlement-card-amount {
+    font-size: 1.125rem;
+  }
+}
+
+/* ============================================
+   Status Variations — Extra (for edge cases)
+   ============================================ */
+
+/* اگر کارت settlement وضعیت "cancelled" داشته باشد */
+.settlement-card.status-gray .settlement-card-amount {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-border);
+}
+
+/* اگر کارت settlement وضعیت "failed" داشته باشد */
+.settlement-card.status-red .settlement-card-amount {
+  color: var(--color-danger);
+}
+
+/* اگر کارت settlement وضعیت "completed" داشته باشد */
+.settlement-card.status-green .settlement-card-amount {
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Loading State (اگر استفاده شود)
+   ============================================ */
+.settlement-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.settlement-card.loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--color-bg-card) 50%, transparent),
+      transparent);
+  animation: settlementLoading 1.5s ease-in-out infinite;
+}
+
+@keyframes settlementLoading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ============================================
+   Hover Effect — Subtle Lift
+   ============================================ */
+@media (hover: hover) {
+  .settlement-card:hover .settlement-card-icon {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+  }
+
+  .settlement-card:hover .settlement-card-amount {
+    color: var(--color-primary-hover);
+    transition: color 0.2s ease;
+  }
+}
+
+/* ============================================
+   Empty State — Enhanced
+   ============================================ */
+.empty-state-large h3 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0.25rem 0 0.5rem;
+}
+
+.empty-state-large .empty-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+  opacity: 0.8;
+}
+
+/* ============================================
+   Settlement Card — Divider
+   ============================================ */
+.settlement-card-body>*+* {
+  margin-top: 0.25rem;
+}
+
+/* ============================================
+   Settlement Card — Icon Animations on Hover
+   ============================================ */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .settlement-card:hover .settlement-card-icon.yellow svg {
+    animation: iconShake 0.4s ease;
+  }
+
+  .settlement-card:hover .settlement-card-icon.blue svg {
+    animation: iconPulseBlue 0.5s ease;
+  }
+
+  .settlement-card:hover .settlement-card-icon.green svg {
+    animation: iconBounceGreen 0.4s ease;
+  }
+
+  .settlement-card:hover .settlement-card-icon.red svg {
+    animation: iconShake 0.4s ease;
+  }
+}
+
+@keyframes iconShake {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-5deg);
+  }
+
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes iconPulseBlue {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes iconBounceGreen {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ============================================
+   Reduced Motion — Extended
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .settlement-card.loading::after {
+    animation: none !important;
+  }
+
+  .settlement-card:hover .settlement-card-icon svg,
+  .settlement-card:hover .settlement-card-icon {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .settlement-card:hover .settlement-card-amount {
+    color: var(--color-text);
+  }
+
+  @keyframes iconShake,
+  @keyframes iconPulseBlue,
+  @keyframes iconBounceGreen,
+  @keyframes settlementLoading {
+    from,
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+/* ============================================
+   Focus Visible — Extended
+   ============================================ */
+.settlement-card:focus-visible,
+.active-settlement-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 1rem;
+}
+
+.settlement-card-bank:focus-visible,
+.settlement-card-reference:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 0.625rem;
+}
+
+/* ============================================
+   Print — Extended
+   ============================================ */
+@media print {
+  .settlement-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .settlement-card::before {
+    display: none;
+  }
+
+  .settlement-card-icon {
+    border: 1px solid #ddd;
+  }
+
+  .settlement-card-status {
+    border: 1px solid #999;
+    background: #fff !important;
+    color: #333 !important;
+  }
+
+  .settlement-card-amount {
+    color: #000 !important;
+  }
+
+  .settlement-card-dates {
+    border-top: 1px solid #ddd;
+  }
+
+  .active-settlement-card::before {
+    display: none;
+  }
+}
+
+/* ============================================
+   Selection — Extended
+   ============================================ */
+.settlement-card ::selection,
+.settlement-card *::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Accessibility — Screen Reader Only
+   ============================================ */
+.settlement-card .sr-only,
+.empty-state-large .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Tooltip Support (اگر استفاده شود)
+   ============================================ */
+.settlement-card-bank[title]:hover::after,
+.settlement-card-reference[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--color-secondary);
+  color: white;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  animation: tooltipFadeIn 0.2s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(50%) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+  }
+}
+
+/* ============================================
+   Complete — End of Settlements Page Styles
+   ============================================ */

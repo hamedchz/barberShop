@@ -1,10 +1,8 @@
 /* ============================================
-   Barber Bookings Page - Complete CSS
+   Barber Bookings Page — Theme-aware
    ============================================ */
 
-/* ============================================
-   1. Stats Cards
-   ============================================ */
+/* ============ 1. Stats Cards ============ */
 .barber-bookings-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -12,27 +10,21 @@
   margin-bottom: 2rem;
 }
 
-@media (min-width: 768px) {
-  .barber-bookings-stats {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
 .barber-bookings-stats .stat-card {
   display: flex;
   align-items: center;
   gap: 0.875rem;
   padding: 1.25rem;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 1.25rem;
-  border: 1px solid #f3f4f6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transition: all 0.3s;
 }
 
 .barber-bookings-stats .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px var(--color-shadow);
 }
 
 .barber-bookings-stats .stat-card-icon {
@@ -43,59 +35,59 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .stat-card.today .stat-card-icon {
-  background-color: #fef3c7;
-  color: #f59e0b;
+  background-color: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .stat-card.pending .stat-card-icon {
-  background-color: #fffbeb;
-  color: #92400e;
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .stat-card.confirmed .stat-card-icon {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .stat-card.revenue .stat-card-icon {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .barber-bookings-stats .stat-value {
   display: block;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.2;
 }
 
 .barber-bookings-stats .stat-label {
   display: block;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 500;
   margin-top: 0.1875rem;
 }
 
-/* ============================================
-   2. Tabs
-   ============================================ */
+/* ============ 2. Tabs ============ */
 .barber-bookings-tabs {
   display: flex;
   gap: 0.5rem;
   padding: 0.5rem;
-  background-color: #ffffff;
-  border: 1px solid #f3f4f6;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   margin-bottom: 1.5rem;
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .barber-bookings-tabs::-webkit-scrollbar {
@@ -113,7 +105,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -122,8 +114,8 @@
 }
 
 .barber-bookings-tabs .bookings-tab:hover {
-  background-color: #f9fafb;
-  color: #1f2937;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
 .barber-bookings-tabs .bookings-tab svg {
@@ -136,15 +128,15 @@
 }
 
 .barber-bookings-tabs .bookings-tab.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px var(--color-primary-light);
   font-weight: 700;
 }
 
 .barber-bookings-tabs .bookings-tab.active:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 16px var(--color-primary-light);
 }
 
 .barber-bookings-tabs .bookings-tab.active::after {
@@ -155,7 +147,10 @@
   transform: translateX(-50%);
   width: 60%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.6),
+      transparent);
   border-radius: 2px;
 }
 
@@ -166,8 +161,8 @@
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.375rem;
-  background-color: #f3f4f6;
-  color: #6b7280;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
   font-size: 0.6875rem;
   font-weight: 800;
   border-radius: 9999px;
@@ -176,8 +171,8 @@
 }
 
 .barber-bookings-tabs .bookings-tab:hover .tab-count {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }
 
 .barber-bookings-tabs .bookings-tab.active .tab-count {
@@ -185,22 +180,12 @@
   color: #ffffff;
 }
 
-/* ============================================
-   3. Toolbar (Search + Filter Toggle)
-   ============================================ */
+/* ============ 3. Toolbar ============ */
 .barber-bookings-toolbar {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
-  .barber-bookings-toolbar {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
 }
 
 .bookings-search-wrapper {
@@ -214,25 +199,18 @@
   flex-wrap: wrap;
 }
 
-/* ============================================
-   4. Filters Panel
-   ============================================ */
+/* ============ 4. Filters Panel ============ */
 .barber-bookings-filters-panel {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #ffffff;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   margin-bottom: 1.5rem;
   animation: slideDown 0.3s ease;
-}
-
-@media (min-width: 768px) {
-  .barber-bookings-filters-panel {
-    padding: 1.75rem;
-  }
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 @keyframes slideDown {
@@ -247,19 +225,20 @@
   }
 }
 
-/* ============================================
-   5. Date Shortcuts Panel
-   ============================================ */
+/* ============ 5. Date Shortcuts Panel ============ */
 .date-shortcuts-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
   padding: 1.25rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      color-mix(in srgb, var(--color-primary) 4%, var(--color-bg-card)) 100%);
+  border: 1px solid var(--color-border);
   border-radius: 1rem;
   position: relative;
   overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .date-shortcuts-wrapper::before {
@@ -270,7 +249,7 @@
   width: 200px;
   height: 200px;
   background: radial-gradient(circle,
-      rgba(16, 185, 129, 0.06) 0%,
+      color-mix(in srgb, var(--color-primary) 6%, transparent) 0%,
       transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -290,12 +269,12 @@
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .date-shortcuts-title svg {
-  color: #f59e0b;
-  fill: #f59e0b;
+  color: var(--color-warning);
+  fill: var(--color-warning);
   animation: zapPulse 2s ease-in-out infinite;
 }
 
@@ -321,29 +300,30 @@
   z-index: 1;
 }
 
+/* ============ Shortcut Chips ============ */
 .shortcut-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.4375rem;
   padding: 0.5625rem 1rem;
-  background-color: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 700;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px var(--color-shadow);
 }
 
 .shortcut-chip:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 16px var(--color-shadow);
 }
 
 .shortcut-chip svg {
@@ -355,55 +335,55 @@
   transform: scale(1.15);
 }
 
-/* امروز */
+/* امروز (warning) */
 .shortcut-chip.today {
-  background: linear-gradient(135deg, #fffbeb, #fef3c7);
-  border-color: #fde68a;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  color: var(--color-warning);
 }
 
 .shortcut-chip.today svg {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .shortcut-chip.today:hover {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-color: #f59e0b;
-  color: white;
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 35%, transparent);
 }
 
 .shortcut-chip.today:hover svg {
-  color: white;
+  color: #ffffff;
 }
 
-/* فردا */
+/* فردا (info) */
 .shortcut-chip.tomorrow {
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  border-color: #bfdbfe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+  color: var(--color-info);
 }
 
 .shortcut-chip.tomorrow svg {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
 .shortcut-chip.tomorrow:hover {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border-color: #3b82f6;
-  color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+  background: var(--color-info);
+  border-color: var(--color-info);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-info) 35%, transparent);
 }
 
 .shortcut-chip.tomorrow:hover svg {
-  color: white;
+  color: #ffffff;
 }
 
-/* ۷ روز آینده */
+/* ۷ روز آینده (purple) */
 .shortcut-chip.next-week {
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-  border-color: #ddd6fe;
-  color: #5b21b6;
+  background: color-mix(in srgb, #8b5cf6 10%, var(--color-bg-card));
+  border-color: color-mix(in srgb, #8b5cf6 30%, transparent);
+  color: #8b5cf6;
 }
 
 .shortcut-chip.next-week svg {
@@ -411,76 +391,66 @@
 }
 
 .shortcut-chip.next-week:hover {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: #8b5cf6;
   border-color: #8b5cf6;
-  color: white;
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, #8b5cf6 35%, transparent);
 }
 
 .shortcut-chip.next-week:hover svg {
-  color: white;
+  color: #ffffff;
 }
 
-/* تا پایان ماه */
+/* تا پایان ماه (primary) */
 .shortcut-chip.end-month {
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  border-color: #a7f3d0;
-  color: #065f46;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .shortcut-chip.end-month svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .shortcut-chip.end-month:hover {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
-  color: white;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 20px var(--color-primary-light);
 }
 
 .shortcut-chip.end-month:hover svg {
-  color: white;
+  color: #ffffff;
 }
 
-/* پاک کردن */
+/* پاک کردن (danger) */
 .shortcut-chip.clear {
   margin-right: auto;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  border-color: #fecaca;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+  color: var(--color-danger);
 }
 
 .shortcut-chip.clear svg {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .shortcut-chip.clear:hover {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  border-color: #ef4444;
-  color: white;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-danger) 35%, transparent);
 }
 
 .shortcut-chip.clear:hover svg {
-  color: white;
+  color: #ffffff;
 }
 
-/* ============================================
-   6. Date Pickers Row
-   ============================================ */
+/* ============ 6. Date Pickers Row ============ */
 .date-pickers-row {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .date-pickers-row {
-    flex-direction: row;
-    align-items: flex-end;
-    gap: 1rem;
-  }
 }
 
 .persian-date-picker-wrapper {
@@ -497,22 +467,22 @@
   gap: 0.375rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .picker-label svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .persian-date-input {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  background-color: #ffffff;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: var(--text-main);
+  font-family: inherit;
+  color: var(--color-text);
   outline: none;
   transition: all 0.2s;
   cursor: pointer;
@@ -521,17 +491,18 @@
 }
 
 .persian-date-input:hover {
-  border-color: #d1d5db;
+  border-color: var(--color-primary-light);
 }
 
 .persian-date-input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .persian-date-input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.8125rem;
+  opacity: 0.7;
 }
 
 .apply-filter-btn {
@@ -539,16 +510,7 @@
   width: 100%;
 }
 
-@media (min-width: 768px) {
-  .apply-filter-btn {
-    width: fit-content;
-    height: 2.75rem;
-  }
-}
-
-/* ============================================
-   7. Barber Booking Card
-   ============================================ */
+/* ============ 7. Booking Card ============ */
 .barber-bookings-list {
   display: flex;
   flex-direction: column;
@@ -557,23 +519,23 @@
 
 .barber-booking-card {
   position: relative;
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 1.5rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 .barber-booking-card:hover {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 20px 40px -12px var(--color-shadow);
   transform: translateY(-4px);
-  border-color: #e5e7eb;
+  border-color: var(--color-primary-light);
 }
 
 .barber-booking-card.today {
-  border-color: #fbbf24;
-  box-shadow: 0 4px 24px rgba(251, 191, 36, 0.15);
+  border-color: var(--color-warning);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--color-warning) 15%, transparent);
 }
 
 .barber-booking-card-stripe {
@@ -592,12 +554,12 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.3125rem 0.75rem;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
+  background: var(--color-warning);
+  color: #ffffff;
   font-size: 0.6875rem;
   font-weight: 800;
   border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 40%, transparent);
   animation: pulseToday 2s ease-in-out infinite;
   z-index: 2;
 }
@@ -606,12 +568,12 @@
 
   0%,
   100% {
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 40%, transparent);
     transform: scale(1);
   }
 
   50% {
-    box-shadow: 0 4px 24px rgba(251, 191, 36, 0.7);
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--color-warning) 70%, transparent);
     transform: scale(1.05);
   }
 }
@@ -623,31 +585,14 @@
   padding: 1.75rem;
 }
 
-@media (min-width: 768px) {
-  .barber-booking-content {
-    grid-template-columns: 220px 1fr auto;
-    gap: 2rem;
-    align-items: center;
-  }
-}
-
-/* ستون مشتری */
+/* ============ Customer Column ============ */
 .barber-booking-customer {
   display: flex;
   align-items: center;
   gap: 0.875rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px dashed #e5e7eb;
-}
-
-@media (min-width: 768px) {
-  .barber-booking-customer {
-    padding-bottom: 0;
-    border-bottom: none;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.625rem;
-  }
+  border-bottom: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .customer-avatar-wrapper {
@@ -660,14 +605,14 @@
   height: 3.5rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 1.25rem;
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 6px 16px var(--color-primary-light);
   transition: transform 0.3s;
 }
 
@@ -688,8 +633,8 @@
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  border: 2.5px solid white;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  border: 2.5px solid var(--color-bg-card);
+  box-shadow: 0 0 0 1px var(--color-shadow);
 }
 
 .customer-info {
@@ -704,7 +649,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -713,7 +658,7 @@
 .customer-name {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -725,11 +670,11 @@
   gap: 0.25rem;
   padding: 0.25rem 0.5rem;
   margin-top: 0.125rem;
-  background-color: #f0fdf4;
-  border: 1px solid #d1fae5;
+  background-color: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.5rem;
   font-size: 0.6875rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s;
@@ -737,24 +682,18 @@
 }
 
 .customer-phone:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 8px var(--color-primary-light);
 }
 
-/* ستون جزئیات */
+/* ============ Details Column ============ */
 .barber-booking-details {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.625rem;
-}
-
-@media (min-width: 640px) {
-  .barber-booking-details {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .booking-detail-row {
@@ -762,60 +701,60 @@
   align-items: flex-start;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 0.875rem;
   transition: all 0.2s;
 }
 
 .booking-detail-row:hover {
-  background-color: #ffffff;
-  border-color: #d1fae5;
+  background-color: var(--color-bg-card);
+  border-color: var(--color-primary-light);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.06);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .detail-icon-box {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background-color: white;
-  color: #10b981;
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   transition: all 0.2s;
 }
 
 .booking-detail-row:hover .detail-icon-box {
-  background-color: #ecfdf5;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
 .booking-detail-row.service .detail-icon-box {
-  background-color: #f5f3ff;
+  background-color: color-mix(in srgb, #8b5cf6 10%, var(--color-bg-card));
   color: #8b5cf6;
-  border-color: #ede9fe;
+  border-color: color-mix(in srgb, #8b5cf6 25%, transparent);
 }
 
 .booking-detail-row.date .detail-icon-box {
-  background-color: #eff6ff;
-  color: #3b82f6;
-  border-color: #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .booking-detail-row.time .detail-icon-box {
-  background-color: #fef3c7;
-  color: #f59e0b;
-  border-color: #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
 .booking-detail-row.price .detail-icon-box {
-  background-color: #ecfdf5;
-  color: #10b981;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
+  border-color: var(--color-primary-light);
 }
 
 .detail-content {
@@ -827,7 +766,7 @@
 
 .detail-label {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -835,7 +774,7 @@
 
 .detail-value {
   font-size: 0.8125rem;
-  color: #1f2937;
+  color: var(--color-text);
   font-weight: 700;
   line-height: 1.4;
   overflow: hidden;
@@ -849,7 +788,7 @@
 }
 
 .booking-detail-row.price .detail-value {
-  color: #10b981;
+  color: var(--color-primary);
   font-weight: 800;
   font-size: 0.875rem;
 }
@@ -860,27 +799,20 @@
   padding: 0.125rem 0.4375rem;
   font-size: 0.625rem;
   font-weight: 800;
-  background-color: rgba(16, 185, 129, 0.08);
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
   border-radius: 9999px;
   width: fit-content;
 }
 
-/* ستون عملیات */
+/* ============ Actions Column ============ */
 .barber-booking-actions {
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-@media (min-width: 768px) {
-  .barber-booking-actions {
-    padding-top: 0;
-    border-top: none;
-    align-items: flex-end;
-    min-width: 240px;
-  }
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
 .booking-status-row {
@@ -900,7 +832,7 @@
   font-weight: 800;
   border: 1px solid;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px var(--color-shadow);
 }
 
 .booking-code {
@@ -908,10 +840,10 @@
   align-items: center;
   gap: 0.1875rem;
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   padding: 0.25rem 0.5rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.5rem;
   direction: ltr;
 }
@@ -922,12 +854,7 @@
   gap: 0.375rem;
 }
 
-@media (min-width: 768px) {
-  .booking-buttons-group {
-    justify-content: flex-end;
-  }
-}
-
+/* ============ Action Buttons ============ */
 .booking-action-btn {
   display: inline-flex;
   align-items: center;
@@ -963,65 +890,125 @@
   transform: scale(0.96);
 }
 
+/* Confirm (primary) */
 .booking-action-btn.confirm {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
 }
 
 .booking-action-btn.confirm:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 16px var(--color-primary-light);
 }
 
+/* Complete (info) */
 .booking-action-btn.complete {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .booking-action-btn.complete:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background-color: var(--color-info);
+  color: #ffffff;
+  border-color: var(--color-info);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-info) 30%, transparent);
 }
 
+/* View (purple) */
 .booking-action-btn.view {
-  background-color: #f5f3ff;
-  color: #5b21b6;
-  border-color: #ede9fe;
+  background-color: color-mix(in srgb, #8b5cf6 10%, var(--color-bg-card));
+  color: #8b5cf6;
+  border-color: color-mix(in srgb, #8b5cf6 25%, transparent);
 }
 
 .booking-action-btn.view:hover {
   background-color: #8b5cf6;
-  color: white;
+  color: #ffffff;
   border-color: #8b5cf6;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, #8b5cf6 30%, transparent);
 }
 
+/* Cancel (danger) */
 .booking-action-btn.cancel {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .booking-action-btn.cancel:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
+  background-color: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
-/* ============================================
-   8. Responsive
-   ============================================ */
+/* ============ 8. Responsive ============ */
+@media (min-width: 640px) {
+  .barber-booking-details {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .barber-bookings-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .barber-bookings-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .barber-bookings-filters-panel {
+    padding: 1.75rem;
+  }
+
+  .date-pickers-row {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .apply-filter-btn {
+    width: fit-content;
+    height: 2.75rem;
+  }
+
+  .barber-booking-content {
+    grid-template-columns: 220px 1fr auto;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .barber-booking-customer {
+    padding-bottom: 0;
+    border-bottom: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+
+  .barber-booking-actions {
+    padding-top: 0;
+    border-top: none;
+    align-items: flex-end;
+    min-width: 240px;
+  }
+
+  .booking-buttons-group {
+    justify-content: flex-end;
+  }
+}
+
 @media (max-width: 767px) {
   .barber-booking-content {
     padding: 1.25rem;
@@ -1146,11 +1133,7 @@
   }
 }
 
-/* ============================================
-   Booking Dispute Badge
-   ============================================ */
-
-/* ============ Badge بالای کارت ============ */
+/* ============ Dispute Badge ============ */
 .booking-dispute-badge {
   display: inline-flex;
   align-items: center;
@@ -1164,7 +1147,7 @@
   white-space: nowrap;
   position: relative;
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px var(--color-shadow);
   animation: disputeBadgeSlideIn 0.4s ease;
   width: fit-content;
 }
@@ -1186,6 +1169,9 @@
   animation: pulseDisputeBadgeIcon 2s ease-in-out infinite;
 }
 
+/* ============================================
+   Dispute Badge Icon Animation
+   ============================================ */
 @keyframes pulseDisputeBadgeIcon {
 
   0%,
@@ -1197,5 +1183,544 @@
   50% {
     opacity: 0.7;
     transform: scale(1.15);
+  }
+}
+
+/* ============================================
+   Dispute Badge — Variants (6 وضعیت)
+   ============================================ */
+
+/* pending (warning) */
+.booking-dispute-badge.status-pending {
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  animation:
+    disputeBadgeSlideIn 0.4s ease,
+    pulsePendingDispute 2s ease-in-out infinite;
+}
+
+@keyframes pulsePendingDispute {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-warning) 20%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 2px 20px color-mix(in srgb, var(--color-warning) 50%, transparent);
+  }
+}
+
+/* investigating (info) */
+.booking-dispute-badge.status-investigating {
+  background: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+}
+
+/* awaiting_response (warning) */
+.booking-dispute-badge.status-awaiting_response {
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, transparent);
+}
+
+/* resolved (primary) */
+.booking-dispute-badge.status-resolved {
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
+}
+
+/* rejected (danger) */
+.booking-dispute-badge.status-rejected {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+/* cancelled (neutral) */
+.booking-dispute-badge.status-cancelled {
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .barber-bookings-tabs {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-bookings-tabs .bookings-tab:hover {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .barber-bookings-filters-panel {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .date-shortcuts-wrapper {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      color-mix(in srgb, var(--color-primary) 6%, var(--color-bg-card)) 100%);
+  border-color: var(--color-border);
+}
+
+html.dark .shortcut-chip {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .shortcut-chip.today {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .shortcut-chip.tomorrow {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .shortcut-chip.next-week {
+  color: color-mix(in srgb, #8b5cf6 80%, white);
+}
+
+html.dark .shortcut-chip.end-month {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .shortcut-chip.clear {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .persian-date-input {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+html.dark .barber-booking-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-booking-card:hover {
+  border-color: var(--color-primary-light);
+}
+
+html.dark .barber-booking-card.today {
+  border-color: var(--color-warning);
+}
+
+html.dark .customer-avatar {
+  box-shadow: 0 6px 16px var(--color-primary-light);
+}
+
+html.dark .customer-avatar-status {
+  border-color: var(--color-bg-card);
+}
+
+html.dark .customer-phone {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .booking-detail-row {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .booking-detail-row:hover {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .detail-icon-box {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .booking-code {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+}
+
+html.dark .booking-action-btn.confirm {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .booking-action-btn.complete {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .booking-action-btn.view {
+  color: color-mix(in srgb, #8b5cf6 80%, white);
+}
+
+html.dark .booking-action-btn.cancel {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .booking-dispute-badge.status-pending,
+html.dark .booking-dispute-badge.status-awaiting_response {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .booking-dispute-badge.status-investigating {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .booking-dispute-badge.status-resolved {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .booking-dispute-badge.status-rejected {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.barber-bookings-page button:focus-visible,
+.barber-bookings-page a:focus-visible,
+.barber-bookings-page input:focus-visible,
+.barber-bookings-page select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.bookings-tab:focus-visible {
+  outline-offset: -2px;
+}
+
+.booking-action-btn.confirm:focus-visible {
+  outline-color: var(--color-primary);
+}
+
+.booking-action-btn.complete:focus-visible {
+  outline-color: var(--color-info);
+}
+
+.booking-action-btn.view:focus-visible {
+  outline-color: #8b5cf6;
+}
+
+.booking-action-btn.cancel:focus-visible {
+  outline-color: var(--color-danger);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .barber-bookings-page *,
+  .barber-bookings-page *::before,
+  .barber-bookings-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .today-badge,
+  .date-shortcuts-title svg,
+  .booking-dispute-badge,
+  .booking-dispute-badge svg {
+    animation: none !important;
+  }
+
+  .barber-booking-card:hover,
+  .barber-bookings-stats .stat-card:hover,
+  .shortcut-chip:hover,
+  .booking-action-btn:hover,
+  .booking-action-btn:active,
+  .booking-detail-row:hover,
+  .customer-phone:hover {
+    transform: none !important;
+  }
+
+  .barber-booking-card:hover .customer-avatar {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .barber-bookings-toolbar,
+  .barber-bookings-filters-panel,
+  .barber-bookings-tabs,
+  .bookings-toolbar-actions,
+  .booking-buttons-group,
+  .booking-action-btn,
+  .today-badge {
+    display: none !important;
+  }
+
+  .barber-bookings-list {
+    gap: 0.5rem;
+  }
+
+  .barber-booking-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+    transform: none !important;
+  }
+
+  .barber-booking-card-stripe {
+    display: none;
+  }
+
+  .barber-booking-content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .booking-detail-row {
+    background: #f9f9f9 !important;
+    border: 1px solid #ddd;
+  }
+
+  .booking-status-badge {
+    border: 1px solid #999;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.barber-bookings-page ::selection,
+.barber-booking-card ::selection,
+.booking-detail-row ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Screen Reader Only
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Tooltip Support
+   ============================================ */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--color-secondary);
+  color: white;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 100;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  animation: tooltipFadeIn 0.2s ease;
+  pointer-events: none;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(50%) translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+  }
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+.barber-booking-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.barber-booking-card.loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--color-bg-card) 50%, transparent),
+      transparent);
+  animation: bookingShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes bookingShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ============================================
+   Empty State
+   ============================================ */
+.barber-bookings-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  color: var(--color-text-muted);
+  gap: 0.75rem;
+}
+
+.barber-bookings-empty svg {
+  color: var(--color-border);
+  margin-bottom: 0.5rem;
+}
+
+.barber-bookings-empty h3 {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.barber-bookings-empty p {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.7;
+  max-width: 320px;
+}
+
+/* ============================================
+   Complete — End of Barber Bookings Styles
+   ============================================ */
+
+@supports not (color: color-mix(in srgb, red, blue)) {
+
+  .stat-card.today .stat-card-icon,
+  .stat-card.pending .stat-card-icon {
+    background: var(--color-bg-hover);
+    color: var(--color-warning);
+  }
+
+  .stat-card.revenue .stat-card-icon {
+    background: var(--color-bg-hover);
+    color: var(--color-info);
+  }
+
+  .shortcut-chip.today,
+  .shortcut-chip.tomorrow,
+  .shortcut-chip.next-week,
+  .shortcut-chip.clear {
+    background: var(--color-bg-hover);
+  }
+
+  .shortcut-chip.today {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+  }
+
+  .shortcut-chip.tomorrow {
+    border-color: var(--color-info);
+    color: var(--color-info);
+  }
+
+  .shortcut-chip.next-week {
+    border-color: #8b5cf6;
+    color: #8b5cf6;
+  }
+
+  .shortcut-chip.clear {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+
+  .booking-detail-row.service .detail-icon-box {
+    background: var(--color-bg-hover);
+    color: #8b5cf6;
+  }
+
+  .booking-detail-row.date .detail-icon-box {
+    background: var(--color-bg-hover);
+    color: var(--color-info);
+  }
+
+  .booking-detail-row.time .detail-icon-box {
+    background: var(--color-bg-hover);
+    color: var(--color-warning);
+  }
+
+  .booking-action-btn.confirm {
+    background: var(--color-primary-tint);
+    border-color: var(--color-primary-light);
+    color: var(--color-primary-hover);
+  }
+
+  .booking-action-btn.complete {
+    background: var(--color-bg-hover);
+    border-color: var(--color-info);
+    color: var(--color-info);
+  }
+
+  .booking-action-btn.view {
+    background: var(--color-bg-hover);
+    border-color: #8b5cf6;
+    color: #8b5cf6;
+  }
+
+  .booking-action-btn.cancel {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+
+  .booking-dispute-badge.status-pending,
+  .booking-dispute-badge.status-awaiting_response {
+    background: var(--color-bg-hover);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+  }
+
+  .booking-dispute-badge.status-investigating {
+    background: var(--color-bg-hover);
+    border-color: var(--color-info);
+    color: var(--color-info);
+  }
+
+  .booking-dispute-badge.status-rejected {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+    color: var(--color-danger);
   }
 }

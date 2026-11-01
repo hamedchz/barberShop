@@ -1,11 +1,15 @@
 /* ============================================
-   Barbers Hero Section
+   Barbers Hero Section — Theme-aware
    ============================================ */
 .barbers-hero {
   position: relative;
   padding: 4rem 1.5rem;
   overflow: hidden;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #ffffff 100%);
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)) 50%,
+      var(--color-bg-card) 100%);
+  transition: background 0.3s;
 }
 
 .hero-shape {
@@ -19,7 +23,7 @@
 .hero-shape.shape-1 {
   width: 400px;
   height: 400px;
-  background: #10b981;
+  background: var(--color-primary);
   top: -100px;
   right: -100px;
   animation: floatShape 8s ease-in-out infinite;
@@ -28,7 +32,7 @@
 .hero-shape.shape-2 {
   width: 300px;
   height: 300px;
-  background: #3b82f6;
+  background: var(--color-info);
   bottom: -100px;
   left: -50px;
   animation: floatShape 10s ease-in-out infinite reverse;
@@ -37,7 +41,7 @@
 .hero-shape.shape-3 {
   width: 200px;
   height: 200px;
-  background: #f59e0b;
+  background: var(--color-warning);
   top: 50%;
   left: 40%;
   animation: floatShape 12s ease-in-out infinite;
@@ -73,27 +77,27 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  background-color: white;
-  border: 1px solid #d1fae5;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-primary-light);
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #065f46;
+  color: var(--color-primary-hover);
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .hero-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   line-height: 1.3;
   margin: 0 0 1rem;
   letter-spacing: -0.025em;
 }
 
 .hero-title .highlight {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -101,12 +105,14 @@
 
 .hero-description {
   font-size: 1.0625rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.8;
   margin: 0 0 2.5rem;
 }
 
-/* ============ آمار Hero ============ */
+/* ============================================
+   Hero Stats
+   ============================================ */
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -121,16 +127,16 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.25rem 1rem;
-  background-color: white;
+  background-color: var(--color-bg-card);
   border-radius: 1.25rem;
-  border: 1px solid #f3f4f6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transition: all 0.3s;
 }
 
 .hero-stat:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px var(--color-shadow);
 }
 
 .stat-icon {
@@ -140,20 +146,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .stat-icon.green {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .stat-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .stat-icon.purple {
-  background-color: #f5f3ff;
+  background-color: color-mix(in srgb, #8b5cf6 12%, var(--color-bg-card));
   color: #8b5cf6;
 }
 
@@ -161,17 +168,19 @@
   display: block;
   font-size: 1.25rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   line-height: 1.2;
 }
 
 .hero-stat span {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
-/* ============ ویژگی‌های Hero ============ */
+/* ============================================
+   Hero Features
+   ============================================ */
 .hero-features {
   display: flex;
   flex-wrap: wrap;
@@ -185,23 +194,23 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--color-text-muted);
   transition: all 0.2s;
 }
 
 .hero-feature:hover {
-  border-color: #10b981;
-  color: #10b981;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   transform: translateY(-2px);
 }
 
 .hero-feature svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 /* ============================================
@@ -209,7 +218,8 @@
    ============================================ */
 .barbers-section {
   padding: 3rem 0 4rem;
-  background-color: #fafafa;
+  background-color: var(--color-bg-hover);
+  transition: background-color 0.3s;
 }
 
 .section-container {
@@ -225,25 +235,17 @@
   margin-bottom: 2rem;
 }
 
-@media (min-width: 768px) {
-  .barbers-section-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-}
-
 .barbers-section-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 0.375rem;
   letter-spacing: -0.025em;
 }
 
 .barbers-section-subtitle {
   font-size: 0.9375rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -254,13 +256,16 @@
   flex-wrap: wrap;
 }
 
-/* ============ حالت نمایش ============ */
+/* ============================================
+   View Mode Toggle
+   ============================================ */
 .view-mode-toggle {
   display: inline-flex;
   padding: 0.25rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .view-mode-btn {
@@ -269,7 +274,7 @@
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   transition: all 0.2s;
   display: flex;
   align-items: center;
@@ -277,15 +282,17 @@
 }
 
 .view-mode-btn:hover {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .view-mode-btn.active {
-  background-color: #10b981;
-  color: white;
+  background-color: var(--color-primary);
+  color: #ffffff;
 }
 
-/* ============ مرتب‌سازی ============ */
+/* ============================================
+   Sort Wrapper
+   ============================================ */
 .sort-wrapper {
   position: relative;
   display: inline-flex;
@@ -295,13 +302,13 @@
 .sort-select-public {
   appearance: none;
   padding: 0.625rem 2.25rem 0.625rem 1rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
-  color: #1f2937;
+  color: var(--color-text);
   cursor: pointer;
   outline: none;
   transition: all 0.2s;
@@ -309,7 +316,7 @@
 
 .sort-select-public:hover,
 .sort-select-public:focus {
-  border-color: #10b981;
+  border-color: var(--color-primary);
 }
 
 .sort-wrapper::after {
@@ -317,12 +324,12 @@
   position: absolute;
   left: 0.75rem;
   pointer-events: none;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.75rem;
 }
 
 /* ============================================
-   Barbers Filters
+   Filters Toolbar
    ============================================ */
 .barbers-filters {
   margin-bottom: 2rem;
@@ -333,14 +340,6 @@
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
-  .barbers-toolbar {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
 }
 
 .barbers-search-wrapper {
@@ -359,22 +358,22 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-toggle-btn:hover,
 .filter-toggle-btn.active {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .filter-count-badge {
@@ -384,8 +383,8 @@
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.375rem;
-  background-color: #10b981;
-  color: white;
+  background-color: var(--color-primary);
+  color: #ffffff;
   font-size: 0.6875rem;
   font-weight: 700;
   border-radius: 9999px;
@@ -397,31 +396,34 @@
   gap: 0.375rem;
   padding: 0.625rem 1rem;
   background-color: transparent;
-  border: 1px solid #fee2e2;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
   font-family: inherit;
-  color: #ef4444;
+  color: var(--color-danger);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .clear-filters-btn:hover {
-  background-color: #fef2f2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
 }
 
-/* ============ پنل فیلترها ============ */
+/* ============================================
+   Filters Panel
+   ============================================ */
 .barbers-filters-panel {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background-color: white;
-  border: 1px solid #f3f4f6;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px var(--color-shadow);
   animation: slideDown 0.3s ease;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 @keyframes slideDown {
@@ -448,14 +450,16 @@
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .filter-label svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
-/* ============ چیپ‌های شهر ============ */
+/* ============================================
+   City & Rating Chips
+   ============================================ */
 .city-chips,
 .rating-chips {
   display: flex;
@@ -463,97 +467,87 @@
   gap: 0.5rem;
 }
 
-.city-chip {
-  padding: 0.4375rem 0.875rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  font-family: inherit;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.city-chip:hover {
-  border-color: #10b981;
-  color: #10b981;
-  background-color: #f0fdf4;
-}
-
-.city-chip.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-}
-
-/* ============ چیپ‌های امتیاز ============ */
+.city-chip,
 .rating-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.4375rem 0.875rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
 
+.city-chip:hover,
 .rating-chip:hover {
-  border-color: #fbbf24;
-  color: #92400e;
-  background-color: #fffbeb;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-tint);
+}
+
+.city-chip.active {
+  background: var(--gradient-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.rating-chip:hover {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
 }
 
 .rating-chip.active {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  border-color: #fbbf24;
-  color: white;
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
+  background: linear-gradient(135deg, var(--color-warning), color-mix(in srgb, var(--color-warning) 80%, black));
+  border-color: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
-/* ============ دکمه آنلاین ============ */
+/* ============================================
+   Online Toggle
+   ============================================ */
 .online-toggle-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   width: fit-content;
 }
 
 .online-toggle-btn:hover {
-  border-color: #10b981;
-  color: #10b981;
-  background-color: #f0fdf4;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-tint);
 }
 
 .online-toggle-btn.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  background: var(--gradient-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .online-dot {
   width: 0.5rem;
   height: 0.5rem;
-  background-color: #fbbf24;
+  background-color: var(--color-warning);
   border-radius: 50%;
   animation: blink 1.5s ease-in-out infinite;
 }
@@ -579,43 +573,11 @@
   gap: 1.25rem;
 }
 
-@media (min-width: 640px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* ============ حالت لیستی ============ */
 .barbers-public-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.barbers-public-list .barber-card-public {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1.5rem;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .barbers-public-list .barber-card-public {
-    grid-template-columns: 1fr;
-  }
+  width: 100%;
 }
 
 /* ============================================
@@ -623,7 +585,8 @@
    ============================================ */
 .features-section {
   padding: 4rem 0;
-  background-color: white;
+  background-color: var(--color-bg-card);
+  transition: background-color 0.3s;
 }
 
 .features-grid {
@@ -632,25 +595,19 @@
   gap: 1.5rem;
 }
 
-@media (min-width: 768px) {
-  .features-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .feature-card {
-  background-color: #fafafa;
+  background-color: var(--color-bg-hover);
   padding: 2rem;
   border-radius: 1.5rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   text-align: center;
   transition: all 0.3s;
 }
 
 .feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
-  background-color: white;
+  box-shadow: 0 20px 40px -10px var(--color-shadow);
+  background-color: var(--color-bg-card);
 }
 
 .feature-icon {
@@ -661,41 +618,1000 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.25rem;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .feature-icon.green {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .feature-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .feature-icon.purple {
-  background-color: #f5f3ff;
+  background-color: color-mix(in srgb, #8b5cf6 12%, var(--color-bg-card));
   color: #8b5cf6;
 }
 
 .feature-card h3 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 0.75rem;
 }
 
 .feature-card p {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.8;
   margin: 0;
 }
 
 /* ============================================
-   Responsive
+   Barber Card — Specialty & Info
    ============================================ */
-@media (max-width: 768px) {
+.barber-card-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.625rem;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, #8b5cf6 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, #8b5cf6 15%, var(--color-bg-card)) 100%);
+  color: #8b5cf6;
+  border: 1px solid color-mix(in srgb, #8b5cf6 25%, transparent);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  width: fit-content;
+  margin-top: 0.25rem;
+  transition: all 0.2s;
+}
+
+.barber-card-specialty svg {
+  color: #8b5cf6;
+  flex-shrink: 0;
+}
+
+.barber-card-public:hover .barber-card-specialty {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, #8b5cf6 15%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, #8b5cf6 22%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, #8b5cf6 35%, transparent);
+}
+
+/* Info Row */
+.barber-card-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
+}
+
+.barber-card-info-row .info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.barber-card-info-row .info-item svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.barber-card-public:hover .barber-card-info-row .info-item {
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+.barber-card-public:hover .barber-card-info-row .info-item svg {
+  color: var(--color-primary-hover);
+}
+
+/* Bio clamp */
+.barber-card-public-bio {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.6;
+  min-height: 2.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   List Mode
+   ============================================ */
+.barbers-public-list .barber-card-public {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  align-items: center;
+  border-radius: 1.5rem;
+  transition: all 0.3s;
+}
+
+.barbers-public-list .barber-card-stripe {
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 1.5rem 1.5rem 0 0;
+}
+
+.barbers-public-list .barber-card-public-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+}
+
+.barbers-public-list .barber-card-public-avatar {
+  width: 5rem;
+  height: 5rem;
+  font-size: 1.75rem;
+}
+
+.barbers-public-list .barber-card-public-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+}
+
+.barbers-public-list .barber-card-public-name {
+  font-size: 1.375rem;
+  margin-bottom: 0.25rem;
+}
+
+.barbers-public-list .barber-card-public-bio {
+  font-size: 0.875rem;
+  -webkit-line-clamp: 3;
+  line-height: 1.7;
+}
+
+.barbers-public-list .barber-card-specialty {
+  font-size: 0.8125rem;
+  padding: 0.375rem 0.875rem;
+}
+
+.barbers-public-list .barber-card-info-row {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.barbers-public-list .barber-card-info-row .info-item {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.barbers-public-list .barber-card-public-services {
+  grid-column: 1 / -1;
+  padding-top: 0.75rem;
+}
+
+.barbers-public-list .services-tags {
+  gap: 0.5rem;
+}
+
+.barbers-public-list .service-tag {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.barbers-public-list .barber-card-public-cta {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  font-size: 0.9375rem;
+  margin-top: 0;
+}
+
+.barbers-public-list .barber-card-public-rating {
+  order: -1;
+}
+
+/* ============================================
+   Avatar Sizes (Grid vs List)
+   ============================================ */
+.barber-card-public.card-grid-mode .barber-card-public-avatar {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.5rem;
+}
+
+.barber-card-public.card-list-mode .barber-card-public-avatar {
+  width: 5.5rem;
+  height: 5.5rem;
+  font-size: 2rem;
+}
+
+/* Avatar Image Loading */
+.barber-card-public-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.barber-card-public-avatar img.loaded {
+  opacity: 1;
+}
+
+/* ============================================
+   Classic Card
+   ============================================ */
+.barber-card-classic {
+  position: relative;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px var(--color-shadow);
+}
+
+.barber-card-classic:hover {
+  box-shadow: 0 20px 40px -12px var(--color-shadow);
+  transform: translateY(-4px);
+  border-color: var(--color-primary-light);
+}
+
+.classic-stripe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+      var(--color-primary),
+      var(--color-primary-hover),
+      var(--color-primary));
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes shimmer {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Classic Content */
+.classic-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  align-items: flex-start;
+}
+
+/* Classic Image */
+.classic-image-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.classic-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: var(--color-primary-tint);
+  box-shadow: 0 8px 24px var(--color-primary-light);
+  transition: all 0.3s;
+}
+
+.barber-card-classic:hover .classic-image {
+  box-shadow: 0 12px 32px var(--color-primary-light);
+}
+
+.classic-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  opacity: 0;
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+
+.classic-image img.loaded {
+  opacity: 1;
+}
+
+.barber-card-classic:hover .classic-image img {
+  transform: scale(1.05);
+}
+
+.classic-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+  opacity: 0.6;
+}
+
+/* Image Status Indicator */
+.classic-image-status {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-bg-card);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px var(--color-shadow);
+  z-index: 2;
+}
+
+.classic-image-status.online {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.classic-image-status.online::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
+  animation: pulseOnline 2s ease-out infinite;
+  z-index: -1;
+}
+
+@keyframes pulseOnline {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.classic-image-status.offline {
+  background-color: var(--color-text-muted);
+  color: #ffffff;
+}
+
+/* Classic Info */
+.classic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.classic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
+}
+
+.classic-name-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.classic-name {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.classic-specialty {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  background: color-mix(in srgb, #8b5cf6 10%, var(--color-bg-card));
+  color: #8b5cf6;
+  border: 1px solid color-mix(in srgb, #8b5cf6 25%, transparent);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+/* Rating */
+.classic-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-warning);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.classic-rating .rating-value {
+  font-size: 0.875rem;
+}
+
+.classic-rating .rating-count {
+  font-size: 0.6875rem;
+  color: var(--color-warning);
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.no-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4375rem 0.875rem;
+  background-color: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--color-primary-hover);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Bio */
+.classic-bio {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s;
+}
+
+.classic-bio.expanded {
+  -webkit-line-clamp: unset;
+  display: block;
+}
+
+/* Classic Info Row */
+.classic-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.classic-info-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.classic-info-item svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.barber-card-classic:hover .classic-info-item {
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+/* Classic Services */
+.classic-services {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
+}
+
+.classic-services-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.classic-services-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4375rem;
+}
+
+.classic-service-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3125rem 0.75rem;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.classic-service-tag:hover {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.classic-service-tag.more {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+/* Classic Footer */
+.classic-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 1rem;
+  margin-top: auto;
+  border-top: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
+}
+
+.classic-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border-radius: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 16px var(--color-primary-light);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.classic-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.25),
+      transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.classic-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px var(--color-primary-light);
+}
+
+.classic-cta:hover::before {
+  opacity: 1;
+}
+
+.classic-cta svg {
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.classic-cta:hover svg {
+  transform: translateX(-4px);
+}
+
+/* ============================================
+   Countdown Timer — Booking Card
+   ============================================ */
+.booking-card .countdown-timer,
+.booking-status-row .countdown-timer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3125rem;
+  padding: 0.3125rem 0.625rem;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card)) 100%);
+  color: var(--color-warning);
+  border: 1.5px solid color-mix(in srgb, var(--color-warning) 40%, transparent);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  font-family: inherit;
+  direction: ltr;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-warning) 25%, transparent);
+  animation: countdownPulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-card .countdown-timer::before,
+.booking-status-row .countdown-timer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent);
+  animation: countdownShimmer 2s ease-in-out infinite;
+}
+
+@keyframes countdownShimmer {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes countdownPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-warning) 25%, transparent);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 2px 20px color-mix(in srgb, var(--color-warning) 60%, transparent);
+    transform: scale(1.03);
+  }
+}
+
+.booking-card .countdown-timer svg,
+.booking-status-row .countdown-timer svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  animation: countdownRotate 3s linear infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes countdownRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Expired State */
+.booking-card .countdown-timer.expired,
+.booking-status-row .countdown-timer.expired {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card)) 100%);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-danger) 20%, transparent);
+  animation: none;
+}
+
+.booking-card .countdown-timer.expired::before,
+.booking-status-row .countdown-timer.expired::before {
+  display: none;
+}
+
+.booking-card .countdown-timer.expired svg,
+.booking-status-row .countdown-timer.expired svg {
+  animation: none;
+  color: var(--color-danger);
+}
+
+/* Warning State */
+.booking-card .countdown-timer.warning,
+.booking-status-row .countdown-timer.warning {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 25%, var(--color-bg-card)) 100%);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 50%, transparent);
+  animation: countdownWarning 1s ease-in-out infinite;
+}
+
+@keyframes countdownWarning {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-danger) 30%, transparent);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 2px 20px color-mix(in srgb, var(--color-danger) 60%, transparent);
+  }
+}
+
+/* ============================================
+   Responsive — Tablet (min 768px)
+   ============================================ */
+@media (min-width: 768px) {
+  .barbers-section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .barbers-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .classic-content {
+    grid-template-columns: 180px 1fr;
+    gap: 1.75rem;
+    padding: 1.75rem;
+  }
+
+  .barber-card-specialty {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .barber-card-info-row .info-item {
+    font-size: 0.75rem;
+    padding: 0.3125rem 0.625rem;
+  }
+
+  .barbers-public-list .barber-card-public {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   Responsive — Desktop (min 1024px)
+   ============================================ */
+@media (min-width: 1024px) {
+  .barbers-public-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .barbers-public-list .barber-card-public {
+    grid-template-columns: 1fr 1fr auto;
+    gap: 2rem;
+  }
+
+  .barbers-public-list .barber-card-public-header {
+    grid-column: 1;
+    flex-wrap: nowrap;
+  }
+
+  .barbers-public-list .barber-card-public-body {
+    grid-column: 2;
+  }
+
+  .barbers-public-list .barber-card-public-services {
+    grid-column: 2;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .barbers-public-list .barber-card-public-cta {
+    grid-column: 3;
+    width: auto;
+    min-width: 180px;
+    padding: 1rem 2rem;
+    align-self: center;
+  }
+
+  .barbers-public-list .barber-card-public-rating {
+    margin-right: auto;
+  }
+
+  .classic-content {
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+  }
+
+  .classic-name {
+    font-size: 1.5rem;
+  }
+
+  .barber-card-public.card-list-mode .barber-card-public-avatar {
+    width: 6rem;
+    height: 6rem;
+    font-size: 2.25rem;
+  }
+}
+
+/* ============================================
+   Responsive — Large Desktop (min 1280px)
+   ============================================ */
+@media (min-width: 1280px) {
+  .barbers-public-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .barbers-public-list {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+}
+
+/* ============================================
+   Responsive — Tablet (max 1023px)
+   ============================================ */
+@media (max-width: 1023px) {
+  .barbers-public-list .barber-card-public {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  .barbers-public-list .barber-card-public-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .barbers-public-list .barber-card-public-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .barbers-public-list .barber-card-public-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.5rem;
+  }
+
+  .barbers-public-list .barber-card-public-body {
+    grid-column: 1;
+  }
+
+  .barbers-public-list .barber-card-public-cta {
+    grid-column: 1;
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Responsive — Mobile (max 767px)
+   ============================================ */
+@media (max-width: 767px) {
+  .classic-content {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .classic-image {
+    max-width: 220px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 10;
+    border-radius: 1rem;
+    height: 220px;
+  }
+
+  .classic-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .classic-name {
+    font-size: 1.125rem;
+  }
+
+  .classic-bio {
+    font-size: 0.8125rem;
+  }
+
+  .classic-info-item {
+    font-size: 0.6875rem;
+    padding: 0.3125rem 0.625rem;
+  }
+
+  .classic-service-tag {
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .classic-footer {
+    justify-content: stretch;
+  }
+
+  .classic-cta {
+    width: 100%;
+    min-width: 0;
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+/* ============================================
+   Responsive — Small Mobile (max 640px)
+   ============================================ */
+@media (max-width: 640px) {
   .barbers-hero {
     padding: 2.5rem 1rem;
   }
@@ -752,1028 +1668,10 @@
   .view-mode-toggle {
     display: none;
   }
-}
 
-/* ============================================
-   Barber Card - Specialty & Info
-   ============================================ */
-
-/* ============ برچسب تخصص ============ */
-.barber-card-specialty {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.3125rem 0.625rem;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  color: #5b21b6;
-  border: 1px solid #ddd6fe;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  width: fit-content;
-  margin-top: 0.25rem;
-  transition: all 0.2s;
-}
-
-.barber-card-specialty svg {
-  color: #8b5cf6;
-  flex-shrink: 0;
-}
-
-.barber-card-public:hover .barber-card-specialty {
-  background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
-  border-color: #c4b5fd;
-}
-
-/* ============ ردیف اطلاعات ============ */
-.barber-card-info-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px dashed var(--border-color);
-}
-
-.barber-card-info-row .info-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3125rem;
-  padding: 0.25rem 0.5rem;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 0.5rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #6b7280;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.barber-card-info-row .info-item svg {
-  color: #10b981;
-  flex-shrink: 0;
-}
-
-.barber-card-public:hover .barber-card-info-row .info-item {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
-  color: #065f46;
-}
-
-.barber-card-public:hover .barber-card-info-row .info-item svg {
-  color: #059669;
-}
-
-/* ============ حالت دسکتاپ ============ */
-@media (min-width: 768px) {
-  .barber-card-specialty {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-  }
-
-  .barber-card-info-row .info-item {
-    font-size: 0.75rem;
-    padding: 0.3125rem 0.625rem;
-  }
-}
-
-/* ============ محدود کردن بیوگرافی به ۲ خط ============ */
-.barber-card-public-bio {
-  font-size: 0.8125rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.6;
-  min-height: 2.6rem;
-  /* ارتفاع ثابت برای هماهنگی کارت‌ها */
-
-  /* محدود کردن به ۲ خط */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ============================================
-   Barbers List View (حالت لیستی)
-   ============================================ */
-.barbers-public-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* ============ کارت در حالت لیستی ============ */
-.barbers-public-list .barber-card-public {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  align-items: center;
-  border-radius: 1.5rem;
-  transition: all 0.3s;
-}
-
-/* در دسکتاپ: چیدمان ۳ ستونه */
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public {
-    grid-template-columns: 1fr 1fr auto;
-    gap: 2rem;
-  }
-}
-
-/* ============ نوار رنگی بالا ============ */
-.barbers-public-list .barber-card-stripe {
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 3px;
-  border-radius: 1.5rem 1.5rem 0 0;
-}
-
-/* ============ ستون ۱: اطلاعات اصلی ============ */
-.barbers-public-list .barber-card-public-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  grid-column: 1 / -1;
-  /* در موبایل تمام عرض */
-  flex-wrap: wrap;
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public-header {
-    grid-column: 1;
-    flex-wrap: nowrap;
-  }
-}
-
-/* آواتار بزرگ‌تر در حالت لیستی */
-.barbers-public-list .barber-card-public-avatar {
-  width: 5rem;
-  height: 5rem;
-  font-size: 1.75rem;
-}
-
-/* ============ اطلاعات ============ */
-.barbers-public-list .barber-card-public-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  grid-column: 1 / -1;
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public-body {
-    grid-column: 2;
-  }
-}
-
-.barbers-public-list .barber-card-public-name {
-  font-size: 1.375rem;
-  margin-bottom: 0.25rem;
-}
-
-.barbers-public-list .barber-card-public-bio {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 3;
-  /* در حالت لیستی ۳ خط */
-  line-height: 1.7;
-}
-
-/* ============ تخصص ============ */
-.barbers-public-list .barber-card-specialty {
-  font-size: 0.8125rem;
-  padding: 0.375rem 0.875rem;
-}
-
-/* ============ ردیف اطلاعات ============ */
-.barbers-public-list .barber-card-info-row {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-}
-
-.barbers-public-list .barber-card-info-row .info-item {
-  font-size: 0.75rem;
-  padding: 0.375rem 0.75rem;
-}
-
-/* ============ خدمات ============ */
-.barbers-public-list .barber-card-public-services {
-  grid-column: 1 / -1;
-  padding-top: 0.75rem;
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public-services {
-    grid-column: 2;
-    border-top: none;
-    padding-top: 0;
-  }
-}
-
-.barbers-public-list .services-tags {
-  gap: 0.5rem;
-}
-
-.barbers-public-list .service-tag {
-  font-size: 0.75rem;
-  padding: 0.375rem 0.75rem;
-}
-
-/* ============ دکمه CTA ============ */
-.barbers-public-list .barber-card-public-cta {
-  grid-column: 1 / -1;
-  width: 100%;
-  padding: 1rem 1.5rem;
-  border-radius: 1rem;
-  font-size: 0.9375rem;
-  margin-top: 0;
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public-cta {
-    grid-column: 3;
-    width: auto;
-    min-width: 180px;
-    padding: 1rem 2rem;
-    align-self: center;
-  }
-}
-
-/* ============ رتبه‌بندی در حالت لیستی ============ */
-.barbers-public-list .barber-card-public-rating {
-  order: -1;
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-list .barber-card-public-rating {
-    margin-right: auto;
-  }
-}
-
-/* ============================================
-   Responsive - حالت لیستی
-   ============================================ */
-@media (max-width: 1023px) {
-  .barbers-public-list .barber-card-public {
+  .barbers-public-grid {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
-    padding: 1.25rem;
   }
-
-  .barbers-public-list .barber-card-public-header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .barbers-public-list .barber-card-public-avatar-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex: 1;
-  }
-
-  .barbers-public-list .barber-card-public-avatar {
-    width: 4rem;
-    height: 4rem;
-    font-size: 1.5rem;
-  }
-
-  .barbers-public-list .barber-card-public-body {
-    grid-column: 1;
-  }
-
-  .barbers-public-list .barber-card-public-cta {
-    grid-column: 1;
-    width: 100%;
-  }
-}
-
-/* ============================================
-   حالت گرید (Barbers Grid)
-   ============================================ */
-.barbers-public-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-}
-
-@media (min-width: 640px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .barbers-public-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* ============================================
-   Avatar Size - Grid vs List
-   ============================================ */
-
-/* در حالت گرید: آواتار کوچک‌تر */
-.barber-card-public.card-grid-mode .barber-card-public-avatar {
-  width: 4rem;
-  height: 4rem;
-  font-size: 1.5rem;
-}
-
-/* در حالت لیستی: آواتار بزرگ‌تر با کیفیت بالا */
-.barber-card-public.card-list-mode .barber-card-public-avatar {
-  width: 5.5rem;
-  height: 5.5rem;
-  font-size: 2rem;
-}
-
-/* حالت لیستی - دسکتاپ */
-@media (min-width: 1024px) {
-  .barber-card-public.card-list-mode .barber-card-public-avatar {
-    width: 6rem;
-    height: 6rem;
-    font-size: 2.25rem;
-  }
-}
-
-/* ============ بارگذاری عکس ============ */
-.barber-card-public-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.barber-card-public-avatar img.loaded {
-  opacity: 1;
-}
-
-/* گرید - کوچک */
-.barber-card-public.card-grid-mode .barber-card-public-avatar {
-  width: 4rem;
-  height: 4rem;
-}
-
-/* لیست - بزرگ */
-.barber-card-public.card-list-mode .barber-card-public-avatar {
-  width: 5.5rem;
-  height: 5.5rem;
-}
-
-/* ============================================
-   Barber Card - Classic List Mode
-   ============================================ */
-
-.barbers-public-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-}
-
-/* ============ کارت کلاسیک ============ */
-.barber-card-classic {
-  position: relative;
-  background-color: #ffffff;
-  border: 1px solid #f3f4f6;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.barber-card-classic:hover {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-4px);
-  border-color: #d1fae5;
-}
-
-.classic-stripe {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
-  background-size: 200% 100%;
-  animation: shimmer 3s ease-in-out infinite;
-  z-index: 2;
-}
-
-@keyframes shimmer {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* ============ محتوای اصلی (Grid) ============ */
-.classic-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-  padding: 1.5rem;
-  align-items: flex-start;
-}
-
-@media (min-width: 768px) {
-  .classic-content {
-    grid-template-columns: 180px 1fr;
-    gap: 1.75rem;
-    padding: 1.75rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .classic-content {
-    grid-template-columns: 220px 1fr;
-    gap: 2rem;
-  }
-}
-
-/* ============================================
-   سمت راست: تصویر
-   ============================================ */
-.classic-image-wrapper {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.classic-image {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.1);
-  transition: all 0.3s;
-}
-
-.barber-card-classic:hover .classic-image {
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.2);
-}
-
-@media (max-width: 767px) {
-  .classic-image {
-    max-width: 220px;
-    margin: 0 auto;
-    aspect-ratio: 16 / 10;
-    border-radius: 1rem;
-    height: 220px;
-  }
-}
-
-.classic-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-  opacity: 0;
-  transition: opacity 0.4s ease, transform 0.6s ease;
-}
-
-.classic-image img.loaded {
-  opacity: 1;
-}
-
-.barber-card-classic:hover .classic-image img {
-  transform: scale(1.05);
-}
-
-.classic-image-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #93c5fd;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-}
-
-/* نشانگر آنلاین روی تصویر */
-.classic-image-status {
-  position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  border: 3px solid white;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 2;
-}
-
-.classic-image-status.online {
-  background-color: #10b981;
-  color: white;
-}
-
-.classic-image-status.online::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background-color: rgba(16, 185, 129, 0.4);
-  animation: pulseOnline 2s ease-out infinite;
-  z-index: -1;
-}
-
-@keyframes pulseOnline {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
-.classic-image-status.offline {
-  background-color: #9ca3af;
-  color: white;
-}
-
-/* ============================================
-   وسط: اطلاعات
-   ============================================ */
-.classic-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  min-width: 0;
-}
-
-/* ============ هدر ============ */
-.classic-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px dashed #f3f4f6;
-}
-
-.classic-name-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  min-width: 0;
-}
-
-.classic-name {
-  font-size: 1.375rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-}
-
-@media (min-width: 1024px) {
-  .classic-name {
-    font-size: 1.5rem;
-  }
-}
-
-.classic-specialty {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.3125rem 0.75rem;
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-  color: #5b21b6;
-  border: 1px solid #ddd6fe;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  width: fit-content;
-}
-
-/* امتیاز */
-.classic-rating {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.4375rem 0.875rem;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #92400e;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.classic-rating .rating-value {
-  font-size: 0.875rem;
-}
-
-.classic-rating .rating-count {
-  font-size: 0.6875rem;
-  color: #a16207;
-  font-weight: 600;
-}
-
-.no-rating-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4375rem 0.875rem;
-  background-color: #f0fdf4;
-  border: 1px solid #d1fae5;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  color: #065f46;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* ============ بیوگرافی ============ */
-.classic-bio-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.classic-bio {
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1.8;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.3s;
-}
-
-.classic-bio.expanded {
-  -webkit-line-clamp: unset;
-  display: block;
-}
-
-/* ============ ردیف اطلاعات ============ */
-.classic-info-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-}
-
-.classic-info-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #6b7280;
-  transition: all 0.2s;
-}
-
-.classic-info-item svg {
-  color: #10b981;
-  flex-shrink: 0;
-}
-
-.barber-card-classic:hover .classic-info-item {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
-  color: #065f46;
-}
-
-/* ============ خدمات ============ */
-.classic-services {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #f3f4f6;
-}
-
-.classic-services-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3125rem;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.classic-services-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4375rem;
-}
-
-.classic-service-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.3125rem 0.75rem;
-  background-color: #f0fdf4;
-  color: #065f46;
-  border: 1px solid #d1fae5;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-
-.classic-service-tag:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
-}
-
-.classic-service-tag.more {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border-color: #e5e7eb;
-}
-
-/* ============================================
-   فوتر: دکمه در پایین سمت چپ
-   ============================================ */
-.classic-footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-top: 1rem;
-  margin-top: auto;
-  border-top: 1px dashed #f3f4f6;
-}
-
-.classic-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border-radius: 0.875rem;
-  font-size: 0.9375rem;
-  font-weight: 800;
-  text-decoration: none;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  min-width: 180px;
-}
-
-.classic-cta::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.25),
-      transparent);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.classic-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
-}
-
-.classic-cta:hover::before {
-  opacity: 1;
-}
-
-.classic-cta svg {
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-
-.classic-cta:hover svg {
-  transform: translateX(-4px);
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 767px) {
-  .classic-content {
-    padding: 1.25rem;
-    gap: 1rem;
-  }
-
-  .classic-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .classic-name {
-    font-size: 1.125rem;
-  }
-
-  .classic-bio {
-    font-size: 0.8125rem;
-  }
-
-  .classic-info-item {
-    font-size: 0.6875rem;
-    padding: 0.3125rem 0.625rem;
-  }
-
-  .classic-service-tag {
-    font-size: 0.6875rem;
-    padding: 0.25rem 0.625rem;
-  }
-
-  .classic-footer {
-    justify-content: stretch;
-  }
-
-  .classic-cta {
-    width: 100%;
-    min-width: 0;
-    padding: 0.875rem 1.25rem;
-  }
-}
-
-/* ============================================
-   اگر بخواهید کارت‌ها یک ستونه با عرض محدود باشند
-   ============================================ */
-@media (min-width: 1200px) {
-  .barbers-public-list {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-}
-
-/* ============================================
-   Countdown Timer - Booking Card
-   ============================================ */
-
-.booking-card .countdown-timer,
-.booking-status-row .countdown-timer {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3125rem;
-  padding: 0.3125rem 0.625rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  color: #92400e;
-  border: 1.5px solid #fcd34d;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  font-family: "Vazirmatn", inherit;
-  direction: ltr;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
-  animation: countdownPulse 2s ease-in-out infinite;
-  position: relative;
-  overflow: hidden;
-}
-
-/* افکت Shimmer */
-.booking-card .countdown-timer::before,
-.booking-status-row .countdown-timer::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent);
-  animation: countdownShimmer 2s ease-in-out infinite;
-}
-
-@keyframes countdownShimmer {
-  0% {
-    left: -100%;
-  }
-
-  50%,
-  100% {
-    left: 100%;
-  }
-}
-
-@keyframes countdownPulse {
-
-  0%,
-  100% {
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
-    transform: scale(1);
-  }
-
-  50% {
-    box-shadow: 0 2px 20px rgba(251, 191, 36, 0.6);
-    transform: scale(1.03);
-  }
-}
-
-/* آیکون */
-.booking-card .countdown-timer svg,
-.booking-status-row .countdown-timer svg {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-  animation: countdownRotate 3s linear infinite;
-  position: relative;
-  z-index: 1;
-}
-
-@keyframes countdownRotate {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============ حالت منقضی شده ============ */
-.booking-card .countdown-timer.expired,
-.booking-status-row .countdown-timer.expired {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  color: #991b1b;
-  border-color: #fca5a5;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
-  animation: none;
-}
-
-.booking-card .countdown-timer.expired::before,
-.booking-status-row .countdown-timer.expired::before {
-  display: none;
-}
-
-.booking-card .countdown-timer.expired svg,
-.booking-status-row .countdown-timer.expired svg {
-  animation: none;
-  color: #ef4444;
-}
-
-/* ============ حالت هشدار (کمتر از ۵ دقیقه) ============ */
-.booking-card .countdown-timer.warning,
-.booking-status-row .countdown-timer.warning {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  color: #991b1b;
-  border-color: #fecaca;
-  animation: countdownWarning 1s ease-in-out infinite;
-}
-
-@keyframes countdownWarning {
-
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-  }
-
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 2px 20px rgba(239, 68, 68, 0.6);
-  }
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
 
   .booking-card .countdown-timer,
   .booking-status-row .countdown-timer {
@@ -1787,4 +1685,220 @@
     width: 10px;
     height: 10px;
   }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .barbers-hero {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .hero-shape {
+  opacity: 0.2;
+}
+
+html.dark .barbers-section {
+  background-color: var(--color-bg);
+}
+
+html.dark .barber-card-public,
+html.dark .barber-card-classic {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-card-public:hover,
+html.dark .barber-card-classic:hover {
+  border-color: var(--color-primary-light);
+}
+
+html.dark .barber-card-public-avatar,
+html.dark .classic-image {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .classic-image-placeholder {
+  color: var(--color-primary);
+}
+
+html.dark .view-mode-toggle {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .sort-select-public {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+html.dark .filter-toggle-btn,
+html.dark .clear-filters-btn,
+html.dark .online-toggle-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barbers-filters-panel {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .city-chip,
+html.dark .rating-chip {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+html.dark .city-chip:hover,
+html.dark .rating-chip:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .feature-card {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .feature-card:hover {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .hero-badge,
+html.dark .hero-stat,
+html.dark .hero-feature {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-card-specialty {
+  color: color-mix(in srgb, #8b5cf6 80%, white);
+}
+
+html.dark .classic-specialty {
+  color: color-mix(in srgb, #8b5cf6 80%, white);
+}
+
+html.dark .classic-rating {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .classic-rating .rating-count {
+  color: color-mix(in srgb, var(--color-warning) 70%, white);
+}
+
+html.dark .booking-card .countdown-timer,
+html.dark .booking-status-row .countdown-timer {
+  color: color-mix(in srgb, var(--color-warning) 70%, white);
+}
+
+html.dark .booking-card .countdown-timer.expired,
+html.dark .booking-status-row .countdown-timer.expired,
+html.dark .booking-card .countdown-timer.warning,
+html.dark .booking-status-row .countdown-timer.warning {
+  color: color-mix(in srgb, var(--color-danger) 70%, white);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .barbers-hero *,
+  .barbers-section *,
+  .features-section *,
+  .barbers-public-list * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-shape,
+  .barber-card-stripe,
+  .classic-stripe,
+  .countdown-timer,
+  .countdown-timer svg,
+  .pulseOnline,
+  .online-dot,
+  .booking-card .countdown-timer,
+  .booking-status-row .countdown-timer {
+    animation: none !important;
+  }
+
+  .hero-stat:hover,
+  .hero-feature:hover,
+  .feature-card:hover,
+  .barber-card-public:hover,
+  .barber-card-classic:hover,
+  .classic-cta:hover {
+    transform: none;
+  }
+
+  .barber-card-classic:hover .classic-image img {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .barbers-hero,
+  .barbers-filters,
+  .barbers-toolbar,
+  .view-mode-toggle,
+  .sort-wrapper,
+  .filter-toggle-btn,
+  .clear-filters-btn,
+  .classic-cta,
+  .barber-card-public-cta {
+    display: none !important;
+  }
+
+  .barbers-section {
+    background: #ffffff;
+    padding: 1rem 0;
+  }
+
+  .barber-card-public,
+  .barber-card-classic,
+  .feature-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .barber-card-stripe,
+  .classic-stripe {
+    display: none;
+  }
+}
+
+/* ============================================
+   Focus Visible (A11y)
+   ============================================ */
+.barbers-hero button:focus-visible,
+.barbers-section button:focus-visible,
+.barbers-section a:focus-visible,
+.barbers-public-list a:focus-visible,
+.barbers-public-grid a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.barbers-hero ::selection,
+.barbers-section ::selection,
+.barbers-public-list ::selection,
+.barbers-public-grid ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }

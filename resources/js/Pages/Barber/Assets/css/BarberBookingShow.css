@@ -1,30 +1,33 @@
 /* ============================================
-   Barber Booking Show Page
+   Barber Booking Show Page — Theme-aware تا اینجا
    ============================================ */
 
+/* ============ Page Container ============ */
 .barber-booking-show-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
+  color: var(--color-text);
+  transition: color 0.3s;
 }
 
 .barber-booking-show-back {
   margin-bottom: 1.5rem;
 }
 
-/* ============================================
-   1. Header
-   ============================================ */
+/* ============ 1. Header ============ */
 .barber-booking-show-header {
   display: flex;
   align-items: flex-start;
   gap: 1.25rem;
   padding: 1.75rem;
-  border: 1px solid;
+  border: 1px solid var(--color-border);
   border-radius: 1.5rem;
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
+  background-color: var(--color-bg-card);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .barber-booking-show-header::before {
@@ -34,7 +37,9 @@
   left: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--color-primary) 8%, transparent) 0%,
+      transparent 70%);
   pointer-events: none;
 }
 
@@ -88,42 +93,43 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 700;
   padding: 0.375rem 0.75rem;
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 9999px;
 }
 
 .barber-booking-show-title {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.375rem;
   line-height: 1.5;
 }
 
 .barber-booking-show-subtitle {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
-/* ============================================
-   2. Dispute Alert
-   ============================================ */
+/* ============ 2. Dispute Alert ============ */
 .barber-dispute-alert {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
   padding: 1.25rem;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border: 1px solid #fecaca;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card)) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
   border-radius: 1.25rem;
   margin-bottom: 1.5rem;
-  border-right: 4px solid #ef4444;
+  border-right: 4px solid var(--color-danger);
   animation: shakeAlert 0.5s ease;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 @keyframes shakeAlert {
@@ -143,7 +149,7 @@
 }
 
 .barber-dispute-alert svg {
-  color: #ef4444;
+  color: var(--color-danger);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -151,38 +157,31 @@
 .barber-dispute-alert h4 {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #991b1b;
+  color: var(--color-danger);
   margin: 0 0 0.375rem;
 }
 
 .barber-dispute-alert p {
   font-size: 0.8125rem;
-  color: #b91c1c;
+  color: var(--color-danger);
   line-height: 1.6;
   margin: 0;
+  opacity: 0.9;
 }
 
 .barber-dispute-alert .dispute-reason {
   margin-top: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: color-mix(in srgb, var(--color-bg-card) 60%, transparent);
   border-radius: 0.5rem;
   font-style: italic;
 }
 
-/* ============================================
-   3. Grid Layout
-   ============================================ */
+/* ============ 3. Grid Layout ============ */
 .barber-booking-show-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .barber-booking-show-grid {
-    grid-template-columns: 1fr 380px;
-  }
 }
 
 .barber-booking-show-main {
@@ -197,20 +196,18 @@
   gap: 1.5rem;
 }
 
-/* ============================================
-   4. Cards
-   ============================================ */
+/* ============ 4. Cards ============ */
 .barber-booking-show-card {
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
   transition: all 0.2s;
 }
 
 .barber-booking-show-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .barber-booking-show-card-header {
@@ -219,21 +216,21 @@
   gap: 0.75rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--color-border);
+  transition: border-color 0.3s;
 }
 
-/* ============================================
-   5. Customer Info Card
-   ============================================ */
+/* ============ 5. Customer Info Card ============ */
 .customer-info-card {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 1rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   flex-wrap: wrap;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .customer-info-avatar {
@@ -241,15 +238,15 @@
   height: 4rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1.5rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .customer-info-avatar img {
@@ -266,7 +263,7 @@
 .customer-info-name {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 0.5rem;
 }
 
@@ -281,36 +278,28 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.3125rem 0.625rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .customer-info-contact .contact-item:hover {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   transform: translateY(-1px);
 }
 
-/* ============================================
-   6. Booking Info Grid
-   ============================================ */
+/* ============ 6. Booking Info Grid ============ */
 .booking-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-}
-
-@media (max-width: 640px) {
-  .booking-info-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .info-block {
@@ -318,30 +307,30 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   transition: all 0.2s;
 }
 
 .info-block:hover {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.06);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .info-icon {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background-color: white;
-  color: #10b981;
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
 }
 
 .info-content {
@@ -353,7 +342,7 @@
 
 .info-label {
   font-size: 0.6875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -362,39 +351,36 @@
 .info-value {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
-/* ============================================
-   7. Service Description
-   ============================================ */
+/* ============ 7. Service Description ============ */
 .service-description-box {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.875rem 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border-right: 3px solid #10b981;
+  border-right: 3px solid var(--color-primary);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .service-description-box svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .service-description-box p {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
 
-/* ============================================
-   8. Payment Info
-   ============================================ */
+/* ============ 8. Payment Info ============ */
 .payment-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -402,31 +388,26 @@
   margin-bottom: 1.25rem;
 }
 
-@media (max-width: 640px) {
-  .payment-info-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 .payment-info-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.75rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .payment-info-label {
   font-size: 0.6875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .payment-info-value {
   font-size: 0.8125rem;
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 700;
 }
 
@@ -452,9 +433,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
   border-radius: 0.875rem;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .payment-total-label {
@@ -463,24 +445,22 @@
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .payment-total-value {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .payment-total-value .currency {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #047857;
+  color: var(--color-primary);
 }
 
-/* ============================================
-   9. Review Display
-   ============================================ */
+/* ============ 9. Review Display ============ */
 .review-display {
   display: flex;
   flex-direction: column;
@@ -497,27 +477,28 @@
 
 .review-display-date {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .review-display-comment {
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-text);
   line-height: 1.9;
   margin: 0;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border-right: 3px solid #fbbf24;
+  border-right: 3px solid var(--color-warning);
+  transition: background-color 0.3s;
 }
 
-/* ============================================
-   10. Summary Card
-   ============================================ */
+/* ============ 10. Summary Card ============ */
 .summary-card {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
-  border-color: #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-primary-light);
 }
 
 .summary-list {
@@ -535,41 +516,42 @@
 }
 
 .summary-row-label {
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .summary-row-value {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .summary-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #a7f3d0, transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      var(--color-primary-light),
+      transparent);
   margin: 0.25rem 0;
 }
 
 .summary-row.total .summary-row-label {
   font-size: 0.875rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 800;
 }
 
 .summary-row.total .summary-row-value {
   font-size: 1.25rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 800;
 }
 
 .summary-row.total .currency {
   font-size: 0.75rem;
-  color: #047857;
+  color: var(--color-primary);
 }
 
-/* ============================================
-   11. Actions
-   ============================================ */
+/* ============ 11. Actions ============ */
 .actions-list {
   display: flex;
   flex-direction: column;
@@ -581,13 +563,13 @@
   align-items: center;
   gap: 0.625rem;
   padding: 0.875rem 1rem;
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.8125rem;
   font-weight: 700;
   font-family: inherit;
-  color: var(--text-main);
+  color: var(--color-text);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -599,82 +581,80 @@
   flex-shrink: 0;
 }
 
-/* دکمه تکمیل - سبز */
+/* دکمه تکمیل - primary */
 .action-btn.complete {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .action-btn.complete:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 20px var(--color-primary-light);
 }
 
-/* دکمه اعتراض - نارنجی */
+/* دکمه اعتراض - warning */
 .action-btn.dispute {
-  background-color: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 .action-btn.dispute:hover {
-  background-color: #f59e0b;
-  color: white;
-  border-color: #f59e0b;
+  background-color: var(--color-warning);
+  color: #ffffff;
+  border-color: var(--color-warning);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
-/* دکمه چاپ - آبی */
+/* دکمه چاپ - info */
 .action-btn.print {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .action-btn.print:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background-color: var(--color-info);
+  color: #ffffff;
+  border-color: var(--color-info);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
-/* دکمه تماس - سبز روشن */
+/* دکمه تماس - primary */
 .action-btn.contact {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
 }
 
 .action-btn.contact:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
-/* دکمه لغو - قرمز */
+/* دکمه لغو - danger */
 .action-btn.cancel {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .action-btn.cancel:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
+  background-color: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
-/* ============================================
-   12. Info Box
-   ============================================ */
+/* ============ 12. Info Box ============ */
 .info-box {
   display: flex;
   align-items: flex-start;
@@ -697,38 +677,36 @@
 }
 
 .info-box.info {
-  background-color: #eff6ff;
-  border-right: 3px solid #3b82f6;
-  color: #1e40af;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-right: 3px solid var(--color-info);
+  color: var(--color-info);
 }
 
 .info-box.info svg {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
 .info-box.warning {
-  background-color: #fffbeb;
-  border-right: 3px solid #f59e0b;
-  color: #92400e;
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border-right: 3px solid var(--color-warning);
+  color: var(--color-warning);
 }
 
 .info-box.warning svg {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .info-box.success {
-  background-color: #ecfdf5;
-  border-right: 3px solid #10b981;
-  color: #065f46;
+  background-color: var(--color-primary-tint);
+  border-right: 3px solid var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .info-box.success svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
-/* ============================================
-   13. Status Guide List
-   ============================================ */
+/* ============ 13. Status Guide ============ */
 .status-guide-list {
   list-style: none;
   padding: 0;
@@ -743,19 +721,17 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
 }
 
 .status-guide-list li svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 3px;
 }
 
-/* ============================================
-   14. Dispute Modal
-   ============================================ */
+/* ============ 14. Dispute Modal ============ */
 .dispute-modal-overlay {
   position: fixed;
   inset: 0;
@@ -770,16 +746,39 @@
   animation: fadeIn 0.2s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .dispute-modal {
-  background-color: white;
+  background-color: var(--color-bg-card);
   border-radius: 1.5rem;
   padding: 1.75rem;
   max-width: 520px;
   width: 100%;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--color-shadow);
   animation: modalSlideUp 0.3s ease;
   max-height: 90vh;
   overflow-y: auto;
+  transition: background-color 0.3s;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .dispute-modal-header {
@@ -795,12 +794,12 @@
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fecaca;
+  border: 2px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   animation: iconPulseRed 2s ease-in-out infinite;
 }
 
@@ -808,18 +807,18 @@
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-danger) 40%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 12px transparent;
   }
 }
 
 .dispute-modal-header h3 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -828,22 +827,22 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
   border-radius: 0.875rem;
-  border-right: 3px solid #f59e0b;
+  border-right: 3px solid var(--color-warning);
   margin-bottom: 1.25rem;
 }
 
 .dispute-modal-warning svg {
-  color: #f59e0b;
+  color: var(--color-warning);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .dispute-modal-warning p {
   font-size: 0.75rem;
-  color: #92400e;
+  color: var(--color-warning);
   line-height: 1.7;
   margin: 0;
 }
@@ -857,9 +856,9 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   margin-bottom: 1.25rem;
 }
 
@@ -872,15 +871,67 @@
 }
 
 .dispute-modal-info .info-row span {
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .dispute-modal-info .info-row strong {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 800;
 }
 
+/* ============ Dispute Type Options ============ */
+.dispute-type-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.dispute-type-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: right;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.dispute-type-btn:hover {
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--color-warning) 15%, transparent);
+}
+
+.dispute-type-btn.selected {
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 35%, transparent);
+  transform: translateY(-1px);
+}
+
+.dispute-type-btn svg {
+  flex-shrink: 0;
+}
+
+.dispute-type-btn.selected svg {
+  color: #ffffff;
+}
+
+/* ============ Form Textarea ============ */
 .dispute-form-group {
   margin-bottom: 1.25rem;
 }
@@ -889,52 +940,72 @@
   display: block;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 
 .required {
-  color: #ef4444;
+  color: var(--color-danger);
   margin-right: 0.25rem;
 }
 
 .form-textarea {
   width: 100%;
-  padding: 0.875rem;
-  background-color: #f9fafb;
-  border: 1.5px solid var(--border-color);
+  padding: 0.875rem 1rem;
+  background-color: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: var(--text-main);
+  font-family: inherit;
+  color: var(--color-text);
   line-height: 1.7;
   resize: vertical;
   min-height: 100px;
   outline: none;
   transition: all 0.2s;
+  direction: rtl;
+}
+
+.form-textarea:hover {
+  border-color: var(--color-primary-light);
+  background-color: var(--color-bg-card);
 }
 
 .form-textarea:focus {
-  background-color: white;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background-color: var(--color-bg-card);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
 .form-textarea.error {
-  border-color: #ef4444;
+  border-color: var(--color-danger);
+  background-color: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg-card));
+}
+
+.form-textarea.error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
 }
 
 .form-textarea::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  opacity: 0.7;
+}
+
+.form-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .char-counter {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-align: left;
   direction: ltr;
   margin-top: 0.375rem;
+  padding: 0 0.25rem;
 }
 
 .form-error {
@@ -942,28 +1013,44 @@
   align-items: center;
   gap: 0.375rem;
   margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
+  border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 600;
+  animation: errorShake 0.3s ease;
+}
+
+@keyframes errorShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 .form-error svg {
-  color: #ef4444;
+  color: var(--color-danger);
+  flex-shrink: 0;
 }
 
+/* ============ Modal Actions ============ */
 .dispute-modal-actions {
   display: flex;
   flex-direction: column-reverse;
   gap: 0.625rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-@media (min-width: 640px) {
-  .dispute-modal-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
+  border-top: 1px dashed var(--color-border);
 }
 
 .btn-cancel,
@@ -978,49 +1065,58 @@
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   white-space: nowrap;
+  width: 100%;
 }
 
 .btn-cancel {
-  background-color: white;
-  color: var(--text-muted);
-  border: 1.5px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-primary-light);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-confirm {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+  background: var(--color-danger);
+  color: #ffffff;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .btn-confirm:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-danger) 45%, transparent);
 }
 
-.btn-confirm:disabled,
-.btn-cancel:disabled {
-  opacity: 0.6;
+.btn-confirm:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-confirm:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* ============================================
-   15. Spinner
-   ============================================ */
+/* ============ Spinner ============ */
 .spinner {
   display: inline-block;
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -1031,10 +1127,943 @@
   }
 }
 
-/* ============================================
-   16. Animations
-   ============================================ */
-@keyframes fadeIn {
+/* ============ Dispute Attachments ============ */
+.dispute-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.attachments-preview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.625rem;
+  width: 100%;
+}
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: attachmentFadeIn 0.3s ease;
+}
+
+@keyframes attachmentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.attachment-item:hover {
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.attachment-image {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.625rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  transition: all 0.2s;
+}
+
+.attachment-item:hover .attachment-image {
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+/* ============ Attachments (ادامه) ============ */
+.attachment-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1.5px solid color-mix(in srgb, var(--color-info) 25%, transparent);
+}
+
+.attachment-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.attachment-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.attachment-size {
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  direction: ltr;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.attachment-size::before {
+  content: "";
+  display: inline-block;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.attachment-remove {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border: 1.5px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+}
+
+.attachment-remove:hover:not(:disabled) {
+  background-color: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+.attachment-remove:active:not(:disabled) {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.attachment-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.attachment-remove svg {
+  flex-shrink: 0;
+}
+
+/* ============ Upload Button ============ */
+.attachment-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-bg-card);
+  border: 2px dashed var(--color-border);
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  width: 100%;
+  text-align: right;
+  position: relative;
+  overflow: hidden;
+}
+
+.attachment-upload-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--color-primary) 10%, transparent),
+      transparent);
+  transition: left 0.5s;
+}
+
+.attachment-upload-btn:hover {
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--color-primary-light);
+}
+
+.attachment-upload-btn:hover::before {
+  left: 100%;
+}
+
+.attachment-upload-btn svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  transition: transform 0.3s;
+}
+
+.attachment-upload-btn:hover svg {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.attachment-upload-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.attachment-upload-btn .upload-count {
+  margin-right: auto;
+  padding: 0.25rem 0.625rem;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  direction: ltr;
+  transition: all 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.attachment-upload-btn:hover .upload-count {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--color-primary-light);
+}
+
+/* ============ Display Attachments (بعد از ارسال) ============ */
+.dispute-attachments-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 0.875rem;
+  margin-top: 1rem;
+}
+
+.dispute-attachments-display h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.dispute-attachments-display h4 svg {
+  color: var(--color-primary);
+}
+
+.attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.attachment-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.25s;
+  background-color: var(--color-bg-card);
+}
+
+.attachment-preview-item:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  z-index: 1;
+}
+
+.attachment-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.attachment-overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-primary) 90%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.25s;
+  backdrop-filter: blur(2px);
+}
+
+.attachment-preview-item:hover .attachment-overlay {
+  opacity: 1;
+}
+
+/* ============ Dispute Mini Badge ============ */
+.dispute-mini-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.dispute-mini-badge.status-pending {
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  animation: pulseMiniBadge 2s ease-in-out infinite;
+}
+
+.dispute-mini-badge.status-investigating {
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+}
+
+.dispute-mini-badge.status-resolved {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
+}
+
+.dispute-mini-badge.status-rejected {
+  background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+@keyframes pulseMiniBadge {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-warning) 40%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+/* ============ Customer Dispute Banner (Barber Panel) ============ */
+.customer-dispute-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  direction: rtl;
+  animation: disputeBannerSlideIn 0.4s ease;
+  background-color: var(--color-bg-card);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+@keyframes disputeBannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* pending */
+.customer-dispute-banner.status-pending {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 40%, transparent);
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-icon {
+  background: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 35%, transparent);
+  animation: pulsePendingIcon 2s ease-in-out infinite;
+}
+
+/* investigating */
+.customer-dispute-banner.status-investigating {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-info) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-info) 40%, transparent);
+}
+
+.customer-dispute-banner.status-investigating .dispute-banner-icon {
+  background: var(--color-info);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-info) 35%, transparent);
+}
+
+/* awaiting_response */
+.customer-dispute-banner.status-awaiting_response {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-warning) 18%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+}
+
+.customer-dispute-banner.status-awaiting_response .dispute-banner-icon {
+  background: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 35%, transparent);
+  animation: pulsePendingIcon 1.5s ease-in-out infinite;
+}
+
+/* resolved */
+.customer-dispute-banner.status-resolved {
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card)) 100%);
+  border-color: var(--color-primary-light);
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-icon {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 20px var(--color-primary-light);
+}
+
+/* rejected */
+.customer-dispute-banner.status-rejected {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.customer-dispute-banner.status-rejected .dispute-banner-icon {
+  background: var(--color-danger);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
+/* cancelled */
+.customer-dispute-banner.status-cancelled {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      color-mix(in srgb, var(--color-text-muted) 8%, var(--color-bg-card)) 100%);
+  border-color: var(--color-border);
+}
+
+.customer-dispute-banner.status-cancelled .dispute-banner-icon {
+  background: var(--color-text-muted);
+  color: #ffffff;
+}
+
+@keyframes pulsePendingIcon {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 35%, transparent);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--color-warning) 55%, transparent);
+  }
+}
+
+/* ============ Banner Icon ============ */
+.dispute-banner-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.dispute-banner-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* ============ Banner Content ============ */
+.dispute-banner-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dispute-banner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.dispute-banner-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-header h3,
+.customer-dispute-banner.status-awaiting_response .dispute-banner-header h3 {
+  color: var(--color-warning);
+}
+
+.customer-dispute-banner.status-investigating .dispute-banner-header h3 {
+  color: var(--color-info);
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-header h3 {
+  color: var(--color-primary-hover);
+}
+
+.customer-dispute-banner.status-rejected .dispute-banner-header h3 {
+  color: var(--color-danger);
+}
+
+.dispute-banner-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  background-color: color-mix(in srgb, var(--color-bg-card) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  direction: ltr;
+  backdrop-filter: blur(8px);
+}
+
+.dispute-banner-message {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.customer-dispute-banner.status-pending .dispute-banner-message {
+  color: var(--color-warning);
+}
+
+.customer-dispute-banner.status-resolved .dispute-banner-message {
+  color: var(--color-primary-hover);
+}
+
+/* ============ Banner Details ============ */
+.dispute-banner-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--color-bg-card);
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-text) 5%, transparent);
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.dispute-banner-details .detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  flex-wrap: wrap;
+}
+
+.dispute-banner-details .detail-label {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.dispute-banner-details .detail-value {
+  color: var(--color-text);
+  font-weight: 700;
+  text-align: left;
+  line-height: 1.6;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Success */
+.dispute-banner-details .detail-item.success {
+  padding: 0.75rem;
+  background-color: var(--color-primary-tint);
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-primary-light);
+}
+
+.dispute-banner-details .detail-item.success .detail-label {
+  color: var(--color-primary-hover);
+}
+
+.dispute-banner-details .detail-item.success .detail-value {
+  color: var(--color-primary);
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+/* Penalty */
+.dispute-banner-details .detail-item.penalty {
+  padding: 0.75rem;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-radius: 0.625rem;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.dispute-banner-details .detail-item.penalty .detail-label {
+  color: var(--color-danger);
+}
+
+.dispute-banner-details .detail-item.penalty .detail-value {
+  color: var(--color-danger);
+  font-weight: 800;
+}
+
+/* Resolution */
+.dispute-banner-details .detail-item.resolution {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.dispute-banner-details .detail-item.resolution .detail-value {
+  padding: 0.75rem 1rem;
+  background-color: var(--color-bg-hover);
+  border-right: 3px solid var(--color-primary);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--color-text);
+  width: 100%;
+  text-align: right;
+}
+
+/* Response */
+.dispute-banner-details .detail-item.response {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.dispute-banner-details .detail-item.response .detail-value {
+  padding: 0.75rem 1rem;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-right: 3px solid var(--color-info);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--color-info);
+  width: 100%;
+  text-align: right;
+}
+
+/* ============ Attachments ============ */
+.dispute-banner-details .detail-item.attachments {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.dispute-banner-details .detail-item.attachments .detail-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--color-text);
+}
+
+.dispute-banner-details .detail-item.attachments .detail-label svg {
+  color: var(--color-primary);
+}
+
+.dispute-attachments-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.dispute-attachment-mini {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--color-bg-hover);
+  text-decoration: none;
+}
+
+.dispute-attachment-mini:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  z-index: 2;
+}
+
+.dispute-attachment-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.attachment-mini-overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-primary) 90%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.25s;
+  backdrop-filter: blur(2px);
+}
+
+.dispute-attachment-mini:hover .attachment-mini-overlay {
+  opacity: 1;
+}
+
+/* ============ Banner Info & Warning ============ */
+.dispute-banner-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: color-mix(in srgb, var(--color-bg-card) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 5%, transparent);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  backdrop-filter: blur(8px);
+  margin-top: 0.25rem;
+}
+
+.dispute-banner-info svg {
+  color: var(--color-warning);
+  flex-shrink: 0;
+}
+
+.dispute-banner-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: color-mix(in srgb, var(--color-bg-card) 85%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--color-warning) 40%, transparent);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-warning);
+  margin-top: 0.25rem;
+}
+
+.dispute-banner-warning svg {
+  color: var(--color-warning);
+  flex-shrink: 0;
+  animation: pulseWarningIcon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseWarningIcon {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.15);
+  }
+}
+
+/* ============ Banner Actions ============ */
+.dispute-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.875rem;
+  margin-top: 0.875rem;
+  border-top: 1px dashed color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.dispute-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border: 1.5px solid;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-bg-card);
+}
+
+.dispute-action-btn.edit {
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
+}
+
+.dispute-action-btn.edit:hover {
+  background-color: var(--color-info);
+  color: #ffffff;
+  border-color: var(--color-info);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-info) 30%, transparent);
+}
+
+.dispute-action-btn.delete {
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.dispute-action-btn.delete:hover {
+  background-color: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+.dispute-action-btn.respond {
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+.dispute-action-btn.respond:hover {
+  background-color: var(--color-warning);
+  color: #ffffff;
+  border-color: var(--color-warning);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+.dispute-action-btn.view {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.dispute-action-btn.view:hover {
+  background-color: var(--color-text-muted);
+  color: #ffffff;
+  border-color: var(--color-text-muted);
+  transform: translateY(-2px);
+}
+
+.dispute-action-btn .time-remaining {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.4375rem;
+  margin-right: 0.25rem;
+  background-color: color-mix(in srgb, var(--color-bg-card) 60%, transparent);
+  color: inherit;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  direction: ltr;
+}
+
+/* ============ Response Modal ============ */
+.response-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: responseOverlayIn 0.2s ease-out;
+}
+
+@keyframes responseOverlayIn {
   from {
     opacity: 0;
   }
@@ -1044,10 +2073,23 @@
   }
 }
 
-@keyframes modalSlideUp {
+.response-modal {
+  background: var(--color-bg-card);
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px var(--color-shadow);
+  animation: responseModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--color-text);
+}
+
+@keyframes responseModalIn {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(16px) scale(0.97);
   }
 
   to {
@@ -1056,38 +2098,452 @@
   }
 }
 
+.response-modal-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.response-modal-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.response-modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.response-modal-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-muted);
+}
+
+.response-modal-close:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.response-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.response-modal-warning {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  padding: 0.875rem 1rem;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-radius: 0.875rem;
+  margin-bottom: 1rem;
+  color: var(--color-warning);
+}
+
+.response-modal-warning svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.response-modal-warning p {
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.admin-request-box {
+  padding: 1rem;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid color-mix(in srgb, var(--color-info) 25%, transparent);
+  border-right: 4px solid var(--color-info);
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-request-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-info);
+  margin-bottom: 0.5rem;
+}
+
+.admin-request-box p {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.8;
+  margin: 0 0 0.5rem;
+}
+
+.admin-request-date {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.response-modal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: var(--color-bg-hover);
+  border-radius: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.response-modal-info .info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+}
+
+.response-modal-info .info-row span {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.response-modal-info .info-row strong {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.response-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.response-form-group .form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.response-form-group .required {
+  color: var(--color-danger);
+}
+
+.response-form-group .form-textarea {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.875rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 110px;
+  transition: all 0.2s;
+  background-color: var(--color-bg-hover);
+}
+
+.response-form-group .form-textarea:focus {
+  outline: none;
+  border-color: var(--color-info);
+  background-color: var(--color-bg-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-info) 12%, transparent);
+}
+
+.response-form-group .form-textarea.error {
+  border-color: var(--color-danger);
+  /* ============ Response Form Group (ادامه) ============ */
+  background-color: color-mix(in srgb, var(--color-danger) 5%, var(--color-bg-card));
+}
+
+.response-form-group .form-textarea.error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.375rem;
+}
+
+.form-hint {
+  display: inline-block;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin-right: 0.375rem;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.form-counter {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  direction: ltr;
+}
+
+/* ============ Response Attachments ============ */
+.response-attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.response-modal-actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.response-modal-actions .btn-cancel,
+.response-modal-actions .btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+}
+
+.response-modal-actions .btn-cancel {
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.response-modal-actions .btn-cancel:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.response-modal-actions .btn-confirm {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.response-modal-actions .btn-confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px var(--color-primary-light);
+}
+
+.response-modal-actions .btn-cancel:disabled,
+.response-modal-actions .btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============ Dispute Admin Message ============ */
+.dispute-admin-message {
+  position: relative;
+  margin: 18px 0;
+  padding: 18px;
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
+  border-right: 4px solid var(--color-info);
+  border-radius: 12px;
+  direction: rtl;
+  overflow: hidden;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dispute-admin-message-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.dispute-admin-message-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  color: var(--color-info);
+  background: color-mix(in srgb, var(--color-info) 15%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-info) 30%, transparent);
+  border-radius: 10px;
+}
+
+.dispute-admin-message-title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.dispute-admin-message-title strong {
+  color: var(--color-info);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.dispute-admin-message-title span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.dispute-admin-message-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dispute-admin-message-body {
+  padding: 14px 15px;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid color-mix(in srgb, var(--color-info) 20%, transparent);
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 2.1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.dispute-admin-message-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  color: var(--color-info);
+  border-top: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.dispute-admin-message-footer svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ============ Action Required Variant ============ */
+.dispute-admin-message.is-action-required {
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  border-right-color: var(--color-warning);
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-icon {
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-title strong {
+  color: var(--color-warning);
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-body {
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+.dispute-admin-message.is-action-required .dispute-admin-message-footer {
+  color: var(--color-warning);
+  border-top-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
 /* ============================================
-   17. Print
+   Responsive — Tablet (min 640px)
    ============================================ */
-@media print {
-
-  .barber-booking-show-back,
-  .barber-booking-show-sidebar .actions-card,
-  .barber-booking-show-sidebar .status-guide-card,
-  .public-navbar,
-  .sidebar,
-  .mobile-menu-btn {
-    display: none !important;
+@media (min-width: 640px) {
+  .attachments-preview {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .barber-booking-show-page {
-    max-width: 100%;
-    padding: 0;
+  .attachments-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  .barber-booking-show-card {
-    box-shadow: none;
-    border: 1px solid #e5e7eb;
-    page-break-inside: avoid;
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .barber-booking-show-header {
-    background: white !important;
+  .dispute-modal-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    width: auto;
+    min-width: 140px;
+  }
+}
+
+@media (min-width: 480px) {
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 /* ============================================
-   18. Responsive
+   Responsive — Desktop (min 1024px)
+   ============================================ */
+@media (min-width: 1024px) {
+  .barber-booking-show-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+/* ============================================
+   Responsive — Mobile (max 767px)
    ============================================ */
 @media (max-width: 767px) {
   .barber-booking-show-header {
@@ -1128,413 +2584,25 @@
   .payment-total-value {
     font-size: 1rem;
   }
+
+  .booking-info-grid,
+  .payment-info-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media (max-width: 480px) {
+/* ============================================
+   Responsive — Small Mobile (max 640px)
+   ============================================ */
+@media (max-width: 640px) {
   .barber-booking-show-page {
-    padding: 1rem 0.75rem 2.5rem;
+    padding: 1.5rem 1rem 3rem;
   }
 
   .barber-booking-show-card {
-    padding: 1rem;
-    border-radius: 1rem;
-  }
-
-  .customer-info-avatar {
-    width: 3.5rem;
-    height: 3.5rem;
-    font-size: 1.25rem;
-  }
-
-  .customer-info-name {
-    font-size: 1rem;
-  }
-
-  .info-block {
-    padding: 0.625rem;
-  }
-
-  .info-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .info-value {
-    font-size: 0.8125rem;
-  }
-
-  .dispute-modal {
     padding: 1.25rem;
-    border-radius: 1.25rem;
   }
 
-  .dispute-modal-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-
-  .btn-cancel,
-  .btn-confirm {
-    width: 100%;
-  }
-}
-
-/* ============================================
-   Dispute Attachments - Full Styles
-   ============================================ */
-
-.dispute-attachments {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-/* ============================================
-   پیش‌نمایش فایل‌ها
-   ============================================ */
-.attachments-preview {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.625rem;
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .attachments-preview {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ============ هر آیتم پیوست ============ */
-.attachment-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background-color: #f9fafb;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.875rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  animation: attachmentFadeIn 0.3s ease;
-}
-
-@keyframes attachmentFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.attachment-item:hover {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
-}
-
-/* ============ تصویر پیوست ============ */
-.attachment-image {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.625rem;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1.5px solid #e5e7eb;
-  background-color: #ffffff;
-  transition: all 0.2s;
-}
-
-.attachment-item:hover .attachment-image {
-  border-color: #10b981;
-  transform: scale(1.05);
-}
-
-/* ============ آیکون فایل (اگر تصویر نبود) ============ */
-.attachment-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.625rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  color: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 1.5px solid #dbeafe;
-}
-
-/* ============ اطلاعات فایل ============ */
-.attachment-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.attachment-name {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  direction: ltr;
-  text-align: right;
-  line-height: 1.3;
-}
-
-.attachment-size {
-  font-size: 0.625rem;
-  color: #6b7280;
-  font-weight: 700;
-  direction: ltr;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.attachment-size::before {
-  content: "";
-  display: inline-block;
-  width: 0.3125rem;
-  height: 0.3125rem;
-  border-radius: 50%;
-  background-color: #10b981;
-  flex-shrink: 0;
-}
-
-/* ============ دکمه حذف ============ */
-.attachment-remove {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: #fef2f2;
-  color: #ef4444;
-  border: 1.5px solid #fee2e2;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0;
-}
-
-.attachment-remove:hover:not(:disabled) {
-  background-color: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-.attachment-remove:active:not(:disabled) {
-  transform: rotate(90deg) scale(0.95);
-}
-
-.attachment-remove:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.attachment-remove svg {
-  flex-shrink: 0;
-}
-
-/* ============================================
-   دکمه آپلود
-   ============================================ */
-.attachment-upload-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 1rem 1.25rem;
-  background-color: #ffffff;
-  border: 2px dashed #d1d5db;
-  border-radius: 0.875rem;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #6b7280;
-  font-family: inherit;
-  width: 100%;
-  text-align: right;
-  position: relative;
-  overflow: hidden;
-}
-
-.attachment-upload-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-      transparent,
-      rgba(16, 185, 129, 0.1),
-      transparent);
-  transition: left 0.5s;
-}
-
-.attachment-upload-btn:hover {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  color: #065f46;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
-}
-
-.attachment-upload-btn:hover::before {
-  left: 100%;
-}
-
-.attachment-upload-btn svg {
-  flex-shrink: 0;
-  color: #10b981;
-  transition: transform 0.3s;
-}
-
-.attachment-upload-btn:hover svg {
-  transform: translateY(-3px) scale(1.1);
-}
-
-.attachment-upload-btn span {
-  position: relative;
-  z-index: 1;
-}
-
-/* ============ شمارنده فایل‌ها ============ */
-.attachment-upload-btn .upload-count {
-  margin-right: auto;
-  padding: 0.25rem 0.625rem;
-  background-color: #f3f4f6;
-  color: #6b7280;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  border-radius: 9999px;
-  direction: ltr;
-  transition: all 0.2s;
-  position: relative;
-  z-index: 1;
-}
-
-.attachment-upload-btn:hover .upload-count {
-  background-color: #10b981;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-}
-
-/* ============================================
-   نمایش پیوست‌ها در صفحه (بعد از ارسال)
-   ============================================ */
-.dispute-attachments-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  background-color: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 0.875rem;
-  margin-top: 1rem;
-}
-
-.dispute-attachments-display h4 {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
-}
-
-.dispute-attachments-display h4 svg {
-  color: #10b981;
-}
-
-.attachments-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .attachments-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.attachment-preview-item {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  border: 2px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 0.25s;
-  background-color: #ffffff;
-}
-
-.attachment-preview-item:hover {
-  transform: scale(1.05);
-  border-color: #10b981;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
-  z-index: 1;
-}
-
-.attachment-preview-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.attachment-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-      rgba(16, 185, 129, 0.9) 0%,
-      rgba(5, 150, 105, 0.9) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  opacity: 0;
-  transition: opacity 0.25s;
-  backdrop-filter: blur(2px);
-}
-
-.attachment-preview-item:hover .attachment-overlay {
-  opacity: 1;
-}
-
-/* ============================================
-   Form Hint
-   ============================================ */
-.form-hint {
-  display: inline-block;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #9ca3af;
-  margin-right: 0.375rem;
-  line-height: 1.5;
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 640px) {
   .attachment-item {
     padding: 0.625rem;
     gap: 0.5rem;
@@ -1573,961 +2641,7 @@
   .attachments-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-}
 
-@media (max-width: 380px) {
-  .attachments-preview {
-    grid-template-columns: 1fr;
-  }
-
-  .attachment-image,
-  .attachment-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-}
-
-/* ============ Dispute Type Options ============ */
-.dispute-type-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-}
-
-@media (max-width: 480px) {
-  .dispute-type-options {
-    grid-template-columns: 1fr;
-  }
-}
-
-.dispute-type-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0.875rem;
-  background-color: #ffffff;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: inherit;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: right;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-}
-
-.dispute-type-btn:hover {
-  background-color: #fffbeb;
-  border-color: #f59e0b;
-  color: #92400e;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.15);
-}
-
-.dispute-type-btn.selected {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  border-color: #f59e0b;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
-  transform: translateY(-1px);
-}
-
-.dispute-type-btn svg {
-  flex-shrink: 0;
-}
-
-.dispute-type-btn.selected svg {
-  color: #ffffff;
-}
-
-/* ============ Form Textarea ============ */
-.form-textarea {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  background-color: #f9fafb;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.875rem;
-  font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: #1f2937;
-  line-height: 1.7;
-  resize: vertical;
-  min-height: 100px;
-  outline: none;
-  transition: all 0.2s;
-  direction: rtl;
-}
-
-.form-textarea:hover {
-  border-color: #d1d5db;
-  background-color: #ffffff;
-}
-
-.form-textarea:focus {
-  background-color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-textarea.error {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-}
-
-.form-textarea.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.form-textarea::placeholder {
-  color: #9ca3af;
-  font-size: 0.8125rem;
-  line-height: 1.7;
-}
-
-.form-textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ============ Char Counter ============ */
-.char-counter {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  font-weight: 700;
-  text-align: left;
-  direction: ltr;
-  margin-top: 0.375rem;
-  padding: 0 0.25rem;
-}
-
-/* ============ Form Error ============ */
-.form-error {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background-color: #fef2f2;
-  border: 1px solid #fee2e2;
-  border-radius: 0.625rem;
-  font-size: 0.75rem;
-  color: #991b1b;
-  font-weight: 600;
-  animation: errorShake 0.3s ease;
-}
-
-@keyframes errorShake {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-4px);
-  }
-
-  75% {
-    transform: translateX(4px);
-  }
-}
-
-.form-error svg {
-  color: #ef4444;
-  flex-shrink: 0;
-}
-
-/* ============ Modal Actions ============ */
-.dispute-modal-actions {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.625rem;
-  padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-@media (min-width: 640px) {
-  .dispute-modal-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-}
-
-.btn-cancel,
-.btn-confirm {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 0.875rem;
-  font-size: 0.875rem;
-  font-weight: 800;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
-  white-space: nowrap;
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-
-  .btn-cancel,
-  .btn-confirm {
-    width: auto;
-    min-width: 140px;
-  }
-}
-
-.btn-cancel {
-  background-color: #ffffff;
-  color: #6b7280;
-  border: 1.5px solid #e5e7eb;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #1f2937;
-  transform: translateY(-1px);
-}
-
-.btn-cancel:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-confirm {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
-}
-
-.btn-confirm:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.45);
-}
-
-.btn-confirm:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-}
-
-.btn-confirm:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ============ Spinner ============ */
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
-  .dispute-modal {
-    padding: 1.5rem;
-    border-radius: 1.25rem;
-    max-height: 95vh;
-  }
-
-  .dispute-modal-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-
-  .dispute-modal-header h3 {
-    font-size: 1rem;
-  }
-
-  .dispute-modal-warning p {
-    font-size: 0.6875rem;
-  }
-
-  .dispute-type-btn {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.6875rem;
-  }
-
-  .btn-cancel,
-  .btn-confirm {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.8125rem;
-  }
-}
-
-/* ============================================
-   Dispute Mini Badge (کنار وضعیت)
-   ============================================ */
-.dispute-mini-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3125rem;
-  padding: 0.3125rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  border: 1px solid;
-  white-space: nowrap;
-}
-
-.dispute-mini-badge.status-pending {
-  background-color: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
-  animation: pulseMiniBadge 2s ease-in-out infinite;
-}
-
-.dispute-mini-badge.status-investigating {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
-}
-
-.dispute-mini-badge.status-resolved {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
-}
-
-.dispute-mini-badge.status-rejected {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
-}
-
-@keyframes pulseMiniBadge {
-
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
-  }
-}
-
-/* ============================================
-   Customer Dispute Banner (Barber Panel)
-   ============================================ */
-
-.customer-dispute-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid;
-  direction: rtl;
-  animation: disputeBannerSlideIn 0.4s ease;
-}
-
-@keyframes disputeBannerSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ============================================
-   حالت‌های مختلف وضعیت
-   ============================================ */
-
-/* pending - زرد */
-.customer-dispute-banner.status-pending {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border-color: #fcd34d;
-}
-
-.customer-dispute-banner.status-pending .dispute-banner-icon {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
-  animation: pulsePendingIcon 2s ease-in-out infinite;
-}
-
-/* investigating - آبی */
-.customer-dispute-banner.status-investigating {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-color: #93c5fd;
-}
-
-.customer-dispute-banner.status-investigating .dispute-banner-icon {
-  background: linear-gradient(135deg, #60a5fa, #3b82f6);
-  color: white;
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
-}
-
-/* awaiting_response - نارنجی */
-.customer-dispute-banner.status-awaiting_response {
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  border-color: #fdba74;
-}
-
-.customer-dispute-banner.status-awaiting_response .dispute-banner-icon {
-  background: linear-gradient(135deg, #fb923c, #f97316);
-  color: white;
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.35);
-  animation: pulsePendingIcon 1.5s ease-in-out infinite;
-}
-
-/* resolved - سبز */
-.customer-dispute-banner.status-resolved {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border-color: #6ee7b7;
-}
-
-.customer-dispute-banner.status-resolved .dispute-banner-icon {
-  background: linear-gradient(135deg, #34d399, #10b981);
-  color: white;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
-}
-
-/* rejected - قرمز */
-.customer-dispute-banner.status-rejected {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  border-color: #fca5a5;
-}
-
-.customer-dispute-banner.status-rejected .dispute-banner-icon {
-  background: linear-gradient(135deg, #f87171, #ef4444);
-  color: white;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
-}
-
-/* cancelled - خاکستری */
-.customer-dispute-banner.status-cancelled {
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-  border-color: #d1d5db;
-}
-
-.customer-dispute-banner.status-cancelled .dispute-banner-icon {
-  background: linear-gradient(135deg, #9ca3af, #6b7280);
-  color: white;
-}
-
-@keyframes pulsePendingIcon {
-
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);
-  }
-
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 8px 28px rgba(245, 158, 11, 0.55);
-  }
-}
-
-/* ============================================
-   آیکون بنر
-   ============================================ */
-.dispute-banner-icon {
-  width: 3.75rem;
-  height: 3.75rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.dispute-banner-icon svg {
-  width: 26px;
-  height: 26px;
-}
-
-/* ============================================
-   محتوای بنر
-   ============================================ */
-.dispute-banner-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* ============ هدر ============ */
-.dispute-banner-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.25rem;
-}
-
-.dispute-banner-header h3 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
-  line-height: 1.4;
-}
-
-.customer-dispute-banner.status-pending .dispute-banner-header h3 {
-  color: #92400e;
-}
-
-.customer-dispute-banner.status-investigating .dispute-banner-header h3 {
-  color: #1e40af;
-}
-
-.customer-dispute-banner.status-awaiting_response .dispute-banner-header h3 {
-  color: #9a3412;
-}
-
-.customer-dispute-banner.status-resolved .dispute-banner-header h3 {
-  color: #065f46;
-}
-
-.customer-dispute-banner.status-rejected .dispute-banner-header h3 {
-  color: #991b1b;
-}
-
-/* ============ تاریخ ============ */
-.dispute-banner-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.875rem;
-  background-color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: #6b7280;
-  white-space: nowrap;
-  direction: ltr;
-  backdrop-filter: blur(8px);
-}
-
-/* ============================================
-   پیام اصلی
-   ============================================ */
-.dispute-banner-message {
-  font-size: 0.875rem;
-  line-height: 1.8;
-  margin: 0;
-  color: #4b5563;
-  font-weight: 500;
-}
-
-.customer-dispute-banner.status-pending .dispute-banner-message {
-  color: #78350f;
-}
-
-.customer-dispute-banner.status-resolved .dispute-banner-message {
-  color: #065f46;
-}
-
-/* ============================================
-   جزئیات اعتراض (کارت داخلی)
-   ============================================ */
-.dispute-banner-details {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem;
-  background-color: #ffffff;
-  border-radius: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-/* ============ ردیف جزئیات ============ */
-.dispute-banner-details .detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  font-size: 0.8125rem;
-  flex-wrap: wrap;
-}
-
-.dispute-banner-details .detail-label {
-  color: #6b7280;
-  font-weight: 700;
-  font-size: 0.8125rem;
-  white-space: nowrap;
-}
-
-.dispute-banner-details .detail-value {
-  color: #1f2937;
-  font-weight: 700;
-  text-align: left;
-  line-height: 1.6;
-  flex: 1;
-  min-width: 0;
-}
-
-/* ============ حالت Success ============ */
-.dispute-banner-details .detail-item.success {
-  padding: 0.75rem;
-  background-color: #ecfdf5;
-  border-radius: 0.625rem;
-  border: 1px solid #d1fae5;
-}
-
-.dispute-banner-details .detail-item.success .detail-label {
-  color: #065f46;
-}
-
-.dispute-banner-details .detail-item.success .detail-value {
-  color: #10b981;
-  font-size: 0.9375rem;
-  font-weight: 800;
-}
-
-/* ============ حالت Penalty ============ */
-.dispute-banner-details .detail-item.penalty {
-  padding: 0.75rem;
-  background-color: #fef2f2;
-  border-radius: 0.625rem;
-  border: 1px solid #fee2e2;
-}
-
-.dispute-banner-details .detail-item.penalty .detail-label {
-  color: #991b1b;
-}
-
-.dispute-banner-details .detail-item.penalty .detail-value {
-  color: #ef4444;
-  font-weight: 800;
-}
-
-/* ============ حالت Resolution (پاسخ ادمین) ============ */
-.dispute-banner-details .detail-item.resolution {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-.dispute-banner-details .detail-item.resolution .detail-value {
-  padding: 0.75rem 1rem;
-  background-color: #f9fafb;
-  border-right: 3px solid #10b981;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-style: italic;
-  line-height: 1.8;
-  color: #1f2937;
-  width: 100%;
-  text-align: right;
-}
-
-/* ============ حالت Response (پاسخ مشتری) ============ */
-.dispute-banner-details .detail-item.response {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-.dispute-banner-details .detail-item.response .detail-value {
-  padding: 0.75rem 1rem;
-  background-color: #eff6ff;
-  border-right: 3px solid #3b82f6;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-style: italic;
-  line-height: 1.8;
-  color: #1e40af;
-  width: 100%;
-  text-align: right;
-}
-
-/* ============================================
-   پیوست‌ها
-   ============================================ */
-.dispute-banner-details .detail-item.attachments {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px dashed #e5e7eb;
-}
-
-.dispute-banner-details .detail-item.attachments .detail-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  color: #1f2937;
-}
-
-.dispute-banner-details .detail-item.attachments .detail-label svg {
-  color: #10b981;
-}
-
-/* گرید پیوست‌ها */
-.dispute-attachments-mini-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  width: 100%;
-}
-
-@media (min-width: 480px) {
-  .dispute-attachments-mini-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 640px) {
-  .dispute-attachments-mini-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* آیتم پیوست */
-.dispute-attachment-mini {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  border: 2px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: #f9fafb;
-  text-decoration: none;
-}
-
-.dispute-attachment-mini:hover {
-  transform: translateY(-3px) scale(1.03);
-  border-color: #10b981;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
-  z-index: 2;
-}
-
-.dispute-attachment-mini img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Overlay روی آیتم */
-.attachment-mini-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-      rgba(16, 185, 129, 0.85) 0%,
-      rgba(5, 150, 105, 0.9) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.25s;
-  backdrop-filter: blur(2px);
-}
-
-.dispute-attachment-mini:hover .attachment-mini-overlay {
-  opacity: 1;
-}
-
-/* ============================================
-   Info Box پایین بنر
-   ============================================ */
-.dispute-banner-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background-color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  backdrop-filter: blur(8px);
-  margin-top: 0.25rem;
-}
-
-.dispute-banner-info svg {
-  color: #f59e0b;
-  flex-shrink: 0;
-}
-
-/* ============================================
-   هشدار (Warning Box)
-   ============================================ */
-.dispute-banner-warning {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background-color: rgba(255, 255, 255, 0.85);
-  border: 1.5px solid #fdba74;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9a3412;
-  margin-top: 0.25rem;
-}
-
-.dispute-banner-warning svg {
-  color: #f97316;
-  flex-shrink: 0;
-  animation: pulseWarningIcon 1.5s ease-in-out infinite;
-}
-
-@keyframes pulseWarningIcon {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.7;
-    transform: scale(1.15);
-  }
-}
-
-/* ============================================
-   دکمه‌های عملیات بنر
-   ============================================ */
-.dispute-banner-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding-top: 0.875rem;
-  margin-top: 0.875rem;
-  border-top: 1px dashed rgba(0, 0, 0, 0.1);
-}
-
-.dispute-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  border-radius: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  border: 1.5px solid;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-  background-color: #ffffff;
-}
-
-/* ویرایش - آبی */
-.dispute-action-btn.edit {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
-}
-
-.dispute-action-btn.edit:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
-}
-
-/* حذف - قرمز */
-.dispute-action-btn.delete {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
-}
-
-.dispute-action-btn.delete:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
-}
-
-/* پاسخ - نارنجی */
-.dispute-action-btn.respond {
-  background-color: #fff7ed;
-  color: #9a3412;
-  border-color: #ffedd5;
-}
-
-.dispute-action-btn.respond:hover {
-  background-color: #f97316;
-  color: white;
-  border-color: #f97316;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
-}
-
-/* مشاهده - خاکستری */
-.dispute-action-btn.view {
-  background-color: #f9fafb;
-  color: #6b7280;
-  border-color: #e5e7eb;
-}
-
-.dispute-action-btn.view:hover {
-  background-color: #6b7280;
-  color: white;
-  border-color: #6b7280;
-  transform: translateY(-2px);
-}
-
-/* Badge زمان باقی‌مانده روی دکمه */
-.dispute-action-btn .time-remaining {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.4375rem;
-  margin-right: 0.25rem;
-  background-color: rgba(255, 255, 255, 0.6);
-  color: inherit;
-  font-size: 0.5625rem;
-  font-weight: 800;
-  border-radius: 9999px;
-  direction: ltr;
-}
-
-/* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 640px) {
   .customer-dispute-banner {
     padding: 1.25rem;
     gap: 1rem;
@@ -2588,459 +2702,41 @@
     padding: 0.5rem 0.625rem;
     font-size: 0.6875rem;
   }
-}
 
-@media (max-width: 380px) {
-  .dispute-attachments-mini-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ============================================
-   Response Modal (پاسخ به درخواست ادمین)
-   ============================================ */
-.response-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(3px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
-  animation: responseOverlayIn 0.2s ease-out;
-}
-
-@keyframes responseOverlayIn {
-  from {
-    opacity: 0;
+  .dispute-modal {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    max-height: 95vh;
   }
 
-  to {
-    opacity: 1;
-  }
-}
-
-.response-modal {
-  background: #ffffff;
-  border-radius: 1.5rem;
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 1.75rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
-  animation: responseModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes responseModalIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
+  .dispute-modal-icon {
+    width: 3.5rem;
+    height: 3.5rem;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  .dispute-modal-header h3 {
+    font-size: 1rem;
   }
-}
 
-.response-modal-header {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.response-modal-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background-color: #eff6ff;
-  color: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.response-modal-header h3 {
-  font-size: 1.125rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
-}
-
-.response-modal-close {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #6b7280;
-}
-
-.response-modal-close:hover:not(:disabled) {
-  background: #fef2f2;
-  color: #ef4444;
-  border-color: #fecaca;
-}
-
-.response-modal-close:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.response-modal-warning {
-  display: flex;
-  gap: 0.625rem;
-  align-items: flex-start;
-  padding: 0.875rem 1rem;
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 0.875rem;
-  margin-bottom: 1rem;
-  color: #92400e;
-}
-
-.response-modal-warning svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.response-modal-warning p {
-  font-size: 0.8125rem;
-  line-height: 1.7;
-  margin: 0;
-}
-
-/* ============ پیام ادمین ============ */
-.admin-request-box {
-  padding: 1rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border: 1.5px solid #dbeafe;
-  border-right: 4px solid #3b82f6;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
-}
-
-.admin-request-header {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #1e40af;
-  margin-bottom: 0.5rem;
-}
-
-.admin-request-box p {
-  font-size: 0.875rem;
-  color: #1f2937;
-  line-height: 1.8;
-  margin: 0 0 0.5rem;
-}
-
-.admin-request-date {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  font-weight: 600;
-}
-
-/* ============ اطلاعات خلاصه ============ */
-.response-modal-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.875rem 1rem;
-  background: #f9fafb;
-  border-radius: 0.875rem;
-  margin-bottom: 1rem;
-}
-
-.response-modal-info .info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8125rem;
-}
-
-.response-modal-info .info-row span {
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.response-modal-info .info-row strong {
-  color: #1f2937;
-  font-weight: 700;
-}
-
-/* ============ فرم ============ */
-.response-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-}
-
-.response-form-group .form-label {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #374151;
-}
-
-.response-form-group .required {
-  color: #ef4444;
-}
-
-.response-form-group .form-textarea {
-  width: 100%;
-  padding: 0.75rem 0.875rem;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.875rem;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  color: #1f2937;
-  line-height: 1.7;
-  resize: vertical;
-  min-height: 110px;
-  transition: all 0.2s;
-  background-color: #f9fafb;
-}
-
-.response-form-group .form-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-}
-
-.response-form-group .form-textarea.error {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-}
-
-.response-form-group .form-textarea.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-}
-
-.form-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.375rem;
-}
-
-.form-hint {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  font-weight: 500;
-}
-
-.form-counter {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  font-weight: 600;
-}
-
-.form-error {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  color: #ef4444;
-  font-weight: 600;
-}
-
-/* ============ پیوست‌ها ============ */
-.response-attachments {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.attachments-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.attachment-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-}
-
-.attachment-image {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.5rem;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.attachment-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1875rem;
-}
-
-.attachment-name {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.attachment-size {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-}
-
-.attachment-remove {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  background: #fef2f2;
-  color: #ef4444;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.attachment-remove:hover:not(:disabled) {
-  background: #ef4444;
-  color: white;
-}
-
-.attachment-remove:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.attachment-upload-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem;
-  background: #f9fafb;
-  border: 1.5px dashed #d1d5db;
-  border-radius: 0.875rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.attachment-upload-btn:hover {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #2563eb;
-}
-
-.upload-count {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  margin-right: auto;
-}
-
-/* ============ دکمه‌ها ============ */
-.response-modal-actions {
-  display: flex;
-  gap: 0.625rem;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
-}
-
-.response-modal-actions .btn-cancel,
-.response-modal-actions .btn-confirm {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.75rem;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1.5px solid transparent;
-}
-
-.response-modal-actions .btn-cancel {
-  background: #ffffff;
-  color: #6b7280;
-  border-color: #e5e7eb;
-}
-
-.response-modal-actions .btn-cancel:hover:not(:disabled) {
-  background: #f9fafb;
-  color: #374151;
-}
-
-.response-modal-actions .btn-confirm {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.response-modal-actions .btn-confirm:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
-}
-
-.response-modal-actions .btn-cancel:disabled,
-.response-modal-actions .btn-confirm:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  .dispute-modal-warning p {
+    font-size: 0.6875rem;
   }
-}
 
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
+  .dispute-type-options {
+    grid-template-columns: 1fr;
+  }
+
+  .dispute-type-btn {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.6875rem;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+
   .response-modal {
     padding: 1.25rem;
   }
@@ -3053,148 +2749,7 @@
   .response-modal-actions .btn-confirm {
     width: 100%;
   }
-}
 
-/* =========================================
-   پیام مدیریت به مشتری
-========================================= */
-
-.dispute-admin-message {
-  position: relative;
-  margin: 18px 0;
-  padding: 18px;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-right: 4px solid #0ea5e9;
-  border-radius: 12px;
-  direction: rtl;
-  overflow: hidden;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.dispute-admin-message-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-
-.dispute-admin-message-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  color: #0284c7;
-  background: #e0f2fe;
-  border: 1px solid #bae6fd;
-  border-radius: 10px;
-}
-
-.dispute-admin-message-title {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 150px;
-}
-
-.dispute-admin-message-title strong {
-  color: #075985;
-  font-size: 14px;
-  font-weight: 800;
-  line-height: 1.8;
-}
-
-.dispute-admin-message-title span {
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.7;
-}
-
-.dispute-admin-message-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 6px 10px;
-  color: #92400e;
-  background: #fef3c7;
-  border: 1px solid #fde68a;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.dispute-admin-message-body {
-  padding: 14px 15px;
-  color: #334155;
-  background: #ffffff;
-  border: 1px solid #e0f2fe;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 2.1;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.dispute-admin-message-footer {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 12px;
-  color: #0369a1;
-  border-top: 1px solid #bae6fd;
-  font-size: 12px;
-  line-height: 1.9;
-}
-
-.dispute-admin-message-footer svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-/* =========================================
-   پیام نیازمند اقدام مشتری
-========================================= */
-
-.dispute-admin-message.is-action-required {
-  background: #fffbeb;
-  border-color: #fcd34d;
-  border-right-color: #f59e0b;
-}
-
-.dispute-admin-message.is-action-required .dispute-admin-message-icon {
-  color: #b45309;
-  background: #fef3c7;
-  border-color: #fde68a;
-}
-
-.dispute-admin-message.is-action-required .dispute-admin-message-title strong {
-  color: #92400e;
-}
-
-.dispute-admin-message.is-action-required .dispute-admin-message-body {
-  border-color: #fde68a;
-}
-
-.dispute-admin-message.is-action-required .dispute-admin-message-footer {
-  color: #92400e;
-  border-top-color: #fde68a;
-}
-
-/* =========================================
-   نمایش در موبایل
-========================================= */
-
-@media (max-width: 576px) {
   .dispute-admin-message {
     margin: 14px 0;
     padding: 13px;
@@ -3228,5 +2783,434 @@
 
   .dispute-admin-message-footer {
     font-size: 11px;
+  }
+}
+
+/* ============================================
+   Responsive — Small Mobile (max 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .barber-booking-show-page {
+    padding: 1rem 0.75rem 2.5rem;
+  }
+
+  .barber-booking-show-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+
+  .customer-info-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.25rem;
+  }
+
+  .customer-info-name {
+    font-size: 1rem;
+  }
+
+  .info-block {
+    padding: 0.625rem;
+  }
+
+  .info-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .info-value {
+    font-size: 0.8125rem;
+  }
+
+  .dispute-attachments-mini-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .attachments-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-image,
+  .attachment-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .barber-booking-show-header {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-booking-show-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .barber-booking-show-code {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .customer-info-card {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .info-block {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .info-icon {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .payment-info-item {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .payment-total {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .review-display-comment {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .summary-card {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .service-description-box {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .customer-dispute-banner.status-pending,
+html.dark .customer-dispute-banner.status-investigating,
+html.dark .customer-dispute-banner.status-awaiting_response,
+html.dark .customer-dispute-banner.status-resolved,
+html.dark .customer-dispute-banner.status-rejected,
+html.dark .customer-dispute-banner.status-cancelled {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .dispute-banner-details {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .dispute-banner-details .detail-item.success {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .dispute-banner-details .detail-item.penalty {
+  background-color: color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card));
+}
+
+html.dark .dispute-banner-details .detail-item.resolution .detail-value,
+html.dark .dispute-banner-details .detail-item.response .detail-value {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .dispute-admin-message {
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+}
+
+html.dark .dispute-admin-message-body {
+  background: var(--color-bg-card);
+}
+
+html.dark .dispute-admin-message.is-action-required {
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+}
+
+html.dark .dispute-modal,
+html.dark .response-modal {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .form-textarea {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+html.dark .form-textarea:focus {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .attachment-item {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .attachment-image {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .attachment-preview-item {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .dispute-attachment-mini {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .customer-info-contact .contact-item {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .action-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.barber-booking-show-page button:focus-visible,
+.barber-booking-show-page a:focus-visible,
+.barber-booking-show-page textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.btn-confirm:focus-visible {
+  outline-color: var(--color-danger);
+}
+
+.dispute-action-btn.respond:focus-visible {
+  outline-color: var(--color-warning);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .barber-booking-show-page *,
+  .barber-booking-show-page *::before,
+  .barber-booking-show-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .barber-dispute-alert,
+  .dispute-modal-icon,
+  .customer-dispute-banner,
+  .customer-dispute-banner.status-pending .dispute-banner-icon,
+  .customer-dispute-banner.status-awaiting_response .dispute-banner-icon,
+  .dispute-banner-warning svg,
+  .dispute-mini-badge.status-pending,
+  .attachment-item {
+    animation: none !important;
+  }
+
+  .info-block:hover,
+  .action-btn:hover,
+  .dispute-action-btn:hover,
+  .customer-info-contact .contact-item:hover,
+  .attachment-item:hover,
+  .attachment-preview-item:hover,
+  .dispute-attachment-mini:hover,
+  .btn-confirm:hover,
+  .btn-cancel:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .barber-booking-show-back,
+  .barber-booking-show-sidebar .actions-card,
+  .barber-booking-show-sidebar .status-guide-card,
+  .public-navbar,
+  .sidebar,
+  .mobile-menu-btn,
+  .dispute-banner-actions,
+  .response-modal-overlay,
+  .dispute-modal-overlay {
+    display: none !important;
+  }
+
+  .barber-booking-show-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .barber-booking-show-card,
+  .barber-booking-show-header,
+  .customer-dispute-banner,
+  .dispute-banner-details {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+    background: #ffffff !important;
+  }
+
+  .barber-booking-show-header {
+    background: #ffffff !important;
+  }
+
+  .dispute-banner-icon {
+    background: #f9f9f9 !important;
+    color: #333 !important;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.barber-booking-show-page ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+.dispute-admin-message ::selection,
+.customer-dispute-banner ::selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Screen Reader Only
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Complete — End of Barber Booking Show Styles
+   ============================================ */
+
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .barber-dispute-alert {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+  }
+
+  .customer-dispute-banner.status-pending,
+  .customer-dispute-banner.status-awaiting_response {
+    background: var(--color-bg-hover);
+    border-color: var(--color-warning);
+  }
+
+  .customer-dispute-banner.status-investigating {
+    background: var(--color-bg-hover);
+    border-color: var(--color-info);
+  }
+
+  .customer-dispute-banner.status-resolved {
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
+  }
+
+  .customer-dispute-banner.status-rejected {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+  }
+
+  .dispute-banner-details .detail-item.success {
+    background: var(--color-primary-tint);
+    border-color: var(--color-primary-light);
+  }
+
+  .dispute-banner-details .detail-item.penalty {
+    background: var(--color-bg-hover);
+    border-color: var(--color-danger);
+  }
+
+  .dispute-banner-details .detail-item.resolution .detail-value {
+    background: var(--color-bg-hover);
+    border-right-color: var(--color-primary);
+  }
+
+  .dispute-banner-details .detail-item.response .detail-value {
+    background: var(--color-bg-hover);
+    border-right-color: var(--color-info);
+  }
+
+  .dispute-admin-message {
+    background: var(--color-bg-hover);
+    border-color: var(--color-info);
+  }
+
+  .dispute-admin-message.is-action-required {
+    background: var(--color-bg-hover);
+    border-color: var(--color-warning);
+  }
+
+  .dispute-admin-message-body {
+    background: var(--color-bg-card);
+  }
+
+  .action-btn.dispute,
+  .action-btn.print,
+  .action-btn.cancel {
+    background: var(--color-bg-hover);
+  }
+
+  .dispute-action-btn.edit {
+    background: var(--color-bg-hover);
+    color: var(--color-info);
+    border-color: var(--color-info);
+  }
+
+  .dispute-action-btn.delete {
+    background: var(--color-bg-hover);
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+
+  .dispute-action-btn.respond {
+    background: var(--color-bg-hover);
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+  }
+
+  .attachment-remove {
+    background: var(--color-bg-hover);
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+
+  .form-error {
+    background: var(--color-bg-hover);
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+
+  .info-box.info,
+  .info-box.warning,
+  .info-box.success {
+    background: var(--color-bg-hover);
   }
 }

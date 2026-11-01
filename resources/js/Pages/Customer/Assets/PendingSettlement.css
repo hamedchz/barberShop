@@ -1,5 +1,5 @@
 /* ============================================
-   Pending Settlements
+   Pending Settlements — Theme-aware
    ============================================ */
 .settlements-list {
   display: flex;
@@ -13,29 +13,37 @@
   gap: 0.75rem;
   padding: 0.75rem;
   border-radius: 0.875rem;
-  border: 1px solid;
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
+/* ============ Status Variants ============ */
+
+/* status-yellow (warning) */
 .settlement-item.status-yellow {
-  background: #fffbeb;
-  border-color: #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
+/* status-blue (info) */
 .settlement-item.status-blue {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 }
 
+/* status-green (primary) */
 .settlement-item.status-green {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
+/* status-red (danger) */
 .settlement-item.status-red {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
+/* ============ Icon ============ */
 .settlement-icon {
   width: 2rem;
   height: 2rem;
@@ -44,28 +52,30 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-icon.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .settlement-icon.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .settlement-icon.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-icon.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
+/* ============ Content ============ */
 .settlement-content {
   display: flex;
   flex-direction: column;
@@ -85,43 +95,93 @@
 .settlement-amount {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
+/* ============ Status Badge ============ */
 .settlement-status {
   padding: 0.1875rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.5625rem;
   font-weight: 800;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .settlement-status.yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .settlement-status.blue {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .settlement-status.green {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .settlement-status.red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
+/* ============ Date & Failure ============ */
 .settlement-date,
 .settlement-failure {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .settlement-failure {
-  color: #ef4444;
+  color: var(--color-danger);
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .settlement-icon.yellow,
+html.dark .settlement-status.yellow {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .settlement-icon.blue,
+html.dark .settlement-status.blue {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .settlement-icon.green,
+html.dark .settlement-status.green {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .settlement-icon.red,
+html.dark .settlement-status.red {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .settlement-failure {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .settlement-item,
+  .settlement-icon,
+  .settlement-status {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.settlements-list ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }

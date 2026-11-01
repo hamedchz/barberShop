@@ -78,6 +78,8 @@
             --color-shadow: rgba(0, 0, 0, 0.08);
         }
 
+
+
         /* ============ تم تیره ============ */
         @if ($theme['mode'] === 'dark')
             :root,
@@ -128,7 +130,7 @@
     @inertiaHead
 </head>
 
-<body>
+<body data-primary-hue="{{ $theme['primary'] === '#10B981' ? 'green' : 'non-green' }}">
     @inertia
 </body>
 

@@ -5,6 +5,7 @@ import {
     TrendingUp,
     TrendingDown,
     ArrowUpRight,
+    Info,
 } from "lucide-react";
 import { formatCompactNumber } from "../../../Constants/formatCompactNumber";
 import StatDetailModal from "../Wallet/Components/StatsCardModal";
@@ -83,7 +84,12 @@ export default function StatsCards({ wallet, stats, period, onPeriodChange }) {
                         </button>
                     ))}
                 </div>
-
+                <div className="finance-stats-hint">
+                    <Info size={14} />
+                    <span>
+                        برای مشاهده مبلغ دقیق و جزئیات، روی هر کارت کلیک کنید
+                    </span>
+                </div>
                 {/* کارت‌ها */}
                 <div className="wallet-stats-grid">
                     {cards.map((card) => {

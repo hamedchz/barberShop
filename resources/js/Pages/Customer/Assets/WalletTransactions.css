@@ -1,30 +1,26 @@
 /* ============================================
-   Filters Grid Variations
+   Filters Grid Variations — Theme-aware
    ============================================ */
-.filters-grid-3 {
-  grid-template-columns: 1fr;
-  margin-bottom: 1rem;
-}
 
-@media (min-width: 640px) {
-  .filters-grid-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+/* ✅ رفع باگ: display: grid اضافه شد */
+.filters-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  min-width: 0;
 }
 
 .filters-grid-2 {
+  display: grid;
   grid-template-columns: 1fr;
+  gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-@media (min-width: 640px) {
-  .filters-grid-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  min-width: 0;
 }
 
 /* ============================================
-   Transaction Status (extra)
+   Transaction Status
    ============================================ */
 .transaction-status {
   display: inline-flex;
@@ -33,26 +29,27 @@
   border-radius: 9999px;
   font-size: 0.5625rem;
   font-weight: 800;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .transaction-status.status-completed {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
 }
 
 .transaction-status.status-pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .transaction-status.status-failed {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .transaction-status.status-cancelled {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
 /* ============================================
@@ -70,8 +67,9 @@
 
 .transaction-item.detailed .amount-currency {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
+  opacity: 0.85;
 }
 
 /* ============================================
@@ -83,15 +81,57 @@
   gap: 0.375rem;
   flex-wrap: wrap;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   margin-top: 0.25rem;
 }
 
 .meta-separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 .meta-balance {
-  color: #9ca3af;
+  color: var(--color-text-muted);
+  opacity: 0.85;
+}
+
+/* ============================================
+   Responsive — Tablet (min 640px)
+   ============================================ */
+@media (min-width: 640px) {
+  .filters-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .filters-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .transaction-status.status-completed {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .transaction-status.status-pending {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .transaction-status.status-failed {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .transaction-status.status-cancelled {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .transaction-status {
+    transition: none !important;
+  }
 }

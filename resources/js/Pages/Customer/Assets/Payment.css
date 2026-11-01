@@ -1,8 +1,14 @@
-/* ============ Payment Page Container ============ */
+/* ============================================
+   Payment Page — Theme-aware
+   ============================================ */
+
+/* ============ Page Container ============ */
 .payment-page-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
+  color: var(--color-text);
+  transition: color 0.3s;
 }
 
 .payment-page-header {
@@ -12,19 +18,22 @@
 .payment-page-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 1rem 0 0;
   text-align: center;
 }
 
 /* ============ Payment Summary Card ============ */
 .payment-summary-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-  border: 1px solid #d1fae5;
+  background: linear-gradient(135deg,
+      var(--color-bg-card) 0%,
+      var(--color-primary-tint) 100%);
+  border: 1px solid var(--color-primary-light);
   border-radius: 1.5rem;
   padding: 1.75rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  box-shadow: 0 4px 20px var(--color-primary-light);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .payment-summary-header {
@@ -33,25 +42,26 @@
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed #a7f3d0;
+  border-bottom: 1px dashed var(--color-primary-light);
+  transition: border-color 0.3s;
 }
 
 .summary-icon-box {
   width: 3rem;
   height: 3rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .payment-summary-header h2 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -74,24 +84,27 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .summary-label svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
 .summary-value {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .summary-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #a7f3d0, transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      var(--color-primary-light),
+      transparent);
   margin: 0.5rem 0;
 }
 
@@ -102,22 +115,23 @@
 .summary-total {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .summary-total .currency {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #047857;
+  color: var(--color-primary);
 }
 
 /* ============ Payment Gateways Card ============ */
 .payment-gateways-card {
-  background: white;
-  border: 1px solid var(--border-color);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.5rem;
   padding: 1.75rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px var(--color-shadow);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .gateways-header {
@@ -128,7 +142,7 @@
 }
 
 .gateways-header svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 4px;
 }
@@ -136,13 +150,13 @@
 .gateways-header h2 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.25rem;
 }
 
 .gateways-header p {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -159,8 +173,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  background: white;
-  border: 2px solid var(--border-color);
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-border);
   border-radius: 1rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -170,16 +184,18 @@
 }
 
 .gateway-item:hover {
-  border-color: #10b981;
-  background-color: #f0fdf4;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-tint);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.1);
+  box-shadow: 0 8px 20px var(--color-primary-light);
 }
 
 .gateway-item.selected {
-  border-color: #10b981;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+  box-shadow: 0 8px 24px var(--color-primary-light);
 }
 
 /* رادیو */
@@ -190,23 +206,23 @@
 .radio-circle {
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid #d1d5db;
+  border: 2px solid var(--color-border);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  background-color: white;
+  background-color: var(--color-bg-card);
 }
 
 .gateway-item.selected .radio-circle {
-  border-color: #10b981;
+  border-color: var(--color-primary);
 }
 
 .radio-inner {
   width: 0.75rem;
   height: 0.75rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   border-radius: 50%;
   animation: radioScale 0.2s ease;
 }
@@ -226,14 +242,15 @@
   width: 3rem;
   height: 3rem;
   border-radius: 0.75rem;
-  background-color: #f9fafb;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   flex-shrink: 0;
   padding: 0.375rem;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .gateway-logo img {
@@ -254,17 +271,17 @@
 .gateway-name {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .gateway-desc {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
 }
 
 /* چک */
 .gateway-check {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   animation: checkScale 0.2s ease;
 }
@@ -289,20 +306,21 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background-color: #eff6ff;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
   border-radius: 0.875rem;
-  border-right: 3px solid #3b82f6;
+  border-right: 3px solid var(--color-info);
   margin-bottom: 1.5rem;
+  transition: background-color 0.3s;
 }
 
 .payment-security svg {
-  color: #3b82f6;
+  color: var(--color-info);
   flex-shrink: 0;
 }
 
 .payment-security p {
   font-size: 0.75rem;
-  color: #1e40af;
+  color: var(--color-info);
   margin: 0;
   line-height: 1.6;
 }
@@ -315,8 +333,8 @@
   justify-content: center;
   gap: 0.625rem;
   padding: 1.125rem 1.5rem;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: var(--gradient-primary);
+  color: #ffffff;
   border: none;
   border-radius: 1rem;
   font-size: 1rem;
@@ -324,13 +342,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 24px var(--color-primary-light);
   margin-bottom: 0.75rem;
 }
 
 .payment-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 32px var(--color-primary-light);
 }
 
 .payment-submit-btn:disabled {
@@ -341,14 +359,14 @@
 
 .payment-terms {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   text-align: center;
   margin: 0;
   line-height: 1.6;
 }
 
 .payment-terms a {
-  color: #10b981;
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 600;
 }
@@ -357,7 +375,9 @@
   text-decoration: underline;
 }
 
-/* ============ Payment Result (Success/Failed) ============ */
+/* ============================================
+   Payment Result (Success/Failed)
+   ============================================ */
 .payment-result-container {
   max-width: 640px;
   margin: 0 auto;
@@ -365,13 +385,14 @@
 }
 
 .payment-result-card {
-  background: white;
+  background: var(--color-bg-card);
   border-radius: 2rem;
   padding: 2.5rem 2rem;
   text-align: center;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px -10px var(--color-shadow);
+  border: 1px solid var(--color-border);
   animation: resultSlideIn 0.5s ease;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 @keyframes resultSlideIn {
@@ -399,21 +420,25 @@
 }
 
 .result-icon-wrapper.success {
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  color: #10b981;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .result-icon-wrapper.failed {
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .result-icon-pulse {
   position: absolute;
   inset: -10px;
   border-radius: 50%;
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--color-primary-light);
   animation: iconPulse 2s ease-out infinite;
+}
+
+.result-icon-wrapper.failed .result-icon-pulse {
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
 }
 
 @keyframes iconPulse {
@@ -436,23 +461,23 @@
 }
 
 .result-title.success {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .result-title.failed {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .result-subtitle {
   font-size: 0.9375rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0 0 2rem;
 }
 
 /* اطلاعات تراکنش */
 .transaction-info {
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 1rem;
   padding: 1.25rem;
   margin-bottom: 1.5rem;
@@ -460,6 +485,7 @@
   flex-direction: column;
   gap: 0.875rem;
   text-align: right;
+  transition: background-color 0.3s;
 }
 
 .info-row {
@@ -475,44 +501,45 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .info-label svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .info-value {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--text-main);
-  font-family: "Vazirmatn", monospace;
+  color: var(--color-text);
+  font-family: "Courier New", monospace;
 }
 
 .info-value.primary {
-  color: #10b981;
+  color: var(--color-primary);
   font-size: 1rem;
 }
 
 /* اطلاعات تماس */
 .contact-info-box {
-  background-color: #eff6ff;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
   border-radius: 0.875rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
-  border-right: 3px solid #3b82f6;
+  border-right: 3px solid var(--color-info);
+  transition: background-color 0.3s;
 }
 
 .contact-info-box p {
   font-size: 0.8125rem;
-  color: #1e40af;
+  color: var(--color-info);
   margin: 0;
   line-height: 1.7;
 }
 
 .contact-info-box strong {
-  color: #1e3a8a;
+  color: var(--color-info);
   font-weight: 700;
 }
 
@@ -522,15 +549,16 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background-color: #fef2f2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
   border-radius: 1rem;
-  border-right: 3px solid #ef4444;
+  border-right: 3px solid var(--color-danger);
   margin-bottom: 1rem;
   text-align: right;
+  transition: background-color 0.3s;
 }
 
 .failed-info-box svg {
-  color: #ef4444;
+  color: var(--color-danger);
   flex-shrink: 0;
   margin-top: 3px;
 }
@@ -538,7 +566,7 @@
 .failed-info-box strong {
   display: block;
   font-size: 0.875rem;
-  color: #991b1b;
+  color: var(--color-danger);
   margin-bottom: 0.5rem;
 }
 
@@ -553,7 +581,7 @@
 
 .failed-info-box li {
   font-size: 0.8125rem;
-  color: #b91c1c;
+  color: var(--color-danger);
   line-height: 1.6;
 }
 
@@ -564,18 +592,19 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background-color: #f0fdf4;
+  background-color: var(--color-primary-tint);
   border-radius: 0.875rem;
   margin-bottom: 1.5rem;
+  transition: background-color 0.3s;
 }
 
 .support-box svg {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .support-box p {
   font-size: 0.8125rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   margin: 0;
   font-weight: 600;
 }
@@ -585,13 +614,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-@media (min-width: 640px) {
-  .result-actions {
-    flex-direction: row;
-    justify-content: center;
-  }
 }
 
 .result-btn {
@@ -612,29 +634,41 @@
 }
 
 .result-btn.primary {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  background: var(--gradient-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 20px var(--color-primary-light);
 }
 
 .result-btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 28px var(--color-primary-light);
 }
 
 .result-btn.outline {
-  background: white;
-  color: var(--text-main);
-  border: 2px solid var(--border-color);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
 }
 
 .result-btn.outline:hover {
-  border-color: #10b981;
-  color: #10b981;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   transform: translateY(-2px);
 }
 
-/* ============ Responsive ============ */
+/* ============================================
+   Responsive — Tablet (min 640px)
+   ============================================ */
+@media (min-width: 640px) {
+  .result-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Responsive — Mobile (max 640px)
+   ============================================ */
 @media (max-width: 640px) {
   .payment-page-container {
     padding: 1.5rem 1rem 3rem;
@@ -675,4 +709,159 @@
   .result-title {
     font-size: 1.25rem;
   }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .result-btn {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .payment-summary-card {
+  background: linear-gradient(135deg,
+      var(--color-bg-card) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+  border-color: var(--color-primary-light);
+}
+
+html.dark .payment-gateways-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .gateway-item {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .gateway-item:hover {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .gateway-item.selected {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+}
+
+html.dark .gateway-logo {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .radio-circle {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .transaction-info {
+  background: var(--color-bg-hover);
+}
+
+html.dark .payment-security p,
+html.dark .contact-info-box p,
+html.dark .contact-info-box strong {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .failed-info-box strong,
+html.dark .failed-info-box li {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .result-icon-pulse {
+  background: color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+html.dark .result-icon-wrapper.failed .result-icon-pulse {
+  background: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+html.dark .result-btn.outline {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.payment-page-container button:focus-visible,
+.payment-page-container a:focus-visible,
+.payment-result-container button:focus-visible,
+.payment-result-container a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .payment-page-container *,
+  .payment-page-container *::before,
+  .payment-page-container *::after,
+  .payment-result-container *,
+  .payment-result-container *::before,
+  .payment-result-container *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .radio-inner,
+  .gateway-check,
+  .result-icon-pulse,
+  .payment-result-card {
+    animation: none !important;
+  }
+
+  .gateway-item:hover,
+  .gateway-item.selected,
+  .payment-submit-btn:hover:not(:disabled),
+  .result-btn.primary:hover,
+  .result-btn.outline:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .payment-submit-btn,
+  .payment-terms,
+  .result-actions {
+    display: none !important;
+  }
+
+  .payment-page-container,
+  .payment-result-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .payment-summary-card,
+  .payment-gateways-card,
+  .payment-result-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.payment-page-container ::selection,
+.payment-result-container ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
 }

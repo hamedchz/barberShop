@@ -32,6 +32,7 @@ import {
     MessageSquareCode,
     Quote,
     CreditCardPlus,
+    UserRoundCog,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -394,6 +395,14 @@ export const menuConfig = [
         label: "مشتریان من",
         icon: UserRoundGroup,
         href: "/barber/customers",
+        scopes: ["customers"],
+        permissions: ["barber-dashboard-panel"],
+    },
+    {
+        id: "barber-profile",
+        label: "پروفایل",
+        icon: UserRoundCog,
+        href: "/barber/profile",
         scopes: ["customers"],
         permissions: ["barber-dashboard-panel"],
     },

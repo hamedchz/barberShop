@@ -2,14 +2,11 @@
    Filters Grid Variations
    ============================================ */
 .filters-grid-2 {
+  display: grid;
   grid-template-columns: 1fr;
+  gap: 0.75rem;
   margin-bottom: 1rem;
-}
-
-@media (min-width: 640px) {
-  .filters-grid-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  min-width: 0;
 }
 
 /* ============================================
@@ -40,26 +37,37 @@
 .filters-panel .date-picker-wrapper input {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
   font-family: inherit;
   font-size: 0.8125rem;
-  color: #1f2937;
+  color: var(--color-text);
   box-sizing: border-box;
   transition: all 0.2s;
+}
+
+.filters-panel .persian-date-picker input:hover,
+.filters-panel .date-picker-wrapper input:hover {
+  border-color: var(--color-primary-light);
 }
 
 .filters-panel .persian-date-picker input:focus,
 .filters-panel .date-picker-wrapper input:focus {
   outline: none;
-  border-color: #10b981;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.filters-panel .persian-date-picker input::placeholder,
+.filters-panel .date-picker-wrapper input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 
 /* ============================================
-   Fix Calendar z-index
+   Fix Calendar z-index & Overflow
    ============================================ */
 .filters-panel,
 .filters-grid,
@@ -75,4 +83,53 @@
 .date-picker-popup,
 .date-picker-calendar {
   z-index: 99999 !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text) !important;
+  box-shadow: 0 20px 40px var(--color-shadow) !important;
+}
+
+/* ============================================
+   Responsive — Tablet (min 640px)
+   ============================================ */
+@media (min-width: 640px) {
+  .filters-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .filters-panel .persian-date-picker input,
+html.dark .filters-panel .date-picker-wrapper input {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+html.dark .filters-panel .persian-date-picker input:focus,
+html.dark .filters-panel .date-picker-wrapper input:focus {
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .filters-panel .persian-date-picker input,
+  .filters-panel .date-picker-wrapper input {
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.filters-panel .persian-date-picker input:focus-visible,
+.filters-panel .date-picker-wrapper input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

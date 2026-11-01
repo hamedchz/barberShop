@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Customer\BankInfoController;
 use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\DisputeController;
 use App\Http\Controllers\Customer\PaymentController;
 use App\Http\Controllers\Customer\ProfileController;
@@ -9,6 +10,12 @@ use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\WalletController;
 use App\Http\Controllers\Customer\WalletDepositController;
 use Illuminate\Support\Facades\Route;
+
+Route::controller(DashboardController::class)
+  ->group(function () {
+    Route::get('/dashboard', 'index')
+      ->name('dashboard');
+  });
 
 Route::prefix('/bookings')
   ->name('bookings.')->controller(BookingController::class)->group(function () {
@@ -73,6 +80,9 @@ Route::prefix('bookings/reviews')->name('reviews.')->controller(ReviewController
 
 // dispute
 Route::prefix('disputes')->name('disputes.')->controller(DisputeController::class)->group(function () {
+
+  Route::get('/{dispute}/show', 'show')
+    ->name('show');
   // ویرایش اعتراض
   Route::get('/{dispute}/edit',  'edit')
     ->name('edit');

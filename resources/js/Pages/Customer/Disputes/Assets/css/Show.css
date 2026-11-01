@@ -1,0 +1,1662 @@
+/* ============================================
+   Customer Dispute Show Page — Theme-aware
+   ============================================ */
+
+.dispute-show-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  color: var(--color-text);
+}
+
+.dispute-show-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  align-self: flex-start;
+}
+
+.dispute-show-back:hover {
+  color: var(--color-primary);
+}
+
+/* ============ Header ============ */
+.dispute-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.75rem;
+  border-radius: 1.5rem;
+  border: 2px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.dispute-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle,
+      currentColor 0%,
+      transparent 70%);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.dispute-header.warning {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-warning) 40%, transparent);
+}
+
+.dispute-header.info {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-info) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-info) 40%, transparent);
+}
+
+.dispute-header.primary {
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card)) 100%);
+  border-color: var(--color-primary-light);
+}
+
+.dispute-header.danger {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card)) 100%);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.dispute-header.gray {
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+  border-color: var(--color-border);
+}
+
+.dispute-header-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.dispute-header.warning .dispute-header-icon {
+  background: var(--color-warning);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-warning) 35%, transparent);
+}
+
+.dispute-header.info .dispute-header-icon {
+  background: var(--color-info);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-info) 35%, transparent);
+}
+
+.dispute-header.primary .dispute-header-icon {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 8px 20px var(--color-primary-light);
+}
+
+.dispute-header.danger .dispute-header-icon {
+  background: var(--color-danger);
+  color: #ffffff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
+.dispute-header.gray .dispute-header-icon {
+  background: var(--color-text-muted);
+  color: #ffffff;
+}
+
+.dispute-header-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.dispute-header-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.dispute-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1px solid;
+}
+
+.dispute-status-badge.warning {
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 40%, transparent);
+}
+
+.dispute-status-badge.info {
+  background: color-mix(in srgb, var(--color-info) 20%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 40%, transparent);
+}
+
+.dispute-status-badge.primary {
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
+}
+
+.dispute-status-badge.danger {
+  background: color-mix(in srgb, var(--color-danger) 20%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.dispute-status-badge.gray {
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.dispute-code {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  padding: 0.375rem 0.75rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  direction: ltr;
+}
+
+.dispute-type-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 0.375rem 0.75rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+}
+
+.dispute-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 0.375rem;
+}
+
+.dispute-subtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ============ Timeline ============ */
+.dispute-timeline {
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+}
+
+.timeline-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 1.25rem;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+.timeline-list::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  bottom: 1rem;
+  right: 0.875rem;
+  width: 2px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--color-bg-card);
+}
+
+.timeline-icon.warning {
+  background: var(--color-warning);
+  color: #ffffff;
+}
+
+.timeline-icon.info {
+  background: var(--color-info);
+  color: #ffffff;
+}
+
+.timeline-icon.primary {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.timeline-icon.danger {
+  background: var(--color-danger);
+  color: #ffffff;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.125rem;
+}
+
+.timeline-item-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.timeline-item-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.timeline-item-date {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+/* ============ Grid Layout ============ */
+.dispute-show-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.dispute-show-main,
+.dispute-show-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+/* ============ Cards ============ */
+.dispute-show-card {
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+}
+
+.dispute-show-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.dispute-show-card-header h2 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  flex: 1;
+}
+
+.card-icon-box {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon-box.warning {
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+}
+
+.card-icon-box.info {
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
+}
+
+.card-icon-box.green {
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.card-icon-box.blue {
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
+}
+
+.card-icon-box.purple {
+  background: color-mix(in srgb, #8b5cf6 12%, var(--color-bg-card));
+  color: #8b5cf6;
+}
+
+/* ============ Dispute Details ============ */
+.dispute-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.detail-value {
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-block-content {
+  padding: 1rem;
+  background: var(--color-bg-hover);
+  border-radius: 0.75rem;
+  border-right: 3px solid var(--color-warning);
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.8;
+}
+
+/* ============ Dispute Response ============ */
+.dispute-responses {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.response-block {
+  padding: 1rem;
+  border-radius: 1rem;
+  border-right: 3px solid;
+}
+
+.response-block.info {
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-right-color: var(--color-info);
+}
+
+.response-block.success {
+  background: var(--color-primary-tint);
+  border-right-color: var(--color-primary);
+}
+
+.response-block.danger {
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-right-color: var(--color-danger);
+}
+
+.response-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.response-user {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.response-avatar,
+.response-avatar-placeholder {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.response-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.response-avatar-placeholder {
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.response-header strong {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-text);
+  display: block;
+}
+
+.response-date {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  display: block;
+}
+
+.response-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.response-block.success .response-icon {
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.response-block.danger .response-icon {
+  background: color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card));
+  color: var(--color-danger);
+}
+
+.response-text {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.8;
+  margin: 0;
+}
+
+.response-by {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ============ Attachments ============ */
+.attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.attachment-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  cursor: pointer;
+  transition: all 0.25s;
+  background: var(--color-bg-hover);
+  display: block;
+}
+
+.attachment-preview-item:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 20px var(--color-primary-light);
+  z-index: 1;
+}
+
+.attachment-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.attachment-file-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.attachment-overlay {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-primary) 90%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.attachment-preview-item:hover .attachment-overlay {
+  opacity: 1;
+}
+
+/* ============ Admin Message ============ */
+.dispute-admin-message {
+  padding: 1.25rem;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 2px solid color-mix(in srgb, var(--color-warning) 35%, transparent);
+  border-right: 4px solid var(--color-warning);
+  border-radius: 1rem;
+}
+
+.dispute-admin-message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.875rem;
+}
+
+.dispute-admin-message-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-bg-card));
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dispute-admin-message-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dispute-admin-message-title strong {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-warning);
+}
+
+.dispute-admin-message-title span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.dispute-admin-message-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--color-warning);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  white-space: nowrap;
+  animation: pulseBadge 2s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.dispute-admin-message-body {
+  padding: 0.875rem 1rem;
+  background: var(--color-bg-card);
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  margin-bottom: 0.875rem;
+}
+
+.dispute-admin-message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dispute-admin-message-footer>span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+/* ============ Financial Info ============ */
+.financial-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.financial-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--color-bg-hover);
+  border-radius: 0.625rem;
+}
+
+.financial-item .label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.financial-item .value {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.financial-item .value.refund {
+  color: var(--color-primary-hover);
+}
+
+.financial-item .value.penalty {
+  color: var(--color-danger);
+}
+
+.financial-item .value.compensation {
+  color: var(--color-info);
+}
+
+/* ============ Booking Info ============ */
+.booking-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.booking-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.booking-info-item:last-child {
+  border-bottom: none;
+}
+
+.booking-info-item .label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.booking-info-item .value {
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.booking-info-item .value.mono {
+  font-family: "Courier New", monospace;
+  direction: ltr;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1rem;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+}
+
+.btn-secondary.full-width {
+  width: 100%;
+}
+
+/* ============ Actions ============ */
+.dispute-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid;
+  width: 100%;
+  text-align: right;
+}
+
+.action-btn.primary {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--color-primary-light);
+}
+
+.action-btn.info {
+  background: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
+}
+
+.action-btn.info:hover {
+  background: var(--color-info);
+  color: #ffffff;
+  border-color: var(--color-info);
+  transform: translateY(-1px);
+}
+
+.action-btn.danger {
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.action-btn.danger:hover {
+  background: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+  transform: translateY(-1px);
+}
+
+.time-remaining {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: auto;
+  padding: 0.125rem 0.5rem;
+  background: color-mix(in srgb, var(--color-bg-card) 60%, transparent);
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+}
+
+/* ============ Modal ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--color-bg-card);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px var(--color-shadow);
+  animation: modalSlideUp 0.3s ease;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.modal-header h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  flex: 1;
+}
+
+.modal-close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-bg-hover);
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.modal-close:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.form-label .required {
+  color: var(--color-danger);
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  background: var(--color-bg-hover);
+  transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.form-input.error,
+.form-textarea.error {
+  border-color: var(--color-danger);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.7;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-hint {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.form-counter {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  direction: ltr;
+}
+
+.form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.btn-cancel,
+.btn-confirm,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+}
+
+.btn-cancel {
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.btn-confirm {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.btn-confirm:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px var(--color-primary-light);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.btn-cancel:disabled,
+.btn-confirm:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ Delete Modal ============ */
+.delete-modal .delete-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card));
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.delete-modal h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0 0 0.5rem;
+}
+
+.modal-message {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.delete-preview {
+  padding: 0.875rem;
+  background: var(--color-bg-hover);
+  border-radius: 0.75rem;
+  border-right: 3px solid var(--color-danger);
+}
+
+.preview-label {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.preview-text {
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============ Respond Modal ============ */
+.respond-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-request-box {
+  padding: 1rem;
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 25%, transparent);
+  border-right: 3px solid var(--color-warning);
+  border-radius: 0.75rem;
+}
+
+.admin-request-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-warning);
+  margin-bottom: 0.5rem;
+}
+
+.admin-request-box p {
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  margin: 0 0 0.5rem;
+}
+
+.admin-request-date {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.original-dispute-box {
+  padding: 0.875rem;
+  background: var(--color-bg-hover);
+  border-radius: 0.75rem;
+  border-right: 3px solid var(--color-warning);
+}
+
+.original-label {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  margin-bottom: 0.375rem;
+}
+
+.original-dispute-box p {
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  line-height: 1.7;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============ Responsive ============ */
+@media (min-width: 640px) {
+  .attachments-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dispute-show-grid {
+    grid-template-columns: 1fr 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dispute-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem;
+  }
+
+  .dispute-header-top {
+    justify-content: center;
+  }
+
+  .dispute-title {
+    font-size: 1.0625rem;
+  }
+
+  .dispute-admin-message-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dispute-admin-message-footer .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .dispute-show-page {
+    padding: 1.5rem 1rem 3rem;
+    gap: 1rem;
+  }
+
+  .dispute-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .dispute-header-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .dispute-show-card {
+    padding: 1.25rem;
+  }
+
+  .timeline-title,
+  .dispute-show-card-header h2 {
+    font-size: 0.875rem;
+  }
+
+  .attachments-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .modal-content {
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel,
+  .btn-confirm,
+  .btn-danger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .detail-row,
+  .booking-info-item,
+  .financial-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dispute-header-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .dispute-title {
+    font-size: 1rem;
+  }
+
+  .attachments-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dispute-show-card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+html.dark .dispute-header.warning {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-warning) 18%, var(--color-bg-card)) 100%);
+}
+
+html.dark .dispute-header.info {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-info) 18%, var(--color-bg-card)) 100%);
+}
+
+html.dark .dispute-header.primary {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-primary) 18%, var(--color-bg-card)) 100%);
+}
+
+html.dark .dispute-header.danger {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-danger) 12%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-danger) 18%, var(--color-bg-card)) 100%);
+}
+
+html.dark .dispute-status-badge.warning {
+  color: color-mix(in srgb, var(--color-warning) 80%, white);
+}
+
+html.dark .dispute-status-badge.info {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+html.dark .dispute-status-badge.primary {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .dispute-status-badge.danger {
+  color: color-mix(in srgb, var(--color-danger) 80%, white);
+}
+
+html.dark .dispute-show-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .timeline-list::before {
+  background: var(--color-border);
+}
+
+html.dark .timeline-icon {
+  border-color: var(--color-bg-card);
+}
+
+html.dark .detail-block-content,
+html.dark .response-block,
+html.dark .financial-item,
+html.dark .delete-preview,
+html.dark .original-dispute-box,
+html.dark .admin-request-box {
+  background: var(--color-bg-hover);
+}
+
+html.dark .dispute-admin-message {
+  background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card));
+}
+
+html.dark .dispute-admin-message-body {
+  background: var(--color-bg-card);
+}
+
+html.dark .form-input,
+html.dark .form-textarea {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+html.dark .form-input:focus,
+html.dark .form-textarea:focus {
+  background: var(--color-bg-card);
+}
+
+html.dark .modal-content {
+  background: var(--color-bg-card);
+}
+
+html.dark .btn-cancel {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .response-block.info {
+  background: color-mix(in srgb, var(--color-info) 15%, var(--color-bg-card));
+}
+
+html.dark .response-block.success {
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+}
+
+html.dark .response-block.danger {
+  background: color-mix(in srgb, var(--color-danger) 15%, var(--color-bg-card));
+}
+
+html.dark .financial-item .value.refund {
+  color: color-mix(in srgb, var(--color-primary) 60%, white);
+}
+
+html.dark .financial-item .value.compensation {
+  color: color-mix(in srgb, var(--color-info) 80%, white);
+}
+
+/* ============================================
+   Focus Visible (Accessibility)
+   ============================================ */
+.dispute-show-page button:focus-visible,
+.dispute-show-page a:focus-visible,
+.dispute-show-page textarea:focus-visible,
+.dispute-show-page select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.action-btn.danger:focus-visible,
+.btn-danger:focus-visible {
+  outline-color: var(--color-danger);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .dispute-show-page *,
+  .dispute-show-page *::before,
+  .dispute-show-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .dispute-admin-message-badge {
+    animation: none !important;
+  }
+
+  .action-btn.primary:hover,
+  .action-btn.info:hover,
+  .action-btn.danger:hover,
+  .btn-confirm:hover:not(:disabled),
+  .btn-danger:hover,
+  .attachment-preview-item:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .dispute-show-back,
+  .dispute-actions-list,
+  .action-btn,
+  .modal-overlay,
+  .timeline-icon {
+    display: none !important;
+  }
+
+  .dispute-show-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .dispute-header,
+  .dispute-show-card,
+  .dispute-timeline,
+  .dispute-admin-message {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+    background: #ffffff !important;
+  }
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+.dispute-show-page ::selection {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+}
+
+/* ============================================
+   Modal Overlay — Processing State
+   ============================================ */
+.modal-overlay.is-processing {
+  cursor: wait;
+  pointer-events: none;
+  /* غیرفعال کردن کلیک‌ها */
+}
+
+.modal-overlay.is-processing .modal-content {
+  pointer-events: auto;
+  /* اما داخل مودال فعال باشد */
+}
+
+/* ============================================
+   Delete Modal Button — Loading State
+   ============================================ */
+.btn-danger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-danger .spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Modal Close Button — Disabled
+   ============================================ */
+.modal-close:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.modal-close:disabled:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Cancel Button — Disabled
+   ============================================ */
+.btn-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   Loading State — Dim Background
+   ============================================ */
+.modal-overlay.is-processing .modal-content {
+  opacity: 0.95;
+}
+
+.modal-overlay.is-processing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 1;
+  cursor: wait;
+}
+
+/* ============================================
+   Delete Modal — Enhanced
+   ============================================ */
+.delete-modal {
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================
+   Spinner Animation for Buttons
+   ============================================ */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation-duration: 2s;
+  }
+}

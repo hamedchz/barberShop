@@ -1,65 +1,27 @@
-/* --- فونت فارسی --- */
+/* ============================================
+   فونت فارسی
+   ============================================ */
 @import url('./font-face-fa.css');
 
-/*@font-face {
-   font-family: 'Alibaba-Regular';
-  src: url('../../../Assets/fonts/fonts/Alibaba-Regular.eot');
-  src: url('../../../Assets/fonts/fonts/Alibaba-Regular.eot?#iefix') format('embedded-opentype'),
-    url('../../../Assets/fonts/fonts/Alibaba-Regular.woff') format('woff'),
-    url('../../../Assets/fonts/fonts/Alibaba-Regular.woff2') format('woff2'),
-    url('../../../Assets/fonts/fonts/Alibaba-Regular.ttf') format('truetype');
-  font-weight: normal;
+/* ============================================
+   Root Variables — متغیرهای قدیمی + جدید
+   ============================================ */
 
+
+/* Dark Mode Default */
+html.dark {
+  --color-bg: #0f172a;
+  --color-bg-card: #1e293b;
+  --color-bg-hover: #334155;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
-html {
-  font-family: 'Alibaba-Regular', 'Poppins' !important;
-
-}
-
-
-
-a,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-div,
-span,
-p,
-small,
-strong,
-select,
-option,
-button,
-label,
-input,
-textarea {
-  font-family: 'Alibaba-Regular', 'Poppins' !important;
-
-} */
-
-:root {
-  --bg-color: #f8f9fa;
-  --white: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --text-light: #9ca3af;
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-light: #ecfdf5;
-  --danger: #ef4444;
-  --danger-light: #fef2f2;
-  --border-color: #f3f4f6;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --radius-lg: 1.5rem;
-  --radius-md: 1rem;
-  --radius-sm: 0.75rem;
-}
-
+/* ============================================
+   Base Reset
+   ============================================ */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -67,202 +29,649 @@ textarea {
 }
 
 body {
-  /* RTL Change: فونت فارسی و جهت راست‌چین */
-  font-family: 'Alibaba-Regular', 'Poppins' !important;
-
-  /* font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; */
+  font-family: 'Alibaba-Regular', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
   direction: rtl;
   text-align: right;
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s, color 0.3s;
 }
 
-/* --- Layout اصلی --- */
+/* ============================================
+   Layout اصلی
+   ============================================ */
 .admin-layout {
   display: flex;
   min-height: 100vh;
   position: relative;
 }
 
-/* --- سایدبار --- */
+/* ============================================
+   Sidebar — تعریف واحد
+   ============================================ */
 .sidebar {
   position: fixed;
   top: 0;
-  /* RTL Change: سایدبار از سمت راست */
   right: 0;
   left: auto;
   height: 100%;
   width: 16rem;
-  background-color: var(--white);
-  /* RTL Change: بوردر از سمت چپ */
-  border-left: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border-left: 1px solid var(--color-border);
   border-right: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 1.5rem 1rem;
   z-index: 50;
-  transition: transform 0.3s ease;
-  /* RTL Change: مخفی شدن به سمت راست */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(100%);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar.open {
-  /* RTL Change: باز شدن به سمت راست */
   transform: translateX(0);
 }
 
+.sidebar.collapsed {
+  width: 5rem;
+  padding: 1.5rem 0.75rem;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================
+   Sidebar Header
+   ============================================ */
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2.5rem;
-  padding: 0 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0 0.25rem;
+  position: relative;
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  overflow: hidden;
+  flex: 1;
 }
 
+.logo-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+  overflow: hidden;
+}
 
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.25rem;
+}
 
 .logo-text {
-  font-weight: bold;
-  font-size: 1.25rem;
+  font-weight: 800;
+  font-size: 1.125rem;
   letter-spacing: -0.025em;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar Header Buttons */
+.collapse-sidebar-btn,
+.close-sidebar-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .close-sidebar-btn {
-  display: block;
-  background: none;
+  display: flex;
+  width: auto;
+  height: auto;
+  padding: 0.25rem;
   border: none;
-  color: var(--text-light);
-  cursor: pointer;
+  background: none;
 }
 
+.collapse-sidebar-btn:hover,
+.close-sidebar-btn:hover {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ============================================
+   Sidebar Nav
+   ============================================ */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
 }
 
+/* ============================================
+   Sidebar Item — تعریف واحد
+   ============================================ */
 .sidebar-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s;
-  color: var(--text-muted);
-}
-
-.sidebar-item:hover {
-  background-color: var(--bg-color);
-}
-
-.sidebar-item.active {
-  background-color: var(--primary-light);
-  color: var(--primary);
-}
-
-.sidebar-item-content {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid transparent;
 }
 
-.sidebar-item span {
+.sidebar-item:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+/* آیتم فعال — هماهنگ با تم */
+.sidebar-item.active {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  font-weight: 700;
+  border-color: color-mix(in srgb,
+      var(--color-primary) 25%,
+      transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.sidebar-item.active:hover {
+  background: color-mix(in srgb,
+      var(--color-primary) 18%,
+      var(--color-bg-card));
+}
+
+/* Sidebar Item Icon */
+.sidebar-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.sidebar-item-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: inherit;
+  stroke: currentColor;
+  transition: color 0.2s, stroke 0.2s;
+}
+
+.sidebar-item:hover .sidebar-item-icon,
+.sidebar-item:hover .sidebar-item-icon svg {
+  color: var(--color-text);
+}
+
+.sidebar-item.active .sidebar-item-icon,
+.sidebar-item.active .sidebar-item-icon svg {
+  color: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+/* Sidebar Item Label */
+.sidebar-item-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Indicator */
+.sidebar-item-indicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--color-primary);
+  border-radius: 3px 0 0 3px;
+  box-shadow: 0 0 8px var(--color-primary-light);
+  transition: all 0.2s;
+}
+
+/* Sidebar Collapsed */
+.sidebar.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+}
+
+.sidebar.collapsed .sidebar-item-icon {
+  width: 100%;
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-item-label {
+  display: none;
+}
+
+.sidebar.collapsed .logo-container {
+  justify-content: center;
+}
+
+.sidebar.collapsed .logo-text {
+  display: none;
+}
+
+.sidebar-empty {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* ============================================
+   Sidebar Parent (والد زیرمنو) — تعریف واحد
+   ============================================ */
+.sidebar-parent {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin: 0;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
+  text-align: right;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.badge {
-  background-color: var(--danger);
-  color: var(--white);
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
+.sidebar-parent:not(.active):not(.expanded):hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
+.sidebar-parent.expanded {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  border-radius: 0.75rem 0.75rem 0 0;
+  font-weight: 600;
+}
+
+.sidebar-parent.active {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.sidebar-parent.active.expanded {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 16%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+  color: var(--color-primary);
+  font-weight: 700;
+  border-radius: 0.75rem 0.75rem 0 0;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 15%, transparent);
+}
+
+.sidebar-parent.active:hover,
+.sidebar-parent.active.expanded:hover,
+.sidebar-parent.expanded:not(.active):hover {
+  background: color-mix(in srgb,
+      var(--color-primary) 18%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+}
+
+.sidebar-parent.active .sidebar-item-icon,
+.sidebar-parent.active .sidebar-item-icon svg,
+.sidebar-parent.expanded .sidebar-item-icon,
+.sidebar-parent.expanded .sidebar-item-icon svg {
+  color: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+.sidebar-parent.active .sidebar-submenu-chevron,
+.sidebar-parent.expanded .sidebar-submenu-chevron {
+  color: var(--color-primary);
+}
+
+.sidebar-parent.active::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--color-primary);
+  border-radius: 3px 0 0 3px;
+  box-shadow: 0 0 8px var(--color-primary-light);
+}
+
+/* ============================================
+   Submenu Chevron
+   ============================================ */
+.sidebar-submenu-chevron {
+  margin-right: auto;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+  color: var(--color-text-muted);
+}
+
+.sidebar-submenu-chevron.rotated {
+  transform: rotate(180deg);
+  color: var(--color-primary);
+}
+
+/* ============================================
+   Submenu
+   ============================================ */
+.sidebar-nav .sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 10px 0;
+  padding: 8px 10px 10px 8px;
+  background: var(--color-primary-tint);
+  border-right: 3px solid var(--color-primary);
+  border-radius: 0 0 8px 8px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  animation: submenuSlideIn 0.2s ease-out;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+@keyframes submenuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Submenu Items */
+.sidebar-submenu .sidebar-item {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: all 0.2s ease;
+}
+
+.sidebar-submenu .sidebar-item:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: translateX(-2px);
+}
+
+.sidebar-submenu .sidebar-item.active {
+  background: color-mix(in srgb,
+      var(--color-primary) 20%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  font-weight: 600;
+  border-color: color-mix(in srgb,
+      var(--color-primary) 30%,
+      transparent);
+}
+
+.sidebar-submenu .sidebar-item.active:hover {
+  background: color-mix(in srgb,
+      var(--color-primary) 26%,
+      var(--color-bg-card));
+}
+
+.sidebar-submenu .sidebar-item.active::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--color-primary);
+  box-shadow: 0 0 6px var(--color-primary-light);
+}
+
+.sidebar-submenu .sidebar-item-icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.sidebar-submenu .sidebar-item-icon svg {
+  width: 17px;
+  height: 17px;
+  color: inherit;
+  stroke: currentColor;
+}
+
+.sidebar-submenu .sidebar-item.active .sidebar-item-icon,
+.sidebar-submenu .sidebar-item.active .sidebar-item-icon svg {
+  color: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+/* Submenu Collapsed */
+.sidebar.collapsed .sidebar-submenu {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-parent {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+}
+
+.sidebar.collapsed .sidebar-parent .sidebar-submenu-chevron,
+.sidebar.collapsed .sidebar-parent .sidebar-item-label {
+  display: none;
+}
+
+/* Menu Group */
+.sidebar-nav .sidebar-menu-group {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   Sidebar Footer
+   ============================================ */
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+}
+
+/* Logout Button */
 .logout-btn {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--text-muted);
   padding: 0.75rem;
-  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  border-radius: 0.75rem;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .logout-btn:hover {
-  background-color: var(--bg-color);
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
 }
 
-/* --- دکمه منوی موبایل و اورلی --- */
-.mobile-menu-btn {
-  display: block;
-  position: fixed;
-  top: 1rem;
-  /* RTL Change: دکمه منو در موبایل سمت راست */
-  right: 1rem;
-  left: auto;
-  z-index: 50;
-  padding: 0.5rem;
-  background-color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-md);
-  color: var(--text-muted);
-  cursor: pointer;
+.sidebar.collapsed .logout-btn {
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
 }
 
-.overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 40;
-  display: block;
+.sidebar.collapsed .logout-btn .sidebar-item-label {
+  display: none;
 }
 
-/* --- محتوای اصلی --- */
-/* .main-content {
-  flex: 1;
-  padding: 5rem 1rem 1rem 1rem;
+/* Sidebar User */
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  background-color: var(--color-bg-hover);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+.sidebar-user-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.sidebar-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-user-info {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-} */
+  gap: 0.125rem;
+  overflow: hidden;
+}
 
+.sidebar-user-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
+.sidebar-user-role {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.sidebar.collapsed .sidebar-user-info {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-
-  /* فاصله از سایدبار ثابت سمت راست (16rem = 256px) */
   margin-right: 16rem;
-
-  /* اگه سایدبار collapsed بشه (5rem) */
   transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
   overflow-x: hidden;
   box-sizing: border-box;
 }
 
-/* وقتی سایدبار جمع شده */
 .admin-layout.sidebar-collapsed .main-content {
   margin-right: 5rem;
 }
 
-/* ============ Wrapper داخلی برای max-width و وسط‌چینی ============ */
 .main-content-inner {
   flex: 1;
   display: flex;
@@ -275,30 +684,13 @@ body {
   box-sizing: border-box;
 }
 
-/* ============ Wide mode (برای جدول‌های عریض) ============ */
 .main-content-inner.wide {
   max-width: 1600px;
 }
 
-/* ============ Responsive ============ */
-@media (max-width: 1023px) {
-  .main-content {
-    margin-right: 0;
-    /* در موبایل سایدبار overlay می‌شه */
-  }
-
-  .main-content-inner {
-    padding: 4rem 0.75rem 1rem 0.75rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .main-content-inner {
-    padding: 3.5rem 0.5rem 1rem 0.5rem;
-    gap: 1rem;
-  }
-}
-
+/* ============================================
+   Center / Right Columns
+   ============================================ */
 .center-column {
   flex: 1;
   display: flex;
@@ -315,13 +707,16 @@ body {
   flex-shrink: 0;
 }
 
-/* --- کارت‌های عمومی --- */
+/* ============================================
+   Cards — عمومی
+   ============================================ */
 .card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   padding: 1rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .card-header {
@@ -334,9 +729,12 @@ body {
 .card-title {
   font-weight: bold;
   font-size: 1.125rem;
+  color: var(--color-text);
 }
 
-/* --- پروفایل --- */
+/* ============================================
+   Profile Card
+   ============================================ */
 .profile-card {
   display: flex;
   flex-direction: column;
@@ -361,8 +759,8 @@ body {
 }
 
 .badge-new {
-  background-color: var(--primary);
-  color: var(--white);
+  background-color: var(--color-primary);
+  color: #ffffff;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.75rem;
@@ -375,6 +773,7 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  color: var(--color-text);
 }
 
 .profile-details-grid {
@@ -383,23 +782,54 @@ body {
   gap: 1rem;
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
-  /* RTL Change: متن جزئیات راست‌چین */
   text-align: right;
 }
 
 .detail-label {
-  color: var(--text-light);
+  color: var(--color-text-muted);
   margin-bottom: 0.25rem;
 }
 
 .detail-value {
   font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 12px var(--color-primary-light);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px var(--color-primary-light);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-outline {
   width: 100%;
-  border: 1px solid var(--primary);
-  color: var(--primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
   font-weight: 600;
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
@@ -410,10 +840,36 @@ body {
 }
 
 .btn-outline:hover {
-  background-color: var(--primary-light);
+  background-color: var(--color-primary-tint);
 }
 
-/* --- گریدها و لیست‌ها --- */
+.btn-icon {
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.btn-icon.danger:hover {
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+/* ============================================
+   Grids & Lists
+   ============================================ */
 .grid-2-col {
   display: grid;
   grid-template-columns: 1fr;
@@ -435,14 +891,14 @@ body {
 
 .interest-name {
   width: 4rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
 }
 
 .progress-bar-bg {
   flex: 1;
   height: 0.375rem;
-  background-color: var(--border-color);
+  background-color: var(--color-border);
   border-radius: 9999px;
   overflow: hidden;
 }
@@ -475,49 +931,63 @@ body {
 .contact-name {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
-/* --- ستون راست (در RTL می‌شود ستون چپ) --- */
+/* ============================================
+   Search Box
+   ============================================ */
 .search-box {
   position: relative;
 }
 
 .search-icon {
   position: absolute;
-  /* RTL Change: آیکون جستجو سمت راست */
   right: 0.75rem;
   left: auto;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-light);
+  color: var(--color-text-muted);
 }
 
 .search-input {
   width: 100%;
-  /* RTL Change: پدینگ راست برای آیکون */
   padding: 0.75rem 2.5rem 0.75rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid #e5e7eb;
-  background-color: var(--white);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-input:focus {
-  border-color: var(--primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Section Title
+   ============================================ */
 .section-title {
   font-weight: bold;
   font-size: 1.125rem;
   margin-bottom: 1rem;
+  color: var(--color-text);
 }
 
+/* ============================================
+   Recommendation Cards
+   ============================================ */
 .recommendation-card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   padding: 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -535,31 +1005,35 @@ body {
 }
 
 .rec-icon-wrapper.danger {
-  background-color: var(--danger-light);
-  color: var(--danger);
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
 }
 
 .rec-icon-wrapper.success {
-  background-color: var(--primary-light);
-  color: var(--primary);
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .rec-title {
   font-weight: 600;
   font-size: 0.875rem;
+  color: var(--color-text);
 }
 
 .rec-desc {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin-top: 0.25rem;
 }
 
+/* ============================================
+   History Cards
+   ============================================ */
 .history-card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   padding: 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   margin-bottom: 0.75rem;
 }
 
@@ -573,16 +1047,17 @@ body {
 .history-title {
   font-weight: 600;
   font-size: 0.875rem;
+  color: var(--color-text);
 }
 
 .history-code {
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--color-text-muted);
 }
 
 .history-desc {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin-bottom: 0.75rem;
 }
 
@@ -601,11 +1076,11 @@ body {
 }
 
 .status-badge.active {
-  color: var(--danger);
+  color: var(--color-danger);
 }
 
 .status-badge.cured {
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .status-dot {
@@ -615,15 +1090,15 @@ body {
 }
 
 .status-badge.active .status-dot {
-  background-color: var(--danger);
+  background-color: var(--color-danger);
 }
 
 .status-badge.cured .status-dot {
-  background-color: var(--primary);
+  background-color: var(--color-primary);
 }
 
 .link-btn {
-  color: var(--primary);
+  color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 600;
   display: flex;
@@ -634,6 +1109,9 @@ body {
   border: none;
 }
 
+/* ============================================
+   Action Buttons
+   ============================================ */
 .action-buttons {
   display: flex;
   flex-direction: column;
@@ -642,31 +1120,13 @@ body {
   padding-top: 1rem;
 }
 
-.btn-primary {
-  /* flex: 1; */
-  /* background-color: var(--primary); */
-  color: var(--white);
-  font-weight: 600;
-  padding: 0.75rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.875rem;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-  /* box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2); */
-  background: var(--gradient-primary);
-  box-shadow: 0 4px 12px var(--color-primary-light);
-}
-
-.btn-primary:hover {
-  /* background-color: var(--primary-hover); */
-  box-shadow: 0 8px 18px var(--color-primary-light, rgba(139, 92, 246, 0.4));
-}
-
 .action-buttons .btn-outline {
   flex: 1;
 }
 
+/* ============================================
+   Chart
+   ============================================ */
 .chart-container {
   height: 12rem;
   width: 100%;
@@ -676,15 +1136,15 @@ body {
 .chart-tooltip {
   position: absolute;
   top: 0.5rem;
-  /* RTL Change: موقعیت تولتیپ سمت راست */
   right: 0.5rem;
   left: auto;
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   padding: 0.5rem;
   border-radius: 0.25rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   font-size: 0.75rem;
+  color: var(--color-text);
 }
 
 .chart-tooltip p:first-child {
@@ -692,11 +1152,13 @@ body {
 }
 
 .chart-tooltip p:last-child {
-  color: var(--text-light);
+  color: var(--color-text-muted);
   font-size: 0.625rem;
 }
 
-/* --- استایل‌های صفحه نقش‌ها (Roles) --- */
+/* ============================================
+   Roles Page
+   ============================================ */
 .roles-page-header {
   display: flex;
   justify-content: space-between;
@@ -709,15 +1171,15 @@ body {
 .roles-page-title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .role-main-card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -730,12 +1192,11 @@ body {
   content: '';
   position: absolute;
   top: 0;
-  /* RTL Change: نوار رنگی سمت راست کارت */
   right: 0;
   left: auto;
   width: 4px;
   height: 100%;
-  background-color: var(--primary);
+  background-color: var(--color-primary);
 }
 
 .role-card-content {
@@ -749,8 +1210,8 @@ body {
   width: 4rem;
   height: 4rem;
   border-radius: var(--radius-md);
-  background-color: var(--primary-light);
-  color: var(--primary);
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -765,12 +1226,12 @@ body {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .role-description {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.5;
   margin-bottom: 0.5rem;
 }
@@ -779,7 +1240,7 @@ body {
   display: flex;
   gap: 1rem;
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--color-text-muted);
 }
 
 .role-actions {
@@ -788,12 +1249,19 @@ body {
   align-items: center;
 }
 
+/* ============================================
+   Permissions Section
+   ============================================ */
+/* ============================================
+   Permissions Section (ادامه)
+   ============================================ */
 .permissions-section {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .permissions-header {
@@ -802,7 +1270,7 @@ body {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .permissions-title {
@@ -811,11 +1279,12 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: var(--color-text);
 }
 
 .permissions-count {
-  background-color: var(--bg-color);
-  color: var(--text-muted);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -856,32 +1325,33 @@ body {
   flex-shrink: 0;
 }
 
+/* Badge Variants — با تم هماهنگ */
 .badge-green {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
 }
 
 .badge-green .permission-badge-icon {
-  background-color: #10b981;
+  background-color: var(--color-primary);
   color: white;
 }
 
 .badge-blue {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
+  background: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .badge-blue .permission-badge-icon {
-  background-color: #3b82f6;
+  background-color: var(--color-info);
   color: white;
 }
 
 .badge-purple {
-  background-color: #f5f3ff;
-  color: #5b21b6;
-  border-color: #ede9fe;
+  background: color-mix(in srgb, #8b5cf6 10%, var(--color-bg-card));
+  color: #8b5cf6;
+  border-color: color-mix(in srgb, #8b5cf6 25%, transparent);
 }
 
 .badge-purple .permission-badge-icon {
@@ -890,174 +1360,141 @@ body {
 }
 
 .badge-orange {
-  background-color: #fff7ed;
-  color: #9a3412;
-  border-color: #ffedd5;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
 .badge-orange .permission-badge-icon {
-  background-color: #f97316;
+  background-color: var(--color-warning);
   color: white;
 }
 
 .badge-red {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .badge-red .permission-badge-icon {
-  background-color: #ef4444;
+  background-color: var(--color-danger);
   color: white;
 }
 
 .badge-gray {
-  background-color: #f3f4f6;
-  color: #374151;
-  border-color: #e5e7eb;
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .badge-gray .permission-badge-icon {
-  background-color: #6b7280;
+  background-color: var(--color-text-muted);
   color: white;
 }
 
-.btn-icon {
-  padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background-color: var(--white);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-icon:hover {
-  background-color: var(--bg-color);
-  color: var(--text-main);
-}
-
-.btn-icon.danger:hover {
-  background-color: var(--danger-light);
-  color: var(--danger);
-  border-color: var(--danger-light);
-}
-
-/* --- مدیا کوئری‌ها --- */
-@media (min-width: 768px) {
-  .main-content {
-    padding: 2rem;
-  }
-
-  .profile-card {
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: right;
-  }
-
-  /* RTL Change */
-  .profile-details-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .btn-outline {
-    width: auto;
-  }
-
-  .grid-2-col {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .interest-name {
-    font-size: 0.875rem;
-  }
-
-  .contacts-list {
-    justify-content: flex-start;
-  }
-
-  .action-buttons {
-    flex-direction: row;
-  }
-}
-
-@media (min-width: 1024px) {
-  .sidebar {
-    /* RTL Change: در دسکتاپ سایدبار همیشه باز است */
-    transform: translateX(0);
-  }
-
-  .mobile-menu-btn {
-    display: none;
-  }
-
-  .close-sidebar-btn {
-    display: none;
-  }
-
-  .overlay {
-    display: none;
-  }
-
-  .main-content {
-    /* RTL Change: فاصله از سمت راست به جای چپ */
-    margin-right: 16rem;
-    margin-left: 0;
-    padding-top: 2rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  .main-content {
-    flex-direction: row;
-  }
-
-  .right-column {
-    width: 20rem;
-  }
-}
-
-/* --- صفحه ایجاد نقش --- */
-.page-header-with-back {
+/* ============================================
+   Form Elements
+   ============================================ */
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-.back-btn {
-  display: inline-flex;
+.form-label {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-muted);
-  text-decoration: none;
   font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.form-label svg {
+  color: var(--color-primary);
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.form-input.error {
+  border-color: var(--color-danger);
+}
+
+.form-input.error:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--color-danger);
+  font-size: 0.75rem;
   font-weight: 500;
-  transition: color 0.2s;
-  width: fit-content;
 }
 
-.back-btn:hover {
-  color: var(--primary);
+.form-help-text {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.375rem;
+  line-height: 1.6;
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-main);
+.form-actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
 }
 
-/* کارت فرم */
+/* ============================================
+   Form Card
+   ============================================ */
 .form-card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  max-width: 800px;
+  border: 1px solid var(--color-border);
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .form-card-header {
@@ -1066,15 +1503,15 @@ body {
   gap: 1rem;
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .form-icon-box {
   width: 3rem;
   height: 3rem;
   border-radius: var(--radius-md);
-  background-color: var(--primary-light);
-  color: var(--primary);
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1084,105 +1521,24 @@ body {
 .form-card-title {
   font-size: 1.125rem;
   font-weight: bold;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 
 .form-card-subtitle {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
 }
 
-/* بدنه فرم */
 .form-body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.required {
-  color: var(--danger);
-}
-
-.form-hint {
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--text-light);
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid #e5e7eb;
-  background-color: var(--white);
-  font-family: inherit;
-  font-size: 0.875rem;
-  color: var(--text-main);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;
-}
-
-.form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-input.error {
-  border-color: var(--danger);
-}
-
-.form-input::placeholder {
-  color: var(--text-light);
-}
-
-.form-error {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  color: var(--danger);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.form-help-text {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.25rem;
-}
-
-.form-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.form-actions .btn-outline {
-  text-align: center;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Spinner */
+/* ============================================
+   Spinner
+   ============================================ */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -1199,64 +1555,41 @@ body {
   }
 }
 
-/* ریسپانسیو فرم */
-@media (min-width: 768px) {
-  .form-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
-  .form-actions .btn-outline {
-    width: auto;
-    padding: 0.75rem 2rem;
-  }
-
-  .form-actions .btn-primary {
-    width: auto;
-    padding: 0.75rem 2rem;
-  }
-}
-
-.rtl-alert {
-  direction: rtl;
-  font-family: Vazirmatn, Tahoma, sans-serif;
-}
-
-.rtl-alert .swal2-title {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.rtl-alert .swal2-html-container {
-  font-size: 14px;
-}
-
-.swal2-confirm-custom {
-  min-width: 100px;
-}
-
-.rtl-toast {
-  direction: rtl;
-  font-family: Alibaba-Regular, Tahoma, sans-serif;
-}
-
-/* ============ Wrapper برچسب دسترسی‌ها ============ */
-.permissions-label-wrapper {
+/* ============================================
+   Page Header With Back
+   ============================================ */
+.page-header-with-back {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  align-items: flex-start;
+  margin-bottom: 1.5rem;
 }
 
-@media (min-width: 768px) {
-  .permissions-label-wrapper {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  width: fit-content;
 }
 
-/* ============ دکمه‌های میانبر ============ */
+.back-btn:hover {
+  color: var(--color-primary);
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+/* ============================================
+   Shortcut Buttons
+   ============================================ */
 .permission-shortcuts {
   display: flex;
   gap: 0.5rem;
@@ -1268,60 +1601,70 @@ body {
   align-items: center;
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
 }
 
 .shortcut-btn:hover {
-  background-color: var(--primary-light);
-  border-color: var(--primary);
-  color: var(--primary);
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .shortcut-btn.danger:hover {
-  background-color: var(--danger-light);
-  border-color: var(--danger);
-  color: var(--danger);
+  background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
-/* ============ راهنمای دسترسی‌ها ============ */
+/* ============================================
+   Permissions Help
+   ============================================ */
 .permissions-help {
   margin-top: 0.75rem;
   padding: 0.75rem 1rem;
-  background-color: #eff6ff;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
   border-radius: var(--radius-sm);
-  border-right: 3px solid #3b82f6;
+  border-right: 3px solid var(--color-info);
 }
 
 .permissions-help p {
   font-size: 0.75rem;
-  color: #1e40af;
+  color: var(--color-info);
   line-height: 1.6;
 }
 
 .permissions-help strong {
-  color: #1e3a8a;
+  color: var(--color-info);
+  font-weight: 700;
 }
 
-/* ============ استایل Select2 ============ */
+.permissions-label-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+/* ============================================
+   React Select (Select2)
+   ============================================ */
 .react-select-container {
   width: 100%;
 }
 
-/* اطمینان از اینکه Badgeها به درستی wrap می‌شوند */
 .react-select__value-container--is-multi {
   flex-wrap: wrap;
   gap: 0.25rem;
 }
 
-/* استایل برای گزینه‌های لیست بازشو */
 .react-select__option {
   display: flex !important;
   align-items: center;
@@ -1334,37 +1677,32 @@ body {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background-color: #d1d5db;
+  background-color: var(--color-text-muted);
   transition: background-color 0.2s;
 }
 
-.react-select__option--is-focused::before {
-  background-color: #10b981;
-}
-
+.react-select__option--is-focused::before,
 .react-select__option--is-selected::before {
-  background-color: #10b981;
+  background-color: var(--color-primary);
 }
 
-
-
-/* ============ Password Input ============ */
-/* ============ Password Section ============ */
+/* ============================================
+   Password Section
+   ============================================ */
 .password-section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* ============ Password Toggle Card ============ */
 .password-toggle-card {
   display: flex;
   align-items: center;
   gap: 1rem;
   width: 100%;
   padding: 1.125rem 1.25rem;
-  background-color: var(--white);
-  border: 2px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1381,40 +1719,41 @@ body {
   right: 0;
   width: 4px;
   height: 100%;
-  background-color: #d1d5db;
+  background-color: var(--color-border);
   transition: background-color 0.3s;
 }
 
 .password-toggle-card:hover {
-  border-color: #d1d5db;
-  background-color: #fafafa;
+  border-color: var(--color-primary-light);
+  background-color: var(--color-bg-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .password-toggle-card.active {
-  border-color: var(--primary);
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.12);
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 100%);
+  box-shadow: 0 4px 16px var(--color-primary-light);
 }
 
 .password-toggle-card.active::before {
-  background: linear-gradient(180deg, #10b981, #059669);
+  background: var(--gradient-primary);
   width: 4px;
 }
 
 .password-toggle-card.active:hover {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.18);
+  box-shadow: 0 6px 20px var(--color-primary-light);
   transform: translateY(-2px);
 }
 
-/* ============ Icon ============ */
 .password-toggle-card-icon {
   width: 3rem;
   height: 3rem;
   border-radius: 0.875rem;
-  background-color: #f3f4f6;
-  color: var(--text-muted);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1423,12 +1762,11 @@ body {
 }
 
 .password-toggle-card.active .password-toggle-card-icon {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
-/* ============ Content ============ */
 .password-toggle-card-content {
   flex: 1;
   display: flex;
@@ -1440,28 +1778,27 @@ body {
 .password-toggle-card-title {
   font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0;
   transition: color 0.3s;
 }
 
 .password-toggle-card.active .password-toggle-card-title {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .password-toggle-card-description {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
   line-height: 1.5;
   transition: color 0.3s;
 }
 
 .password-toggle-card.active .password-toggle-card-description {
-  color: #047857;
+  color: var(--color-primary-hover);
 }
 
-/* ============ Action (Status + Chevron) ============ */
 .password-toggle-card-action {
   display: flex;
   align-items: center;
@@ -1482,74 +1819,49 @@ body {
 }
 
 .password-toggle-card-status.inactive {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .password-toggle-card-status.active {
-  background-color: #10b981;
+  background-color: var(--color-primary);
   color: white;
-  border: 1px solid #10b981;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 2px 8px var(--color-primary-light);
 }
 
 .password-toggle-card-chevron {
-  color: var(--text-light);
+  color: var(--color-text-muted);
   transition: all 0.3s ease;
   flex-shrink: 0;
 }
 
 .password-toggle-card.active .password-toggle-card-chevron {
-  color: var(--primary);
+  color: var(--color-primary);
   transform: rotate(-90deg);
 }
 
-/* ============ Password Fields ============ */
 .password-fields {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 1.25rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: var(--radius-md);
-  border: 1px dashed #d1d5db;
+  border: 1px dashed var(--color-border);
   animation: slideDown 0.3s ease;
 }
 
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
-  .password-toggle-card {
-    padding: 1rem;
-    gap: 0.75rem;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
 
-  .password-toggle-card-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.75rem;
-  }
-
-  .password-toggle-card-title {
-    font-size: 0.875rem;
-  }
-
-  .password-toggle-card-description {
-    font-size: 0.6875rem;
-  }
-
-  /* پنهان کردن متن "فعال/غیرفعال" در موبایل */
-  .password-toggle-card-status span {
-    display: none;
-  }
-
-  .password-toggle-card-status {
-    padding: 0.375rem;
-    border-radius: 50%;
-  }
-
-  .password-toggle-card-action {
-    gap: 0.5rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -1570,7 +1882,7 @@ body {
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--text-light);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 0.375rem;
@@ -1581,169 +1893,36 @@ body {
 }
 
 .password-toggle-btn:hover {
-  color: var(--primary);
-  background-color: var(--primary-light);
+  color: var(--color-primary);
+  background-color: var(--color-primary-tint);
 }
 
-/* ============ Password Match ============ */
 .password-match {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: #10b981;
+  color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 500;
   margin-top: 0.25rem;
 }
 
-/* ============ Form Label with Icon ============ */
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-}
-
-.form-label svg {
-  color: var(--primary);
-}
-
-/* ============ Form Input Improved ============ */
-.form-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid #e5e7eb;
-  background-color: var(--white);
-  font-family: inherit;
-  font-size: 0.875rem;
-  color: var(--text-main);
-  transition: all 0.2s;
-  outline: none;
-}
-
-.form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-input.error {
-  border-color: var(--danger);
-}
-
-.form-input.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.form-input::placeholder {
-  color: var(--text-light);
-  font-size: 0.8125rem;
-}
-
-/* ============ Form Help Text ============ */
-.form-help-text {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.375rem;
-  line-height: 1.6;
-}
-
-/* ============ Form Card Improved ============ */
-.form-card {
-  background-color: var(--white);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
-  max-width: 700px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .form-card {
-    padding: 2rem;
-  }
-}
-
-.form-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* ============ Form Actions ============ */
-.form-actions {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-@media (min-width: 640px) {
-  .form-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
-  .form-actions .btn-outline,
-  .form-actions .btn-primary {
-    width: auto;
-    padding: 0.75rem 2rem;
-  }
-}
-
-/* ============ Spinner ============ */
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============ Admins Cards Grid ============ */
+/* ============================================
+   Admins Cards Grid
+   ============================================ */
 .admins-cards-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
-@media (min-width: 640px) {
-  .admins-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .admins-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1440px) {
-  .admins-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* ============ Admin Card ============ */
+/* ============================================
+   Admin Card
+   ============================================ */
 .admin-card {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -1754,13 +1933,12 @@ body {
 }
 
 .admin-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08),
-    0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px -5px var(--color-shadow),
+    0 8px 10px -6px var(--color-shadow);
   transform: translateY(-2px);
-  border-color: #d1d5db;
+  border-color: var(--color-primary-light);
 }
 
-/* نوار رنگی بالای کارت */
 .admin-card-stripe {
   position: absolute;
   top: 0;
@@ -1771,14 +1949,13 @@ body {
 }
 
 .admin-card-stripe.active {
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover));
 }
 
 .admin-card-stripe.inactive {
-  background: linear-gradient(90deg, #ef4444, #f87171);
+  background: linear-gradient(90deg, var(--color-danger), color-mix(in srgb, var(--color-danger) 70%, white));
 }
 
-/* ============ بالای کارت: آواتار و وضعیت ============ */
 .admin-card-top {
   display: flex;
   justify-content: space-between;
@@ -1794,7 +1971,7 @@ body {
   height: 4rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--primary), #059669);
+  background: var(--gradient-primary);
   color: white;
   display: flex;
   align-items: center;
@@ -1802,7 +1979,7 @@ body {
   font-weight: bold;
   font-size: 1.5rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .admin-card-avatar img {
@@ -1811,27 +1988,27 @@ body {
   object-fit: cover;
 }
 
-/* نشانگر آنلاین/آفلاین روی آواتار */
 .admin-card-avatar-status {
   position: absolute;
   bottom: 2px;
   left: 2px;
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
   border-radius: 50%;
-  border: 2px solid var(--white);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  border: 2.5px solid var(--color-bg-card);
+  box-shadow: 0 0 0 1px var(--color-shadow);
+  transition: all 0.3s;
 }
 
 .admin-card-avatar-status.online {
-  background-color: #10b981;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .admin-card-avatar-status.offline {
-  background-color: #9ca3af;
+  background-color: var(--color-text-muted);
 }
 
-/* دکمه وضعیت */
 .admin-card-status-btn {
   display: inline-flex;
   align-items: center;
@@ -1847,29 +2024,66 @@ body {
   white-space: nowrap;
 }
 
-.admin-card-status-btn.active {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
+.admin-card-status-btn.status-active {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border-color: var(--color-primary-light);
 }
 
-.admin-card-status-btn.active:hover {
-  background-color: #10b981;
+.admin-card-status-btn.status-active:hover {
+  background-color: var(--color-primary);
   color: white;
+  border-color: var(--color-primary);
 }
 
-.admin-card-status-btn.inactive {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+.admin-card-status-btn.status-inactive {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
-.admin-card-status-btn.inactive:hover {
-  background-color: #ef4444;
+.admin-card-status-btn.status-inactive:hover {
+  background-color: var(--color-text-muted);
   color: white;
+  border-color: var(--color-text-muted);
 }
 
-/* ============ نام و شناسه ============ */
+.admin-card-status-btn.status-suspended {
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+.admin-card-status-btn.status-suspended:hover {
+  background-color: var(--color-warning);
+  color: white;
+  border-color: var(--color-warning);
+}
+
+.admin-card-status-btn.status-pending {
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
+}
+
+.admin-card-status-btn.status-pending:hover {
+  background-color: var(--color-info);
+  color: white;
+  border-color: var(--color-info);
+}
+
+.admin-card-status-btn.status-banned {
+  background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.admin-card-status-btn.status-banned:hover {
+  background-color: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+
 .admin-card-name-wrapper {
   display: flex;
   flex-direction: column;
@@ -1879,18 +2093,17 @@ body {
 .admin-card-name {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.4;
   margin: 0;
 }
 
 .admin-card-id {
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
-/* ============ Badgeهای نقش ============ */
 .admin-card-roles {
   display: flex;
   flex-wrap: wrap;
@@ -1899,7 +2112,7 @@ body {
 
 .no-role-text {
   font-size: 0.75rem;
-  color: var(--text-light);
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
@@ -1914,15 +2127,20 @@ body {
   white-space: nowrap;
 }
 
-/* ============ اطلاعات تماس و تاریخ ============ */
+.role-badge.crown {
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
 .admin-card-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: var(--radius-sm);
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   margin-top: auto;
 }
 
@@ -1931,11 +2149,11 @@ body {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
 }
 
 .admin-card-info-row svg {
-  color: var(--primary);
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -1945,12 +2163,11 @@ body {
   white-space: nowrap;
 }
 
-/* ============ دکمه‌های عملیات ============ */
 .admin-card-actions {
   display: flex;
   gap: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--color-border);
 }
 
 .admin-card-btn {
@@ -1971,77 +2188,68 @@ body {
   white-space: nowrap;
 }
 
-.admin-card-btn.edit {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
+.admin-card-btn.edit,
+.admin-card-btn.info {
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
-.admin-card-btn.edit:hover {
-  background-color: #3b82f6;
+.admin-card-btn.edit:hover,
+.admin-card-btn.info:hover {
+  background-color: var(--color-info);
   color: white;
-  border-color: #3b82f6;
+  border-color: var(--color-info);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .admin-card-btn.warning {
-  background-color: #fffbeb;
-  color: #b45309;
-  border-color: #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
 .admin-card-btn.warning:hover {
-  background-color: #f59e0b;
+  background-color: var(--color-warning);
   color: white;
-  border-color: #f59e0b;
+  border-color: var(--color-warning);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.2);
-}
-
-/* ============ Edit Button (Info Style) ============ */
-.admin-card-btn.info {
-  background-color: #f0f9ff;
-  color: #075985;
-  border-color: #bae6fd;
-}
-
-.admin-card-btn.info:hover {
-  background-color: #0ea5e9;
-  color: white;
-  border-color: #0ea5e9;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
 .admin-card-btn.delete {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .admin-card-btn.delete:hover {
-  background-color: #ef4444;
+  background-color: var(--color-danger);
   color: white;
-  border-color: #ef4444;
+  border-color: var(--color-danger);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
-/* ============ Admins Toolbar ============ */
+.admin-card-btn.delete.disabled,
+.admin-card-btn.delete:disabled {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============================================
+   Admins Toolbar
+   ============================================ */
 .admins-toolbar {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .admins-toolbar {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
 }
 
 .admins-search-wrapper {
@@ -2060,13 +2268,13 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 500;
   font-family: inherit;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -2074,9 +2282,9 @@ body {
 
 .filter-toggle-btn:hover,
 .filter-toggle-btn.active {
-  background-color: var(--primary-light);
-  border-color: var(--primary);
-  color: var(--primary);
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .filter-count-badge {
@@ -2086,7 +2294,7 @@ body {
   min-width: 1.25rem;
   height: 1.25rem;
   padding: 0 0.375rem;
-  background-color: var(--primary);
+  background-color: var(--color-primary);
   color: white;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -2099,55 +2307,33 @@ body {
   gap: 0.375rem;
   padding: 0.625rem 1rem;
   background-color: transparent;
-  border: 1px solid #fee2e2;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 25%, transparent);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 500;
   font-family: inherit;
-  color: #ef4444;
+  color: var(--color-danger);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .clear-filters-btn:hover {
-  background-color: #fef2f2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
 }
 
-/* ============ Filters Panel ============ */
+/* ============================================
+   Admins Filters Panel
+   ============================================ */
 .admins-filters-panel {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
   padding: 1.25rem;
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
   animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (min-width: 768px) {
-  .admins-filters-panel {
-    flex-direction: row;
-    gap: 2rem;
-    align-items: flex-start;
-  }
-
-  .filter-group {
-    flex: 1;
-  }
 }
 
 .filter-group {
@@ -2159,7 +2345,7 @@ body {
 .filter-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .status-filter-buttons {
@@ -2173,117 +2359,32 @@ body {
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--white);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
   font-weight: 500;
   font-family: inherit;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .status-filter-btn:hover {
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
 .status-filter-btn.active {
-  background-color: var(--primary);
+  background-color: var(--color-primary);
   color: white;
-  border-color: var(--primary);
+  border-color: var(--color-primary);
 }
 
-/* ============ Admin Card Status Button ============ */
-.admin-card-status-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.3rem 0.65rem;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.admin-card-status-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  filter: brightness(0.95);
-}
-
-.admin-card-status-btn:active {
-  transform: translateY(0);
-}
-
-/* ============ رنگ‌بندی بر اساس وضعیت ============ */
-.admin-card-status-btn.status-active {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
-}
-
-.admin-card-status-btn.status-active:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
-}
-
-.admin-card-status-btn.status-inactive {
-  background-color: #f3f4f6;
-  color: #374151;
-  border-color: #e5e7eb;
-}
-
-.admin-card-status-btn.status-inactive:hover {
-  background-color: #6b7280;
-  color: white;
-  border-color: #6b7280;
-}
-
-.admin-card-status-btn.status-suspended {
-  background-color: #fff7ed;
-  color: #9a3412;
-  border-color: #ffedd5;
-}
-
-.admin-card-status-btn.status-suspended:hover {
-  background-color: #f97316;
-  color: white;
-  border-color: #f97316;
-}
-
-.admin-card-status-btn.status-pending {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
-}
-
-.admin-card-status-btn.status-pending:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.admin-card-status-btn.status-banned {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
-}
-
-.admin-card-status-btn.status-banned:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
-}
-
-/* ============ Header Stats ============ */
+/* ============================================
+   Header Stats
+   ============================================ */
 .header-stats {
   display: flex;
   align-items: center;
@@ -2293,32 +2394,31 @@ body {
 }
 
 .stats-text {
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-size: 0.875rem;
   margin: 0;
 }
 
-/* شمارنده آنلاین */
 .online-counter-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.375rem 0.75rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
   position: relative;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 2px 8px var(--color-primary-light);
 }
 
 .online-counter-badge .online-dot {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background-color: #10b981;
+  background-color: var(--color-primary);
   position: relative;
   flex-shrink: 0;
 }
@@ -2328,7 +2428,7 @@ body {
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  background-color: rgba(16, 185, 129, 0.4);
+  background-color: var(--color-primary-light);
   animation: pulseRing 2s ease-out infinite;
 }
 
@@ -2340,7 +2440,7 @@ body {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background-color: #10b981;
+  background-color: var(--color-primary);
   opacity: 0.5;
   animation: blink 1s ease-in-out infinite;
 }
@@ -2369,35 +2469,34 @@ body {
   }
 }
 
-/* ============ دکمه فقط آنلاین ============ */
 .only-online-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 500;
   font-family: inherit;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
 }
 
 .only-online-btn:hover {
-  background-color: #ecfdf5;
-  border-color: #10b981;
-  color: #065f46;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .only-online-btn.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-color: #10b981;
+  background: var(--gradient-primary);
+  border-color: var(--color-primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .only-online-btn .active-dot {
@@ -2407,46 +2506,14 @@ body {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background-color: #fbbf24;
+  background-color: var(--color-warning);
   border: 1.5px solid white;
   animation: blink 1.5s ease-in-out infinite;
 }
 
-/* ============ نشانگر آنلاین روی آواتار ============ */
-.admin-card-avatar-status {
-  position: absolute;
-  bottom: 2px;
-  left: 2px;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 50%;
-  border: 2.5px solid var(--white);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
-}
-
-.admin-card-avatar-status.online {
-  background-color: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
-}
-
-.admin-card-avatar-status.offline {
-  background-color: #9ca3af;
-}
-
-.admin-card-avatar-status .pulse-ring {
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background-color: rgba(16, 185, 129, 0.4);
-  animation: pulseRing 2s ease-out infinite;
-  pointer-events: none;
-}
-
-/* ============ نشانگر آنلاین متنی ============ */
 .admin-card-online-indicator {
   padding: 0.625rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .online-badge {
@@ -2462,15 +2529,15 @@ body {
 }
 
 .online-badge.online {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
 }
 
 .online-badge.offline {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .online-badge .online-dot {
@@ -2482,64 +2549,49 @@ body {
 }
 
 .online-badge.online .online-dot {
-  background-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.online-badge.offline .online-dot {
+  background-color: var(--color-text-muted);
 }
 
 .you-badge {
   display: inline-flex;
   align-items: center;
   padding: 0.1875rem 0.5rem;
-  background-color: #eff6ff;
-  color: #1e40af;
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
   font-size: 0.625rem;
   font-weight: 700;
   border-radius: 9999px;
-  border: 1px solid #dbeafe;
+  border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
   white-space: nowrap;
 }
 
-/* ============ دکمه حذف غیرفعال ============ */
-.admin-card-btn.delete.disabled,
-.admin-card-btn.delete:disabled {
-  background-color: #f9fafb;
-  color: #9ca3af;
-  border-color: #e5e7eb;
-  cursor: not-allowed;
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.admin-card-btn.delete.disabled:hover,
-.admin-card-btn.delete:disabled:hover {
-  background-color: #f9fafb;
-  color: #9ca3af;
-  border-color: #e5e7eb;
-  transform: none;
-  box-shadow: none;
-}
-
-/* ============ Image Upload ============ */
+/* ============================================
+   Image Upload
+   ============================================ */
 .image-upload-wrapper {
   width: 100%;
 }
 
-/* باکس آپلود */
 .image-upload-box {
   display: block;
   position: relative;
   width: 100%;
-  border: 2px dashed #d1d5db;
+  border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   cursor: pointer;
   transition: all 0.3s;
   overflow: hidden;
 }
 
 .image-upload-box:hover {
-  border-color: var(--primary);
-  background-color: #ecfdf5;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-tint);
 }
 
 .image-upload-input {
@@ -2565,8 +2617,8 @@ body {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  color: #3b82f6;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2576,25 +2628,24 @@ body {
 .image-upload-text {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0;
 }
 
 .image-upload-hint {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
-/* پیش‌نمایش تصویر */
 .image-preview-container {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background-color: #f3f4f6;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background-color: var(--color-bg-hover);
+  box-shadow: 0 4px 12px var(--color-shadow);
 }
 
 .image-preview {
@@ -2603,7 +2654,6 @@ body {
   object-fit: cover;
 }
 
-/* دکمه حذف تصویر */
 .image-remove-btn {
   position: absolute;
   top: 0.75rem;
@@ -2611,7 +2661,7 @@ body {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background-color: rgba(239, 68, 68, 0.95);
+  background-color: var(--color-danger);
   color: white;
   border: none;
   cursor: pointer;
@@ -2619,49 +2669,31 @@ body {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .image-remove-btn:hover {
-  background-color: #dc2626;
+  background-color: color-mix(in srgb, var(--color-danger) 80%, black);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 40%, transparent);
 }
 
-/* ریسپانسیو */
-@media (max-width: 640px) {
-  .image-upload-content {
-    padding: 1.5rem 1rem;
-  }
-
-  .image-upload-icon {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .image-upload-text {
-    font-size: 0.8125rem;
-  }
-
-  .image-upload-hint {
-    font-size: 0.6875rem;
-  }
-}
-
-/* ============ Barber Profile Card ============ */
+/* ============================================
+   Barber Profile Card
+   ============================================ */
 .barber-profile-card {
   position: relative;
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   overflow: hidden;
 }
 
 .barber-profile-card.online {
-  border-color: #a7f3d0;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 20px var(--color-primary-light);
 }
 
 .online-stripe {
@@ -2670,7 +2702,10 @@ body {
   right: 0;
   left: 0;
   height: 4px;
-  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+  background: linear-gradient(90deg,
+      var(--color-primary),
+      var(--color-primary-hover),
+      var(--color-primary));
   background-size: 200% 100%;
   animation: shimmer 3s ease-in-out infinite;
 }
@@ -2694,7 +2729,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* آواتار */
 .barber-profile-avatar-wrapper {
   position: relative;
   flex-shrink: 0;
@@ -2705,14 +2739,14 @@ body {
   height: 5.5rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 2rem;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 20px var(--color-primary-light);
 }
 
 .barber-profile-avatar img {
@@ -2728,32 +2762,19 @@ body {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  background-color: #10b981;
-  border: 3px solid white;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  background-color: var(--color-primary);
+  border: 3px solid var(--color-bg-card);
+  box-shadow: 0 0 0 1px var(--color-shadow);
 }
 
 .online-indicator .pulse-ring {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  background-color: rgba(16, 185, 129, 0.4);
+  background-color: var(--color-primary-light);
   animation: pulseRing 2s ease-out infinite;
 }
 
-@keyframes pulseRing {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-/* اطلاعات */
 .barber-profile-info {
   flex: 1;
   min-width: 200px;
@@ -2770,7 +2791,7 @@ body {
 .barber-profile-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -2795,34 +2816,15 @@ body {
 }
 
 .barber-online-badge.online {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
 }
 
 .barber-online-badge.offline {
-  background-color: #f3f4f6;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-}
-
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  background-color: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #dbeafe;
-}
-
-.role-badge.crown {
-  background-color: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .barber-contact-row {
@@ -2837,11 +2839,11 @@ body {
   align-items: center;
   gap: 0.375rem;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
 }
 
 .contact-item svg {
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .barber-edit-btn {
@@ -2849,9 +2851,9 @@ body {
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  background-color: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -2862,11 +2864,11 @@ body {
 }
 
 .barber-edit-btn:hover {
-  background-color: #3b82f6;
+  background-color: var(--color-info);
   color: white;
-  border-color: #3b82f6;
+  border-color: var(--color-info);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .barber-success-btn {
@@ -2874,9 +2876,9 @@ body {
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  background-color: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -2887,11 +2889,11 @@ body {
 }
 
 .barber-success-btn:hover {
-  background-color: #22c55e;
+  background-color: var(--color-primary);
   color: white;
-  border-color: #22c55e;
+  border-color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .barber-profile-actions {
@@ -2910,20 +2912,16 @@ body {
   box-sizing: border-box;
 }
 
-/* آمار سریع */
+/* ============================================
+   Barber Quick Stats
+   ============================================ */
 .barber-quick-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px dashed var(--border-color);
-}
-
-@media (min-width: 768px) {
-  .barber-quick-stats {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  border-top: 1px dashed var(--color-border);
 }
 
 .quick-stat {
@@ -2931,14 +2929,14 @@ body {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: var(--radius-sm);
   transition: all 0.2s;
 }
 
 .quick-stat:hover {
-  background-color: var(--white);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: var(--color-bg-card);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transform: translateY(-2px);
 }
 
@@ -2953,23 +2951,23 @@ body {
 }
 
 .quick-stat-icon.green {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 .quick-stat-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
 }
 
 .quick-stat-icon.purple {
-  background-color: #f5f3ff;
+  background-color: color-mix(in srgb, #8b5cf6 12%, var(--color-bg-card));
   color: #8b5cf6;
 }
 
 .quick-stat-icon.orange {
-  background-color: #fff7ed;
-  color: #f97316;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .quick-stat span {
@@ -2979,26 +2977,29 @@ body {
 .quick-stat-value {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   line-height: 1.2;
 }
 
 .quick-stat-label {
   font-size: 0.6875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
-/* ============ Tabs ============ */
+/* ============================================
+   Barber Tabs
+   ============================================ */
 .barber-tabs {
   display: flex;
   gap: 0.5rem;
   padding: 0.375rem;
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .barber-tab {
@@ -3012,21 +3013,21 @@ body {
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .barber-tab:hover {
-  background-color: #f9fafb;
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
 .barber-tab.active {
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-light);
 }
 
 .tab-count {
@@ -3044,11 +3045,13 @@ body {
 }
 
 .barber-tab:not(.active) .tab-count {
-  background-color: #f3f4f6;
-  color: var(--text-muted);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
-/* ============ Tab Content ============ */
+/* ============================================
+   Tab Content
+   ============================================ */
 .barber-tab-content {
   animation: fadeIn 0.3s ease;
 }
@@ -3065,17 +3068,13 @@ body {
   }
 }
 
-/* ============ Overview ============ */
+/* ============================================
+   Overview
+   ============================================ */
 .overview-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .overview-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .stats-detail-list {
@@ -3089,40 +3088,40 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.625rem 0.75rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: var(--radius-sm);
   font-size: 0.8125rem;
 }
 
 .stats-detail-row.highlighted {
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  border: 1px solid #a7f3d0;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-primary-light);
 }
 
 .stats-detail-label {
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
 .stats-detail-value {
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .stats-detail-value.green {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
 .stats-detail-value.blue {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
 .stats-detail-value.red {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .stats-detail-value.primary {
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .overview-schedule {
@@ -3141,35 +3140,37 @@ body {
 }
 
 .overview-day.active {
-  background-color: #ecfdf5;
-  border-right: 3px solid #10b981;
+  background-color: var(--color-primary-tint);
+  border-right: 3px solid var(--color-primary);
 }
 
 .overview-day.inactive {
-  background-color: #f9fafb;
-  border-right: 3px solid #d1d5db;
+  background-color: var(--color-bg-hover);
+  border-right: 3px solid var(--color-border);
   opacity: 0.7;
 }
 
 .overview-day-name {
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .overview-day-time {
   font-size: 0.75rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 600;
   direction: ltr;
 }
 
 .overview-day-off {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
-/* ============ Empty State ============ */
+/* ============================================
+   Empty State
+   ============================================ */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -3177,18 +3178,18 @@ body {
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
-  color: var(--text-light);
+  color: var(--color-text-muted);
 }
 
 .empty-state svg {
-  color: #d1d5db;
+  color: var(--color-border);
   margin-bottom: 1rem;
 }
 
 .empty-state h3 {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.5rem;
 }
 
@@ -3197,39 +3198,29 @@ body {
   margin: 0;
 }
 
-/* ============ Schedule Grid ============ */
+/* ============================================
+   Schedule Grid
+   ============================================ */
 .schedule-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.875rem;
 }
 
-@media (min-width: 640px) {
-  .schedule-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .schedule-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .schedule-day-card {
   padding: 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   transition: all 0.2s;
 }
 
 .schedule-day-card.active {
-  background-color: #ecfdf5;
-  border-color: #a7f3d0;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
 .schedule-day-card.inactive {
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
 }
 
 .schedule-day-header {
@@ -3242,7 +3233,7 @@ body {
 .schedule-day-name {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .schedule-day-status {
@@ -3256,13 +3247,13 @@ body {
 }
 
 .schedule-day-status.active {
-  background-color: white;
-  color: #10b981;
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
 }
 
 .schedule-day-status.inactive {
-  background-color: white;
-  color: #9ca3af;
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
 }
 
 .schedule-day-time {
@@ -3271,17 +3262,19 @@ body {
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #065f46;
+  color: var(--color-primary-hover);
   direction: ltr;
 }
 
 .schedule-day-time-off {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-style: italic;
 }
 
-/* ============ Upcoming Slots ============ */
+/* ============================================
+   Upcoming Slots
+   ============================================ */
 .upcoming-slots-list {
   display: flex;
   flex-direction: column;
@@ -3294,29 +3287,29 @@ body {
   gap: 0.75rem;
   padding: 0.875rem 1rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--color-border);
   flex-wrap: wrap;
   transition: all 0.2s;
 }
 
 .upcoming-slot-row:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transform: translateX(-2px);
 }
 
 .upcoming-slot-row.status-available {
-  background-color: #ecfdf5;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary-light);
 }
 
 .upcoming-slot-row.status-booked {
-  background-color: #eff6ff;
-  border-color: #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .upcoming-slot-row.status-blocked {
-  background-color: #fef2f2;
-  border-color: #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .upcoming-slot-date,
@@ -3328,14 +3321,14 @@ body {
   gap: 0.375rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 .upcoming-slot-date svg,
 .upcoming-slot-time svg,
 .upcoming-slot-service svg,
 .upcoming-slot-customer svg {
-  color: var(--primary);
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
@@ -3354,8 +3347,304 @@ body {
   margin-right: auto;
 }
 
-/* ============ Responsive ============ */
+/* ============================================
+   Services Grid
+   ============================================ */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+/* ============================================
+   Service Card
+   ============================================ */
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 2px var(--color-shadow);
+}
+
+.service-card:hover {
+  box-shadow: 0 10px 25px -5px var(--color-shadow),
+    0 8px 10px -6px var(--color-shadow);
+  transform: translateY(-2px);
+  border-color: var(--color-primary-light);
+}
+
+.service-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: var(--color-primary-tint);
+  margin-bottom: 0.25rem;
+}
+
+.service-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.service-card:hover .service-card-image {
+  transform: scale(1.05);
+}
+
+.service-card-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+  opacity: 0.7;
+}
+
+.service-status-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.service-status-badge.active {
+  background-color: color-mix(in srgb, var(--color-primary-tint) 95%, transparent);
+  color: var(--color-primary-hover);
+  border: 1px solid var(--color-primary-light);
+}
+
+.service-status-badge.inactive {
+  background-color: color-mix(in srgb, var(--color-bg-hover) 95%, transparent);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.service-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.service-description {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.service-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.service-meta-item svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.service-meta-item.price {
+  color: var(--color-primary-hover);
+  font-weight: 700;
+}
+
+.service-meta-item.price svg {
+  color: var(--color-primary-hover);
+}
+
+.service-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.service-card-actions .admin-card-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* ============================================
+   Mobile Menu Button
+   ============================================ */
+.mobile-menu-btn {
+  display: flex;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  padding: 0.625rem;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px var(--color-shadow);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobile-menu-btn:hover {
+  background-color: var(--color-primary-tint);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ============================================
+   Overlay
+   ============================================ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+  animation: fadeIn 0.2s ease;
+}
+
+html.dark .overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================
+   Toast / SweetAlert
+   ============================================ */
+.rtl-alert {
+  direction: rtl;
+  font-family: 'Alibaba-Regular', Tahoma, sans-serif;
+}
+
+.rtl-alert .swal2-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rtl-alert .swal2-html-container {
+  font-size: 14px;
+}
+
+.swal2-confirm-custom {
+  min-width: 100px;
+}
+
+.rtl-toast {
+  direction: rtl;
+  font-family: 'Alibaba-Regular', Tahoma, sans-serif;
+}
+
+/* ============================================
+   Responsive — Mobile (max 640px)
+   ============================================ */
 @media (max-width: 640px) {
+  .main-content-inner {
+    padding: 3.5rem 0.5rem 1rem 0.5rem;
+    gap: 1rem;
+  }
+
+  .image-upload-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .image-upload-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .image-upload-text {
+    font-size: 0.8125rem;
+  }
+
+  .image-upload-hint {
+    font-size: 0.6875rem;
+  }
+
+  .password-toggle-card {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .password-toggle-card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .password-toggle-card-title {
+    font-size: 0.875rem;
+  }
+
+  .password-toggle-card-description {
+    font-size: 0.6875rem;
+  }
+
+  .password-toggle-card-status span {
+    display: none;
+  }
+
+  .password-toggle-card-status {
+    padding: 0.375rem;
+    border-radius: 50%;
+  }
+
+  .password-toggle-card-action {
+    gap: 0.5rem;
+  }
+
   .barber-profile-avatar {
     width: 4.5rem;
     height: 4.5rem;
@@ -3388,224 +3677,7 @@ body {
   .barber-quick-stats {
     grid-template-columns: 1fr 1fr;
   }
-}
 
-/* ============ Services Grid ============ */
-.services-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .services-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* ============ Service Card ============ */
-.service-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  padding: 1.25rem;
-  background-color: #ffffff;
-  border: 1px solid #f3f4f6;
-  border-radius: 1.5rem;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.service-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08),
-    0 8px 10px -6px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
-  border-color: #d1d5db;
-}
-
-/* ============ Service Card Image ============ */
-.service-card-image-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: 1rem;
-  overflow: hidden;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-  margin-bottom: 0.25rem;
-}
-
-.service-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-  display: block;
-}
-
-.service-card:hover .service-card-image {
-  transform: scale(1.05);
-}
-
-.service-card-image-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  color: #93c5fd;
-  background: linear-gradient(135deg, #eff6ff, #dbeafe);
-}
-
-/* ============ Service Status Badge ============ */
-.service-status-badge {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  backdrop-filter: blur(8px);
-  z-index: 2;
-}
-
-.service-status-badge.active {
-  background-color: rgba(236, 253, 245, 0.95);
-  color: #065f46;
-  border: 1px solid #d1fae5;
-}
-
-.service-status-badge.inactive {
-  background-color: rgba(243, 244, 246, 0.95);
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-}
-
-/* ============ Service Name ============ */
-.service-name {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* ============ Service Description ============ */
-.service-description {
-  font-size: 0.8125rem;
-  color: #6b7280;
-  line-height: 1.6;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ============ Service Meta ============ */
-.service-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding-top: 0.875rem;
-  border-top: 1px solid #f3f4f6;
-  margin-top: auto;
-  flex-wrap: wrap;
-}
-
-.service-meta-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.service-meta-item svg {
-  color: #10b981;
-  flex-shrink: 0;
-}
-
-.service-meta-item.price {
-  color: #059669;
-  font-weight: 700;
-}
-
-.service-meta-item.price svg {
-  color: #059669;
-}
-
-/* ============ Service Card Actions ============ */
-.service-card-actions {
-  display: flex;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #f3f4f6;
-}
-
-.service-card-actions .admin-card-btn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  padding: 0.625rem 0.75rem;
-  border-radius: 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.service-card-actions .admin-card-btn.edit {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
-}
-
-.service-card-actions .admin-card-btn.edit:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
-}
-
-.service-card-actions .admin-card-btn.delete {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
-}
-
-.service-card-actions .admin-card-btn.delete:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
   .service-card {
     padding: 1rem;
   }
@@ -3623,293 +3695,181 @@ body {
   .service-card-actions {
     flex-direction: column;
   }
+
+  .status-filters {
+    flex-direction: column;
+    width: 100% !important;
+  }
+
+  .form-card {
+    padding: 1.25rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn-outline,
+  .form-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .admins-filters-panel {
+    padding: 1rem;
+  }
+
+  .header-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-/* ============ Sidebar ============ */
-.sidebar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 16rem;
-  background-color: #ffffff;
-  border-left: 1px solid #f3f4f6;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.5rem 1rem;
-  z-index: 50;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateX(100%);
-  overflow-y: auto;
-  overflow-x: hidden;
+/* ============================================
+   Responsive — Tablet (min 640px)
+   ============================================ */
+@media (min-width: 640px) {
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admins-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .barber-quick-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .form-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .form-actions .btn-outline,
+  .form-actions .btn-primary {
+    width: auto;
+    padding: 0.75rem 2rem;
+  }
 }
 
-.sidebar.open {
-  transform: translateX(0);
+/* ============================================
+   Responsive — Tablet (min 768px)
+   ============================================ */
+@media (min-width: 768px) {
+  .main-content {
+    padding: 2rem;
+  }
+
+  .profile-card {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: right;
+  }
+
+  .profile-details-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .btn-outline {
+    width: auto;
+  }
+
+  .grid-2-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .interest-name {
+    font-size: 0.875rem;
+  }
+
+  .contacts-list {
+    justify-content: flex-start;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+  }
+
+  .admins-toolbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .admins-filters-panel {
+    flex-direction: row;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .filter-group {
+    flex: 1;
+  }
+
+  .form-card {
+    padding: 2rem;
+  }
+
+  .permissions-label-wrapper {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
-/* حالت جمع‌شده */
-.sidebar.collapsed {
-  width: 5rem;
-  padding: 1.5rem 0.75rem;
-}
-
-/* اسکرول‌بار سفارشی */
-.sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background-color: #e5e7eb;
-  border-radius: 4px;
-}
-
-/* ============ هدر سایدبار ============ */
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  padding: 0 0.25rem;
-  position: relative;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  overflow: hidden;
-  flex: 1;
-}
-
-
-
-.logo-text {
-  font-weight: 800;
-  font-size: 1.125rem;
-  letter-spacing: -0.025em;
-  color: #1f2937;
-  white-space: nowrap;
-}
-
-
-
-
-.close-sidebar-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s;
-}
-
-.close-sidebar-btn:hover {
-  color: #1f2937;
-  background-color: #f9fafb;
-}
-
-/* ============ منوها ============ */
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-}
-
-.sidebar-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  color: #6b7280;
-  text-decoration: none;
-  transition: all 0.2s;
-  font-weight: 500;
-  font-size: 0.875rem;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.sidebar-item:hover {
-  background-color: #f9fafb;
-  color: #1f2937;
-}
-
-.sidebar-item.active {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  color: #065f46;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
-}
-
-.sidebar-item.active .sidebar-item-icon {
-  color: #10b981;
-}
-
-.sidebar-item-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 1.5rem;
-  transition: color 0.2s;
-}
-
-
-
-/* نشانگر منوی فعال */
-
-
-
-
-.sidebar.collapsed .sidebar-item-icon {
-  width: 100%;
-  justify-content: center;
-}
-
-.sidebar.collapsed .logo-container {
-  justify-content: center;
-}
-
-.sidebar-empty {
-  font-size: 0.8125rem;
-  color: #9ca3af;
-  text-align: center;
-  padding: 1rem;
-  font-style: italic;
-}
-
-/* ============ فوتر سایدبار ============ */
-.sidebar-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid #f3f4f6;
-  margin-top: 1rem;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: transparent;
-  border: none;
-  border-radius: 0.75rem;
-  color: #6b7280;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-  text-align: right;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.logout-btn:hover {
-  background-color: #fef2f2;
-  color: #ef4444;
-}
-
-.sidebar.collapsed .logout-btn {
-  justify-content: center;
-  padding: 0.75rem 0.5rem;
-}
-
-/* اطلاعات کاربر */
-.sidebar-user {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.625rem;
-  background-color: #f9fafb;
-  border-radius: 0.75rem;
-  border: 1px solid #f3f4f6;
-}
-
-.sidebar-user-avatar {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.sidebar-user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.sidebar-user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  overflow: hidden;
-}
-
-.sidebar-user-name {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #1f2937;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sidebar-user-role {
-  font-size: 0.6875rem;
-  color: #6b7280;
-}
-
-/* ============ حالت جمع‌شده در Layout ============ */
-.admin-layout.sidebar-collapsed .main-content {
-  margin-right: 5rem;
-}
-
-/* .admin-layout:not(.sidebar-collapsed) .main-content {
-  margin-right: 16rem;
-} */
-
-/* ============ مدیا کوئری‌ها ============ */
+/* ============================================
+   Responsive — Desktop (min 1024px)
+   ============================================ */
 @media (min-width: 1024px) {
   .sidebar {
     transform: translateX(0);
+  }
+
+  .mobile-menu-btn {
+    display: none;
   }
 
   .close-sidebar-btn {
     display: none;
   }
 
+  .collapse-sidebar-btn {
+    display: flex;
+  }
 
-  .mobile-menu-btn {
+  .overlay {
     display: none;
   }
 
   .main-content {
-    transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-right: 16rem;
+    margin-left: 0;
+    padding-top: 2rem;
+  }
+
+  .admins-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* ============================================
+   Responsive — Mobile Sidebar (max 1023px)
+   ============================================ */
 @media (max-width: 1023px) {
+  .main-content {
+    margin-right: 0;
+  }
+
+  .main-content-inner {
+    padding: 4rem 0.75rem 1rem 0.75rem;
+  }
+
   .sidebar {
     width: 16rem;
   }
@@ -3924,7 +3884,9 @@ body {
     padding: 0.75rem;
   }
 
-  .sidebar.collapsed .sidebar-item-label {
+  .sidebar.collapsed .sidebar-item-label,
+  .sidebar.collapsed .logo-text,
+  .sidebar.collapsed .logout-btn .sidebar-item-label {
     display: block;
   }
 
@@ -3936,54 +3898,308 @@ body {
     justify-content: flex-start;
     padding: 0.75rem;
   }
-}
 
-/* ============ دکمه منوی موبایل ============ */
-.mobile-menu-btn {
-  display: flex;
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 50;
-  padding: 0.625rem;
-  background-color: white;
-  border: 1px solid #f3f4f6;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.mobile-menu-btn:hover {
-  background-color: #ecfdf5;
-  color: #10b981;
-  border-color: #d1fae5;
-}
-
-/* ============ اورلی ============ */
-.overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  z-index: 40;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+  .sidebar.collapsed .sidebar-user-info {
+    display: flex;
   }
 
-  to {
-    opacity: 1;
+  .sidebar.collapsed .sidebar-user {
+    justify-content: flex-start;
+  }
+
+  .sidebar.collapsed .sidebar-parent {
+    justify-content: flex-start;
+    padding: 0.75rem;
+  }
+
+  .sidebar.collapsed .sidebar-parent .sidebar-submenu-chevron,
+  .sidebar.collapsed .sidebar-parent .sidebar-item-label {
+    display: block;
   }
 }
 
-@media (max-width:650px) {
-  .status-filters {
-    flex-direction: column;
-    width: 100% !important;
+/* ============================================
+   Responsive — Large Desktop (min 1280px)
+   ============================================ */
+@media (min-width: 1280px) {
+  .main-content {
+    flex-direction: row;
+  }
+
+  .right-column {
+    width: 20rem;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .schedule-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================
+   Responsive — Extra Large (min 1440px)
+   ============================================ */
+@media (min-width: 1440px) {
+  .admins-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ============================================
+   Responsive — Small Mobile (max 480px)
+   ============================================ */
+@media (max-width: 480px) {
+  .main-content-inner {
+    padding: 3rem 0.5rem 0.75rem 0.5rem;
+  }
+
+  .barber-profile-name {
+    font-size: 1.125rem;
+  }
+
+  .quick-stat-value {
+    font-size: 1rem;
+  }
+
+  .stats-text {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================
+   Dark Mode — بخش‌های ویژه
+   ============================================ */
+html.dark .sidebar {
+  background-color: var(--color-bg-card);
+  border-left-color: var(--color-border);
+}
+
+html.dark .logo-text,
+html.dark .sidebar-user-name,
+html.dark .admin-card-name,
+html.dark .barber-profile-name,
+html.dark .role-name,
+html.dark .page-title,
+html.dark .roles-page-title,
+html.dark .card-title,
+html.dark .section-title,
+html.dark .form-label,
+html.dark .filter-label,
+html.dark .service-name {
+  color: var(--color-text);
+}
+
+html.dark .sidebar-item:hover,
+html.dark .sidebar-parent:not(.active):not(.expanded):hover {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .sidebar-nav .sidebar-submenu {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  border-right-color: var(--color-primary);
+}
+
+html.dark .sidebar-parent.expanded,
+html.dark .sidebar-parent.active {
+  background: color-mix(in srgb,
+      var(--color-primary) 15%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+}
+
+html.dark .sidebar-parent.active.expanded {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 18%, var(--color-bg-card)) 0%,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)) 100%);
+}
+
+html.dark .sidebar-submenu .sidebar-item:hover,
+html.dark .sidebar-submenu .sidebar-item.active {
+  background: color-mix(in srgb,
+      var(--color-primary) 18%,
+      var(--color-bg-card));
+}
+
+html.dark .mobile-menu-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+html.dark .service-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .service-card-image-wrapper {
+  background: var(--color-bg-hover);
+}
+
+html.dark .admin-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .admin-card-info {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .form-input {
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+}
+
+html.dark .form-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+html.dark .password-fields {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .password-toggle-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .password-toggle-card:hover {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .password-toggle-card.active {
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+}
+
+html.dark .barber-profile-card {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+html.dark .quick-stat {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .quick-stat:hover {
+  background-color: var(--color-bg-card);
+}
+
+html.dark .stats-detail-row {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .overview-day.inactive {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .schedule-day-card.inactive {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .schedule-day-status.active,
+html.dark .schedule-day-status.inactive {
+  background-color: var(--color-bg-hover);
+}
+
+html.dark .image-upload-box {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+
+html.dark .image-upload-box:hover {
+  background-color: var(--color-primary-tint);
+}
+
+html.dark .role-badge {
+  background-color: color-mix(in srgb, var(--color-info) 15%, var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
+  color: var(--color-info);
+}
+
+html.dark .admin-card-avatar-status {
+  border-color: var(--color-bg-card);
+}
+
+html.dark .online-indicator {
+  border-color: var(--color-bg-card);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .sidebar,
+  .sidebar-parent,
+  .sidebar-submenu,
+  .sidebar-submenu-chevron,
+  .sidebar-item,
+  .overlay,
+  .admin-card,
+  .service-card,
+  .quick-stat,
+  .password-toggle-card,
+  .password-fields,
+  .barber-tab,
+  .barber-profile-card {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .sidebar-submenu .sidebar-item:hover,
+  .upcoming-slot-row:hover,
+  .quick-stat:hover,
+  .admin-card:hover,
+  .service-card:hover {
+    transform: none;
+  }
+
+  .online-stripe {
+    animation: none;
+  }
+
+  .online-counter-badge .online-dot.pulse::before,
+  .online-indicator .pulse-ring {
+    animation: none;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+
+  .sidebar,
+  .mobile-menu-btn,
+  .overlay,
+  .admin-card-actions,
+  .service-card-actions,
+  .barber-profile-actions,
+  .form-actions {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-right: 0 !important;
+  }
+
+  .admin-card,
+  .service-card,
+  .card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
   }
 }
