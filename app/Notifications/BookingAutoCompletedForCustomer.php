@@ -3,6 +3,8 @@
 namespace App\Notifications;
 
 use App\Models\Booking;
+use Carbon\Carbon;
+use Hekmatinasser\Verta\Facades\Verta;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -27,9 +29,25 @@ class BookingAutoCompletedForCustomer extends Notification implements ShouldQueu
 
     public function toArray($notifiable): array
     {
+        $date = $this->booking->timeSlot?->date;
+
+        $formattedDate = 'نامشخص';
+
+        if ($date) {
+            try {
+                $carbonDate = $date instanceof Carbon
+                    ? $date
+                    : Carbon::parse($date);
+
+                $formattedDate = Verta::instance($carbonDate)->format('Y/m/d');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         return [
             'title' => 'خدمت شما تکمیل شد',
-            'message' => "خدمت «{$this->booking->service?->name}» شما در تاریخ {$this->booking->timeSlot?->date} تکمیل شد. لطفاً نظر خود را ثبت کنید.",
+            'message' => "خدمت «{$this->booking->service?->name}» شما در تاریخ {$formattedDate} تکمیل شد. لطفاً نظر خود را ثبت کنید.",
             'booking_id' => $this->booking->id,
             'type' => 'booking_auto_completed_customer',
             'icon' => 'star',

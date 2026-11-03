@@ -162,28 +162,12 @@ export default function NotificationsIndex({
         );
     };
 
-    const deleteNotification = (id) => {
-        if (confirm("اعلان حذف شود؟")) {
-            router.delete(`/admin/notifications/${id}`, {
-                preserveScroll: true,
-            });
-        }
-    };
-
     const markAllAsRead = () => {
         router.patch(
             "/admin/notifications/mark-all-read",
             {},
             { preserveScroll: true },
         );
-    };
-
-    const clearRead = () => {
-        if (confirm("همه اعلان‌های خوانده‌شده حذف شوند؟")) {
-            router.delete("/admin/notifications/clear-read", {
-                preserveScroll: true,
-            });
-        }
     };
 
     const [deleteModal, setDeleteModal] = useState({

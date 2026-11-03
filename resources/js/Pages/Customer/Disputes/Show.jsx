@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Head, Link } from "@inertiajs/react";
-import Layout from "../Layouts/PublicLayout";
+import Layout from "../../Admin/Layouts/Layout";
+
 import {
     ArrowRight,
     FileText,
@@ -18,13 +19,7 @@ import {
 import DisputeHeader from "./Components/DisputeHeader";
 import DisputeTimeline from "./Components/DisputeTimeline";
 import DisputeDetails from "./Components/DisputeDetails";
-import DisputeAttachments from "./Components/DisputeAttachments";
-import DisputeResponse from "./Components/DisputeResponse";
-import DisputeAdminMessage from "./Components/DisputeAdminMessage";
-import DisputeActions from "./Components/DisputeActions";
-import EditDisputeModal from "./Components/EditDisputeModal";
-import DeleteConfirmModal from "./Components/DeleteConfirmModal";
-import RespondModal from "./Components/RespondModal";
+
 import "./Assets/css/Show.css";
 
 export default function DisputeShow({

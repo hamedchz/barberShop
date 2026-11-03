@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import PublicLayout from "../Layouts/PublicLayout";
+
 import BarbersHero from "../Components/BarbersHero";
 import BarbersFilters from "../Components/BarbersFilters";
 import BarberCard from "../Components/BarberCard";

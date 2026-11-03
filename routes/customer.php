@@ -4,6 +4,7 @@ use App\Http\Controllers\Customer\BankInfoController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\DisputeController;
+use App\Http\Controllers\Customer\NotificationController;
 use App\Http\Controllers\Customer\PaymentController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\ReviewController;
@@ -20,10 +21,10 @@ Route::controller(DashboardController::class)
 Route::prefix('/bookings')
   ->name('bookings.')->controller(BookingController::class)->group(function () {
     // رزرو
+    Route::get('/', 'index')->name('index');
     Route::post('/create', 'create')
       ->name('create');
 
-    Route::get('/', 'index')->name('index');
     Route::delete('/{booking}/cancel', 'cancel')
       ->name('cancel');
 
@@ -145,4 +146,19 @@ Route::prefix('banks')
 
     Route::get('/{bank}',  'show')
       ->name('show');
+  });
+
+Route::prefix('notifications')
+  ->name('notifications.')->controller(NotificationController::class)->group(function () {
+    // Notifications
+    Route::get('/',  'index')
+      ->name('index');
+    Route::post('/{id}/mark-read',  'markAsRead')
+      ->name('mark-read');
+    Route::post('/mark-all-read',  'markAllAsRead')
+      ->name('mark-all-read');
+    Route::delete('/{id}',  'destroy')
+      ->name('destroy');
+    Route::delete('/destroy-all',  'destroyAll')
+      ->name('destroy-all');
   });

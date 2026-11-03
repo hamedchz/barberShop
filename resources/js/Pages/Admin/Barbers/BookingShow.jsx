@@ -217,13 +217,12 @@ const reviewStatusIcons = {
 };
 
 export default function BarberBookingShow({ auth, barber, booking }) {
-    const isPending =
-        booking.review.status === "pending" && !booking.review.is_deleted;
-    const isApproved =
-        booking.review.status === "approved" && !booking.review.is_deleted;
-    const isRejected =
-        booking.review.status === "rejected" && !booking.review.is_deleted;
-    const isDeleted = booking.review.is_deleted;
+    const review = booking.review;
+
+    const isPending = review?.status === "pending" && !review?.is_deleted;
+    const isApproved = review?.status === "approved" && !review?.is_deleted;
+    const isRejected = review?.status === "rejected" && !review?.is_deleted;
+    const isDeleted = review?.is_deleted ?? false;
 
     // ============ Modals ============
     const [approveModal, setApproveModal] = useState({

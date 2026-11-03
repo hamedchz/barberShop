@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Head, Link, router, usePage } from "@inertiajs/react";
-import PublicLayout from "../Layouts/PublicLayout";
+import PublicLayout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../Components/RatingStars";
 import "../Assets/BookingShow.css";

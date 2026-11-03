@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Head, Link, useForm, router } from "@inertiajs/react";
-import PublicLayout from "../Layouts/PublicLayout";
+import PublicLayout from "../../Admin/Layouts/Layout";
 import "../Assets/DisputeEdit.css";
 import DisputeCountdown from "../Components/DisputeCountdown";
 import Swal from "sweetalert2";

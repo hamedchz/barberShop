@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import PublicLayout from "../Layouts/PublicLayout";
+import PublicLayout from "../../Admin/Layouts/Layout";
 import BookingCard from "../Components/BookingCard";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import Search from "../../../Components/Search";

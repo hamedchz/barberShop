@@ -276,7 +276,6 @@ class BarberBookingController extends Controller
                 'moderatedBy:id,name',
             ]),
         ]);
-
         return Inertia::render('Admin/Barbers/BookingShow', [
             'barber' => [
                 'id'        => $barber->id,
