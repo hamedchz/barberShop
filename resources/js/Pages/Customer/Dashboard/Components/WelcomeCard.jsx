@@ -14,7 +14,7 @@ export default function WelcomeCard({ user, stats }) {
     return (
         <div className="welcome-card">
             <div className="welcome-card-content">
-                <div className="welcome-avatar-wrapper">
+                {/* <div className="welcome-avatar-wrapper">
                     {user.avatar ? (
                         <img
                             src={user.avatar}
@@ -26,7 +26,7 @@ export default function WelcomeCard({ user, stats }) {
                             <User size={32} />
                         </div>
                     )}
-                </div>
+                </div> */}
 
                 <div className="welcome-text">
                     <div className="welcome-greeting">

@@ -27,7 +27,7 @@ export default function NotificationEmpty({ filter }) {
             </div>
             <h3>{content.title}</h3>
             <p>{content.message}</p>
-            <Link href={route("customer.dashboard")} className="btn-secondary">
+            <Link href={route("customer.dashboard")} className="back-btn">
                 <ArrowRight size={16} />
                 بازگشت به داشبورد
             </Link>

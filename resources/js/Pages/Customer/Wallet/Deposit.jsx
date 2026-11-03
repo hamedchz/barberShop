@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/PublicLayout";
+import Layout from "../../Admin/Layouts/Layout";
+
 import {
     Plus,
     ArrowRight,

@@ -54,7 +54,7 @@ export default function PaymentFailed({ auth, booking }) {
                     <div className="support-box">
                         <Phone size={16} />
                         <p>
-                            در صورت نیاز به کمک با پشتیبانی تماس بگیرید:{" "}
+                            در صورت نیاز به کمک ، با پشتیبانی تماس بگیرید:{" "}
                             <strong dir="ltr">
                                 {toPersianNumber(site.phone)}
                             </strong>

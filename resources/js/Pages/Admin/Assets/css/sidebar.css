@@ -793,3 +793,122 @@ html.dark .overlay {
     transform: none;
   }
 }
+
+/* ============================================
+   Sidebar Badge — تعداد اعلان‌ها
+   ============================================ */
+
+/* ============ Badge در حالت باز ============ */
+.sidebar-nav .sidebar-item .sidebar-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.4375rem;
+  margin-right: auto;
+  margin-left: 0.25rem;
+  background-color: #ef4444 !important;
+  background-image: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #ffffff !important;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1;
+  border-radius: 9999px;
+  border: 2px solid var(--color-bg-card, #ffffff);
+  box-shadow:
+    0 2px 8px rgba(239, 68, 68, 0.4),
+    0 0 0 1px rgba(239, 68, 68, 0.2);
+  flex-shrink: 0;
+  direction: ltr;
+  letter-spacing: -0.02em;
+  animation: sidebarBadgePulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+/* ============ Badge روی آیتم فعال ============ */
+.sidebar-nav .sidebar-item.active .sidebar-badge {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: var(--color-primary, #10b981) !important;
+  border-color: var(--color-primary, #10b981);
+  box-shadow:
+    0 2px 8px rgba(16, 185, 129, 0.4),
+    0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+/* ============ انیمیشن ============ */
+@keyframes sidebarBadgePulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* ============ Badge در حالت جمع‌شده (نقطه) ============ */
+.sidebar-nav .sidebar-item .sidebar-badge-dot {
+  position: absolute;
+  top: -0.125rem;
+  right: -0.25rem;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  background-color: #ef4444 !important;
+  border: 2px solid var(--color-bg-card, #ffffff);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+  animation: sidebarBadgePulse 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+/* ============ آیکون باید relative باشد ============ */
+.sidebar-nav .sidebar-item-icon {
+  position: relative;
+}
+
+/* ============ مخفی کردن Badge بزرگ در حالت جمع‌شده ============ */
+.sidebar.collapsed .sidebar-item .sidebar-badge {
+  display: none !important;
+}
+
+/* ============ مخفی کردن نقطه در حالت باز ============ */
+.sidebar:not(.collapsed) .sidebar-item .sidebar-badge-dot {
+  display: none !important;
+}
+
+/* ============ اطمینان از نمایش در collapsed ============ */
+.sidebar.collapsed .sidebar-item .sidebar-badge-dot {
+  display: block !important;
+}
+
+/* ============ Dark Mode ============ */
+html.dark .sidebar-nav .sidebar-item .sidebar-badge {
+  border-color: var(--color-bg-card, #1e293b);
+  box-shadow:
+    0 2px 10px rgba(239, 68, 68, 0.5),
+    0 0 0 1px rgba(239, 68, 68, 0.3);
+}
+
+html.dark .sidebar-nav .sidebar-item.active .sidebar-badge {
+  background-color: var(--color-primary, #10b981) !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border-color: var(--color-bg-card, #1e293b);
+}
+
+html.dark .sidebar-nav .sidebar-item .sidebar-badge-dot {
+  border-color: var(--color-bg-card, #1e293b);
+}
+
+/* ============ Reduced Motion ============ */
+@media (prefers-reduced-motion: reduce) {
+
+  .sidebar-nav .sidebar-item .sidebar-badge,
+  .sidebar-nav .sidebar-item .sidebar-badge-dot {
+    animation: none !important;
+  }
+}

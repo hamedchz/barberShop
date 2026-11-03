@@ -33,6 +33,7 @@ import {
     Quote,
     CreditCardPlus,
     UserRoundCog,
+    CreditCardCheck,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -399,11 +400,117 @@ export const menuConfig = [
         permissions: ["barber-dashboard-panel"],
     },
     {
+        id: "barber-notifications",
+        label: "مرکز اعلان ها",
+        icon: BellRing,
+        href: "/barber/notifications",
+        scopes: ["notifications"],
+        permissions: ["barber-dashboard-panel"],
+        badge: "unread_notifications_count",
+    },
+    {
         id: "barber-profile",
         label: "پروفایل",
         icon: UserRoundCog,
         href: "/barber/profile",
         scopes: ["customers"],
         permissions: ["barber-dashboard-panel"],
+    },
+    // ============ داشبورد ============
+    {
+        id: "customer-dashboard",
+        label: "داشبورد",
+        icon: LayoutDashboard,
+        href: "/customer/dashboard",
+        scopes: ["dashboard"],
+        permissions: ["customer-dashboard-panel"],
+    },
+    // ============ رزرو ============
+    {
+        id: "customer-bookings",
+        label: "رزروهای من",
+        icon: CalendarClock,
+        href: "/customer/bookings",
+        scopes: ["bookings"],
+        permissions: ["customer-dashboard-panel"],
+    },
+
+    // ============ مالی ============
+
+    {
+        id: "customer-finance",
+        label: "مالی",
+        icon: ChartCandlestick,
+        childrenPermissions: ["customer-dashboard-panel"],
+        children: [
+            {
+                id: "customer-finance-index",
+                label: "مدیریت مالی",
+                icon: Coins,
+                href: "/customer/finance/wallet",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["finance"],
+            },
+            {
+                id: "customer-payments",
+                label: "پرداخت های من",
+                icon: CreditCardCheck,
+                href: "/customer/finance/wallet/payments",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["payments"],
+            },
+            {
+                id: "customer-transactions",
+                label: "تراکنش ها",
+                icon: Receipt,
+                href: "/customer/finance/wallet/transactions",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["transactions"],
+            },
+            {
+                id: "customer-settlements",
+                label: "تسویه ها",
+                icon: BanknoteArrowDown,
+                href: "/customer/finance/wallet/settlements",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["settlements"],
+            },
+            {
+                id: "customer-deposits",
+                label: "شارژ کیف پول",
+                icon: BanknoteArrowUp,
+                href: "/customer/finance/deposit",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["deposits"],
+            },
+
+            {
+                id: "customer-bank-info",
+                label: "اطلاعات بانکی",
+                icon: CreditCardPlus,
+                href: "/customer/finance/profile/bank-info",
+                permissions: ["customer-dashboard-panel"],
+                scopes: ["bank-info"],
+            },
+        ],
+    },
+
+    {
+        id: "customer-profile",
+        label: "پروفایل",
+        icon: UserRoundCog,
+        href: "/customer/profile",
+        scopes: ["customers"],
+        permissions: ["customer-dashboard-panel"],
+    },
+
+    {
+        id: "customer-notifications",
+        label: "مرکز اعلان ها",
+        icon: BellRing,
+        href: "/customer/notifications",
+        scopes: ["notifications"],
+        permissions: ["customer-dashboard-panel"],
+        badge: "unread_notifications_count",
     },
 ];

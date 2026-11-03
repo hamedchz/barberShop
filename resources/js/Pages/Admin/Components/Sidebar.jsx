@@ -7,36 +7,32 @@ import {
     ChevronRight,
     ChevronDown,
 } from "lucide-react";
+
 import { menuConfig } from "../../../Config/menu";
 import "../Assets/css/SideBar.css";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
-// ============ فیلتر منوها بر اساس دسترسی ============
+import { toPersianNumber } from "../../../utils/persianNumbers";
+// ========================================
+// فیلتر منوها بر اساس دسترسی
+// ========================================
 const filterMenuItems = (items, hasPermission) => {
     return items.reduce((result, item) => {
         const hasChildren = Array.isArray(item.children);
 
-        // ابتدا فرزندان را مستقل بر اساس Permission فیلتر کن
         const children = hasChildren
             ? filterMenuItems(item.children, hasPermission)
             : [];
 
-        // دسترسی مستقیم خود آیتم
         const hasOwnPermission =
             !item.permissions?.length || item.permissions.some(hasPermission);
 
-        // دسترسی والد از طریق Permissionهای تعریف‌شده برای فرزندان
         const hasChildrenPermission =
             item.childrenPermissions?.some(hasPermission) ?? false;
 
-        // والد فقط با دسترسی خودش یا یکی از دسترسی‌های مجاز فرزندان نمایش داده شود
         const canShow = hasOwnPermission || hasChildrenPermission;
 
-        if (!canShow) {
-            return result;
-        }
+        if (!canShow) return result;
 
-        // اگر والد زیرمنو دارد ولی هیچ زیرمنویی قابل‌نمایش نیست،
-        // والد را نیز نمایش نده
         if (hasChildren && children.length === 0) {
             return result;
         }
@@ -50,27 +46,36 @@ const filterMenuItems = (items, hasPermission) => {
     }, []);
 };
 
-const checkItemActive = (item, scope, currentPath) => {
-    const normalizePath = (path = "") =>
-        `/${path}`.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
+// ========================================
+// نرمال‌سازی مسیر
+// ========================================
+const normalizePath = (path = "") => {
+    return `/${path}`.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
+};
 
+// ========================================
+// تشخیص فعال بودن منو
+// ========================================
+const checkItemActive = (item, scope, currentPath) => {
     const path = normalizePath(currentPath);
 
     // آیتم دارای مسیر
     if (item.href) {
         const href = normalizePath(item.href);
 
-        // مدیریت مالی فقط در صفحه اصلی کیف پول فعال باشد
-        if (item.id === "barber-finance-index" || item.id === "finance-index") {
+        // صفحات اصلی مالی فقط با تطبیق دقیق مسیر فعال شوند
+        const exactMatchItems = [
+            "barber-finance-index",
+            "finance-index",
+            "customer-finance-index",
+        ];
+
+        if (exactMatchItems.includes(item.id)) {
             return path === href;
         }
 
-        // سایر آیتم‌ها
-        if (path === href || path.startsWith(`${href}/`)) {
-            return true;
-        }
-
-        return false;
+        // سایر صفحات
+        return path === href || path.startsWith(`${href}/`);
     }
 
     // آیتم بدون مسیر: بررسی Scope
@@ -86,15 +91,26 @@ const checkItemActive = (item, scope, currentPath) => {
     );
 };
 
-// ============ آیتم منو و زیرمنوها ============
-const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
+// ========================================
+// کامپوننت آیتم منو
+// ========================================
+const SidebarItem = ({
+    item,
+    isCollapsed,
+    isActive,
+    scope,
+    currentPath,
+    unreadCount,
+}) => {
     const Icon = item.icon;
     const hasChildren = item.children?.length > 0;
 
     const active = isActive(item);
-    const [isExpanded, setIsExpanded] = useState(active);
 
-    // با تغییر صفحه، والد منوی فعال باز شود
+    const [isExpanded, setIsExpanded] = useState(active);
+    const showBadge =
+        item.badge === "unread_notifications_count" && unreadCount > 0;
+    // باز شدن خودکار والد هنگام تغییر مسیر
     useEffect(() => {
         if (active) {
             setIsExpanded(true);
@@ -137,25 +153,38 @@ const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
                     )}
                 </button>
             ) : (
-                <a
+                <Link
                     href={item.href}
                     className={`sidebar-item ${active ? "active" : ""}`}
                     title={isCollapsed ? item.label : ""}
+                    preserveScroll
                 >
                     <div className="sidebar-item-icon">
                         {Icon && <Icon size={20} />}
+                        {isCollapsed && showBadge && (
+                            <span className="sidebar-badge-dot" />
+                        )}
                     </div>
 
                     {!isCollapsed && (
                         <span className="sidebar-item-label">{item.label}</span>
                     )}
 
-                    {active && !isCollapsed && (
+                    {!isCollapsed && showBadge && (
+                        <span className="sidebar-badge">
+                            {unreadCount > 99
+                                ? "۹۹+"
+                                : toPersianNumber(unreadCount)}
+                        </span>
+                    )}
+
+                    {active && !isCollapsed && !showBadge && (
                         <span className="sidebar-item-indicator" />
                     )}
-                </a>
+                </Link>
             )}
 
+            {/* زیرمنوها */}
             {hasChildren && !isCollapsed && isExpanded && (
                 <div className="sidebar-submenu">
                     {item.children.map((child) => (
@@ -166,6 +195,7 @@ const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
                             isActive={isActive}
                             scope={scope}
                             currentPath={currentPath}
+                            unreadCount={unreadCount}
                         />
                     ))}
                 </div>
@@ -174,19 +204,27 @@ const SidebarItem = ({ item, isCollapsed, isActive, scope, currentPath }) => {
     );
 };
 
-// ============ Sidebar اصلی ============
+// ========================================
+// Sidebar اصلی
+// ========================================
 export default function Sidebar({
     isOpen,
     closeSidebar,
     isCollapsed,
     toggleCollapse,
 }) {
-    const { site } = usePage().props;
-    const { auth, scopes: scope } = usePage().props;
-    const currentPath =
-        typeof window !== "undefined" ? window.location.pathname : "";
+    const { props, url } = usePage();
 
+    const { site, auth, scopes: scope } = props;
+
+    // مسیر فعلی از Inertia
+    const currentPath = normalizePath(url.split("?")[0]);
+    const unreadNotifications = auth?.user.unread_notifications_count || 0;
+
+    console.log(unreadNotifications);
+    // ========================================
     // بررسی Permission
+    // ========================================
     const hasPermission = (permission) => {
         if (!auth?.user) return false;
 
@@ -197,32 +235,38 @@ export default function Sidebar({
         return (auth.user.permissions || []).includes(permission);
     };
 
-    // فیلتر منوها و زیرمنوها
+    // ========================================
+    // فیلتر منوها
+    // ========================================
     const visibleItems = useMemo(() => {
         if (!auth?.user) return [];
 
         return filterMenuItems(menuConfig, hasPermission);
     }, [auth]);
 
-    // تشخیص فعال بودن یک منو، با توجه به زیرمنوهای آن
-    const isItemActive = (item) => checkItemActive(item, scope, currentPath);
+    // ========================================
+    // تشخیص فعال بودن منو
+    // ========================================
+    const isItemActive = (item) => {
+        return checkItemActive(item, scope, currentPath);
+    };
 
+    // ========================================
+    // خروج از حساب
+    // ========================================
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-    // باز کردن مدال خروج
     const handleLogout = () => {
         setLogoutModalOpen(true);
     };
 
-    // بستن مدال
     const closeLogoutModal = () => {
         if (isLoggingOut) return;
 
         setLogoutModalOpen(false);
     };
 
-    // تأیید خروج
     const handleConfirmLogout = () => {
         setIsLoggingOut(true);
 
@@ -236,6 +280,7 @@ export default function Sidebar({
             },
         );
     };
+
     return (
         <aside
             className={`sidebar ${isOpen ? "open" : ""} ${
@@ -244,7 +289,7 @@ export default function Sidebar({
         >
             {/* هدر */}
             <div className="sidebar-header">
-                <a href="/" className="logo-container">
+                <Link href="/" className="logo-container" preserveScroll>
                     <div className="logo-icon">
                         {site.logo ? (
                             <img src={site.logo} alt={site.name} />
@@ -252,8 +297,9 @@ export default function Sidebar({
                             site.name?.charAt(0) || "آ"
                         )}
                     </div>
+
                     <span className="logo-text">{site.name}</span>
-                </a>
+                </Link>
 
                 <button
                     type="button"
@@ -291,6 +337,7 @@ export default function Sidebar({
                             isCollapsed={isCollapsed}
                             scope={scope}
                             currentPath={currentPath}
+                            unreadCount={unreadNotifications}
                         />
                     ))
                 )}
@@ -305,6 +352,7 @@ export default function Sidebar({
                     title={isCollapsed ? "خروج" : ""}
                 >
                     <LogOut size={20} />
+
                     {!isCollapsed && <span>خروج</span>}
                 </button>
 
@@ -335,12 +383,14 @@ export default function Sidebar({
                     </div>
                 )}
             </div>
+
+            {/* مدال خروج */}
             <ConfirmModal
                 isOpen={logoutModalOpen}
                 onClose={closeLogoutModal}
                 onConfirm={handleConfirmLogout}
                 title="خروج از حساب کاربری"
-                message="آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟"
+                message="آیا مطمئن هستید که می‌خواهید از حساب خود خارج شوید؟"
                 confirmText="بله، خارج شو"
                 cancelText="انصراف"
                 type="danger"

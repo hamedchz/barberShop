@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import PublicLayout from "../Layouts/PublicLayout";
+import PublicLayout from "../../Admin/Layouts/Layout";
 import {
     ArrowUpRight,
     ArrowDownRight,

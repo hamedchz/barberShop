@@ -57,7 +57,7 @@ export default function NotificationsIndex({ notifications, filter, counts }) {
     const handleConfirmClearRead = () => {
         setClearReadModal((prev) => ({ ...prev, isLoading: true }));
 
-        router.delete("/admin/notifications/clear-read/delete", {
+        router.delete("/customer/notifications/clear-read/delete", {
             preserveScroll: true,
             onSuccess: () => closeClearReadModal(),
             onError: () =>

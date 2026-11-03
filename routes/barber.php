@@ -7,6 +7,7 @@ use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\CustomerController;
 use App\Http\Controllers\Barber\DashboardController;
 use App\Http\Controllers\Barber\DisputeController;
+use App\Http\Controllers\Barber\NotificationController;
 use App\Http\Controllers\Barber\ProfileController;
 use App\Http\Controllers\Barber\ReviewController;
 use App\Http\Controllers\Barber\ServiceController;
@@ -123,3 +124,18 @@ Route::prefix('profile')->name('profile.')->controller(ProfileController::class)
   Route::put('/password', 'updatePassword')->name('update-password');
   Route::put('/bank-info', 'updateBankInfo')->name('update-bank-info');
 });
+
+Route::prefix('notifications')
+  ->name('notifications.')->controller(NotificationController::class)->group(function () {
+    // Notifications
+    Route::get('/',  'index')
+      ->name('index');
+    Route::post('/{id}/mark-read',  'markAsRead')
+      ->name('mark-read');
+    Route::post('/mark-all-read',  'markAllAsRead')
+      ->name('mark-all-read');
+    Route::delete('/{id}',  'destroy')
+      ->name('destroy');
+    Route::delete('/destroy-all',  'destroyAll')
+      ->name('destroy-all');
+  });
