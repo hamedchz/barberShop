@@ -33,4 +33,13 @@ class Service extends Model
     {
         return $this->hasMany(TimeSlot::class);
     }
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function barbers()
+    {
+        return $this->belongsToMany(User::class, 'barber_service', 'service_id', 'barber_id');
+    }
 }

@@ -25,10 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->middleware(['auth', 'web'])
                 ->name('customer.')
                 ->group(base_path('routes/customer.php'));
-            // Route::prefix('{locale}/dashboard')
-            //     ->middleware(['web', 'auth', 'check-email-verification'])
-            //     ->name('member.')
-            //     ->group(base_path('routes/member.php'));
+
             Route::prefix('admin')
                 ->middleware(['web', 'auth', 'ensure-user-is-active'])
                 ->name('admin.')
@@ -37,15 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->middleware(['web', 'auth', 'ensure-user-is-active'])
                 ->name('barber.')
                 ->group(base_path('routes/barber.php'));
-            // Route::prefix('check')
-            //     ->middleware(['web'])
-            //     ->name('check.')
-            //     ->group(base_path('routes/check.php'));
             Route::prefix('auth')->middleware(['web'])
                 ->name('auth.')
                 ->group(base_path('routes/auth.php'));
-            // Route::prefix('api')
-            //     ->group(base_path('routes/api.php'));
         },
     )
 
