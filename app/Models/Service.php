@@ -16,6 +16,7 @@ class Service extends Model
         'price',
         'is_active',
         'image',
+        'category_id'
     ];
 
     protected $casts = [
@@ -41,5 +42,11 @@ class Service extends Model
     public function barbers()
     {
         return $this->belongsToMany(User::class, 'barber_service', 'service_id', 'barber_id');
+    }
+
+
+    public function category()
+    {
+        return $this->belongsTo(ServiceCategory::class, 'category_id');
     }
 }
