@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SettlementController;
 use App\Http\Controllers\Admin\WalletDepositController;
@@ -27,6 +28,22 @@ use Illuminate\Support\Facades\Route;
 Route::controller(DashboardController::class)->group(function () {
   Route::get('/dashboard',  'index')->name('dashboard');
 });
+
+Route::prefix('service-categories')
+  ->name('service-categories.')
+  ->controller(ServiceCategoryController::class)->group(function () {
+    // دسته‌بندی خدمات
+    Route::get('/',  'index')->name('index');
+    Route::get('/create',  'create')->name('create');
+    Route::post('/store',  'store')->name('store');
+    Route::get('/{serviceCategory}/edit',  'edit')->name('edit');
+    Route::put('/{serviceCategory}/update',  'update')->name('update');
+    Route::delete('/{serviceCategory}/destroy',  'destroy')->name('destroy');
+    Route::patch(
+      'service-categories/{serviceCategory}/toggle-status',
+      [ServiceCategoryController::class, 'toggleStatus']
+    )->name('toggle-status');
+  });
 Route::prefix('/roles')
   ->name('role.')->controller(RolesController::class)->group(function () {
     Route::get('/',  'index')->name('list');

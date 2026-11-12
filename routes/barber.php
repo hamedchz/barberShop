@@ -29,6 +29,12 @@ Route::prefix('/services')
     Route::get('/{service}/edit',  'edit')->name('edit');
     Route::put('/{service}',  'update')->name('update');
     Route::delete('/{service}',  'destroy')->name('destroy');
+    Route::get('/configure/{category}', 'configure')
+      ->name('configure');
+    Route::patch(
+      '{service}/toggle-status',
+      'toggleStatus'
+    )->name('toggle-status');
   });
 
 Route::prefix('/availabilities')

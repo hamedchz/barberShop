@@ -22,8 +22,13 @@ class Service extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
+        'duration' => 'integer',
     ];
-
+    protected $appends = [
+        'name',
+        'description',
+        'image_url',
+    ];
 
     public function user()
     {
@@ -48,5 +53,26 @@ class Service extends Model
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'category_id');
+    }
+
+    public function getNameAttribute(): ?string
+    {
+        return $this->category?->name;
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        return $this->category?->description;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->category?->image_url;
+    }
+
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

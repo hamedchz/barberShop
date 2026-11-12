@@ -33,6 +33,7 @@ enum Permissions: string
   case managePaymentSettings = 'manage-payment-settings';
   case manageReviews = 'manage-reviews';
   case manageBanks = 'manage-banks';
+  case manageServices = 'manage-services';
 
 
   public function description(): string
@@ -67,6 +68,7 @@ enum Permissions: string
       self::managePaymentSettings => 'مدیریت درگاه پرداخت',
       self::manageReviews => 'مدیریت نظرات',
       self::manageBanks => 'مدیریت بانک ها',
+      self::manageServices => 'مدیریت سرویس ها',
     };
   }
 

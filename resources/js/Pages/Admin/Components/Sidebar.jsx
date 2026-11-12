@@ -221,7 +221,6 @@ export default function Sidebar({
     const currentPath = normalizePath(url.split("?")[0]);
     const unreadNotifications = auth?.user.unread_notifications_count || 0;
 
-    console.log(unreadNotifications);
     // ========================================
     // بررسی Permission
     // ========================================

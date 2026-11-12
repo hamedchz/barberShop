@@ -34,6 +34,8 @@ import {
     CreditCardPlus,
     UserRoundCog,
     CreditCardCheck,
+    StickyNote,
+    CopyPlus,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -62,6 +64,7 @@ export const menuConfig = [
             "manage-reviews",
             "manage-payment-settings",
             "manage-general-settings",
+            "manage-services",
         ],
     },
 
@@ -209,12 +212,12 @@ export const menuConfig = [
         permissions: ["manage-needs-attention"],
     },
     {
-        id: "notifications",
-        label: "مرکز اعلان ها",
-        icon: BellRing,
-        href: "/admin/notifications",
-        scopes: ["notifications"],
-        permissions: ["manage-notifications"],
+        id: "services",
+        label: "سرویس ها",
+        icon: CopyPlus,
+        href: "/admin/service-categories",
+        scopes: ["services"],
+        permissions: ["manage-services"],
     },
     // ============ رزروها============
     {
@@ -254,7 +257,14 @@ export const menuConfig = [
             },
         ],
     },
-
+    {
+        id: "notifications",
+        label: "مرکز اعلان ها",
+        icon: BellRing,
+        href: "/admin/notifications",
+        scopes: ["notifications"],
+        permissions: ["manage-notifications"],
+    },
     // ============ تنظیمات ============
 
     {
@@ -293,7 +303,7 @@ export const menuConfig = [
     },
     // ============ خدمات من (آرایشگر) ============
     {
-        id: "services",
+        id: "barber-services",
         label: "خدمات من",
         icon: Package,
         href: "/barber/services",

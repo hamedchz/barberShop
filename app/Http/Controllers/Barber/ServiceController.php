@@ -2,194 +2,227 @@
 
 namespace App\Http\Controllers\Barber;
 
-use App\Enums\Casts\LogsStatus;
+use App\Enums\Casts\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\ServiceCategory;
 use App\Supports\StickyAlert;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
 {
-
-    public function index(Request $request)
+    /**
+     * لیست خدمات آرایشگر
+     */
+    public function index()
     {
-        $query = Service::where('user_id', auth()->id());
+        $services = Service::query()
+            ->where('user_id', auth()->id())
+            ->with('category')
+            ->latest()
+            ->get();
 
-        // ============ جستجو ============
-        if ($search = trim($request->input('search', ''))) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // ============ فیلتر وضعیت ============
-        if ($status = $request->input('status')) {
-            if ($status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($status === 'inactive') {
-                $query->where('is_active', false);
-            }
-        }
-
-        $services = $query->latest()->paginate(21)->withQueryString();
-
-        // ============ تبدیل داده‌ها ============
-        $services->through(function ($service) {
-            return [
-                'id' => $service->id,
-                'name' => $service->name,
-                'description' => $service->description,
-                'image' => $service->image
-                    ? asset('storage/' . $service->image)
-                    : null,
-                'duration' => $service->duration,
-                'price' => $service->price,
-                'is_active' => (bool) $service->is_active,
-                'created_at' => $service->created_at,
-                'updated_at' => $service->updated_at,
-            ];
-        });
-
-        return Inertia::render('Barber/Services/Index', [
+        return inertia('Barber/Services/Index', [
             'services' => $services,
-            'filters' => [
-                'search' => $search ?? '',
-                'status' => $request->input('status', ''),
-            ],
         ]);
     }
 
-    public function create()
+    /**
+     * نمایش سرویس‌های تعریف‌شده توسط ادمین
+     */
+    public function create(Request $request)
     {
-        return Inertia::render('Barber/Services/Create');
+        $barberId = auth()->id();
+
+        $categories = ServiceCategory::query()
+            ->active()
+            ->ordered()
+            ->whereDoesntHave('services', function ($query) use ($barberId) {
+                $query->withTrashed()
+                    ->where('user_id', $barberId);
+            })
+            ->get();
+
+        $selectedCategory = null;
+
+        if ($request->filled('category_id')) {
+            $selectedCategory = $categories->firstWhere(
+                'id',
+                (int) $request->category_id
+            );
+
+            abort_unless($selectedCategory, 404);
+        }
+
+        return inertia('Barber/Services/Create', [
+            'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
+        ]);
     }
 
+    public function configure(ServiceCategory $category)
+    {
+        abort_unless($category->is_active, 404);
+
+        $exists = Service::withTrashed()
+            ->where('user_id', auth()->id())
+            ->where('category_id', $category->id)
+            ->exists();
+
+        abort_if($exists, 404);
+
+        return inertia('Barber/Services/Configure', [
+            'category' => $category,
+        ]);
+    }
+
+    /**
+     * ثبت سرویس برای آرایشگر
+     */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'duration' => 'required|integer|min:1|max:480',
-            'price' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'category_id' => [
+                'required',
+                'integer',
+                Rule::exists('service_categories', 'id')
+                    ->where('is_active', true)
+                    ->whereNull('deleted_at'),
+            ],
+            'price' => ['nullable', 'numeric', 'min:0'],
+            'duration' => ['nullable', 'integer', 'min:5', 'max:600'],
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('services', 'public');
+        $barberId = auth()->id();
+
+        $existingService = Service::withTrashed()
+            ->where('user_id', $barberId)
+            ->where('category_id', $validated['category_id'])
+            ->first();
+
+        if ($existingService && !$existingService->trashed()) {
+
+            return back()->withErrors([
+                'category_id' => 'این سرویس قبلاً به خدمات شما اضافه شده است.',
+            ]);
         }
+        $category = ServiceCategory::findOrFail($validated['category_id']);
+        if ($existingService) {
+            $existingService->restore();
 
-        $validated['user_id'] = auth()->id();
-
-        $store =  Service::create($validated);
-        if ($store) {
-            (new \App\Models\Log())->storeLog($store->id, LogsStatus::store->value . ' خدمت ', LogsStatus::store->value);
-            StickyAlert::toast(
-                'خدمت با موفقیت ایجاد شد.',
-                'success'
-            );
+            $existingService->update([
+                'price' => $validated['price'] ?? null,
+                'duration' => $validated['duration'] ?? null,
+                'name' => $category->name,
+                'description' => $category->description,
+                'image' => $category->image,
+                'is_active' => true,
+            ]);
         } else {
-            StickyAlert::alert(
-                'مشکلی وجود دارد.',
-                'error'
-            );
+            Service::create([
+                'user_id' => $barberId,
+                'category_id' => $validated['category_id'],
+                'name' => $category->name,
+                'description' => $category->description,
+                'image' => $category->image,
+                'price' => $validated['price'] ?? null,
+                'duration' => $validated['duration'] ?? null,
+                'is_active' => true,
+            ]);
         }
-
-        return to_route('barber.time-slots.index', ['service_id' => $store->id]);
+        StickyAlert::toast('سرویس با موفقیت به خدمات شما اضافه شد.', 'success');
+        return redirect()->back();
     }
 
+    /**
+     * صفحه ویرایش قیمت و زمان
+     */
     public function edit(Service $service)
     {
-        if ($service->user_id !== auth()->id()) {
-            abort(403);
-        }
+        abort_unless($service->user_id === auth()->id(), 403);
 
-        return Inertia::render('Barber/Services/Edit', [
-            'service' => [
-                'id' => $service->id,
-                'name' => $service->name,
-                'description' => $service->description,
-                'image' => $service->image
-                    ? asset('storage/' . $service->image)
-                    : null,  // ← URL کامل
-                'duration' => $service->duration,
-                'price' => $service->price,
-                'is_active' => $service->is_active,
-                'created_at' => $service->created_at,
-                'updated_at' => $service->updated_at,
-            ],
+        $service->load('category');
+
+        return inertia('Barber/Services/Edit', [
+            'service' => $service,
         ]);
     }
 
+    /**
+     * ذخیره قیمت و زمان
+     */
     public function update(Request $request, Service $service)
     {
-
-        if ($service->user_id !== auth()->id()) {
-            abort(403);
-        }
+        abort_unless($service->user_id === auth()->id(), 403);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'duration' => 'required|integer|min:5|max:480',
-            'price' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'price' => ['nullable', 'numeric', 'min:0'],
+            'duration' => ['nullable', 'integer', 'min:5', 'max:600'],
+            'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        // ← آپلود عکس جدید (و حذف قبلی)
-        if ($request->hasFile('image')) {
-            // حذف عکس قبلی
-            if ($service->image && Storage::disk('public')->exists($service->image)) {
-                Storage::disk('public')->delete($service->image);
+
+
+        $message = 'اطلاعات سرویس با موفقیت ویرایش شد.';
+        if ($request->has('toggle') && !is_null($request->toggle) && $request->boolean('toggle')) {
+            $hasActiveBookings = $service->bookings()
+                ->whereIn('status', [
+                    BookingStatus::pending->value,
+                    BookingStatus::confirmed->value,
+                ])
+                ->exists();
+
+            if ($hasActiveBookings) {
+                StickyAlert::alert(
+                    'این سرویس دارای رزرو فعال است. ابتدا باید رزروهای آن تعیین تکلیف شوند.',
+                    'error'
+                );
+
+                return back();
             }
-            $validated['image'] = $request->file('image')->store('services', 'public');
-        } else {
-            // اگر عکسی آپلود نشد، عکس قبلی حفظ شود
-            unset($validated['image']);
+            if ($service->is_active) {
+                $message = 'سرویس غیر فعال شد.';
+            } else {
+                $message = 'سرویس  فعال شد.';
+            }
         }
 
-        $store = $service->update($validated);
-
-        if ($store) {
-            (new \App\Models\Log())->storeLog($service->id, LogsStatus::edit->value . ' خدمت ', LogsStatus::edit->value);
-            StickyAlert::toast(
-                'خدمت با موفقیت ویرایش شد.',
-                'success'
-            );
-        } else {
-            StickyAlert::alert(
-                'مشکلی وجود دارد.',
-                'error'
-            );
-        }
-
+        $service->update($validated);
+        StickyAlert::toast($message, 'success');
         return to_route('barber.services.index');
     }
 
+    /**
+     * حذف سرویس
+     */
     public function destroy(Service $service)
     {
-        if ($service->user_id !== auth()->id()) {
-            abort(403);
-        }
+        abort_unless($service->user_id === auth()->id(), 403);
 
-        $delete = $service->delete();
+        $hasActiveBookings = $service->bookings()
+            ->whereIn('status', [
+                BookingStatus::pending->value,
+                BookingStatus::confirmed->value,
+            ])
+            ->exists();
 
-        if ($delete) {
-            (new \App\Models\Log())->storeLog($service->id, LogsStatus::delete->value . ' خدمت ', LogsStatus::store->value);
-            StickyAlert::toast(
-                'خدمت با موفقیت حذف شد.',
-                'success'
-            );
-        } else {
+        if ($hasActiveBookings) {
             StickyAlert::alert(
-                'مشکلی وجود دارد.',
+                'این سرویس دارای رزرو فعال است. ابتدا باید رزروهای آن تعیین تکلیف شوند.',
                 'error'
             );
+
+            return back();
         }
+
+        $service->delete();
+
+        StickyAlert::toast(
+            'سرویس از خدمات شما حذف شد.',
+            'success'
+        );
 
         return to_route('barber.services.index');
     }

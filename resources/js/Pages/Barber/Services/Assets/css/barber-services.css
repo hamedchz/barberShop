@@ -1,0 +1,1961 @@
+/* =========================================================
+   Barber Services - Dynamic Theme
+   Light / Dark / Auto
+========================================================= */
+
+.barber-services-page {
+  color-scheme: light dark;
+
+  /* Theme colors */
+  --service-primary: var(--color-primary, var(--primary, #10b981));
+  --service-primary-hover: var(--color-primary-hover, var(--primaryHover, #0d9668));
+  --service-primary-tint: var(--color-primary-tint, var(--primaryTint, #e8f8f2));
+
+  --service-secondary: var(--color-secondary, #1e293b);
+
+  --service-success: var(--color-success, #10b981);
+  --service-danger: var(--color-danger, #ef4444);
+  --service-warning: var(--color-warning, #f59e0b);
+  --service-info: var(--color-info, #3b82f6);
+
+  /* Surface colors */
+  --service-bg: var(--color-bg-body, var(--body-bg, #f8fafc));
+  --service-card: var(--color-bg-card, var(--card-bg, #ffffff));
+  --service-input-bg: var(--color-bg-input, var(--color-bg-card, #ffffff));
+
+  /* Text colors */
+  --service-text: var(--color-text, var(--text-primary, #1e293b));
+  --service-muted: var(--color-text-muted, var(--text-muted, #64748b));
+
+  /* Border */
+  --service-border: var(--color-border, var(--border-color, #e2e8f0));
+
+  /* Derived colors */
+  --service-primary-soft: color-mix(in srgb,
+      var(--service-primary) 10%,
+      var(--service-card));
+
+  --service-primary-border: color-mix(in srgb,
+      var(--service-primary) 28%,
+      var(--service-border));
+
+  --service-hover-bg: color-mix(in srgb,
+      var(--service-primary) 7%,
+      var(--service-card));
+
+  --service-muted-bg: color-mix(in srgb,
+      var(--service-muted) 8%,
+      var(--service-card));
+
+  --service-shadow: color-mix(in srgb,
+      var(--service-text) 9%,
+      transparent);
+
+  --service-overlay: color-mix(in srgb,
+      var(--service-text) 58%,
+      transparent);
+
+  --service-success-bg: color-mix(in srgb,
+      var(--service-success) 12%,
+      var(--service-card));
+
+  --service-danger-bg: color-mix(in srgb,
+      var(--service-danger) 10%,
+      var(--service-card));
+
+  --service-warning-bg: color-mix(in srgb,
+      var(--service-warning) 12%,
+      var(--service-card));
+
+  --service-info-bg: color-mix(in srgb,
+      var(--service-info) 10%,
+      var(--service-card));
+
+  padding: 24px;
+  min-height: 100%;
+  color: var(--service-text);
+  background: transparent;
+}
+
+/* =========================================================
+   General
+========================================================= */
+
+.barber-services-page,
+.barber-services-page * {
+  box-sizing: border-box;
+}
+
+.barber-services-page button,
+.barber-services-page input {
+  font-family: inherit;
+}
+
+.barber-services-page button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.barber-services-header,
+.barber-services-title,
+.barber-services-count,
+.barber-services-section-heading,
+.barber-service-meta,
+.barber-service-meta>div,
+.barber-service-actions,
+.barber-service-modal-header,
+.barber-service-edit-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* =========================================================
+   Header
+========================================================= */
+.barber-services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  background: linear-gradient(135deg, var(--color-primary-tint) 0%, var(--color-bg-card) 60%, var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 1.5rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px var(--color-primary-light);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.barber-services-header ::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* .barber-services-header {
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+} */
+
+.barber-services-title {
+  gap: 14px;
+}
+
+.barber-services-title-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 15px;
+
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+}
+
+.barber-services-title h1 {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 7px;
+}
+
+.barber-services-title p,
+.barber-services-section-heading p {
+  font-size: 13px;
+  color: var(--service-muted);
+  margin: 0;
+  line-height: 1.8;
+}
+
+.barber-services-count {
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 12px;
+
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+  color: var(--service-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Header actions */
+
+.barber-services-add-btn,
+.barber-services-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 43px;
+  padding: 0 16px;
+
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.barber-services-add-btn {
+  color: #fff;
+  background: var(--service-primary);
+  border: 1px solid var(--service-primary);
+}
+
+.barber-services-add-btn:hover {
+  color: #fff;
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--service-primary) 22%,
+      transparent);
+}
+
+.barber-services-back-btn {
+  color: var(--service-text);
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+}
+
+.barber-services-back-btn:hover {
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border-color: var(--service-primary-border);
+}
+
+/* =========================================================
+   Summary
+========================================================= */
+
+.barber-services-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 28px;
+}
+
+.barber-services-summary>div {
+  flex: 1;
+  min-width: 180px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 17px;
+
+  border: 1px solid var(--service-border);
+  border-radius: 14px;
+  background: var(--service-card);
+
+  color: var(--service-muted);
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.barber-services-summary>div:hover {
+  border-color: var(--service-primary-border);
+  box-shadow: 0 5px 18px var(--service-shadow);
+}
+
+.barber-services-summary svg {
+  flex-shrink: 0;
+  color: var(--service-primary);
+}
+
+.barber-services-summary strong {
+  margin-right: auto;
+  font-size: 18px;
+  color: var(--service-text);
+  font-weight: 800;
+}
+
+/* =========================================================
+   Sections
+========================================================= */
+
+.barber-services-section {
+  margin-bottom: 38px;
+}
+
+.barber-services-section-heading {
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.barber-services-section-heading h2 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 7px;
+}
+
+/* =========================================================
+   Search
+========================================================= */
+
+.barber-services-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  max-width: 380px;
+  height: 45px;
+  padding: 0 14px;
+
+  border: 1px solid var(--service-border);
+  border-radius: 11px;
+  background: var(--service-card);
+
+  margin-bottom: 20px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.barber-services-search:focus-within {
+  border-color: var(--service-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--service-primary) 13%,
+      transparent);
+}
+
+.barber-services-search svg {
+  color: var(--service-muted);
+  flex-shrink: 0;
+}
+
+.barber-services-search input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+
+  background: transparent;
+  color: var(--service-text);
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.barber-services-search input::placeholder {
+  color: var(--service-muted);
+  opacity: 0.8;
+}
+
+/* =========================================================
+   Services Grid
+========================================================= */
+
+.barber-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* =========================================================
+   Service Card
+========================================================= */
+
+.barber-service-card {
+  min-width: 0;
+  overflow: hidden;
+
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+  border-radius: 17px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.barber-service-card:hover {
+  border-color: var(--service-primary-border);
+  box-shadow: 0 8px 25px var(--service-shadow);
+  transform: translateY(-2px);
+}
+
+.barber-service-card.is-inactive {
+  opacity: 0.72;
+}
+
+.barber-service-card.is-inactive:hover {
+  opacity: 0.9;
+}
+
+/* Service image */
+
+.barber-service-image {
+  height: 165px;
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--service-muted);
+  background: var(--service-muted-bg);
+
+  overflow: hidden;
+}
+
+.barber-service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.barber-service-card:hover .barber-service-image img {
+  transform: scale(1.04);
+}
+
+/* Status */
+
+.barber-service-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  padding: 5px 11px;
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.barber-service-status.active {
+  color: var(--service-success);
+  background: color-mix(in srgb,
+      var(--service-success) 16%,
+      var(--service-card));
+  border: 1px solid color-mix(in srgb,
+      var(--service-success) 30%,
+      transparent);
+}
+
+.barber-service-status.inactive {
+  color: var(--service-muted);
+  background: color-mix(in srgb,
+      var(--service-muted) 13%,
+      var(--service-card));
+  border: 1px solid var(--service-border);
+}
+
+/* Service content */
+
+.barber-service-content {
+  padding: 17px;
+}
+
+.barber-service-content h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 9px;
+}
+
+.barber-service-description {
+  min-height: 38px;
+
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--service-muted);
+
+  margin: 0 0 16px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Service metadata */
+
+.barber-service-meta {
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 13px 0;
+
+  border-top: 1px solid var(--service-border);
+  border-bottom: 1px solid var(--service-border);
+}
+
+.barber-service-meta>div {
+  gap: 7px;
+  color: var(--service-muted);
+  font-size: 12px;
+}
+
+.barber-service-meta svg {
+  flex-shrink: 0;
+  color: var(--service-primary);
+}
+
+/* =========================================================
+   Service Actions
+========================================================= */
+
+.barber-service-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.barber-service-actions button,
+.barber-service-add {
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  border-radius: 9px;
+  padding: 9px 11px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.barber-service-actions button {
+  background: var(--service-muted-bg);
+  color: var(--service-text);
+  border-color: var(--service-border);
+}
+
+.barber-service-actions button:hover {
+  background: var(--service-primary-soft);
+  color: var(--service-primary);
+  border-color: var(--service-primary-border);
+}
+
+.barber-service-actions button.delete {
+  color: var(--service-danger);
+  background: var(--service-danger-bg);
+  border-color: color-mix(in srgb,
+      var(--service-danger) 20%,
+      transparent);
+  margin-right: auto;
+}
+
+.barber-service-actions button.delete:hover {
+  color: var(--service-danger);
+  background: color-mix(in srgb,
+      var(--service-danger) 18%,
+      var(--service-card));
+  border-color: color-mix(in srgb,
+      var(--service-danger) 35%,
+      transparent);
+}
+
+.barber-service-add {
+  width: 100%;
+  margin-top: 14px;
+
+  color: #fff;
+  background: var(--service-primary);
+  border-color: var(--service-primary);
+}
+
+.barber-service-add:hover {
+  color: #fff;
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+}
+
+/* =========================================================
+   Empty State
+========================================================= */
+
+.barber-services-empty {
+  min-height: 210px;
+
+  border: 1px dashed var(--service-border);
+  border-radius: 16px;
+
+  background: var(--service-card);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  padding: 25px;
+}
+
+.barber-services-empty.small {
+  min-height: 120px;
+  gap: 10px;
+  color: var(--service-muted);
+}
+
+.barber-services-empty-icon {
+  width: 62px;
+  height: 62px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 18px;
+
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+
+  margin-bottom: 15px;
+}
+
+.barber-services-empty h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 8px;
+}
+
+.barber-services-empty p {
+  font-size: 12px;
+  color: var(--service-muted);
+  margin: 0;
+  line-height: 1.9;
+}
+
+/* =========================================================
+   Modal
+========================================================= */
+
+.barber-service-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--service-overlay);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.barber-service-modal {
+  width: 100%;
+  max-width: 470px;
+  max-height: 90vh;
+
+  padding: 24px;
+
+  border-radius: 19px;
+  background: var(--service-card);
+
+  border: 1px solid var(--service-border);
+
+  box-shadow:
+    0 20px 70px var(--service-shadow),
+    0 2px 8px color-mix(in srgb,
+      var(--service-text) 5%,
+      transparent);
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Modal header */
+
+.barber-service-modal-header {
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.barber-service-modal-header h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 7px;
+}
+
+.barber-service-modal-header p {
+  color: var(--service-primary);
+  font-size: 12px;
+  font-weight: 700;
+  margin: 5px 0 0;
+}
+
+.barber-service-modal-header>button {
+  flex-shrink: 0;
+
+  border: 1px solid var(--service-border);
+
+  width: 35px;
+  height: 35px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: var(--service-muted-bg);
+  color: var(--service-muted);
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.barber-service-modal-header>button:hover {
+  color: var(--service-danger);
+  background: var(--service-danger-bg);
+  border-color: color-mix(in srgb,
+      var(--service-danger) 25%,
+      transparent);
+}
+
+/* Modal fields */
+
+.barber-service-modal-fields {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.barber-service-modal label,
+.barber-service-edit-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  color: var(--service-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.barber-service-modal-fields label>span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--service-text);
+}
+
+.barber-service-modal-fields label>span svg {
+  color: var(--service-primary);
+}
+
+.barber-service-modal input,
+.barber-service-edit-form input,
+.barber-service-modal-fields input {
+  width: 100%;
+  height: 46px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--service-border);
+  border-radius: 10px;
+
+  outline: none;
+
+  background: var(--service-input-bg);
+  color: var(--service-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  direction: rtl;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.barber-service-modal input::placeholder,
+.barber-service-edit-form input::placeholder {
+  color: var(--service-muted);
+  opacity: 0.8;
+}
+
+.barber-service-modal input:focus,
+.barber-service-edit-form input:focus,
+.barber-service-modal-fields input:focus {
+  border-color: var(--service-primary);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--service-primary) 14%,
+      transparent);
+}
+
+.barber-service-modal-fields .barber-service-error {
+  color: var(--service-danger);
+  font-size: 11px;
+}
+
+/* Modal actions */
+
+.barber-service-modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.barber-service-modal-actions button {
+  flex: 1;
+  min-height: 43px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.barber-service-modal-actions button:first-child {
+  background: var(--service-muted-bg);
+  color: var(--service-text);
+  border-color: var(--service-border);
+}
+
+.barber-service-modal-actions button:first-child:hover {
+  background: var(--service-hover-bg);
+  border-color: var(--service-primary-border);
+}
+
+.barber-service-modal-actions button:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: var(--service-primary);
+  color: #fff;
+  border-color: var(--service-primary);
+}
+
+.barber-service-modal-actions button:last-child:hover {
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+}
+
+.barber-service-modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error */
+
+.barber-service-error {
+  color: var(--service-danger);
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+/* =========================================================
+   Edit Form
+========================================================= */
+
+.barber-service-edit-form {
+  display: grid;
+  gap: 13px;
+}
+
+.barber-service-edit-actions {
+  gap: 8px;
+}
+
+.barber-service-edit-actions button {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 9px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.service-btn-save {
+  background: var(--service-primary);
+  color: #fff;
+  border-color: var(--service-primary);
+}
+
+.service-btn-save:hover {
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+}
+
+.service-btn-cancel {
+  background: var(--service-muted-bg);
+  color: var(--service-text);
+  border-color: var(--service-border);
+}
+
+.service-btn-cancel:hover {
+  background: var(--service-hover-bg);
+  border-color: var(--service-primary-border);
+}
+
+/* =========================================================
+   Settings Page
+========================================================= */
+
+.barber-service-settings-card {
+  max-width: 760px;
+
+  padding: 25px;
+
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+  border-radius: 18px;
+
+  box-shadow: 0 4px 18px var(--service-shadow);
+}
+
+/* Settings info */
+
+.barber-service-settings-info {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--service-border);
+}
+
+.barber-service-settings-image {
+  width: 100px;
+  height: 85px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+  border-radius: 13px;
+
+  background: var(--service-muted-bg);
+  border: 1px solid var(--service-border);
+
+  color: var(--service-muted);
+}
+
+.barber-service-settings-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-service-settings-info h2 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 8px;
+}
+
+.barber-service-settings-info p {
+  color: var(--service-muted);
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* Base info */
+
+.barber-service-base-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+
+  padding: 20px 0;
+}
+
+.barber-service-base-info>div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  padding: 13px;
+
+  background: var(--service-muted-bg);
+  border: 1px solid var(--service-border);
+  border-radius: 11px;
+
+  font-size: 11px;
+  color: var(--service-muted);
+}
+
+.barber-service-base-info svg {
+  color: var(--service-primary);
+  flex-shrink: 0;
+}
+
+.barber-service-base-info strong {
+  color: var(--service-text);
+  font-weight: 800;
+}
+
+/* Settings form */
+
+.barber-service-settings-form {
+  display: grid;
+  gap: 22px;
+  margin-top: 8px;
+}
+
+.barber-service-setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barber-service-setting-field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--service-text);
+}
+
+.barber-service-setting-field label svg {
+  color: var(--service-primary);
+}
+
+.barber-service-setting-field input {
+  height: 47px;
+  width: 100%;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--service-border);
+  border-radius: 10px;
+
+  background: var(--service-input-bg);
+  color: var(--service-text);
+
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  direction: rtl;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.barber-service-setting-field input::placeholder {
+  color: var(--service-muted);
+  opacity: 0.8;
+}
+
+.barber-service-setting-field input:focus {
+  border-color: var(--service-primary);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--service-primary) 14%,
+      transparent);
+}
+
+.barber-service-setting-field>button {
+  align-self: flex-start;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 5px 0;
+
+  border: 0;
+  background: transparent;
+  color: var(--service-primary);
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.barber-service-setting-field>button:hover {
+  color: var(--service-primary-hover);
+}
+
+.barber-service-field-error {
+  color: var(--service-danger);
+  font-size: 11px;
+}
+
+/* Settings note */
+
+.barber-service-settings-note {
+  padding: 13px;
+
+  border-radius: 10px;
+
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+
+  color: var(--service-primary);
+  font-size: 12px;
+  line-height: 1.9;
+
+  margin-top: 10px;
+}
+
+/* Settings actions */
+
+.barber-service-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  padding-top: 15px;
+  border-top: 1px solid var(--service-border);
+}
+
+.barber-service-cancel-btn,
+.barber-service-save-btn {
+  min-width: 125px;
+  min-height: 43px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.barber-service-cancel-btn {
+  color: var(--service-text);
+  background: var(--service-muted-bg);
+  border: 1px solid var(--service-border);
+}
+
+.barber-service-cancel-btn:hover {
+  background: var(--service-hover-bg);
+  border-color: var(--service-primary-border);
+}
+
+.barber-service-save-btn {
+  border: 1px solid var(--service-primary);
+  color: #fff;
+  background: var(--service-primary);
+}
+
+.barber-service-save-btn:hover {
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+}
+
+.barber-service-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Amount Display
+========================================================= */
+
+.amount-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  padding: 0.75rem 0.875rem;
+
+  background: linear-gradient(135deg,
+      var(--service-primary-soft) 0%,
+      var(--service-card) 100%);
+
+  border: 1.5px solid var(--service-primary-border);
+  border-radius: 0.875rem;
+
+  margin-top: 0.5rem;
+
+  animation: amountFadeIn 0.25s ease-out;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+@keyframes amountFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.amount-display .amount-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.amount-display .amount-value {
+  font-size: 1.125rem;
+  font-weight: 800;
+
+  color: var(--service-primary-hover);
+
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.amount-display .amount-currency {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--service-primary);
+}
+
+.amount-display .amount-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  font-size: 0.6875rem;
+  color: var(--service-muted);
+  font-weight: 600;
+}
+
+.amount-display .amount-remaining {
+  color: var(--service-primary);
+  font-weight: 700;
+}
+
+/* =========================================================
+   Focus & Accessibility
+========================================================= */
+
+.barber-services-page button:focus-visible,
+.barber-services-page a:focus-visible {
+  outline: 2px solid var(--service-primary);
+  outline-offset: 3px;
+}
+
+.barber-services-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 1100px) {
+  .barber-services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .barber-services-page {
+    padding: 16px;
+  }
+
+  .barber-services-header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 25px;
+  }
+
+  .barber-services-title h1 {
+    font-size: 18px;
+  }
+
+  .barber-services-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .barber-service-image {
+    height: 190px;
+  }
+
+  .barber-services-section-heading h2 {
+    font-size: 15px;
+  }
+
+  .barber-service-modal {
+    padding: 19px;
+  }
+
+  .barber-services-summary {
+    flex-direction: column;
+  }
+
+  .barber-service-settings-card {
+    padding: 17px;
+  }
+
+  .barber-service-base-info {
+    grid-template-columns: 1fr;
+  }
+
+  .barber-services-header {
+    align-items: flex-start;
+  }
+
+  .barber-service-settings-info {
+    align-items: flex-start;
+  }
+
+  .barber-service-settings-image {
+    width: 75px;
+    height: 75px;
+  }
+
+  .barber-service-settings-actions {
+    flex-direction: column-reverse;
+  }
+
+  .barber-service-cancel-btn,
+  .barber-service-save-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .barber-service-modal-backdrop {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .barber-service-modal {
+    padding: 18px;
+    max-height: 85vh;
+  }
+
+  .barber-service-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .barber-service-modal-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .barber-service-edit-actions {
+    flex-direction: column;
+  }
+
+  .barber-service-edit-actions button {
+    width: 100%;
+    min-height: 40px;
+  }
+}
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .barber-services-page *,
+  .barber-services-page *::before,
+  .barber-services-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.barber-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  background: linear-gradient(135deg, var(--color-primary-tint) 0%, var(--color-bg-card) 60%, var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary);
+  border-radius: 1.5rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px var(--color-primary-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.barber-hero::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.barber-hero-content {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.barber-hero-greeting {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+/* =========================================
+   Available Services - Modern Luxury Cards
+========================================= */
+
+.barber-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 24px;
+  margin-top: 26px;
+  align-items: stretch;
+}
+
+/* Main Card */
+.barber-service-card.available {
+  --service-card-radius: 20px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+  border-radius: var(--service-card-radius);
+
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--service-text) 3%, transparent),
+    0 8px 24px color-mix(in srgb, var(--service-text) 4%, transparent);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.barber-service-card.available:hover {
+  transform: translateY(-5px);
+
+  border-color: color-mix(in srgb,
+      var(--service-primary) 40%,
+      var(--service-border));
+
+  box-shadow:
+    0 5px 14px color-mix(in srgb, var(--service-primary) 8%, transparent),
+    0 16px 35px color-mix(in srgb, var(--service-text) 9%, transparent);
+}
+
+/* Image */
+.barber-service-card.available .barber-service-image {
+  position: relative;
+  height: 185px;
+  min-height: 185px;
+  overflow: hidden;
+  background: var(--service-tint);
+}
+
+.barber-service-card.available .barber-service-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  transition: transform 0.5s ease;
+}
+
+.barber-service-card.available:hover .barber-service-image img {
+  transform: scale(1.06);
+}
+
+.barber-service-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  color: var(--service-primary);
+
+  background:
+    radial-gradient(circle at 50% 40%,
+      color-mix(in srgb, var(--service-primary) 13%, transparent),
+      transparent 65%),
+    var(--service-tint);
+}
+
+/* Image Badge */
+.barber-service-image-badge {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 11px;
+
+  color: var(--service-primary);
+  background: color-mix(in srgb, var(--service-card) 92%, transparent);
+
+  border: 1px solid color-mix(in srgb,
+      var(--service-primary) 18%,
+      transparent);
+
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+
+  backdrop-filter: blur(10px);
+}
+
+/* Content */
+.barber-service-card.available .barber-service-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  padding: 19px;
+  gap: 18px;
+}
+
+.barber-service-heading {
+  min-height: 75px;
+}
+
+.barber-service-heading h3 {
+  margin: 0 0 9px;
+
+  color: var(--service-text);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.barber-service-description {
+  display: -webkit-box;
+  margin: 0;
+
+  color: var(--service-muted);
+  font-size: 12px;
+  line-height: 1.9;
+
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Meta Information */
+.barber-service-card.available .barber-service-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.barber-service-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+
+  background: color-mix(in srgb,
+      var(--service-bg) 70%,
+      var(--service-card));
+
+  border: 1px solid var(--service-border);
+  border-radius: 12px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.barber-service-meta-item:hover {
+  background: var(--service-tint);
+
+  border-color: color-mix(in srgb,
+      var(--service-primary) 25%,
+      var(--service-border));
+}
+
+
+.barber-service-meta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+
+  border-radius: 11px;
+}
+
+.barber-service-meta-icon.price {
+  color: var(--service-primary);
+  background: var(--service-tint);
+}
+
+.barber-service-meta-icon.duration {
+  color: var(--service-muted);
+
+  background: color-mix(in srgb,
+      var(--service-muted) 10%,
+      var(--service-card));
+}
+
+.barber-service-meta-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+
+  min-width: 0;
+  gap: 5px;
+}
+
+.barber-service-meta-info>span {
+  color: var(--service-muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.barber-service-meta-info strong {
+  display: block;
+  max-width: 100%;
+
+  color: var(--service-text);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+}
+
+@media (max-width: 480px) {
+  .barber-service-meta-item {
+    padding: 9px 10px;
+    gap: 9px;
+  }
+
+  .barber-service-meta-icon {
+    width: 33px;
+    height: 33px;
+  }
+
+  .barber-service-meta-info>span {
+    font-size: 10px;
+  }
+
+  .barber-service-meta-info strong {
+    font-size: 11px;
+  }
+}
+
+.barber-service-meta-info small {
+  color: var(--service-muted);
+  font-size: 10px;
+}
+
+/* Add Button */
+.barber-service-card.available .barber-service-add {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 46px;
+  margin-top: auto;
+  padding: 7px 13px 7px 8px;
+
+  color: #fff;
+  background: var(--service-primary);
+
+  border: 1px solid var(--service-primary);
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.barber-service-card.available .barber-service-add:hover {
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+
+  box-shadow: 0 5px 15px color-mix(in srgb,
+      var(--service-primary) 25%,
+      transparent);
+}
+
+.barber-service-add:active {
+  transform: scale(0.98);
+}
+
+.barber-service-add-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 31px;
+  height: 31px;
+  flex-shrink: 0;
+
+  color: var(--service-primary);
+  background: #fff;
+  border-radius: 9px;
+
+  transition: transform 0.2s ease;
+}
+
+.barber-service-add:hover .barber-service-add-icon {
+  transform: rotate(90deg);
+}
+
+/* Focus Accessibility */
+.barber-service-card.available .barber-service-add:focus-visible {
+  outline: 3px solid color-mix(in srgb,
+      var(--service-primary) 35%,
+      transparent);
+  outline-offset: 3px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .barber-services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+  }
+
+  .barber-service-card.available .barber-service-image {
+    height: 155px;
+    min-height: 155px;
+  }
+
+  .barber-service-card.available .barber-service-content {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .barber-service-heading h3 {
+    font-size: 14px;
+  }
+
+  .barber-service-meta-item {
+    flex-direction: column;
+    padding: 10px;
+    gap: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .barber-services-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .barber-service-card.available {
+    flex-direction: row;
+    align-items: stretch;
+    border-radius: 16px;
+  }
+
+  .barber-service-card.available .barber-service-image {
+    width: 115px;
+    min-width: 115px;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .barber-service-card.available .barber-service-image img {
+    position: absolute;
+    inset: 0;
+  }
+
+  .barber-service-image-badge {
+    display: none;
+  }
+
+  .barber-service-card.available .barber-service-content {
+    flex: 1;
+    padding: 13px;
+    gap: 12px;
+  }
+
+  .barber-service-heading {
+    min-height: auto;
+  }
+
+  .barber-service-heading h3 {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .barber-service-description {
+    font-size: 11px;
+    -webkit-line-clamp: 2;
+  }
+
+  .barber-service-card.available .barber-service-meta {
+    gap: 7px;
+  }
+
+  .barber-service-meta-item {
+    padding: 8px;
+  }
+
+  .barber-service-meta-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .barber-service-meta-info>span {
+    font-size: 9px;
+  }
+
+  .barber-service-meta-info strong {
+    font-size: 11px;
+  }
+
+  .barber-service-card.available .barber-service-add {
+    min-height: 40px;
+    font-size: 11px;
+  }
+
+  .barber-service-add-icon {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+.sc-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px var(--color-primary-light);
+  white-space: nowrap;
+}
+
+.sc-create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--color-primary-light);
+}

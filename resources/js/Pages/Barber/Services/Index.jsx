@@ -1,340 +1,414 @@
-import React, { useState } from "react";
-import { Head, Link, router } from "@inertiajs/react";
-import Layout from "../Layouts/Layout";
-import ConfirmModal from "../../Admin/Components/ConfirmModal";
-import EmptyList from "../../Admin/Components/EmptyList";
-import Pagination from "../../Admin/Components/Pagination";
-import Search from "../../../Components/Search";
-
+import React, { useMemo, useState } from "react";
+import { Head, Link, router, useForm } from "@inertiajs/react";
 import {
-    Plus,
     Scissors,
-    Clock,
-    DollarSign,
-    Edit,
+    Clock3,
+    Banknote,
+    Plus,
+    Pencil,
     Trash2,
-    CheckCircle,
-    XCircle,
-    Filter,
+    Check,
     X,
+    Search,
+    Image as ImageIcon,
+    BriefcaseBusiness,
+    CircleCheck,
+    Power,
 } from "lucide-react";
+// import Swal from "sweetalert2";
+import "./Assets/css/barber-services.css";
+import { toPersianNumber } from "../../../utils/persianNumbers";
+import { formatCompactNumber } from "../../../Constants/formatCompactNumber";
+import BarberLayout from "../../Admin/Layouts/Layout";
+import ConfirmModal from "../../Admin/Components/ConfirmModal";
 
-export default function ServicesIndex({ auth, services, filters }) {
+export default function Index({ categories = [], services = [] }) {
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         service: null,
         isLoading: false,
     });
+    const [search, setSearch] = useState("");
+    const [editingService, setEditingService] = useState(null);
+    const [showForm, setShowForm] = useState(false);
 
-    // ============ State جستجو ============
-    const [searchTerm, setSearchTerm] = useState(filters?.search || "");
-    const [isSearching, setIsSearching] = useState(false);
-    const [showFilters, setShowFilters] = useState(false);
-    const servicesList = services.data || [];
+    const [formData, setFormData] = useState({
+        category_id: "",
+        price: "",
+        duration: "",
+    });
 
-    // ============ بررسی فیلتر فعال ============
-    const hasActiveFilters = filters?.search || filters?.status;
+    const [editData, setEditData] = useState({
+        price: "",
+        duration: "",
+    });
 
-    // ============ حذف ============
+    const { post, processing, errors, reset, clearErrors } = useForm();
+
+    const activeServices = services.filter((service) => service.is_active);
+
+    const availableCategories = useMemo(() => {
+        const addedCategoryIds = services.map((service) =>
+            Number(service.category_id),
+        );
+
+        return categories.filter((category) => {
+            const matchesSearch = category.name
+                .toLowerCase()
+                .includes(search.trim().toLowerCase());
+
+            return (
+                !addedCategoryIds.includes(Number(category.id)) && matchesSearch
+            );
+        });
+    }, [categories, services, search]);
+
+    const handleAddService = (category) => {
+        setFormData({
+            category_id: String(category.id),
+            price: "",
+            duration: category.suggested_duration || "",
+        });
+
+        clearErrors();
+        setShowForm(true);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        post(route("barber.services.store"), {
+            data: formData,
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowForm(false);
+                reset();
+            },
+        });
+    };
+
+    const handleEdit = (service) => {
+        setEditingService(service);
+
+        setEditData({
+            price: service.price ?? "",
+            duration: service.duration ?? "",
+        });
+    };
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+
+        router.put(
+            route("barber.services.update", editingService.id),
+            editData,
+            {
+                preserveScroll: true,
+                onSuccess: () => setEditingService(null),
+            },
+        );
+    };
+
+    const handleToggle = (service) => {
+        router.put(
+            route("barber.services.update", {
+                service: service.id,
+                toggle: true,
+            }),
+            {
+                is_active: !service.is_active,
+            },
+            {
+                preserveScroll: true,
+            },
+        );
+    };
+
+    const handleDelete = (service) => {
+        Swal.fire({
+            title: "حذف سرویس",
+            text: `آیا از حذف سرویس «${service.name}» مطمئن هستید؟`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "بله، حذف شود",
+            cancelButtonText: "انصراف",
+            customClass: {
+                popup: "rtl-alert",
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.delete(route("barber.services.destroy", service.id), {
+                    preserveScroll: true,
+                });
+            }
+        });
+    };
+
     const openDeleteModal = (service) =>
         setDeleteModal({ isOpen: true, service, isLoading: false });
+
     const closeDeleteModal = () =>
-        setDeleteModal({ isOpen: false, service: null, isLoading: false });
+        setDeleteModal({
+            isOpen: false,
+            service: null,
+            isLoading: false,
+        });
 
     const handleConfirmDelete = () => {
         if (!deleteModal.service) return;
         setDeleteModal((prev) => ({ ...prev, isLoading: true }));
+
         router.delete(`/barber/services/${deleteModal.service.id}`, {
             preserveScroll: true,
             onSuccess: () => closeDeleteModal(),
             onError: () =>
-                setDeleteModal((prev) => ({ ...prev, isLoading: false })),
+                setDeleteModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                })),
         });
     };
 
-    // ============ جستجو ============
-    const handleSearch = (term) => {
-        setIsSearching(true);
-        router.get(
-            "/barber/services",
-            {
-                search: term,
-                status: filters?.status,
-            },
-            {
-                preserveState: false,
-                // preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onFinish: () => setIsSearching(false),
-            },
-        );
-    };
-
-    // ============ فیلتر وضعیت ============
-    const handleStatusFilter = (status) => {
-        router.get(
-            "/barber/services",
-            {
-                search: searchTerm,
-                status,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
-    };
-
-    // ============ پاک کردن فیلترها ============
-    const handleClearFilters = () => {
-        setSearchTerm("");
-        router.get(
-            "/barber/services",
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
-    };
-
     return (
-        <Layout>
-            <Head title="مدیریت سرویس ها" />
+        <BarberLayout>
+            <Head title="خدمات من" />
 
-            <div className="center-column">
-                {/* هدر */}
-                <div className="roles-page-header">
+            <div className="barber-services-page" dir="rtl">
+                {/* Header */}
+                <div className="barber-services-header">
                     <div>
-                        <h1 className="roles-page-title">مدیریت سرویس ها</h1>
-                        <p
-                            style={{
-                                color: "#6b7280",
-                                fontSize: "0.875rem",
-                                marginTop: "0.25rem",
-                            }}
-                        >
-                            {services.total} سرویس تعریف شده است
-                        </p>
-                    </div>
-                    <Link
-                        href="/barber/services/create"
-                        className="btn-primary"
-                        style={{
-                            width: "auto",
-                            padding: "0.5rem 1.5rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            textDecoration: "none",
-                        }}
-                    >
-                        <Plus size={18} /> سرویس جدید
-                    </Link>
-                </div>
+                        <div className="barber-services-title">
+                            <div className="barber-services-title-icon">
+                                <Scissors size={22} />
+                            </div>
 
-                {/* ============ نوار ابزار جستجو ============ */}
-                <div className="services-toolbar">
-                    {/* ============ سمت راست: جستجو ============ */}
-                    <div className="services-search-wrapper">
-                        <Search
-                            value={searchTerm}
-                            onChange={setSearchTerm}
-                            onSearch={handleSearch}
-                            placeholder="جستجو در نام یا توضیحات سرویس..."
-                            delay={500}
-                            isLoading={isSearching}
-                        />
-                    </div>
-
-                    {/* ============ سمت چپ: فیلترها ============ */}
-                    <div className="services-toolbar-actions">
-                        <button
-                            className={`filter-toggle-btn ${showFilters ? "active" : ""}`}
-                            onClick={() => setShowFilters(!showFilters)}
-                        >
-                            <Filter size={16} />
-                            فیلترها
-                            {filters?.status && (
-                                <span className="filter-count-badge">1</span>
-                            )}
-                        </button>
-
-                        {hasActiveFilters && (
-                            <button
-                                className="clear-filters-btn"
-                                onClick={handleClearFilters}
-                            >
-                                <X size={16} />
-                                پاک کردن
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* ============ پنل فیلترها — اینجا باید باشد ============ */}
-                {showFilters && (
-                    <div className="services-filters-panel">
-                        <div className="filter-group">
-                            <label className="filter-label">وضعیت</label>
-                            <div className="status-filter-buttons">
-                                <button
-                                    className={`status-filter-btn ${!filters?.status ? "active" : ""}`}
-                                    onClick={() => handleStatusFilter("")}
-                                >
-                                    همه
-                                </button>
-                                <button
-                                    className={`status-filter-btn ${filters?.status === "active" ? "active" : ""}`}
-                                    onClick={() => handleStatusFilter("active")}
-                                >
-                                    <CheckCircle size={14} />
-                                    فعال
-                                </button>
-                                <button
-                                    className={`status-filter-btn ${filters?.status === "inactive" ? "active" : ""}`}
-                                    onClick={() =>
-                                        handleStatusFilter("inactive")
-                                    }
-                                >
-                                    <XCircle size={14} />
-                                    غیرفعال
-                                </button>
+                            <div>
+                                <h1>خدمات من</h1>
+                                <p>
+                                    خدماتی که به مشتریان ارائه می‌دهید را مدیریت
+                                    کنید.
+                                </p>
                             </div>
                         </div>
                     </div>
-                )}
 
-                {/* گرید سرویس ها */}
-                {servicesList.length === 0 ? (
-                    <div
-                        className="card"
-                        style={{ textAlign: "center", padding: "3rem" }}
+                    {/* <div className="barber-services-count"> */}
+                    <Link
+                        href={route("barber.services.create")}
+                        className="sc-create-btn"
                     >
-                        <EmptyList
-                            title={
-                                filters?.only_online
-                                    ? "هیچ سرویسی وجود ندارد "
-                                    : hasActiveFilters
-                                      ? "نتیجه‌ای یافت نشد"
-                                      : "سرویسی پیدا نشد"
-                            }
-                            message={
-                                filters?.only_online
-                                    ? "در حال حاضر هیچ سرویسی نیست."
-                                    : hasActiveFilters
-                                      ? "هیچ سرویسی با فیلترهای انتخاب شده مطابقت ندارد."
-                                      : "در حال حاضر هیچ سرویسی در سیستم ثبت نشده است."
-                            }
-                        />
+                        <Plus size={18} />
+                        دسته‌بندی جدید
+                    </Link>
+                    {/* </div> */}
+                </div>
+
+                {/* My services */}
+                <section className="barber-services-section">
+                    <div className="barber-services-section-heading">
+                        <div>
+                            <h2>سرویس‌های انتخاب‌شده</h2>
+                            <p>
+                                قیمت و مدت‌زمان هر سرویس را متناسب با خدمات خود
+                                تنظیم کنید.
+                            </p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="services-grid">
-                        {servicesList.map((service) => (
-                            <div key={service.id} className="service-card">
-                                {/* ============ تصویر سرویس ============ */}
-                                <div className="service-card-image-wrapper">
-                                    {service.image ? (
-                                        <img
-                                            src={service.image}
-                                            alt={service.name}
-                                            className="service-card-image"
-                                        />
-                                    ) : (
-                                        <div className="service-card-image-placeholder">
-                                            <Scissors size={40} />
-                                        </div>
-                                    )}
-                                    <span
-                                        className={`service-status-badge ${
-                                            service.is_active
-                                                ? "active"
-                                                : "inactive"
-                                        }`}
-                                    >
-                                        {service.is_active ? (
-                                            <>
-                                                <CheckCircle size={12} />
-                                                فعال
-                                            </>
+
+                    {services.length === 0 ? (
+                        <div className="barber-services-empty">
+                            <div className="barber-services-empty-icon">
+                                <Scissors size={32} />
+                            </div>
+                            <h3>هنوز سرویسی انتخاب نکرده‌اید</h3>
+                            <p>
+                                از فهرست خدمات موجود، سرویس‌هایی را که ارائه
+                                می‌دهید انتخاب کنید.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="barber-services-grid">
+                            {services.map((service) => (
+                                <div
+                                    className={`barber-service-card ${
+                                        !service.is_active ? "is-inactive" : ""
+                                    }`}
+                                    key={service.id}
+                                >
+                                    <div className="barber-service-image">
+                                        {service.image_url ? (
+                                            <img
+                                                src={service.image_url}
+                                                alt={service.name}
+                                            />
+                                        ) : (
+                                            <ImageIcon size={30} />
+                                        )}
+
+                                        <span
+                                            className={`barber-service-status ${
+                                                service.is_active
+                                                    ? "active"
+                                                    : "inactive"
+                                            }`}
+                                        >
+                                            {service.is_active
+                                                ? "فعال"
+                                                : "غیرفعال"}
+                                        </span>
+                                    </div>
+
+                                    <div className="barber-service-content">
+                                        <h3>{service.name}</h3>
+
+                                        <p className="barber-service-description">
+                                            {service.description ||
+                                                "بدون توضیحات"}
+                                        </p>
+
+                                        {editingService?.id === service.id ? (
+                                            <form
+                                                onSubmit={handleUpdate}
+                                                className="barber-service-edit-form"
+                                            >
+                                                <label>
+                                                    قیمت اختصاصی (تومان)
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={Number(
+                                                            editData.price,
+                                                        )}
+                                                        onChange={(e) =>
+                                                            setEditData({
+                                                                ...editData,
+                                                                price: e.target
+                                                                    .value,
+                                                            })
+                                                        }
+                                                        placeholder="قیمت پایه"
+                                                    />
+                                                </label>
+
+                                                <label>
+                                                    مدت‌زمان (دقیقه)
+                                                    <input
+                                                        type="number"
+                                                        min="5"
+                                                        max="600"
+                                                        value={
+                                                            editData.duration
+                                                        }
+                                                        onChange={(e) =>
+                                                            setEditData({
+                                                                ...editData,
+                                                                duration:
+                                                                    e.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                        placeholder="مدت پایه"
+                                                    />
+                                                </label>
+
+                                                <div className="barber-service-edit-actions">
+                                                    <button
+                                                        type="submit"
+                                                        className="service-btn-save"
+                                                    >
+                                                        <Check size={16} />
+                                                        ذخیره
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="service-btn-cancel"
+                                                        onClick={() =>
+                                                            setEditingService(
+                                                                null,
+                                                            )
+                                                        }
+                                                    >
+                                                        <X size={16} />
+                                                        انصراف
+                                                    </button>
+                                                </div>
+                                            </form>
                                         ) : (
                                             <>
-                                                <XCircle size={12} />
-                                                غیرفعال
+                                                <div className="barber-service-meta">
+                                                    <div>
+                                                        <Banknote size={17} />
+                                                        <span>
+                                                            {toPersianNumber(
+                                                                Number(
+                                                                    service.price,
+                                                                ).toLocaleString(
+                                                                    "en-US",
+                                                                ),
+                                                            )}
+                                                        </span>
+                                                    </div>
+
+                                                    <div>
+                                                        <Clock3 size={17} />
+                                                        <span>
+                                                            {service.duration
+                                                                ? `${toPersianNumber(
+                                                                      service.duration,
+                                                                  )} دقیقه`
+                                                                : "مدت پایه"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="barber-service-actions">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleEdit(service)
+                                                        }
+                                                    >
+                                                        <Pencil size={15} />
+                                                        ویرایش
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleToggle(
+                                                                service,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Power size={15} />
+                                                        {service.is_active
+                                                            ? "غیرفعال‌سازی"
+                                                            : "فعال‌سازی"}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="delete"
+                                                        onClick={() =>
+                                                            openDeleteModal(
+                                                                service,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2 size={15} />
+                                                    </button>
+                                                </div>
                                             </>
                                         )}
-                                    </span>
-                                </div>
-
-                                {/* نام */}
-                                <h3 className="service-name">{service.name}</h3>
-
-                                {/* توضیحات */}
-                                {service.description && (
-                                    <p className="service-description">
-                                        {service.description}
-                                    </p>
-                                )}
-
-                                {/* مدت و قیمت */}
-                                <div className="service-meta">
-                                    <div className="service-meta-item">
-                                        <Clock size={14} />
-                                        <span>
-                                            {service.duration.toLocaleString(
-                                                "fa-IR",
-                                            )}{" "}
-                                            دقیقه
-                                        </span>
-                                    </div>
-                                    <div className="service-meta-item price">
-                                        <DollarSign size={14} />
-                                        <span>
-                                            {parseFloat(
-                                                service.price,
-                                            ).toLocaleString("fa-IR")}{" "}
-                                            تومان
-                                        </span>
                                     </div>
                                 </div>
-
-                                {/* دکمه‌ها */}
-                                <div className="service-card-actions">
-                                    <Link
-                                        href={`/barber/time-slots?service_id=${service.id}/`}
-                                        className="admin-card-btn warning"
-                                    >
-                                        <Clock size={16} />
-                                        زمان بندی نوبت ها
-                                    </Link>
-                                    <Link
-                                        href={`/barber/services/${service.id}/edit`}
-                                        className="admin-card-btn edit"
-                                    >
-                                        <Edit size={16} />
-                                        ویرایش
-                                    </Link>
-                                    <button
-                                        className="admin-card-btn delete"
-                                        onClick={() => openDeleteModal(service)}
-                                    >
-                                        <Trash2 size={16} />
-                                        حذف
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* صفحه‌بندی */}
-                <Pagination links={services.links} />
+                            ))}
+                        </div>
+                    )}
+                </section>
             </div>
 
-            {/* Modal حذف */}
             <ConfirmModal
                 isOpen={deleteModal.isOpen}
                 onClose={closeDeleteModal}
@@ -342,13 +416,16 @@ export default function ServicesIndex({ auth, services, filters }) {
                 title="حذف سرویس"
                 message={
                     deleteModal.service
-                        ? `آیا از حذف سرویس "${deleteModal.service.name}" مطمئن هستید؟`
+                        ? `آیا از حذف سرویس   "${
+                              deleteModal.service.name
+                          }"  مطمئن هستید؟`
                         : ""
                 }
                 confirmText="بله، حذف کن"
+                cancelText="انصراف"
                 type="danger"
                 isLoading={deleteModal.isLoading}
             />
-        </Layout>
+        </BarberLayout>
     );
 }
