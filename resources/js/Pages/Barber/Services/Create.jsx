@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 
 import BarberLayout from "../../Admin/Layouts/Layout";
 import { toPersianNumber } from "../../../utils/persianNumbers";
@@ -43,6 +43,11 @@ const ICON_MAP = {
     Zap,
 };
 export default function Create({ categories = [] }) {
+    const { url } = usePage();
+
+    const isFromSetup =
+        new URLSearchParams(url.split("?")[1] || "").get("from") === "setup";
+
     const [amount, setAmount] = useState("");
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -123,8 +128,6 @@ export default function Create({ categories = [] }) {
             <Head title="افزودن سرویس" />
 
             <div className="barber-services-page" dir="rtl">
-                {/* Header */}
-
                 <div className="barber-services-header">
                     <div className="barber-services-title">
                         <div className="barber-services-title-icon">
@@ -137,13 +140,28 @@ export default function Create({ categories = [] }) {
                         </div>
                     </div>
 
-                    <Link
-                        href={route("barber.services.index")}
-                        className="barber-services-back-btn"
-                    >
-                        <ArrowRight size={17} />
-                        بازگشت به خدمات من
-                    </Link>
+                    <div className="barber-services-header-actions">
+                        <Link
+                            href={route(
+                                "barber.services.index",
+                                isFromSetup ? { from: "setup" } : {},
+                            )}
+                            className="barber-services-back-btn"
+                        >
+                            <ArrowRight size={17} />
+                            بازگشت به خدمات من
+                        </Link>
+
+                        {isFromSetup && (
+                            <Link
+                                href={route("barber.setup")}
+                                className="barber-services-back-btn barber-services-back-btn-primary"
+                            >
+                                <ArrowRight size={17} />
+                                بازگشت به راه‌اندازی نوبت‌دهی
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 {/* Search */}

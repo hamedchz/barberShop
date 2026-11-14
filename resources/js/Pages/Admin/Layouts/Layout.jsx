@@ -2,30 +2,63 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../Components/Sidebar";
 import { Menu } from "lucide-react";
 import "../Assets/css/styles.css";
-import { useAlert } from "../../../Components/AlertProvider";
 import { usePage } from "@inertiajs/react";
 import Swal from "sweetalert2";
 
 export default function Layout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const { site } = usePage().props;
-    // ============ بازیابی وضعیت از localStorage ============
+
+    const { site, auth, flash, bookingSetup = {} } = usePage().props;
+
+    // ========================================
+    // بررسی تکمیل راه‌اندازی آرایشگر
+    // ========================================
+    const isBarber = auth?.user?.roles?.includes("آرایشگر");
+
+    const isBookingSetupCompleted = Boolean(
+        bookingSetup.workingDays &&
+        bookingSetup.services &&
+        bookingSetup.generatedSlots,
+    );
+
+    // تا زمان تکمیل راه‌اندازی، سایدبار مخفی باشد
+    const shouldHideSidebar = isBarber && !isBookingSetupCompleted;
+
+    // ========================================
+    // بازیابی وضعیت Sidebar از localStorage
+    // ========================================
     useEffect(() => {
         const saved = localStorage.getItem("sidebar_collapsed");
-        if (saved === "true") setIsCollapsed(true);
+
+        if (saved === "true") {
+            setIsCollapsed(true);
+        }
     }, []);
 
     useEffect(() => {
         localStorage.setItem("sidebar_collapsed", isCollapsed);
     }, [isCollapsed]);
 
-    // ============ بستن خودکار در موبایل ============
+    // ========================================
+    // بستن خودکار در موبایل
+    // ========================================
     const closeSidebar = () => setIsSidebarOpen(false);
+
     const toggleCollapse = () => setIsCollapsed((prev) => !prev);
 
-    // Alert
-    const { flash } = usePage().props;
+    // ========================================
+    // بستن سایدبار هنگام مخفی شدن
+    // ========================================
+    useEffect(() => {
+        if (shouldHideSidebar) {
+            setIsSidebarOpen(false);
+        }
+    }, [shouldHideSidebar]);
+
+    // ========================================
+    // نمایش Alert
+    // ========================================
     useEffect(() => {
         const alert = flash?.alert;
 
@@ -44,34 +77,40 @@ export default function Layout({ children }) {
             },
         });
     }, [flash?.alert?.id]);
-    // const { toast } = useAlert();
+
     return (
         <div
-            className={`admin-layout ${isCollapsed ? "sidebar-collapsed" : ""}`}
+            className={`admin-layout ${
+                !shouldHideSidebar && isCollapsed ? "sidebar-collapsed" : ""
+            } ${shouldHideSidebar ? "sidebar-hidden" : ""}`}
         >
             {/* دکمه منوی موبایل */}
-            <button
-                className="mobile-menu-btn"
-                onClick={() => setIsSidebarOpen(true)}
-                aria-label="باز کردن منو"
-            >
-                <Menu size={24} />
-            </button>
+            {!shouldHideSidebar && (
+                <button
+                    className="mobile-menu-btn"
+                    onClick={() => setIsSidebarOpen(true)}
+                    aria-label="باز کردن منو"
+                >
+                    <Menu size={24} />
+                </button>
+            )}
 
             {/* اورلی موبایل */}
-            {isSidebarOpen && (
-                <div className="overlay" onClick={closeSidebar}></div>
+            {!shouldHideSidebar && isSidebarOpen && (
+                <div className="overlay" onClick={closeSidebar} />
             )}
 
             {/* سایدبار */}
-            <Sidebar
-                isOpen={isSidebarOpen}
-                closeSidebar={closeSidebar}
-                isCollapsed={isCollapsed}
-                toggleCollapse={toggleCollapse}
-            />
+            {!shouldHideSidebar && (
+                <Sidebar
+                    isOpen={isSidebarOpen}
+                    closeSidebar={closeSidebar}
+                    isCollapsed={isCollapsed}
+                    toggleCollapse={toggleCollapse}
+                />
+            )}
 
-            {/* محتوای اصلی که صفحات درون آن قرار می‌گیرند */}
+            {/* محتوای اصلی */}
             <main className="main-content">
                 <div className="main-content-inner">{children}</div>
             </main>

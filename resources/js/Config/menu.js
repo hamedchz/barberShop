@@ -300,6 +300,7 @@ export const menuConfig = [
         href: "/barber/dashboard",
         scopes: ["dashboard"],
         permissions: ["barber-dashboard-panel"],
+        alwaysVisible: true,
     },
     // ============ خدمات من (آرایشگر) ============
     {
@@ -310,7 +311,15 @@ export const menuConfig = [
         scopes: ["services", "service-list", "service-create", "service-edit"],
         permissions: ["barber-dashboard-panel"],
     },
-
+    {
+        id: "barber-booking-setup",
+        label: "راه‌اندازی نوبت‌دهی",
+        icon: CalendarClock,
+        href: "/barber/dashboard#booking-setup",
+        scopes: ["dashboard"],
+        permissions: ["barber-dashboard-panel"],
+        bookingSetupOnly: true,
+    },
     // ============ برنامه هفتگی ============
     {
         id: "availabilities",
@@ -417,6 +426,7 @@ export const menuConfig = [
         scopes: ["notifications"],
         permissions: ["barber-dashboard-panel"],
         badge: "unread_notifications_count",
+        alwaysVisible: true,
     },
     {
         id: "barber-profile",
@@ -425,7 +435,9 @@ export const menuConfig = [
         href: "/barber/profile",
         scopes: ["customers"],
         permissions: ["barber-dashboard-panel"],
+        alwaysVisible: true,
     },
+    // customer
     // ============ داشبورد ============
     {
         id: "customer-dashboard",

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
 import {
     Scissors,
     Clock3,
@@ -14,6 +14,7 @@ import {
     BriefcaseBusiness,
     CircleCheck,
     Power,
+    ArrowRight,
 } from "lucide-react";
 // import Swal from "sweetalert2";
 import "./Assets/css/barber-services.css";
@@ -23,6 +24,11 @@ import BarberLayout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 
 export default function Index({ categories = [], services = [] }) {
+    const { url } = usePage();
+
+    const isFromSetup =
+        new URLSearchParams(url.split("?")[1] || "").get("from") === "setup";
+
     const [deleteModal, setDeleteModal] = useState({
         isOpen: false,
         service: null,
@@ -192,15 +198,27 @@ export default function Index({ categories = [], services = [] }) {
                         </div>
                     </div>
 
-                    {/* <div className="barber-services-count"> */}
-                    <Link
-                        href={route("barber.services.create")}
-                        className="sc-create-btn"
-                    >
-                        <Plus size={18} />
-                        دسته‌بندی جدید
-                    </Link>
-                    {/* </div> */}
+                    <div className="barber-services-header-actions">
+                        <Link
+                            href={route(
+                                "barber.services.create",
+                                isFromSetup ? { from: "setup" } : {},
+                            )}
+                            className="sc-create-btn"
+                        >
+                            <Plus size={18} />
+                            خدمت جدید
+                        </Link>
+                        {isFromSetup && (
+                            <Link
+                                href={route("barber.setup")}
+                                className="barber-services-back-btn"
+                            >
+                                <ArrowRight size={17} />
+                                بازگشت به راه‌اندازی نوبت‌دهی
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 {/* My services */}
@@ -346,7 +364,8 @@ export default function Index({ categories = [], services = [] }) {
                                                                 ).toLocaleString(
                                                                     "en-US",
                                                                 ),
-                                                            )}
+                                                            )}{" "}
+                                                            تومان
                                                         </span>
                                                     </div>
 

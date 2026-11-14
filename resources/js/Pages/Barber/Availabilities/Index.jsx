@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage, Link } from "@inertiajs/react";
 import Layout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import TimePicker from "../Components/TimePicker";
@@ -26,6 +26,7 @@ import {
     Edit3,
     ChevronLeft,
     X,
+    ArrowRight,
 } from "lucide-react";
 
 // ============ آیکون هر روز ============
@@ -62,6 +63,11 @@ export default function AvailabilitiesIndex({
     availabilities,
     daysOfWeek,
 }) {
+    const { url } = usePage();
+
+    const isFromSetup =
+        new URLSearchParams(url.split("?")[1] || "").get("from") === "setup";
+
     const [selectedDay, setSelectedDay] = useState(0);
     const [shifts, setShifts] = useState([emptyShift()]);
     const [errors, setErrors] = useState({});
@@ -292,29 +298,29 @@ export default function AvailabilitiesIndex({
             <Head title="برنامه هفتگی" />
 
             <div className="center-column">
-                {/* ============ هدر صفحه ============ */}
-                <div className="roles-page-header">
-                    <div>
-                        <h1 className="roles-page-title">برنامه هفتگی</h1>
-                        <p
-                            style={{
-                                color: "#6b7280",
-                                fontSize: "0.875rem",
-                                marginTop: "0.25rem",
-                            }}
-                        >
-                            روزها و ساعات کاری خود را در طول هفته مشخص کنید.
-                        </p>
-                    </div>
-                    <div className="availability-header-badge">
-                        <Calendar size={16} />
-                        <span>
-                            {availabilities.length.toLocaleString("fa-IR")} روز
-                            از ۷ روز تعریف شده
-                        </span>
-                    </div>
-                </div>
+                <div className="barber-services-header barber-availability-header">
+                    <div className="barber-services-title">
+                        <div className="barber-services-title-icon">
+                            <Calendar size={22} />
+                        </div>
 
+                        <div>
+                            <h1>برنامه هفتگی</h1>
+                            <p>
+                                روزها و ساعات کاری خود را در طول هفته مشخص کنید.
+                            </p>
+                        </div>
+                    </div>
+                    {isFromSetup && (
+                        <Link
+                            href={route("barber.setup")}
+                            className="barber-services-back-btn barber-services-back-btn-primary"
+                        >
+                            <ArrowRight size={17} />
+                            بازگشت به راه‌اندازی نوبت‌دهی
+                        </Link>
+                    )}
+                </div>
                 {/* ============ راهنما ============ */}
                 <div className="availability-guide">
                     <div className="availability-guide-icon">

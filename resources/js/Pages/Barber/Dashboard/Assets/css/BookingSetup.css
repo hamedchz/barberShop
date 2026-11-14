@@ -1,0 +1,484 @@
+/* =========================================
+   Barber Booking Setup Guide
+========================================= */
+
+.barber-dashboard {
+  --setup-primary: var(--color-primary);
+  --setup-primary-hover: var(--color-primary-hover);
+  --setup-text: var(--color-text);
+  --setup-muted: var(--color-text-muted);
+  --setup-card: var(--color-bg-card);
+  --setup-bg: var(--color-bg);
+  --setup-hover: var(--color-bg-hover);
+  --setup-border: var(--color-border);
+  --setup-success: var(--color-success);
+  --setup-warning: var(--color-warning);
+}
+
+.barber-setup-guide {
+  position: relative;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--setup-card);
+  border: 1px solid var(--setup-border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.barber-setup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.barber-setup-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.barber-setup-main-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: var(--setup-primary);
+  background: color-mix(in srgb,
+      var(--setup-primary) 12%,
+      var(--setup-card));
+}
+
+.barber-setup-heading h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--setup-text);
+}
+
+.barber-setup-heading p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: var(--setup-muted);
+}
+
+.barber-setup-progress-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.barber-setup-progress-info strong {
+  font-size: 0.85rem;
+  color: var(--setup-primary);
+}
+
+.barber-setup-progress-info span {
+  font-size: 0.72rem;
+  color: var(--setup-muted);
+}
+
+.barber-setup-progress {
+  height: 6px;
+  width: 100%;
+  background: var(--setup-hover);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.barber-setup-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,
+      var(--setup-primary),
+      var(--setup-primary-hover));
+  transition: width 0.35s ease;
+}
+
+.barber-setup-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.barber-setup-step {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.15rem;
+  border: 1px solid var(--setup-border);
+  border-radius: 14px;
+  background: var(--setup-card);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.barber-setup-step:not(.disabled):hover {
+  border-color: color-mix(in srgb,
+      var(--setup-primary) 45%,
+      var(--setup-border));
+  transform: translateY(-2px);
+}
+
+.barber-setup-step.completed {
+  border-color: color-mix(in srgb,
+      var(--setup-success) 35%,
+      var(--setup-border));
+  background: color-mix(in srgb,
+      var(--setup-success) 3%,
+      var(--setup-card));
+}
+
+.barber-setup-step.disabled {
+  opacity: 0.65;
+}
+
+.barber-setup-step-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.barber-setup-step-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--setup-primary);
+  background: color-mix(in srgb,
+      var(--setup-primary) 11%,
+      var(--setup-card));
+}
+
+.barber-setup-step.completed .barber-setup-step-icon {
+  color: var(--setup-success);
+  background: color-mix(in srgb,
+      var(--setup-success) 12%,
+      var(--setup-card));
+}
+
+.barber-setup-step-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--setup-muted);
+  background: var(--setup-hover);
+}
+
+.barber-setup-step.completed .barber-setup-step-number {
+  color: var(--setup-success);
+  background: color-mix(in srgb,
+      var(--setup-success) 12%,
+      var(--setup-card));
+}
+
+.barber-setup-step-content {
+  width: 100%;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.barber-setup-step-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.barber-setup-step-title h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--setup-text);
+}
+
+.barber-setup-done {
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--setup-success);
+  background: color-mix(in srgb,
+      var(--setup-success) 12%,
+      var(--setup-card));
+}
+
+.barber-setup-step-content p {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.9;
+  color: var(--setup-muted);
+}
+
+.barber-setup-action {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--setup-primary);
+  font-family: inherit;
+  font-size: 0.77rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.barber-setup-action:hover {
+  color: #fff;
+  background: var(--setup-primary-hover);
+}
+
+.barber-setup-action.is-completed {
+  color: var(--setup-primary);
+  background: color-mix(in srgb,
+      var(--setup-primary) 10%,
+      var(--setup-card));
+}
+
+.barber-setup-action.is-completed:hover {
+  color: #fff;
+  background: var(--setup-primary);
+}
+
+.barber-setup-action.is-disabled {
+  cursor: not-allowed;
+  pointer-events: auto;
+  color: var(--setup-muted);
+  background: var(--setup-hover);
+}
+
+.barber-setup-hint,
+.barber-setup-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  font-size: 0.77rem;
+  line-height: 1.8;
+}
+
+.barber-setup-hint {
+  color: var(--setup-muted);
+  background: color-mix(in srgb,
+      var(--setup-warning) 8%,
+      var(--setup-card));
+}
+
+.barber-setup-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--setup-warning);
+}
+
+.barber-setup-success {
+  align-items: center;
+  color: var(--setup-success);
+  background: color-mix(in srgb,
+      var(--setup-success) 9%,
+      var(--setup-card));
+}
+
+.barber-setup-success svg {
+  flex-shrink: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .barber-setup-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .barber-setup-step:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  .barber-setup-guide {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .barber-setup-header {
+    align-items: flex-start;
+  }
+
+  .barber-setup-heading {
+    gap: 0.65rem;
+  }
+
+  .barber-setup-main-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .barber-setup-heading h2 {
+    font-size: 0.9rem;
+  }
+
+  .barber-setup-heading p {
+    font-size: 0.72rem;
+  }
+
+  .barber-setup-progress-info {
+    align-items: flex-start;
+  }
+
+  .barber-setup-progress-info strong {
+    font-size: 0.75rem;
+  }
+
+  .barber-setup-progress-info span {
+    font-size: 0.65rem;
+  }
+
+  .barber-setup-steps {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .barber-setup-step:last-child {
+    grid-column: auto;
+  }
+
+  .barber-setup-step {
+    padding: 1rem;
+  }
+
+  .barber-setup-step-top {
+    margin-bottom: 0.75rem;
+  }
+
+  .barber-setup-step-content {
+    margin-bottom: 0.8rem;
+  }
+}
+
+.barber-setup-compact {
+  margin-bottom: 1.25rem;
+}
+
+.barber-setup-compact-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.barber-setup-compact-button:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-success);
+}
+
+.barber-setup-compact-info,
+.barber-setup-compact-action {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.barber-setup-compact-info>svg {
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.barber-setup-compact-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  background: color-mix(in srgb,
+      var(--color-success) 12%,
+      var(--color-bg-card));
+  color: var(--color-success);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.barber-setup-compact-action {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.barber-setup-collapse {
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 576px) {
+  .barber-setup-compact-button {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .barber-setup-compact-action {
+    align-self: flex-end;
+  }
+}
+
+.barber-setup-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.barber-setup-collapse {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.barber-setup-collapse:hover {
+  color: var(--color-primary);
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}

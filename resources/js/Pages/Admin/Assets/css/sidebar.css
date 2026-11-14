@@ -912,3 +912,19 @@ html.dark .sidebar-nav .sidebar-item .sidebar-badge-dot {
     animation: none !important;
   }
 }
+
+.sidebar-setup-badge {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.sidebar-setup-badge-dot {
+  background: var(--color-primary);
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Setting;
+use App\Services\BarberBookingSetupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
@@ -49,6 +50,8 @@ class HandleInertiaRequests extends Middleware
                         'unread_notifications_count' => $request->user()
                             ->unreadNotifications()
                             ->count(),
+
+
                     ]
                     : null,
             ],
@@ -62,7 +65,11 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn() => $request->session()->get('info'),
                 'alert' => fn() => $request->session()->get('alert'),
             ],
-
+            'bookingSetup' => fn() => auth()->check()
+                && auth()->user()->hasRole('آرایشگر')
+                ? app(BarberBookingSetupService::class)
+                ->getStatus(auth()->user())
+                : [],
         ]);
     }
     /**

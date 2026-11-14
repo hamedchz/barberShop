@@ -1,0 +1,1036 @@
+/* =========================================================
+   BARBER TIME SLOTS
+   Modern Luxury | Dynamic Theme | Color Mix
+========================================================= */
+
+.time-slots-page {
+  --ts-primary: var(--color-primary);
+  --ts-primary-hover: var(--color-primary-hover);
+  --ts-primary-tint: var(--color-primary-tint);
+
+  --ts-text: var(--color-text);
+  --ts-muted: var(--color-text-muted);
+
+  --ts-bg: var(--color-bg);
+  --ts-card: var(--color-bg-card);
+  --ts-hover: var(--color-bg-hover);
+  --ts-border: var(--color-border);
+
+  --ts-success: var(--color-success);
+  --ts-danger: var(--color-danger);
+  --ts-warning: var(--color-warning);
+  --ts-info: var(--color-info);
+
+  --ts-radius: 18px;
+  --ts-radius-sm: 12px;
+
+  width: 100%;
+  min-width: 0;
+  color: var(--ts-text);
+  direction: rtl;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.time-slots-page .roles-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.time-slots-page .roles-page-title {
+  color: var(--ts-text);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.time-slots-page .roles-page-header p {
+  color: var(--ts-muted) !important;
+  font-size: 0.88rem !important;
+  line-height: 1.9;
+  margin-top: 5px !important;
+}
+
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
+.time-slots-page .time-slots-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 330px) minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+  width: 100%;
+}
+
+.time-slots-page .time-slots-sidebar,
+.time-slots-page .time-slots-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.time-slots-page .card {
+  min-width: 0;
+  padding: 20px;
+  background: var(--ts-card);
+  border: 1px solid var(--ts-border);
+  border-radius: var(--ts-radius);
+
+  box-shadow:
+    0 2px 8px color-mix(in srgb, var(--ts-text) 3%, transparent),
+    0 12px 30px var(--color-shadow);
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.time-slots-page .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+
+  border-bottom: 1px solid var(--ts-border);
+}
+
+.time-slots-page .card-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: var(--ts-text);
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.time-slots-page .card-title svg {
+  color: var(--ts-primary);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   AVAILABILITY FORM
+========================================================= */
+
+.time-slots-page .availability-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.time-slots-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 14px;
+
+  color: var(--ts-text);
+  background: color-mix(in srgb, var(--ts-primary) 6%, var(--ts-card));
+
+  border: 1px solid color-mix(in srgb, var(--ts-primary) 17%, var(--ts-border));
+  border-radius: var(--ts-radius-sm);
+
+  font-size: 0.88rem;
+  line-height: 1.9;
+}
+
+.time-slots-page .form-label {
+  color: var(--ts-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.time-slots-page .availability-form .btn-primary {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 11px 18px;
+
+  color: #fff;
+  background: var(--ts-primary);
+
+  border: 1px solid var(--ts-primary);
+  border-radius: var(--ts-radius-sm);
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-slots-page .availability-form .btn-primary:hover:not(:disabled) {
+  background: var(--ts-primary-hover);
+  border-color: var(--ts-primary-hover);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 6px 18px color-mix(in srgb,
+      var(--ts-primary) 25%,
+      transparent);
+}
+
+.time-slots-page .availability-form .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================================
+   SPINNER
+========================================================= */
+
+.time-slots-page .spinner {
+  width: 17px;
+  height: 17px;
+
+  border: 2px solid rgb(255 255 255 / 35%);
+  border-top-color: #fff;
+  border-radius: 50%;
+
+  animation: ts-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ts-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   WORKING HOURS INFO
+========================================================= */
+
+.time-slots-page .info-box {
+  margin-top: 16px;
+  padding: 13px 14px;
+
+  background: color-mix(in srgb, var(--ts-info) 7%, var(--ts-card));
+  border: 1px solid color-mix(in srgb, var(--ts-info) 20%, var(--ts-border));
+  border-radius: var(--ts-radius-sm);
+}
+
+.time-slots-page .info-box p {
+  color: var(--ts-muted);
+  font-size: 0.82rem;
+  line-height: 1.9;
+  margin: 0;
+}
+
+.time-slots-page .info-box strong {
+  color: var(--ts-text);
+  font-weight: 800;
+}
+
+/* =========================================================
+   NO AVAILABILITY
+========================================================= */
+
+.time-slots-page .time-slots-sidebar .card:has(> svg) {
+  text-align: center;
+  background: color-mix(in srgb, var(--ts-warning) 5%, var(--ts-card));
+  border-color: color-mix(in srgb, var(--ts-warning) 20%, var(--ts-border));
+}
+
+.time-slots-page .time-slots-sidebar .card>svg {
+  display: block;
+  margin: 0 auto 12px;
+  color: var(--ts-warning) !important;
+}
+
+.time-slots-page .time-slots-sidebar .card>p {
+  color: var(--ts-muted) !important;
+  font-size: 0.88rem !important;
+  line-height: 1.9;
+  margin: 0;
+}
+
+/* =========================================================
+   TOTAL COUNT
+========================================================= */
+
+.time-slots-page .permissions-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 12px;
+
+  color: var(--ts-primary);
+  background: color-mix(in srgb, var(--ts-primary) 10%, var(--ts-card));
+
+  border: 1px solid color-mix(in srgb, var(--ts-primary) 20%, var(--ts-border));
+  border-radius: 30px;
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.time-slots-page .time-slots-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.time-slots-page .stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 0;
+  padding: 14px 10px;
+
+  border: 1px solid transparent;
+  border-radius: var(--ts-radius-sm);
+
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+
+  transition: transform 0.2s ease;
+}
+
+.time-slots-page .stat-item:hover {
+  transform: translateY(-2px);
+}
+
+.time-slots-page .stat-item svg {
+  flex-shrink: 0;
+}
+
+/* Available */
+
+.time-slots-page .stat-item.available {
+  color: var(--ts-success);
+  background: color-mix(in srgb, var(--ts-success) 9%, var(--ts-card));
+  border-color: color-mix(in srgb, var(--ts-success) 20%, var(--ts-border));
+}
+
+/* Booked */
+
+.time-slots-page .stat-item.booked {
+  color: var(--ts-info);
+  background: color-mix(in srgb, var(--ts-info) 9%, var(--ts-card));
+  border-color: color-mix(in srgb, var(--ts-info) 20%, var(--ts-border));
+}
+
+/* Blocked */
+
+.time-slots-page .stat-item.blocked {
+  color: var(--ts-danger);
+  background: color-mix(in srgb, var(--ts-danger) 8%, var(--ts-card));
+  border-color: color-mix(in srgb, var(--ts-danger) 20%, var(--ts-border));
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.time-slots-page .empty-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 150px;
+  padding: 25px;
+
+  color: var(--ts-muted);
+  background: color-mix(in srgb, var(--ts-text) 2%, var(--ts-card));
+
+  border: 1px dashed var(--ts-border);
+  border-radius: var(--ts-radius-sm);
+
+  font-size: 0.9rem;
+  line-height: 2;
+  text-align: center;
+}
+
+/* =========================================================
+   TIME SLOTS LIST
+========================================================= */
+
+.time-slots-page .time-slots-list-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+/* Slot Row */
+
+.time-slots-page .time-slot-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1.1fr) minmax(90px, 0.8fr) minmax(130px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+
+  min-width: 0;
+  padding: 15px 16px;
+
+  background: var(--ts-card);
+  border: 1px solid var(--ts-border);
+  border-right: 3px solid var(--ts-success);
+  border-radius: var(--ts-radius-sm);
+
+  transition: all 0.2s ease;
+}
+
+.time-slots-page .time-slot-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--ts-text) 6%, transparent);
+}
+
+/* Available */
+
+.time-slots-page .time-slot-row.status-available {
+  border-right-color: var(--ts-success);
+}
+
+/* Booked */
+
+.time-slots-page .time-slot-row.status-booked {
+  background: color-mix(in srgb, var(--ts-info) 4%, var(--ts-card));
+  border-right-color: var(--ts-info);
+}
+
+/* Blocked */
+
+.time-slots-page .time-slot-row.status-blocked {
+  background: color-mix(in srgb, var(--ts-danger) 3%, var(--ts-card));
+  border-right-color: var(--ts-danger);
+}
+
+/* =========================================================
+   SLOT TIME
+========================================================= */
+
+.time-slots-page .time-slot-row-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  min-width: 0;
+
+  color: var(--ts-text);
+  font-size: 0.87rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.time-slots-page .time-slot-row-time svg {
+  color: var(--ts-primary);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   SLOT SERVICE
+========================================================= */
+
+.time-slots-page .time-slot-row-service {
+  min-width: 0;
+  overflow: hidden;
+
+  color: var(--ts-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   SLOT STATUS
+========================================================= */
+
+.time-slots-page .time-slot-row-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  min-width: 0;
+
+  color: var(--ts-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+.time-slots-page .status-available .time-slot-row-status {
+  color: var(--ts-success);
+}
+
+.time-slots-page .status-booked .time-slot-row-status {
+  color: var(--ts-info);
+}
+
+.time-slots-page .status-blocked .time-slot-row-status {
+  color: var(--ts-danger);
+}
+
+.time-slots-page .time-slot-row-status svg {
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.time-slots-page .time-slot-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.time-slots-page .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  color: var(--ts-primary);
+  background: color-mix(in srgb, var(--ts-primary) 9%, var(--ts-card));
+
+  border: 1px solid color-mix(in srgb, var(--ts-primary) 20%, var(--ts-border));
+  border-radius: 10px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-slots-page .btn-icon:hover {
+  color: #fff;
+  background: var(--ts-primary);
+  border-color: var(--ts-primary);
+  transform: translateY(-2px);
+}
+
+.time-slots-page .btn-icon.danger {
+  color: var(--ts-danger);
+  background: color-mix(in srgb, var(--ts-danger) 8%, var(--ts-card));
+  border-color: color-mix(in srgb, var(--ts-danger) 20%, var(--ts-border));
+}
+
+.time-slots-page .btn-icon.danger:hover {
+  color: #fff;
+  background: var(--ts-danger);
+  border-color: var(--ts-danger);
+}
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.time-slots-page button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ts-primary) 35%, transparent);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+  .time-slots-page .time-slots-layout {
+    grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .time-slots-page .time-slot-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .time-slots-page .roles-page-header {
+    margin-bottom: 18px;
+  }
+
+  .time-slots-page .roles-page-title {
+    font-size: 1.1rem;
+  }
+
+  .time-slots-page .time-slots-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .time-slots-page .card {
+    padding: 16px;
+    border-radius: 15px;
+  }
+
+  .time-slots-page .card-header {
+    padding-bottom: 14px;
+    margin-bottom: 15px;
+  }
+
+  .time-slots-page .time-slots-stats {
+    gap: 8px;
+  }
+
+  .time-slots-page .stat-item {
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 5px;
+    font-size: 0.72rem;
+  }
+
+  .time-slots-page .time-slot-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .time-slots-page .time-slot-row-service {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .time-slots-page .time-slot-row-status {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .time-slots-page .time-slot-row-actions {
+    grid-column: 2;
+    grid-row: 2 / 4;
+    justify-content: flex-end;
+  }
+
+  .time-slots-page .permissions-count {
+    font-size: 0.72rem;
+    padding: 5px 10px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+  .time-slots-page .roles-page-title {
+    font-size: 1rem;
+  }
+
+  .time-slots-page .card {
+    padding: 13px;
+  }
+
+  .time-slots-page .time-slot-row {
+    padding: 11px;
+  }
+
+  .time-slots-page .time-slot-row-time {
+    font-size: 0.76rem;
+    gap: 5px;
+  }
+
+  .time-slots-page .time-slot-row-status {
+    font-size: 0.72rem;
+  }
+
+  .time-slots-page .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* =========================================================
+   Shared Page Header
+========================================================= */
+
+.barber-services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  padding: 1.75rem;
+
+  background: linear-gradient(135deg,
+      var(--color-primary-tint) 0%,
+      var(--color-bg-card) 60%,
+      var(--color-bg-card) 100%);
+
+  border: 1.5px solid var(--color-primary);
+  border-radius: 1.5rem;
+
+  flex-wrap: wrap;
+
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 12%, transparent);
+
+  position: relative;
+  overflow: hidden;
+
+  margin-bottom: 32px;
+}
+
+/* افکت دایره‌ای پس‌زمینه */
+.barber-services-header::before {
+  content: "";
+  position: absolute;
+
+  top: -60%;
+  right: -10%;
+
+  width: 400px;
+  height: 400px;
+
+  border-radius: 50%;
+
+  background: var(--color-primary);
+  opacity: 0.05;
+
+  pointer-events: none;
+}
+
+/* محتوای هدر بالاتر از افکت پس‌زمینه */
+.barber-services-header>* {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   Header Title
+========================================================= */
+
+.barber-services-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* آیکون عنوان */
+.barber-services-title-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+  border-radius: 15px;
+
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+
+
+}
+
+/* عنوان */
+.barber-services-title h1 {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--service-text);
+  margin: 0 0 7px;
+}
+
+/* توضیحات */
+.barber-services-title p,
+.barber-services-section-heading p {
+  font-size: 13px;
+  color: var(--service-muted);
+  margin: 0;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   Header Count Badge
+========================================================= */
+
+.barber-services-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 15px;
+
+  border-radius: 12px;
+
+  background: var(--service-primary-soft);
+  border: 1px solid var(--service-primary-border);
+  color: var(--service-primary);
+
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   Header Actions
+========================================================= */
+
+.barber-services-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.barber-services-add-btn,
+.barber-services-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 43px;
+  padding: 0 16px;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* دکمه افزودن */
+.barber-services-add-btn {
+  color: #fff;
+  background: var(--service-primary);
+  border: 1px solid var(--service-primary);
+}
+
+.barber-services-add-btn:hover {
+  color: #fff;
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--service-primary) 22%, transparent);
+}
+
+/* دکمه بازگشت */
+.barber-services-back-btn {
+  color: var(--service-text);
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+}
+
+.barber-services-back-btn:hover {
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border-color: var(--service-primary-border);
+}
+
+/* =========================================================
+   Weekly Availability Header
+========================================================= */
+
+.barber-availability-header {
+  /* استایل اصلی از barber-services-header گرفته می‌شود */
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 768px) {
+  .barber-services-header {
+    padding: 1.4rem;
+    gap: 1.2rem;
+  }
+
+  .barber-services-header-actions {
+    width: 100%;
+  }
+
+  .barber-services-header-actions .barber-services-back-btn,
+  .barber-services-header-actions .barber-services-add-btn {
+    flex: 1;
+  }
+
+  .barber-services-count {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .barber-services-header {
+    padding: 1.2rem;
+    border-radius: 1.2rem;
+    gap: 1rem;
+  }
+
+  .barber-services-title {
+    gap: 11px;
+  }
+
+  .barber-services-title-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 13px;
+  }
+
+  .barber-services-title h1 {
+    font-size: 17px;
+    margin-bottom: 5px;
+  }
+
+  .barber-services-title p {
+    font-size: 12px;
+  }
+
+  .barber-services-count {
+    padding: 8px 11px;
+    font-size: 12px;
+  }
+
+  .barber-services-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .barber-services-header-actions .barber-services-back-btn,
+  .barber-services-header-actions .barber-services-add-btn {
+    width: 100%;
+    flex: unset;
+  }
+}
+
+/* کادر رنگی آیکون هدر */
+.barber-services-header .barber-services-title-icon {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  border-radius: 15px;
+
+  color: var(--color-primary);
+
+  background: color-mix(in srgb,
+      var(--color-primary) 13%,
+      var(--color-bg-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 30%,
+      var(--color-border));
+}
+
+/* Header actions */
+
+.barber-services-add-btn,
+.barber-services-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 43px;
+  padding: 0 16px;
+
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.barber-services-add-btn {
+  color: #fff;
+  background: var(--service-primary);
+  border: 1px solid var(--service-primary);
+}
+
+.barber-services-add-btn:hover {
+  color: #fff;
+  background: var(--service-primary-hover);
+  border-color: var(--service-primary-hover);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--service-primary) 22%,
+      transparent);
+}
+
+.barber-services-back-btn {
+  color: var(--service-text);
+  background: var(--service-card);
+  border: 1px solid var(--service-border);
+}
+
+.barber-services-back-btn:hover {
+  color: var(--service-primary);
+  background: var(--service-primary-soft);
+  border-color: var(--service-primary-border);
+}
+
+/* دکمه بازگشت به راه‌اندازی */
+.barber-services-back-btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+}
+
+.barber-services-back-btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #fff;
+}

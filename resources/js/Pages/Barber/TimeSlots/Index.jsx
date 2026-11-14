@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage, Link } from "@inertiajs/react";
 import Layout from "../../Admin/Layouts/Layout";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import JalaliCalendar from "../Components/JalaliCalendar";
@@ -18,8 +18,10 @@ import {
     CheckCircle,
     AlertCircle,
     Calendar as CalendarIcon,
+    ArrowRight,
+    CalendarClock,
 } from "lucide-react";
-
+import "./Assets/css/styles.css";
 export default function TimeSlotsIndex({
     auth,
     timeSlots,
@@ -30,6 +32,11 @@ export default function TimeSlotsIndex({
     service, // ← اطلاعات کامل سرویس انتخاب شده
     filters,
 }) {
+    const { url } = usePage();
+
+    const isFromSetup =
+        new URLSearchParams(url.split("?")[1] || "").get("from") === "setup";
+
     const [date, setDate] = useState(new Date(selectedDate));
     // const [selectedService, setSelectedService] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -148,23 +155,35 @@ export default function TimeSlotsIndex({
         <Layout>
             <Head title="زمان‌بندی نوبت‌ها" />
 
-            <div className="center-column">
-                <div className="roles-page-header">
-                    <div>
-                        <h1 className="roles-page-title">
-                            زمان‌بندی نوبت‌ها برای سرویس {service.name} (
-                            {toPersianNumber(service.duration)} دقیقه)
-                        </h1>
-                        <p
-                            style={{
-                                color: "#6b7280",
-                                fontSize: "0.875rem",
-                                marginTop: "0.25rem",
-                            }}
-                        >
-                            بازه‌های زمانی قابل رزرو را برای هر تاریخ مشخص کنید.
-                        </p>
+            <div className="center-column time-slots-page">
+                <div className="barber-services-header barber-availability-header">
+                    <div className="barber-services-title">
+                        <div className="barber-services-title-icon">
+                            <CalendarClock size={22} />
+                        </div>
+
+                        <div>
+                            <h1>
+                                {" "}
+                                زمان‌بندی نوبت‌ها برای سرویس{" "}
+                                {service.category.name} (
+                                {toPersianNumber(service.duration)} دقیقه)
+                            </h1>
+                            <p>
+                                بازه‌های زمانی قابل رزرو را برای هر تاریخ مشخص
+                                کنید.
+                            </p>
+                        </div>
                     </div>
+                    {isFromSetup && (
+                        <Link
+                            href={route("barber.setup")}
+                            className="barber-services-back-btn barber-services-back-btn-primary"
+                        >
+                            <ArrowRight size={17} />
+                            بازگشت به راه‌اندازی نوبت‌دهی
+                        </Link>
+                    )}
                 </div>
 
                 <div className="time-slots-layout">
@@ -201,7 +220,7 @@ export default function TimeSlotsIndex({
                                         <label className="form-label">
                                             سرویس انتخاب شده:
                                         </label>
-                                        {service.name} (
+                                        {service.category.name} (
                                         {toPersianNumber(service.duration)}{" "}
                                         دقیقه)
                                     </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../../Admin/Layouts/Layout";
 import "./Assets/css/BarberDashboard.css";
-
+import BookingSetupGuide from "./Components/BookingSetupGuide";
 import {
     LayoutDashboard,
     Calendar,
@@ -101,6 +101,8 @@ export default function BarberDashboardIndex({
     weeklySchedule,
     recentTransactions,
     period,
+
+    bookingSetup = {},
 }) {
     const [chartMode, setChartMode] = useState("both");
     const [selectedStat, setSelectedStat] = useState(null);
@@ -171,6 +173,9 @@ export default function BarberDashboardIndex({
                         </Link>
                     </div>
                 </div>
+
+                {/* ============ راه‌اندازی نوبت‌دهی ============ */}
+                <BookingSetupGuide bookingSetup={bookingSetup} />
                 <div className="finance-stats-hint">
                     <Info size={14} />
                     <span>

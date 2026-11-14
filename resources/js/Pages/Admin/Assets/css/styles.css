@@ -4225,3 +4225,31 @@ html.dark .online-indicator {
   color: #1e40af;
   transform: translateX(3px);
 }
+
+/* ========================================
+   Layout بدون Sidebar
+======================================== */
+
+.admin-layout.sidebar-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-layout.sidebar-hidden .main-content {
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+  grid-column: 1 / -1;
+}
+
+/* حالت مخفی بودن سایدبار در زمان راه‌اندازی نوبت‌دهی */
+.admin-layout.sidebar-hidden .main-content {
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+  flex: 1;
+}
+
+/* حذف دکمه منوی موبایل در حالت مخفی بودن سایدبار */
+.admin-layout.sidebar-hidden .mobile-menu-btn {
+  display: none;
+}

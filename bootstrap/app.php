@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureBarberBookingSetupCompleted;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\LogUserActivity;
@@ -31,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
             Route::prefix('barber')
-                ->middleware(['web', 'auth', 'ensure-user-is-active'])
+                ->middleware(['web', 'auth', 'ensure-user-is-active', 'ensure-barber-booking-setup-completed'])
                 ->name('barber.')
                 ->group(base_path('routes/barber.php'));
             Route::prefix('auth')->middleware(['web'])
@@ -50,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn(Request $request) => route('auth.login'));
         $middleware->alias([
             'ensure-user-is-active' => EnsureUserIsActive::class,
+            'ensure-barber-booking-setup-completed' => EnsureBarberBookingSetupCompleted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

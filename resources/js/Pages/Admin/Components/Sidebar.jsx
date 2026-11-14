@@ -161,8 +161,14 @@ const SidebarItem = ({
                 >
                     <div className="sidebar-item-icon">
                         {Icon && <Icon size={20} />}
-                        {isCollapsed && showBadge && (
-                            <span className="sidebar-badge-dot" />
+                        {isCollapsed && (showBadge || item.badgeText) && (
+                            <span
+                                className={`sidebar-badge-dot ${
+                                    item.bookingSetupOnly
+                                        ? "sidebar-setup-badge-dot"
+                                        : ""
+                                }`}
+                            />
                         )}
                     </div>
 
@@ -170,11 +176,18 @@ const SidebarItem = ({
                         <span className="sidebar-item-label">{item.label}</span>
                     )}
 
-                    {!isCollapsed && showBadge && (
-                        <span className="sidebar-badge">
-                            {unreadCount > 99
-                                ? "۹۹+"
-                                : toPersianNumber(unreadCount)}
+                    {!isCollapsed && (showBadge || item.badgeText) && (
+                        <span
+                            className={`sidebar-badge ${
+                                item.bookingSetupOnly
+                                    ? "sidebar-setup-badge"
+                                    : ""
+                            }`}
+                        >
+                            {item.badgeText ||
+                                (unreadCount > 99
+                                    ? "۹۹+"
+                                    : toPersianNumber(unreadCount))}
                         </span>
                     )}
 
@@ -215,8 +228,7 @@ export default function Sidebar({
 }) {
     const { props, url } = usePage();
 
-    const { site, auth, scopes: scope } = props;
-
+    const { site, auth, scopes: scope, bookingSetup = {} } = props;
     // مسیر فعلی از Inertia
     const currentPath = normalizePath(url.split("?")[0]);
     const unreadNotifications = auth?.user.unread_notifications_count || 0;
@@ -235,13 +247,35 @@ export default function Sidebar({
     };
 
     // ========================================
+    // وضعیت تکمیل راه‌اندازی نوبت‌دهی
+    // ========================================
+    const isBookingSetupCompleted = Boolean(
+        bookingSetup.workingDays &&
+        bookingSetup.services &&
+        bookingSetup.generatedSlots,
+    );
+
+    // ========================================
     // فیلتر منوها
     // ========================================
     const visibleItems = useMemo(() => {
         if (!auth?.user) return [];
 
-        return filterMenuItems(menuConfig, hasPermission);
-    }, [auth]);
+        const items = filterMenuItems(menuConfig, hasPermission);
+
+        return items.filter((item) => {
+            // داشبورد، اعلان‌ها و پروفایل همیشه نمایش داده شوند
+            if (item.alwaysVisible) return true;
+
+            // منوی راه‌اندازی فقط تا زمان تکمیل نمایش داده شود
+            if (item.bookingSetupOnly) {
+                return !isBookingSetupCompleted;
+            }
+
+            // سایر منوها فقط پس از تکمیل راه‌اندازی نمایش داده شوند
+            return isBookingSetupCompleted;
+        });
+    }, [auth, hasPermission, isBookingSetupCompleted]);
 
     // ========================================
     // تشخیص فعال بودن منو

@@ -20,25 +20,35 @@ class TimeSlotController extends Controller
     {
         $user = auth()->user();
 
-        // ============ بررسی اجباری service_id ============
+        // بررسی اجباری service_id
         $selectedServiceId = $request->input('service_id');
 
         if (!$selectedServiceId) {
-            StickyAlert::alert('برای زمان‌بندی، ابتدا یک سرویس را انتخاب کنید.', 'error');
+            StickyAlert::alert(
+                'برای زمان‌بندی، ابتدا یک سرویس را انتخاب کنید.',
+                'error'
+            );
+
             return to_route('barber.services.index');
         }
 
-        // ============ بررسی مالکیت سرویس ============
-        $service = Service::where('user_id', $user->id)
+        // بررسی مالکیت و فعال بودن سرویس
+        $service = Service::with('category')
+            ->where('user_id', $user->id)
             ->where('id', $selectedServiceId)
+            ->where('is_active', true)
             ->first();
 
         if (!$service) {
-            StickyAlert::alert('این سرویس متعلق به شما نمی‌باشد.', 'error');
+            StickyAlert::alert(
+                'این سرویس وجود ندارد، غیرفعال است یا متعلق به شما نمی‌باشد.',
+                'error'
+            );
+
             return to_route('barber.services.index');
         }
 
-        // ============ تبدیل تاریخ شمسی به میلادی ============
+        // تبدیل تاریخ شمسی به میلادی
         $jalaliYear = $request->input('jy');
         $jalaliMonth = $request->input('jm');
         $jalaliDay = $request->input('jd');
@@ -47,10 +57,17 @@ class TimeSlotController extends Controller
             try {
                 $selectedDate = Verta::parseFormat(
                     'Y/m/d',
-                    sprintf('%04d/%02d/%02d', $jalaliYear, $jalaliMonth, $jalaliDay)
+                    sprintf(
+                        '%04d/%02d/%02d',
+                        $jalaliYear,
+                        $jalaliMonth,
+                        $jalaliDay
+                    )
                 )->datetime();
-            } catch (\Exception $e) {
-                $selectedDate = Carbon::today();
+            } catch (\Throwable $e) {
+                StickyAlert::alert('تاریخ انتخاب‌شده معتبر نیست.', 'error');
+
+                return back();
             }
         } else {
             $selectedDate = Carbon::today();
@@ -58,28 +75,27 @@ class TimeSlotController extends Controller
 
         $gregorianDate = Carbon::parse($selectedDate)->toDateString();
 
-        // ============ بازه‌های این تاریخ — فقط برای این سرویس ============
+        // بازه‌های زمانی این تاریخ و سرویس
         $timeSlots = TimeSlot::query()
             ->where('user_id', $user->id)
-            ->where('service_id', $selectedServiceId)  // ← فیلتر اجباری سرویس
+            ->where('service_id', $service->id)
             ->where('date', $gregorianDate)
             ->with(['service', 'bookedBy'])
             ->orderBy('start_time')
             ->get();
 
-        // ============ برنامه هفتگی این روز ============
-
-
-        // تبدیل ترتیب Carbon (یکشنبه = 0) به ترتیب پروژه (شنبه = 0)
+        // محاسبه روز هفته
         $dayOfWeek = (Carbon::parse($selectedDate)->dayOfWeek + 1) % 7;
 
+        // برنامه هفتگی آرایشگر
         $availability = Availability::where('user_id', $user->id)
             ->where('day_of_week', $dayOfWeek)
             ->where('is_active', true)
             ->first();
 
-        // ============ خدمات کاربر ============
-        $services = Service::where('user_id', $user->id)
+        // خدمات فعال آرایشگر
+        $services = Service::with('category')
+            ->where('user_id', $user->id)
             ->where('is_active', true)
             ->get();
 
@@ -89,13 +105,16 @@ class TimeSlotController extends Controller
             'selectedDate' => $gregorianDate,
             'availability' => $availability,
             'selectedServiceId' => (int) $selectedServiceId,
+
             'service' => [
                 'id' => $service->id,
                 'name' => $service->name,
                 'duration' => $service->duration,
                 'price' => $service->price,
-                'image' => $service->image ? asset('storage/' . $service->image) : null,
+                'image' => $service->category?->image_url,
+                'category' => $service->category,
             ],
+
             'filters' => [
                 'service_id' => $selectedServiceId,
             ],

@@ -10,6 +10,8 @@ use App\Models\WalletTransaction;
 use App\Enums\Casts\BookingStatus;
 use App\Enums\Casts\ReviewStatus;
 use App\Enums\Casts\SettlementStatus;
+use App\Models\Service;
+use App\Models\TimeSlot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -22,6 +24,12 @@ class DashboardController extends Controller
         $period = (int) $request->input('period', 30);
         $from = now()->subDays($period);
 
+
+        $weeklySchedule = $this->getWeeklySchedule($user);
+
+
+
+
         return Inertia::render('Barber/Dashboard/Index', [
             'stats'        => $this->buildStats($user, $from),
             'chart'        => $this->buildChart($user, $period),
@@ -29,9 +37,11 @@ class DashboardController extends Controller
             'upcomingBookings' => $this->getUpcomingBookings($user),
             'recentReviews' => $this->getRecentReviews($user),
             'topServices'  => $this->getTopServices($user, $from),
-            'weeklySchedule' => $this->getWeeklySchedule($user),
+            'weeklySchedule' => $weeklySchedule,
             'recentTransactions' => $this->getRecentTransactions($user),
             'period'       => $period,
+
+
         ]);
     }
 
