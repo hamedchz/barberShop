@@ -2022,3 +2022,49 @@
   border-color: var(--color-primary-hover);
   color: #fff;
 }
+
+.barber-service-timeslot-action {
+  margin-top: 14px;
+}
+
+.barber-service-timeslot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 14px;
+
+  color: var(--color-primary);
+
+  background: color-mix(in srgb,
+      var(--color-primary) 9%,
+      var(--color-bg-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 25%,
+      var(--color-border));
+
+  border-radius: 11px;
+
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+}
+
+.barber-service-timeslot-btn:hover {
+  color: #fff;
+
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-primary) 20%,
+      transparent);
+}

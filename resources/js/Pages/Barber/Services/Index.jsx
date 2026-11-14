@@ -15,6 +15,8 @@ import {
     CircleCheck,
     Power,
     ArrowRight,
+    CalendarClock,
+    ChevronLeft,
 } from "lucide-react";
 // import Swal from "sweetalert2";
 import "./Assets/css/barber-services.css";
@@ -380,7 +382,30 @@ export default function Index({ categories = [], services = [] }) {
                                                         </span>
                                                     </div>
                                                 </div>
+                                                <div className="barber-service-timeslot-action">
+                                                    <Link
+                                                        href={route(
+                                                            "barber.time-slots.index",
+                                                            {
+                                                                service_id:
+                                                                    service.id,
+                                                            },
+                                                        )}
+                                                        className="barber-service-timeslot-btn"
+                                                    >
+                                                        <CalendarClock
+                                                            size={17}
+                                                        />
 
+                                                        <span>
+                                                            مدیریت زمان‌های نوبت
+                                                        </span>
+
+                                                        <ChevronLeft
+                                                            size={16}
+                                                        />
+                                                    </Link>
+                                                </div>
                                                 <div className="barber-service-actions">
                                                     <button
                                                         type="button"

@@ -1,9 +1,12 @@
 /* =========================================================
    JALALI CALENDAR
-   Modern Luxury | Dynamic Theme | Color Mix
+   Modern Luxury | Dynamic Theme | Light & Dark Mode
+   Color Mix | RTL
 ========================================================= */
 
 .jalali-calendar {
+  /* ==================== Theme Variables ==================== */
+
   --jc-primary: var(--color-primary);
   --jc-primary-hover: var(--color-primary-hover);
   --jc-primary-tint: var(--color-primary-tint);
@@ -16,9 +19,32 @@
   --jc-hover: var(--color-bg-hover);
   --jc-border: var(--color-border);
 
+  /* Semantic Colors */
+
+  --jc-friday: #D97706;
+  --jc-friday-bg: color-mix(in srgb,
+      var(--jc-friday) 10%,
+      var(--jc-card));
+  --jc-friday-border: color-mix(in srgb,
+      var(--jc-friday) 25%,
+      var(--jc-border));
+
+  --jc-holiday: #DC2626;
+  --jc-holiday-bg: color-mix(in srgb,
+      var(--jc-holiday) 11%,
+      var(--jc-card));
+  --jc-holiday-border: color-mix(in srgb,
+      var(--jc-holiday) 28%,
+      var(--jc-border));
+
+  /* ==================== Container ==================== */
+
+  position: relative;
+
   padding: 0.85rem;
 
   color: var(--jc-text);
+
   background: color-mix(in srgb,
       var(--jc-primary) 3%,
       var(--jc-card));
@@ -28,6 +54,7 @@
       var(--jc-border));
 
   border-radius: var(--radius-md, 14px);
+
   direction: rtl;
 }
 
@@ -45,12 +72,15 @@
   padding: 0 0.15rem;
 }
 
-/* Navigation Buttons */
+/* =========================================================
+   NAVIGATION BUTTONS
+========================================================= */
 
 .jalali-calendar .calendar-nav-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   flex-shrink: 0;
 
   width: 36px;
@@ -59,15 +89,23 @@
   color: var(--jc-muted);
 
   background: var(--jc-card);
+
   border: 1px solid var(--jc-border);
   border-radius: 11px;
 
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .jalali-calendar .calendar-nav-btn:hover {
   color: var(--jc-primary);
+
   background: color-mix(in srgb,
       var(--jc-primary) 9%,
       var(--jc-card));
@@ -75,6 +113,10 @@
   border-color: color-mix(in srgb,
       var(--jc-primary) 45%,
       var(--jc-border));
+
+  box-shadow: 0 3px 8px color-mix(in srgb,
+      var(--jc-primary) 10%,
+      transparent);
 
   transform: translateY(-2px);
 }
@@ -87,6 +129,7 @@
   outline: 3px solid color-mix(in srgb,
       var(--jc-primary) 30%,
       transparent);
+
   outline-offset: 2px;
 }
 
@@ -102,6 +145,7 @@
   gap: 7px;
 
   color: var(--jc-text);
+
   font-weight: 800;
   text-align: center;
 }
@@ -119,9 +163,14 @@
   padding: 3px 9px;
 
   color: var(--jc-primary);
+
   background: color-mix(in srgb,
       var(--jc-primary) 9%,
       var(--jc-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--jc-primary) 15%,
+      var(--jc-border));
 
   border-radius: 20px;
 
@@ -150,9 +199,17 @@
   padding: 8px 0;
 
   color: var(--jc-muted);
+
   font-size: 0.7rem;
   font-weight: 800;
   text-align: center;
+}
+
+/* Friday Header */
+
+.jalali-calendar .calendar-weekday.friday-weekday {
+  color: var(--jc-friday);
+  font-weight: 800;
 }
 
 /* =========================================================
@@ -188,9 +245,11 @@
   width: 100%;
   height: 100%;
   min-width: 0;
+
   padding: 0;
 
   color: var(--jc-text);
+
   background: transparent;
 
   border: 1px solid transparent;
@@ -201,6 +260,7 @@
   font-weight: 600;
 
   cursor: pointer;
+
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -209,9 +269,11 @@
     transform 0.2s ease;
 }
 
-/* Hover */
+/* =========================================================
+   NORMAL DAY HOVER
+========================================================= */
 
-.jalali-calendar .calendar-day:hover:not(.selected):not(.empty) {
+.jalali-calendar .calendar-day:hover:not(.selected):not(.empty):not(.friday):not(.official-holiday) {
   color: var(--jc-primary);
 
   background: color-mix(in srgb,
@@ -224,17 +286,106 @@
 }
 
 /* =========================================================
+   FRIDAY
+========================================================= */
+
+.jalali-calendar .calendar-day.friday {
+  color: var(--jc-friday);
+
+  background: var(--jc-friday-bg);
+
+  border-color: var(--jc-friday-border);
+
+  font-weight: 700;
+}
+
+/* Friday Hover */
+
+.jalali-calendar .calendar-day.friday:hover:not(.selected) {
+  background: color-mix(in srgb,
+      var(--jc-friday) 17%,
+      var(--jc-card));
+
+  border-color: color-mix(in srgb,
+      var(--jc-friday) 40%,
+      var(--jc-border));
+}
+
+/* =========================================================
+   OFFICIAL HOLIDAYS
+   Official Holiday Has Priority Over Friday
+========================================================= */
+
+.jalali-calendar .calendar-day.official-holiday {
+  color: var(--jc-holiday);
+
+  background: var(--jc-holiday-bg);
+
+  border-color: var(--jc-holiday-border);
+
+  font-weight: 800;
+}
+
+/* Official Holiday Hover */
+
+.jalali-calendar .calendar-day.official-holiday:hover:not(.selected) {
+  background: color-mix(in srgb,
+      var(--jc-holiday) 18%,
+      var(--jc-card));
+
+  border-color: color-mix(in srgb,
+      var(--jc-holiday) 45%,
+      var(--jc-border));
+}
+
+/* =========================================================
    TODAY
 ========================================================= */
 
+/* Today - Not Selected */
+
 .jalali-calendar .calendar-day.today:not(.selected) {
   color: var(--jc-primary);
+
   background: color-mix(in srgb,
       var(--jc-primary) 7%,
       var(--jc-card));
 
   border: 1.5px solid var(--jc-primary);
+
   font-weight: 800;
+}
+
+/* Today Friday - Not Selected */
+
+.jalali-calendar .calendar-day.today.friday:not(.selected) {
+  color: var(--jc-friday);
+
+  background: color-mix(in srgb,
+      var(--jc-friday) 10%,
+      var(--jc-card));
+
+  border-color: var(--jc-friday);
+}
+
+/* Today Official Holiday - Not Selected */
+
+.jalali-calendar .calendar-day.today.official-holiday:not(.selected) {
+  color: var(--jc-holiday);
+
+  background: var(--jc-holiday-bg);
+
+  border-color: var(--jc-holiday);
+}
+
+/* Today Outline */
+
+.jalali-calendar .calendar-day.today {
+  outline: 2px solid color-mix(in srgb,
+      var(--jc-primary) 75%,
+      transparent);
+
+  outline-offset: 2px;
 }
 
 /* =========================================================
@@ -245,6 +396,7 @@
   color: #fff;
 
   background: var(--jc-primary);
+
   border-color: var(--jc-primary);
 
   font-weight: 800;
@@ -256,9 +408,41 @@
   transform: scale(1.04);
 }
 
+/* Selected Hover */
+
 .jalali-calendar .calendar-day.selected:hover {
+  color: #fff;
+
   background: var(--jc-primary-hover);
+
   border-color: var(--jc-primary-hover);
+}
+
+/* Selected Friday */
+
+.jalali-calendar .calendar-day.friday.selected {
+  color: #fff;
+
+  background: var(--jc-friday);
+
+  border-color: var(--jc-friday);
+}
+
+/* Selected Official Holiday */
+
+.jalali-calendar .calendar-day.official-holiday.selected {
+  color: #fff;
+
+  background: var(--jc-holiday);
+
+  border-color: var(--jc-holiday);
+}
+
+/* Today Selected */
+
+.jalali-calendar .calendar-day.today.selected {
+  outline-color: var(--jc-primary);
+  outline-offset: 2px;
 }
 
 /* =========================================================
@@ -267,7 +451,9 @@
 
 .jalali-calendar .calendar-day.empty {
   color: transparent;
+
   background: transparent;
+
   border-color: transparent;
 
   cursor: default;
@@ -284,6 +470,63 @@
       transparent);
 
   outline-offset: 2px;
+}
+
+/* =========================================================
+   HOLIDAY LEGEND
+========================================================= */
+
+.jalali-calendar .calendar-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+
+  margin-top: 16px;
+  padding-top: 12px;
+
+  border-top: 1px solid var(--jc-border);
+}
+
+.jalali-calendar .calendar-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--jc-muted);
+
+  font-size: 12px;
+}
+
+.jalali-calendar .calendar-legend-dot {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+/* Official Holiday Legend */
+
+.jalali-calendar .calendar-legend-dot.official {
+  background: var(--jc-holiday);
+}
+
+/* Friday Legend */
+
+.jalali-calendar .calendar-legend-dot.friday {
+  background: #F59E0B;
+}
+
+/* Loading Text */
+
+.jalali-calendar .calendar-holiday-loading {
+  margin-right: auto;
+
+  color: var(--jc-muted);
+
+  font-size: 11px;
 }
 
 /* =========================================================
@@ -323,103 +566,24 @@
   .jalali-calendar .calendar-weekday {
     font-size: 0.65rem;
   }
-}
 
+  .jalali-calendar .calendar-legend {
+    gap: 10px;
+  }
+
+  .jalali-calendar .calendar-legend-item {
+    font-size: 11px;
+  }
+}
 
 /* =========================================================
-   Calendar Holidays
+   REDUCED MOTION
 ========================================================= */
 
-/* جمعه‌ها */
-.calendar-day.friday {
-  color: #D97706;
-  background: color-mix(in srgb,
-      #F59E0B 10%,
-      var(--color-bg-card));
-}
+@media (prefers-reduced-motion: reduce) {
 
-/* تعطیلات رسمی */
-.calendar-day.official-holiday {
-  color: #DC2626;
-  background: color-mix(in srgb,
-      #EF4444 12%,
-      var(--color-bg-card));
-
-  border: 1px solid color-mix(in srgb,
-      #EF4444 25%,
-      var(--color-border));
-}
-
-/* حالت انتخاب روز تعطیل */
-.calendar-day.official-holiday.selected {
-  color: #fff;
-  background: #DC2626;
-  border-color: #DC2626;
-}
-
-/* حالت انتخاب جمعه */
-.calendar-day.friday.selected {
-  color: #fff;
-  background: #D97706;
-  border-color: #D97706;
-}
-
-/* امروز */
-.calendar-day.today {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* امروز انتخاب‌شده */
-.calendar-day.today.selected {
-  outline-color: var(--color-primary);
-}
-
-/* روز جمعه در عنوان روزهای هفته */
-.calendar-weekday.friday-weekday {
-  color: #D97706;
-  font-weight: 800;
-}
-
-/* راهنمای پایین تقویم */
-.calendar-legend {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-
-  margin-top: 16px;
-  padding-top: 12px;
-
-  border-top: 1px solid var(--color-border);
-}
-
-.calendar-legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.calendar-legend-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.calendar-legend-dot.official {
-  background: #EF4444;
-}
-
-.calendar-legend-dot.friday {
-  background: #F59E0B;
-}
-
-.calendar-holiday-loading {
-  margin-right: auto;
-  font-size: 11px;
-  color: var(--color-text-muted);
+  .jalali-calendar .calendar-day,
+  .jalali-calendar .calendar-nav-btn {
+    transition: none;
+  }
 }

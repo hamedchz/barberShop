@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { toJalaali, toGregorian } from "jalaali-js";
+
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 import "../Assets/css/JalaliCalendar.css";
+
+import { toJalaali, toGregorian, jalaaliMonthLength } from "jalaali-js";
 
 const monthNames = [
     "فروردین",
@@ -21,7 +23,34 @@ const monthNames = [
 
 const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 
+/**
+ * تبدیل تاریخ ورودی به Date محلی
+ * جلوگیری از اختلاف تاریخ در رشته‌های YYYY-MM-DD
+ */
+const parseLocalDate = (value) => {
+    if (!value) return null;
+
+    if (value instanceof Date) {
+        return Number.isNaN(value.getTime()) ? null : value;
+    }
+
+    if (typeof value === "string") {
+        const dateOnlyMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+        if (dateOnlyMatch) {
+            const [, year, month, day] = dateOnlyMatch;
+
+            return new Date(Number(year), Number(month) - 1, Number(day), 12);
+        }
+    }
+
+    const parsedDate = new Date(value);
+
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
 export default function JalaliCalendar({ selectedDate, onSelectDate }) {
+    // ============ تاریخ امروز ============
     const today = new Date();
 
     const todayJalali = toJalaali(
@@ -30,24 +59,35 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
         today.getDate(),
     );
 
+    // ============ وضعیت تقویم ============
     const [currentYear, setCurrentYear] = useState(todayJalali.jy);
     const [currentMonth, setCurrentMonth] = useState(todayJalali.jm);
 
-    // تعطیلات رسمی سال جاری تقویم
-    const [holidays, setHolidays] = useState([]);
-
+    // ============ تعطیلات رسمی ============
+    const [holidays, setHolidays] = useState({});
     const [holidaysLoading, setHolidaysLoading] = useState(false);
 
     // ============ دریافت تعطیلات رسمی سال ============
     useEffect(() => {
-        let isMounted = true;
+        const controller = new AbortController();
 
         const fetchHolidays = async () => {
             setHolidaysLoading(true);
+            setHolidays({});
 
             try {
                 const response = await fetch(
-                    `https://raw.githubusercontent.com/MiladJoodi/FarsiUI/main/calendar/years/${currentYear}/holidays.json`,
+                    route("barber.calendar.holidays", {
+                        year: currentYear,
+                    }),
+                    {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                        },
+                        credentials: "same-origin",
+                        signal: controller.signal,
+                    },
                 );
 
                 if (!response.ok) {
@@ -56,21 +96,32 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
 
                 const data = await response.json();
 
-                const holidayItems = (data.items || []).filter(
-                    (item) => item.isHoliday,
-                );
+                if (!data.success) {
+                    throw new Error(
+                        data.message || "دریافت تعطیلات ناموفق بود.",
+                    );
+                }
 
-                if (isMounted) {
-                    setHolidays(holidayItems);
+                // خروجی Laravel یک آبجکت با کلید تاریخ است، نه آرایه
+                const holidayData = data.holidays;
+
+                if (
+                    holidayData &&
+                    typeof holidayData === "object" &&
+                    !Array.isArray(holidayData)
+                ) {
+                    setHolidays(holidayData);
+                } else {
+                    setHolidays({});
                 }
             } catch (error) {
-                console.error("Holiday calendar error:", error);
-
-                if (isMounted) {
-                    setHolidays([]);
+                // درخواست لغوشده خطای واقعی محسوب نمی‌شود
+                if (error.name !== "AbortError") {
+                    console.error("Calendar holidays error:", error);
+                    setHolidays({});
                 }
             } finally {
-                if (isMounted) {
+                if (!controller.signal.aborted) {
                     setHolidaysLoading(false);
                 }
             }
@@ -79,19 +130,14 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
         fetchHolidays();
 
         return () => {
-            isMounted = false;
+            controller.abort();
         };
     }, [currentYear]);
 
-    // ============ ساخت نقشه تعطیلات ============
+    // ============ نقشه تعطیلات ============
+    // ساختار holidays از Laravel از قبل بر اساس تاریخ دسته‌بندی شده است.
     const holidayMap = useMemo(() => {
-        const map = {};
-
-        holidays.forEach((holiday) => {
-            map[holiday.date] = holiday;
-        });
-
-        return map;
+        return holidays || {};
     }, [holidays]);
 
     // ============ تعداد روزهای ماه ============
@@ -109,7 +155,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
         return (date.getDay() + 1) % 7;
     }, [currentYear, currentMonth]);
 
-    // ============ ناوبری ============
+    // ============ ناوبری ماه قبل ============
     const goToPrevMonth = () => {
         if (currentMonth === 1) {
             setCurrentMonth(12);
@@ -119,6 +165,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
         }
     };
 
+    // ============ ناوبری ماه بعد ============
     const goToNextMonth = () => {
         if (currentMonth === 12) {
             setCurrentMonth(1);
@@ -128,20 +175,22 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
         }
     };
 
-    // ============ بررسی انتخاب ============
+    // ============ بررسی انتخاب روز ============
     const isSelected = (day) => {
-        if (!selectedDate) return false;
+        const selected = parseLocalDate(selectedDate);
 
-        const selected = new Date(selectedDate);
+        if (!selected) return false;
 
-        const sel = toJalaali(
+        const selectedJalali = toJalaali(
             selected.getFullYear(),
             selected.getMonth() + 1,
             selected.getDate(),
         );
 
         return (
-            sel.jy === currentYear && sel.jm === currentMonth && sel.jd === day
+            selectedJalali.jy === currentYear &&
+            selectedJalali.jm === currentMonth &&
+            selectedJalali.jd === day
         );
     };
 
@@ -166,34 +215,45 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
             String(day).padStart(2, "0"),
         ].join("-");
 
+        // جمعه در JavaScript برابر 5 است
         const isFriday = date.getDay() === 5;
-        const holiday = holidayMap[dateKey];
+
+        // تعطیلات رسمی هر روز از آبجکت Laravel دریافت می‌شود
+        const holidayItems = Array.isArray(holidayMap[dateKey])
+            ? holidayMap[dateKey]
+            : [];
 
         return {
-            isFriday,
-            holiday,
             dateKey,
+            isFriday,
+            holidayItems,
+            isOfficialHoliday: holidayItems.length > 0,
         };
     };
 
     // ============ انتخاب روز ============
     const handleSelectDay = (day) => {
+        if (typeof onSelectDate !== "function") return;
+
         const gregorian = toGregorian(currentYear, currentMonth, day);
 
-        const date = new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd);
+        // ساعت ظهر برای جلوگیری از مشکلات اختلاف ساعت
+        const date = new Date(gregorian.gy, gregorian.gm - 1, gregorian.gd, 12);
 
         onSelectDate(date);
     };
 
-    // ============ ساخت آرایه روزها ============
+    // ============ ساخت آرایه روزهای ماه ============
     const days = [];
 
+    // خانه‌های خالی قبل از روز اول ماه
     for (let i = 0; i < firstDayOfMonth; i++) {
         days.push(null);
     }
 
-    for (let d = 1; d <= daysInMonth; d++) {
-        days.push(d);
+    // روزهای ماه
+    for (let day = 1; day <= daysInMonth; day++) {
+        days.push(day);
     }
 
     return (
@@ -205,6 +265,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                     className="calendar-nav-btn"
                     onClick={goToPrevMonth}
                     title="ماه قبل"
+                    aria-label="ماه قبل"
                 >
                     <ChevronRight size={18} />
                 </button>
@@ -224,6 +285,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                     className="calendar-nav-btn"
                     onClick={goToNextMonth}
                     title="ماه بعد"
+                    aria-label="ماه بعد"
                 >
                     <ChevronLeft size={18} />
                 </button>
@@ -248,13 +310,31 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                 {days.map((day, index) => {
                     if (!day) {
                         return (
-                            <div key={index} className="calendar-day empty" />
+                            <div
+                                key={`empty-${index}`}
+                                className="calendar-day empty"
+                            />
                         );
                     }
 
-                    const { isFriday, holiday, dateKey } = getDayInfo(day);
+                    const {
+                        dateKey,
+                        isFriday,
+                        holidayItems,
+                        isOfficialHoliday,
+                    } = getDayInfo(day);
 
-                    const isOfficialHoliday = Boolean(holiday);
+                    const holidayTitle = holidayItems
+                        .map((item) => item.title)
+                        .filter(Boolean)
+                        .join("، ");
+
+                    // تعطیل رسمی نسبت به جمعه اولویت دارد
+                    const title = isOfficialHoliday
+                        ? holidayTitle || "تعطیل رسمی"
+                        : isFriday
+                          ? "جمعه"
+                          : "";
 
                     const dayClasses = [
                         "calendar-day",
@@ -266,12 +346,6 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                         .filter(Boolean)
                         .join(" ");
 
-                    const title = isOfficialHoliday
-                        ? holiday.title?.fa || "تعطیل رسمی"
-                        : isFriday
-                          ? "جمعه"
-                          : "";
-
                     return (
                         <div key={dateKey} className="calendar-day-wrapper">
                             <button
@@ -279,7 +353,7 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
                                 className={dayClasses}
                                 onClick={() => handleSelectDay(day)}
                                 title={title}
-                                aria-label={`${day}${
+                                aria-label={`${toPersianNumber(day)}${
                                     title ? ` - ${title}` : ""
                                 }`}
                             >
@@ -310,16 +384,4 @@ export default function JalaliCalendar({ selectedDate, onSelectDate }) {
             </div>
         </div>
     );
-}
-
-// ============ تعداد روزهای ماه ============
-function jalaaliMonthLength(jy, jm) {
-    if (jm <= 6) return 31;
-    if (jm <= 11) return 30;
-
-    return isJalaaliLeapYear(jy) ? 30 : 29;
-}
-
-function isJalaaliLeapYear(jy) {
-    return ((jy + 12) % 33) % 4 === 1;
 }

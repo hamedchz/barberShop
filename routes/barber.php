@@ -5,6 +5,7 @@ use App\Http\Controllers\Barber\AvailabilityController;
 use App\Http\Controllers\Barber\BankInfoController;
 use App\Http\Controllers\Barber\BookingController;
 use App\Http\Controllers\Barber\BookingSetupController;
+use App\Http\Controllers\Barber\CalendarController;
 use App\Http\Controllers\Barber\CustomerController;
 use App\Http\Controllers\Barber\DashboardController;
 use App\Http\Controllers\Barber\DisputeController;
@@ -149,3 +150,9 @@ Route::prefix('notifications')
 
 Route::get('/setup', [BookingSetupController::class, 'index'])
   ->name('setup');
+
+Route::get(
+  '/calendar/holidays/{year}',
+  [CalendarController::class, 'holidays']
+)->whereNumber('year')
+  ->name('calendar.holidays');
