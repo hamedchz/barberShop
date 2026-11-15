@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::prefix('/')
-    ->name('home')->controller(HomeController::class)->group(function () {
-        Route::get('/', 'index')->name('home');
-    });
-
+// Route::prefix('/')
+//     ->name('home')->controller(HomeController::class)->group(function () {
+//         Route::get('/', 'index')->name('home');
+//     });
+Route::get('/', HomeController::class)
+    ->name('home');
 Route::prefix('/barber/reviews')
     ->name('barber.reviews.')->controller(ReviewController::class)->group(function () {
         Route::get('/{barber:slug}/list', 'reviews')->name('reviews');

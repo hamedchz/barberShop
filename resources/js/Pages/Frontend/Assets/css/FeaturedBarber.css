@@ -1,0 +1,401 @@
+/* =========================================================
+   Luxury Barber Profile Cards
+========================================================= */
+
+.front-barbers-section {
+  background: var(--color-bg);
+}
+
+.front-barbers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* Main Card */
+
+.front-barber-card {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 0.625;
+  min-width: 0;
+  overflow: hidden;
+
+  background: color-mix(in srgb,
+      var(--color-bg-card) 85%,
+      #dfe5e2);
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-border) 65%,
+      white);
+
+  border-radius: 34px;
+
+  box-shadow:
+    0 8px 30px color-mix(in srgb,
+      var(--color-text) 5%,
+      transparent),
+    inset 0 0 0 5px color-mix(in srgb,
+      white 65%,
+      transparent);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.front-barber-card:hover {
+  transform: translateY(-6px);
+
+  border-color: color-mix(in srgb,
+      var(--color-primary) 35%,
+      var(--color-border));
+
+  box-shadow:
+    0 18px 38px color-mix(in srgb,
+      var(--color-primary) 10%,
+      transparent),
+    inset 0 0 0 5px color-mix(in srgb,
+      white 65%,
+      transparent);
+}
+
+/* Barber Image */
+
+.front-barber-image {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  display: block;
+  overflow: hidden;
+
+  background: color-mix(in srgb,
+      var(--color-primary) 8%,
+      var(--color-bg-card));
+}
+
+.front-barber-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+
+  transition: transform 0.6s ease;
+
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.front-barber-card:hover .front-barber-image img {
+  transform: scale(1.045);
+}
+
+/* Image Fallback */
+
+.front-barber-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--color-primary);
+  font-size: 90px;
+  font-weight: 950;
+
+  background:
+    radial-gradient(circle at 50% 35%,
+      color-mix(in srgb,
+        var(--color-primary) 16%,
+        var(--color-bg-card)),
+      var(--color-bg-card) 70%);
+}
+
+/* Soft Bottom Overlay */
+
+.front-barber-image-overlay {
+  position: absolute;
+  inset: 35% 0 0;
+
+  background: linear-gradient(to bottom,
+      transparent 0%,
+      color-mix(in srgb, var(--color-bg-card) 12%, transparent) 22%,
+      color-mix(in srgb, var(--color-bg-card) 78%, transparent) 58%,
+      var(--color-bg-card) 100%);
+
+  pointer-events: none;
+}
+
+/* Rating */
+
+.front-barber-rating {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+
+  color: #98670c;
+  background: color-mix(in srgb, white 88%, transparent);
+
+  border: 1px solid color-mix(in srgb,
+      white 75%,
+      transparent);
+
+  border-radius: 30px;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  backdrop-filter: blur(12px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Information Area */
+
+.front-barber-info {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  padding: 0 23px 22px;
+
+  color: var(--color-text);
+}
+
+/* Name */
+
+.front-barber-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 8px;
+}
+
+.front-barber-heading h3 {
+  min-width: 0;
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 950;
+  line-height: 1.5;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.front-barber-verified {
+  flex-shrink: 0;
+  color: #16a34a;
+  stroke: white;
+}
+
+/* Specialty */
+
+.front-barber-specialty {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin: 0 0 9px;
+
+  color: var(--color-text);
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+/* Bio */
+
+.front-barber-bio {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  overflow: hidden;
+
+  margin: 0 0 9px;
+
+  color: var(--color-text-muted);
+
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+/* Location */
+
+.front-barber-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-top: 7px;
+
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Bottom Row */
+
+.front-barber-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-top: 17px;
+}
+
+/* Stats */
+
+.front-barber-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.front-barber-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--color-text);
+
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.front-barber-stats svg {
+  color: var(--color-text-muted);
+}
+
+/* Profile Button */
+
+.front-barber-link {
+  flex-shrink: 0;
+
+  min-height: 43px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 0 15px;
+
+  color: var(--color-text);
+  background: color-mix(in srgb,
+      var(--color-bg-card) 85%,
+      white);
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-border) 70%,
+      white);
+
+  border-radius: 30px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+
+  transition: all 0.25s ease;
+}
+
+.front-barber-link:hover {
+  color: white;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 1100px) {
+  .front-barbers-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 850px) {
+  .front-barbers-grid {
+    display: flex;
+    gap: 17px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 8px 3px 20px;
+
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color:
+      var(--color-primary) var(--color-bg-hover);
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .front-barber-card {
+    flex: 0 0 265px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .front-barbers-grid {
+    gap: 14px;
+  }
+
+  .front-barber-card {
+    flex-basis: 250px;
+    border-radius: 30px;
+  }
+
+  .front-barber-info {
+    padding: 0 19px 19px;
+  }
+
+  .front-barber-heading h3 {
+    font-size: 18px;
+  }
+
+  .front-barber-bottom {
+    gap: 7px;
+  }
+
+  .front-barber-stats {
+    gap: 9px;
+  }
+
+  .front-barber-stats span {
+    font-size: 10px;
+  }
+
+  .front-barber-link {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 9px;
+  }
+}

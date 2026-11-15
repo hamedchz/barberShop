@@ -66,6 +66,7 @@ export const menuConfig = [
             "manage-general-settings",
             "manage-services",
         ],
+        panel: "admin",
     },
 
     // ============ مدیریت ادمین‌ها ============
@@ -80,6 +81,7 @@ export const menuConfig = [
             "manage-users",
             "manage-roles",
         ],
+        panel: "admin",
         children: [
             {
                 id: "admins",
@@ -88,6 +90,7 @@ export const menuConfig = [
                 href: "/admin/admins",
                 scopes: ["admins", "admin-list", "admin-create", "admin-edit"],
                 permissions: ["manage-admins"],
+                panel: "admin",
             },
 
             // ============ آرایشگران ============
@@ -98,6 +101,7 @@ export const menuConfig = [
                 href: "/admin/barbers",
                 scopes: ["barbers", "barber-list", "barber-show"],
                 permissions: ["manage-barber"],
+                panel: "admin",
             },
 
             // ============ کاربران ============
@@ -108,6 +112,7 @@ export const menuConfig = [
                 href: "/admin/customers",
                 scopes: ["users", "user-list"],
                 permissions: ["manage-users"],
+                panel: "admin",
             },
             // ============ نقشها ============
             {
@@ -117,6 +122,7 @@ export const menuConfig = [
                 href: "/admin/roles",
                 scopes: ["roles", "role-list"],
                 permissions: ["manage-roles"],
+                panel: "admin",
             },
         ],
     },
@@ -134,6 +140,7 @@ export const menuConfig = [
             "manage-commission",
             "manage-banks",
         ],
+        panel: "admin",
         children: [
             {
                 id: "finance-index",
@@ -142,6 +149,7 @@ export const menuConfig = [
                 href: "/admin/finance",
                 permissions: ["manage-finance"],
                 scopes: ["finance"],
+                panel: "admin",
             },
             {
                 id: "transactions",
@@ -150,6 +158,7 @@ export const menuConfig = [
                 href: "/admin/finance/transactions",
                 permissions: ["manage-transactions", "manage-finance"],
                 scopes: ["transactions"],
+                panel: "admin",
             },
             {
                 id: "revenue",
@@ -158,6 +167,7 @@ export const menuConfig = [
                 href: "/admin/finance/revenue",
                 permissions: ["manage-revenue", "manage-finance"],
                 scopes: ["revenue"],
+                panel: "admin",
             },
             {
                 id: "settlements",
@@ -166,6 +176,7 @@ export const menuConfig = [
                 href: "/admin/finance/settlements",
                 permissions: ["manage-settlements", "manage-finance"],
                 scopes: ["settlements"],
+                panel: "admin",
             },
             {
                 id: "deposits",
@@ -174,6 +185,7 @@ export const menuConfig = [
                 href: "/admin/finance/wallet/deposits",
                 permissions: ["manage-deposits", "manage-finance"],
                 scopes: ["deposits"],
+                panel: "admin",
             },
             {
                 id: "payments",
@@ -182,6 +194,7 @@ export const menuConfig = [
                 href: "/admin/finance/payments",
                 permissions: ["manage-payment", "manage-finance"],
                 scopes: ["payments"],
+                panel: "admin",
             },
 
             {
@@ -191,6 +204,7 @@ export const menuConfig = [
                 href: "/admin/finance/commission",
                 permissions: ["manage-commission", "manage-finance"],
                 scopes: ["commission"],
+                panel: "admin",
             },
             {
                 id: "banks",
@@ -199,6 +213,7 @@ export const menuConfig = [
                 href: "/admin/banks",
                 permissions: ["manage-banks", "manage-finance"],
                 scopes: ["banks-list"],
+                panel: "admin",
             },
         ],
     },
@@ -210,6 +225,7 @@ export const menuConfig = [
         href: "/admin/needs-attention",
         scopes: ["needs-attention"],
         permissions: ["manage-needs-attention"],
+        panel: "admin",
     },
     {
         id: "services",
@@ -218,6 +234,7 @@ export const menuConfig = [
         href: "/admin/service-categories",
         scopes: ["services"],
         permissions: ["manage-services"],
+        panel: "admin",
     },
     // ============ رزروها============
     {
@@ -229,6 +246,7 @@ export const menuConfig = [
             "manage-disputes",
             "manage-reviews",
         ],
+        panel: "admin",
         children: [
             {
                 id: "bookings",
@@ -237,6 +255,7 @@ export const menuConfig = [
                 href: "/admin/bookings",
                 scopes: ["bookings-list"],
                 permissions: ["manage-bookings"],
+                panel: "admin",
             },
 
             {
@@ -246,6 +265,7 @@ export const menuConfig = [
                 href: "/admin/disputes",
                 scopes: ["disputes"],
                 permissions: ["manage-disputes"],
+                panel: "admin",
             },
             {
                 id: "reviews",
@@ -254,6 +274,7 @@ export const menuConfig = [
                 href: "/admin/reviews",
                 scopes: ["reviews"],
                 permissions: ["manage-reviews"],
+                panel: "admin",
             },
         ],
     },
@@ -264,6 +285,7 @@ export const menuConfig = [
         href: "/admin/notifications",
         scopes: ["notifications"],
         permissions: ["manage-notifications"],
+        panel: "admin",
     },
     // ============ تنظیمات ============
 
@@ -272,14 +294,16 @@ export const menuConfig = [
         label: "تنظیمات",
         icon: Settings,
         permissions: ["manage-payment-settings", "manage-general-settings"],
+        panel: "admin",
         children: [
             {
                 id: "general-settings",
                 label: "تنظیمات عمومی",
                 icon: SlidersHorizontal,
                 href: "/admin/settings",
-                permissions: [],
+                permissions: ["manage-general-settings"],
                 scopes: ["manage-general-settings"],
+                panel: "admin",
             },
             {
                 id: "gatway",
@@ -288,6 +312,7 @@ export const menuConfig = [
                 href: "/admin/payment-settings/zarinpal",
                 permissions: ["manage-payment-settings"],
                 scopes: ["payment-settings"],
+                panel: "admin",
             },
         ],
     },
@@ -301,6 +326,7 @@ export const menuConfig = [
         scopes: ["dashboard"],
         permissions: ["barber-dashboard-panel"],
         alwaysVisible: true,
+        panel: "barber",
     },
     // ============ خدمات من (آرایشگر) ============
     {
@@ -310,6 +336,7 @@ export const menuConfig = [
         href: "/barber/services",
         scopes: ["services", "service-list", "service-create", "service-edit"],
         permissions: ["barber-dashboard-panel"],
+        panel: "barber",
     },
     {
         id: "barber-booking-setup",
@@ -319,6 +346,7 @@ export const menuConfig = [
         scopes: ["dashboard"],
         permissions: ["barber-dashboard-panel"],
         bookingSetupOnly: true,
+        panel: "barber",
     },
     // ============ برنامه هفتگی ============
     {
@@ -328,6 +356,7 @@ export const menuConfig = [
         href: "/barber/availabilities",
         scopes: ["availabilities", "availability-list"],
         permissions: ["barber-dashboard-panel"],
+        panel: "barber",
     },
 
     // ============ رزروها ============
@@ -337,6 +366,7 @@ export const menuConfig = [
         label: "مدیریت رزروها",
         icon: CalendarClock,
         childrenPermissions: ["barber-dashboard-panel"],
+        panel: "barber",
         children: [
             {
                 id: "bookings",
@@ -345,6 +375,7 @@ export const menuConfig = [
                 href: "/barber/bookings",
                 scopes: ["bookings-list"],
                 permissions: ["barber-dashboard-panel"],
+                panel: "barber",
             },
 
             {
@@ -354,6 +385,7 @@ export const menuConfig = [
                 href: "/barber/disputes",
                 scopes: ["disputes"],
                 permissions: ["barber-dashboard-panel"],
+                panel: "barber",
             },
             {
                 id: "reviews",
@@ -362,6 +394,7 @@ export const menuConfig = [
                 href: "/barber/reviews",
                 scopes: ["reviews"],
                 permissions: ["barber-dashboard-panel"],
+                panel: "barber",
             },
         ],
     },
@@ -373,6 +406,7 @@ export const menuConfig = [
         label: "مالی",
         icon: ChartCandlestick,
         childrenPermissions: ["barber-dashboard-panel"],
+        panel: "barber",
         children: [
             {
                 id: "barber-finance-index",
@@ -381,6 +415,7 @@ export const menuConfig = [
                 href: "/barber/finance/wallet",
                 permissions: ["barber-dashboard-panel"],
                 scopes: ["finance"],
+                panel: "barber",
             },
             {
                 id: "barber-transactions",
@@ -389,6 +424,7 @@ export const menuConfig = [
                 href: "/barber/finance/wallet/transactions",
                 permissions: ["barber-dashboard-panel"],
                 scopes: ["transactions"],
+                panel: "barber",
             },
             {
                 id: "barber-settlements",
@@ -397,6 +433,7 @@ export const menuConfig = [
                 href: "/barber/finance/wallet/settlements",
                 permissions: ["barber-dashboard-panel"],
                 scopes: ["settlements"],
+                panel: "barber",
             },
 
             {
@@ -406,6 +443,7 @@ export const menuConfig = [
                 href: "/barber/finance/profile/bank-info",
                 permissions: ["barber-dashboard-panel"],
                 scopes: ["bank-info"],
+                panel: "barber",
             },
         ],
     },
@@ -417,6 +455,7 @@ export const menuConfig = [
         href: "/barber/customers",
         scopes: ["customers"],
         permissions: ["barber-dashboard-panel"],
+        panel: "barber",
     },
     {
         id: "barber-notifications",
@@ -427,6 +466,7 @@ export const menuConfig = [
         permissions: ["barber-dashboard-panel"],
         badge: "unread_notifications_count",
         alwaysVisible: true,
+        panel: "barber",
     },
     {
         id: "barber-profile",
@@ -436,6 +476,7 @@ export const menuConfig = [
         scopes: ["customers"],
         permissions: ["barber-dashboard-panel"],
         alwaysVisible: true,
+        panel: "barber",
     },
     // customer
     // ============ داشبورد ============
@@ -446,6 +487,7 @@ export const menuConfig = [
         href: "/customer/dashboard",
         scopes: ["dashboard"],
         permissions: ["customer-dashboard-panel"],
+        panel: "customer",
     },
     // ============ رزرو ============
     {
@@ -455,6 +497,7 @@ export const menuConfig = [
         href: "/customer/bookings",
         scopes: ["bookings"],
         permissions: ["customer-dashboard-panel"],
+        panel: "customer",
     },
 
     // ============ مالی ============
@@ -464,6 +507,7 @@ export const menuConfig = [
         label: "مالی",
         icon: ChartCandlestick,
         childrenPermissions: ["customer-dashboard-panel"],
+        panel: "customer",
         children: [
             {
                 id: "customer-finance-index",
@@ -472,6 +516,7 @@ export const menuConfig = [
                 href: "/customer/finance/wallet",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["finance"],
+                panel: "customer",
             },
             {
                 id: "customer-payments",
@@ -480,6 +525,7 @@ export const menuConfig = [
                 href: "/customer/finance/wallet/payments",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["payments"],
+                panel: "customer",
             },
             {
                 id: "customer-transactions",
@@ -488,6 +534,7 @@ export const menuConfig = [
                 href: "/customer/finance/wallet/transactions",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["transactions"],
+                panel: "customer",
             },
             {
                 id: "customer-settlements",
@@ -496,6 +543,7 @@ export const menuConfig = [
                 href: "/customer/finance/wallet/settlements",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["settlements"],
+                panel: "customer",
             },
             {
                 id: "customer-deposits",
@@ -504,6 +552,7 @@ export const menuConfig = [
                 href: "/customer/finance/deposit",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["deposits"],
+                panel: "customer",
             },
 
             {
@@ -513,6 +562,7 @@ export const menuConfig = [
                 href: "/customer/finance/profile/bank-info",
                 permissions: ["customer-dashboard-panel"],
                 scopes: ["bank-info"],
+                panel: "customer",
             },
         ],
     },
@@ -524,6 +574,7 @@ export const menuConfig = [
         href: "/customer/profile",
         scopes: ["customers"],
         permissions: ["customer-dashboard-panel"],
+        panel: "customer",
     },
 
     {
@@ -534,5 +585,6 @@ export const menuConfig = [
         scopes: ["notifications"],
         permissions: ["customer-dashboard-panel"],
         badge: "unread_notifications_count",
+        panel: "customer",
     },
 ];

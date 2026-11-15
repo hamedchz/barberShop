@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Head, Link, useForm } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import Select2 from "../Components/Select2";
+import Cropper from "react-easy-crop";
 import {
     ArrowRight,
     Save,
@@ -74,12 +75,24 @@ export default function Create({ auth, roles, scope }) {
     };
 
     // ============ ارسال فرم ============
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     forceFormData: (true,
+    //         post("/admin/barbers/store", {
+    //             onSuccess: () => reset(),
+    //         }));
+    // };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        forceFormData: (true,
-            post("/admin/barbers/store", {
-                onSuccess: () => reset(),
-            }));
+
+        post("/admin/barbers/store", {
+            forceFormData: true,
+            onSuccess: () => {
+                reset();
+                setImagePreview(null);
+            },
+        });
     };
 
     return (
@@ -146,7 +159,7 @@ export default function Create({ auth, roles, scope }) {
                                     <label className="image-upload-box">
                                         <input
                                             type="file"
-                                            accept="image/*"
+                                            accept="image/jpeg,image/png,image/webp"
                                             onChange={handleImageChange}
                                             className="image-upload-input"
                                         />
@@ -159,7 +172,7 @@ export default function Create({ auth, roles, scope }) {
                                                 کنید
                                             </p>
                                             <p className="image-upload-hint">
-                                                PNG, JPG, WEBP - حداکثر ۲
+                                                PNG, JPG, WEBP - حداکثر ۵
                                                 مگابایت
                                             </p>
                                         </div>

@@ -168,8 +168,13 @@ class BarberController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone',
             'password' => ['required', 'confirmed', Password::min(8)],
-            // 'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image' => [
+                'required',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'max:5120',
+                'dimensions:min_width=800,min_height=1000',
+            ],
 
         ]);
         // slug
@@ -197,6 +202,11 @@ class BarberController extends Controller
                 $image,
                 $avatarPath
             );
+
+            $avatarCardPath = Thumbnail::storeCardThumb(
+                $image,
+                $filename
+            );
         }
 
         $store = User::create([
@@ -207,6 +217,7 @@ class BarberController extends Controller
             'phone_verified_at' => Carbon::now(),
             'status' => UserStatus::ACTIVE->value,
             'avatar' => $avatarPath,
+            'avatar_card' => $avatarCardPath,
 
         ]);
 
@@ -338,6 +349,11 @@ class BarberController extends Controller
             Thumbnail::storeThumb(
                 $image,
                 $validated['avatar']
+            );
+
+            $validated['avatar_card'] = Thumbnail::storeCardThumb(
+                $image,
+                $filename
             );
         }
         $update = $user->update($validated);

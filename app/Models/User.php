@@ -59,7 +59,8 @@ class User extends Authenticatable
         'gender',
         'email',
         'bank_id',
-        'is_active'
+        'is_active',
+        'avatar_card'
     ];
     protected function casts(): array
     {
@@ -167,6 +168,25 @@ class User extends Authenticatable
 
         // اگر تصویر بندانگشتی وجود نداشت
         return $this->avatarBig();
+    }
+
+    public function avatarCardUrl(): string
+    {
+        $avatar = $this->attributes['avatar'] ?? null;
+
+        if (empty($avatar)) {
+            return $this->avatarUrl();
+        }
+
+        $filename = pathinfo($avatar, PATHINFO_FILENAME);
+
+        $cardPath = 'thumbnails/cards/' . $filename . '.webp';
+
+        if (Storage::disk('public')->exists($cardPath)) {
+            return Storage::disk('public')->url($cardPath);
+        }
+
+        return $this->avatarUrl();
     }
 
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import {
     LogOut,
@@ -15,27 +15,28 @@ import { toPersianNumber } from "../../../utils/persianNumbers";
 // ========================================
 // فیلتر منوها بر اساس دسترسی
 // ========================================
+
 const filterMenuItems = (items, hasPermission) => {
     return items.reduce((result, item) => {
         const hasChildren = Array.isArray(item.children);
 
+        // ابتدا فرزندان را فیلتر می‌کنیم
         const children = hasChildren
             ? filterMenuItems(item.children, hasPermission)
             : [];
 
+        // بررسی مجوز خود منو
         const hasOwnPermission =
-            !item.permissions?.length || item.permissions.some(hasPermission);
+            Array.isArray(item.permissions) &&
+            item.permissions.length > 0 &&
+            item.permissions.some(hasPermission);
 
-        const hasChildrenPermission =
-            item.childrenPermissions?.some(hasPermission) ?? false;
-
-        const canShow = hasOwnPermission || hasChildrenPermission;
+        // منوی والد تنها در صورت داشتن فرزند مجاز نمایش داده می‌شود
+        const canShow = hasChildren
+            ? children.length > 0
+            : hasOwnPermission || item.alwaysVisible;
 
         if (!canShow) return result;
-
-        if (hasChildren && children.length === 0) {
-            return result;
-        }
 
         result.push({
             ...item,
@@ -51,6 +52,23 @@ const filterMenuItems = (items, hasPermission) => {
 // ========================================
 const normalizePath = (path = "") => {
     return `/${path}`.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
+};
+
+// ========================================
+// نرمال‌سازی نقش‌ها و مجوزها
+// ========================================
+const normalizeAccessNames = (items) => {
+    if (!Array.isArray(items)) return [];
+
+    return items
+        .map((item) => {
+            if (typeof item === "string") {
+                return item.trim();
+            }
+
+            return (item?.name || item?.slug || item?.permission || "").trim();
+        })
+        .filter(Boolean);
 };
 
 // ========================================
@@ -231,21 +249,80 @@ export default function Sidebar({
     const { site, auth, scopes: scope, bookingSetup = {} } = props;
     // مسیر فعلی از Inertia
     const currentPath = normalizePath(url.split("?")[0]);
-    const unreadNotifications = auth?.user.unread_notifications_count || 0;
+    const unreadNotifications = auth?.user?.unread_notifications_count || 0;
 
     // ========================================
-    // بررسی Permission
+    // بررسی Permission و تشخیص پنل کاربر
     // ========================================
-    const hasPermission = (permission) => {
-        if (!auth?.user) return false;
 
-        if (auth.user.roles?.includes("سوپر ادمین")) {
-            return true;
+    const userPermissions = useMemo(
+        () => normalizeAccessNames(auth?.user?.permissions),
+        [auth?.user?.permissions],
+    );
+
+    const userRoles = useMemo(
+        () => normalizeAccessNames(auth?.user?.roles),
+        [auth?.user?.roles],
+    );
+
+    // تشخیص سوپر ادمین
+    const isSuperAdmin = userRoles.some((role) => {
+        const normalizedRole = role.toLowerCase();
+
+        return [
+            "سوپر ادمین",
+            "super admin",
+            "super-admin",
+            "super_admin",
+        ].includes(normalizedRole);
+    });
+
+    // تشخیص پنل فعال کاربر
+    const userPanel = useMemo(() => {
+        // سوپر ادمین همیشه پنل ادمین
+        if (isSuperAdmin) {
+            return "admin";
         }
 
-        return (auth.user.permissions || []).includes(permission);
-    };
+        // ابتدا ادمین را تشخیص می‌دهیم
+        const hasAdminPermissions = userPermissions.some((permission) =>
+            permission.startsWith("manage-"),
+        );
 
+        if (hasAdminPermissions) {
+            return "admin";
+        }
+
+        // آرایشگر
+        if (userPermissions.includes("barber-dashboard-panel")) {
+            return "barber";
+        }
+
+        // مشتری
+        if (userPermissions.includes("customer-dashboard-panel")) {
+            return "customer";
+        }
+
+        return null;
+    }, [isSuperAdmin, userPermissions]);
+
+    // بررسی دسترسی
+    const hasPermission = useCallback(
+        (permission) => {
+            if (isSuperAdmin) {
+                return true;
+            }
+
+            return userPermissions.includes(permission);
+        },
+        [isSuperAdmin, userPermissions],
+    );
+    console.log("Sidebar Debug:", {
+        roles: userRoles,
+        permissions: userPermissions,
+        isSuperAdmin,
+        userPanel,
+    });
     // ========================================
     // وضعیت تکمیل راه‌اندازی نوبت‌دهی
     // ========================================
@@ -256,26 +333,42 @@ export default function Sidebar({
     );
 
     // ========================================
-    // فیلتر منوها
+    // فیلتر منوها بر اساس پنل و Permission
     // ========================================
+
     const visibleItems = useMemo(() => {
-        if (!auth?.user) return [];
+        if (!auth?.user || !userPanel) {
+            return [];
+        }
 
-        const items = filterMenuItems(menuConfig, hasPermission);
+        // انتخاب منوهای پنل کاربر
+        const panelItems = menuConfig.filter(
+            (item) => item.panel === userPanel,
+        );
 
-        return items.filter((item) => {
-            // داشبورد، اعلان‌ها و پروفایل همیشه نمایش داده شوند
-            if (item.alwaysVisible) return true;
+        // فیلتر Permission
+        const filteredItems = filterMenuItems(panelItems, hasPermission);
 
-            // منوی راه‌اندازی فقط تا زمان تکمیل نمایش داده شود
+        // قوانین راه‌اندازی فقط برای آرایشگر
+        if (userPanel !== "barber") {
+            return filteredItems;
+        }
+
+        return filteredItems.filter((item) => {
+            // راه‌اندازی نوبت‌دهی تا زمان تکمیل نمایش داده شود
             if (item.bookingSetupOnly) {
                 return !isBookingSetupCompleted;
             }
 
-            // سایر منوها فقط پس از تکمیل راه‌اندازی نمایش داده شوند
+            // داشبورد، اعلان‌ها و پروفایل همیشه نمایش داده شوند
+            if (item.alwaysVisible) {
+                return true;
+            }
+
+            // سایر منوها بعد از تکمیل راه‌اندازی نمایش داده شوند
             return isBookingSetupCompleted;
         });
-    }, [auth, hasPermission, isBookingSetupCompleted]);
+    }, [auth?.user, userPanel, hasPermission, isBookingSetupCompleted]);
 
     // ========================================
     // تشخیص فعال بودن منو

@@ -110,7 +110,7 @@ class ServiceCategoryController extends Controller
             $num++;
             $slug = $slug . "-$num";
         }
-
+        $validated['slug'] = $slug;
         // آپلود تصویر
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')

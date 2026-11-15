@@ -28,6 +28,7 @@ class Service extends Model
         'name',
         'description',
         'image_url',
+
     ];
 
     public function user()

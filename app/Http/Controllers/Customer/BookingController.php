@@ -39,28 +39,29 @@ class BookingController extends Controller
     {
         $user = auth()->user();
 
-        $query = Booking::where('user_id', $user->id)
-            ->with([
-                'barber:id,name,avatar,phone,slug',
-                'service:id,name,image,duration,price',
-                'timeSlot:id,date,start_time,end_time',
-                'disputes' => function ($q) {
-                    $q->latest();
-                },
-            ])->withCount('disputes');;
+        $query = Booking::with([
+            'barber:id,name,avatar,phone,slug',
+            'service.category',
+            'timeSlot:id,date,start_time,end_time',
+            'disputes' => function ($q) {
+                $q->latest();
+            },
+        ])
+            ->where('user_id', $user->id)
+            ->withCount('disputes');
 
         // ============ فیلتر وضعیت ============
         if ($status = $request->input('status')) {
             if ($status === 'upcoming') {
                 // نوبت‌های آینده
-                $query->whereIn('status', ['pending', 'confirmed'])
+                $query->whereIn('status', [BookingStatus::pending->value, BookingStatus::confirmed->value])
                     ->whereHas('timeSlot', function ($q) {
                         $q->where('date', '>=', Carbon::today());
                     });
             } elseif ($status === 'past') {
                 // نوبت‌های گذشته
                 $query->where(function ($q) {
-                    $q->whereIn('status', ['completed', 'cancelled'])
+                    $q->whereIn('status', [BookingStatus::completed->value, BookingStatus::cancelled->value])
                         ->orWhereHas('timeSlot', function ($sq) {
                             $sq->where('date', '<', Carbon::today());
                         });
@@ -75,12 +76,11 @@ class BookingController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereHas('barber', function ($bq) use ($search) {
                     $bq->where('name', 'like', "%{$search}%");
-                })->orWhereHas('service', function ($sq) use ($search) {
-                    $sq->where('name', 'like', "%{$search}%");
+                })->orWhereHas('service.category', function ($cq) use ($search) {
+                    $cq->where('name', 'like', "%{$search}%");
                 });
             });
-        }
-
+        };
         // ============ مرتب‌سازی ============
         $sort = $request->input('sort', 'latest');
         switch ($sort) {
@@ -103,13 +103,13 @@ class BookingController extends Controller
         $stats = [
             'total' => Booking::where('user_id', $user->id)->count(),
             'pending' => Booking::where('user_id', $user->id)
-                ->where('status', 'pending')->count(),
+                ->where('status', BookingStatus::pending->value)->count(),
             'confirmed' => Booking::where('user_id', $user->id)
-                ->where('status', 'confirmed')->count(),
+                ->where('status', BookingStatus::confirmed->value)->count(),
             'completed' => Booking::where('user_id', $user->id)
-                ->where('status', 'completed')->count(),
+                ->where('status', BookingStatus::completed->value)->count(),
             'cancelled' => Booking::where('user_id', $user->id)
-                ->where('status', 'cancelled')->count(),
+                ->where('status', BookingStatus::cancelled->value)->count(),
         ];
 
         // ============ تبدیل داده‌ها ============
@@ -240,10 +240,8 @@ class BookingController extends Controller
                 // ============ اطلاعات خدمت ============
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
-                    'name' => $booking->service->name,
-                    'image' => $booking->service->image
-                        ? asset('storage/' . $booking->service->image)
-                        : null,
+                    'name' => $booking->service->category?->name,
+                    'image' => $booking->service->category?->image_url,
                     'duration' => $booking->service->duration,
                     'price' => (float) $booking->service->price,
                 ] : null,
