@@ -43,11 +43,11 @@ enum UserStatus: string
     public function icon(): string
     {
         return match ($this) {
-            self::ACTIVE => 'CheckCircle',
-            self::INACTIVE => 'XCircle',
-            self::SUSPENDED => 'PauseCircle',
-            self::PENDING => 'Clock',
-            self::BANNED => 'Ban',
+            self::ACTIVE => '/images/userStatuses/active.png',
+            self::INACTIVE => '/images/userStatuses/inactive.png',
+            self::SUSPENDED => '/images/userStatuses/suspended.png',
+            self::PENDING => '/images/userStatuses/pending.png',
+            self::BANNED => '/images/userStatuses/banned.png',
         };
     }
 

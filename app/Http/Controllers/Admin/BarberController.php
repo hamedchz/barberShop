@@ -26,7 +26,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-
+use Illuminate\Validation\ValidationException;
 
 class BarberController extends Controller
 {
@@ -35,9 +35,7 @@ class BarberController extends Controller
         $query = User::query()
             ->with('roles')
             // ->where('is_admin', false)
-            ->whereHas('roles', function ($q) {
-                $q->where('roles.id', 8);
-            });
+            ->role('آرایشگر');
 
         // ============ فیلتر جستجو ============
         if ($search = trim($request->input('search', ''))) {
@@ -103,9 +101,8 @@ class BarberController extends Controller
         // ============ شمارش کل آنلاین‌ها ============
         $totalOnline = User::query()
             ->where('is_admin', false)
-            ->whereHas('roles', function ($q) {
-                $q->where('roles.id', 2);
-            })
+            ->role('آرایشگر')
+
             ->get()
             ->filter(fn($user) => $user->isOnline())
             ->count();
@@ -168,14 +165,22 @@ class BarberController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20|unique:users,phone',
             'password' => ['required', 'confirmed', Password::min(8)],
+
+            // تصویر اصلی
             'image' => [
                 'required',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
                 'max:5120',
-                'dimensions:min_width=800,min_height=1000',
             ],
 
+            // تصویر برش‌خورده مخصوص کارت
+            'card_image' => [
+                'required',
+                'image',
+                'mimes:webp',
+                'max:3072',
+            ],
         ]);
         // slug
 
@@ -186,26 +191,34 @@ class BarberController extends Controller
             $slug = $slug . "-$num";
         }
 
-        if ($request->hasFile('image')) {
+        $avatarPath = null;
+        $avatarCardPath = null;
 
+        if ($request->hasFile('image') && $request->hasFile('card_image')) {
             $image = $validated['image'];
 
             $filename = $image->hashName();
 
+            // ذخیره تصویر اصلی
             $avatarPath = $image->storeAs(
                 'avatars',
                 $filename,
                 'public'
             );
 
+            // تولید thumbnail معمولی
             Thumbnail::storeThumb(
                 $image,
                 $avatarPath
             );
 
+            // تولید تصویر مخصوص کارت
             $avatarCardPath = Thumbnail::storeCardThumb(
-                $image,
-                $filename
+                $validated['card_image'],
+                $avatarPath,
+                800,
+                1280,
+                85
             );
         }
 
@@ -244,8 +257,9 @@ class BarberController extends Controller
     //edit admin
     public function edit(User $user)
     {
+
         // بررسی اینکه کاربر آرایشگر است
-        if (!$user->roles()->where('roles.id', 8)->exists()) {
+        if (!$user->hasRole('آرایشگر')) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return to_route('admin.barbers.list');
@@ -256,27 +270,35 @@ class BarberController extends Controller
             return [
                 'id' => $role->id,
                 'name' => $role->name,
-                // 'label' => $this->translateRoleName($role->name),
             ];
         });
 
-        // دریافت ID نقش‌های فعلی این آرایشگر
+        // دریافت ID نقش‌های فعلی آرایشگر
         $adminRoleIds = $user->roles->pluck('id')->toArray();
 
         return Inertia::render('Admin/Barbers/Edit', [
             'title' => 'ویرایش آرایشگر',
+
             'barber' => [
                 'name' => $user->name,
                 'slug' => $user->slug,
                 'phone' => $user->phone,
-                'image' => $user->avatar
-                    ? asset('storage/' . $user->avatar)
-                    : null,  // ← URL کامل
-                'status' => $user->status->value ?? 'active',
-                'roles' => $adminRoleIds, // آرایه‌ای از ID نقش‌ها
+
+                // تصویر اصلی
+                'avatar_url' => $user->avatarUrl(),
+
+                // تصویر مخصوص کارت
+                'avatar_card_url' => $user->avatarCardUrl(),
+
+                'status' => $user->status instanceof UserStatus
+                    ? $user->status->value
+                    : ($user->status ?? 'active'),
+
+                'roles' => $adminRoleIds,
             ],
+
             'roles' => $roles,
-            'statuses' => UserStatus::toSelectArray(), // ← لیست Enum
+            'statuses' => UserStatus::toSelectArray(),
             'scope' => ['barbers', 'barber-edit'],
         ]);
     }
@@ -285,36 +307,67 @@ class BarberController extends Controller
     public function update(Request $request, User $user)
     {
 
-
-        // $this->authorize(Permissions::manageAdmins->value);
-
-        if (!$user->roles()->where('roles.id', 8)->exists()) {
+        // بررسی نقش آرایشگر
+        if (!$user->hasRole('آرایشگر')) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return to_route('admin.barbers.list');
         }
+
         // ============ اعتبارسنجی ============
         $rules = [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
-            'status' => ['required', Rule::enum(UserStatus::class)], // ← اعتبارسنجی Enum
-            // 'roles' => ['required', 'array', Rule::in(Role::all()->pluck('id')->toArray())],
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
 
+            'phone' => [
+                'required',
+                'string',
+                'max:20',
+                'unique:users,phone,' . $user->id,
+            ],
+
+            'status' => [
+                'required',
+                Rule::enum(UserStatus::class),
+            ],
+
+            // تصویر اصلی
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'max:5120',
+            ],
+
+            // تصویر برش‌خورده مخصوص کارت
+            'card_image' => [
+                'required_with:image',
+                'image',
+                'mimes:webp',
+                'max:3072',
+            ],
         ];
 
         if ($request->filled('password')) {
-            $rules['password'] = ['required', 'confirmed', Password::min(8)];
+            $rules['password'] = [
+                'required',
+                'confirmed',
+                Password::min(8),
+            ];
         }
 
         $validated = $request->validate($rules);
 
-
-        if ($request->has('password') && !is_null($request->password)) {
-            $validated['password'] = Hash::make($request->input('password'));
+        // ============ رمز عبور ============
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make(
+                $validated['password']
+            );
         }
-        // Unique Slug Creator
-        $slug = GenerateUtf8Slug::generateUtf8Slug($request->input('name'));
+
+        // ============ تولید Slug یکتا ============
+        $slug = GenerateUtf8Slug::generateUtf8Slug(
+            $validated['name']
+        );
 
         $num = 1;
         $originalSlug = $slug;
@@ -330,50 +383,93 @@ class BarberController extends Controller
 
         $validated['slug'] = $slug;
 
-
+        // ============ ذخیره تصاویر جدید ============
+        $oldAvatar = $user->avatar;
+        $oldCardAvatar = $user->avatar_card;
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($user->avatar);
-            Storage::disk('public')->delete('thumbnails/' . $user->avatar);
 
             $image = $validated['image'];
+            $cardImage = $validated['card_image'];
 
             $filename = $image->hashName();
 
-            $validated['avatar'] = $image->storeAs(
+            // ذخیره تصویر اصلی
+            $avatarPath = $image->storeAs(
                 'avatars',
                 $filename,
                 'public'
             );
 
+            // تولید thumbnail معمولی
             Thumbnail::storeThumb(
                 $image,
-                $validated['avatar']
+                $avatarPath
             );
 
-            $validated['avatar_card'] = Thumbnail::storeCardThumb(
-                $image,
-                $filename
+            // تولید تصویر اختصاصی کارت از تصویر برش‌خورده React
+            $avatarCardPath = Thumbnail::storeCardThumb(
+                $cardImage,
+                $avatarPath,
+                800,
+                1280,
+                85
             );
+
+            // ثبت مسیر تصاویر جدید
+            $validated['avatar'] = $avatarPath;
+            $validated['avatar_card'] = $avatarCardPath;
         }
+
+        // فایل‌ها نباید مستقیماً وارد update مدل شوند
+        unset(
+            $validated['image'],
+            $validated['card_image']
+        );
+
+        // ============ به‌روزرسانی کاربر ============
         $update = $user->update($validated);
 
-
         if ($update) {
-            (new \App\Models\Log())->storeLog($user->id, LogsStatus::edit->value . 'آرایشگر', LogsStatus::edit->value);
+
+            // حذف تصاویر قبلی بعد از موفقیت به‌روزرسانی
+            if ($request->hasFile('image')) {
+
+                if (!empty($oldAvatar)) {
+                    Storage::disk('public')->delete([
+                        $oldAvatar,
+                        'thumbnails/' . $oldAvatar,
+                    ]);
+                }
+
+                if (!empty($oldCardAvatar)) {
+                    Storage::disk('public')->delete(
+                        $oldCardAvatar
+                    );
+                }
+            }
+
+            // ثبت لاگ
+            (new \App\Models\Log())->storeLog(
+                $user->id,
+                LogsStatus::edit->value . 'آرایشگر',
+                LogsStatus::edit->value
+            );
+
             StickyAlert::toast(
-                'آرایشگر  با موفقیت ویرایش شد.',
+                'آرایشگر با موفقیت ویرایش شد.',
                 'success'
             );
         } else {
+
             StickyAlert::alert(
                 'مشکلی وجود دارد.',
                 'error'
             );
         }
+
         return to_route('admin.barbers.list');
     }
-
     public function destroy(User $barber)
     {
 
@@ -398,8 +494,10 @@ class BarberController extends Controller
      */
     public function show(User $barber)
     {
+
+
         // بررسی اینکه کاربر آرایشگر است
-        if (!$barber->roles()->where('roles.id', 8)->exists()) {
+        if (!$barber->hasRole('آرایشگر')) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
             return to_route('admin.barbers.list');
         }
@@ -427,14 +525,14 @@ class BarberController extends Controller
         ];
 
         // ============ خدمات ============
-        $services = Service::where('user_id', $barber->id)
+        $services = Service::with('category')->where('user_id', $barber->id)
             ->latest()
             ->get()
             ->map(fn($service) => [
                 'id' => $service->id,
                 'name' => $service->name,
                 'description' => $service->description,
-                'image' => $service->image ? asset('storage/' . $service->image) : null,
+                'image' => $service->category->image ? asset('storage/' . $service->category->image) : null,
                 'duration' => $service->duration,
                 'price' => $service->price,
                 'is_active' => (bool) $service->is_active,
@@ -532,9 +630,7 @@ class BarberController extends Controller
     public function onlineStatus()
     {
         $barbers = User::query()
-            ->where('is_admin', false)->whereHas('roles', function ($q) {
-                $q->where('roles.id', 8);
-            })
+            ->where('is_admin', false)->role('آرایشگر')
             ->get()
             ->map(function ($admin) {
                 return [

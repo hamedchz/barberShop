@@ -8,7 +8,6 @@ import Select2 from "../Components/Select2";
 import axios from "axios";
 import { toJalaali } from "jalaali-js";
 import Pagination from "../Components/Pagination";
-
 import {
     UserPlus,
     Edit,
@@ -27,6 +26,7 @@ import {
     WifiOff,
     Info,
     Lock,
+    Users,
 } from "lucide-react";
 
 // ============ نقشه وضعیت کاربران ============
@@ -335,41 +335,45 @@ export default function AdminsIndex({
             <Head title="مدیریت آرایشگرها" />
 
             <div className="center-column">
-                {/* ============ هدر با شمارنده آنلاین ============ */}
                 <div className="roles-page-header">
-                    <div>
-                        <h1 className="roles-page-title">مدیریت آرایشگرها</h1>
-                        <div className="header-stats">
-                            <p className="stats-text">
-                                {barbers.total} آرایشگر در سیستم
-                            </p>
+                    <div className="roles-header-content">
+                        <div className="roles-header-icon">
+                            <Users size={23} strokeWidth={1.8} />
+                        </div>
 
-                            {/* شمارنده آنلاین‌ها */}
-                            <div className="online-counter-badge">
-                                <span className="online-dot pulse"></span>
-                                <span className="online-counter-text">
-                                    {totalOnline} آنلاین
-                                </span>
-                                {isRefreshing && (
-                                    <span className="refreshing-indicator"></span>
-                                )}
+                        <div className="roles-header-info">
+                            <h1 className="roles-page-title">
+                                مدیریت آرایشگرها
+                            </h1>
+
+                            <div className="header-stats">
+                                <p className="stats-text">
+                                    {barbers.total} آرایشگر در سیستم
+                                </p>
+
+                                <span className="roles-header-divider"></span>
+
+                                <div className="online-counter-badge">
+                                    <span className="online-dot pulse"></span>
+
+                                    <span className="online-counter-text">
+                                        {totalOnline} آنلاین
+                                    </span>
+
+                                    {isRefreshing && (
+                                        <span className="refreshing-indicator"></span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <Link
                         href="/admin/barbers/create"
-                        className="btn-primary"
-                        style={{
-                            width: "auto",
-                            padding: "0.5rem 1.5rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            textDecoration: "none",
-                        }}
+                        className="roles-header-action"
                     >
-                        <UserPlus size={18} /> آرایشگر جدید
+                        <UserPlus size={18} strokeWidth={2} />
+                        <span>آرایشگر جدید</span>
                     </Link>
                 </div>
 

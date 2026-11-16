@@ -2,6 +2,9 @@ import React, { useState, useMemo } from "react";
 import { Head, Link, useForm } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import Select2 from "../Components/Select2";
+import Cropper from "react-easy-crop";
+import "./Assets/css/CreateBarber.css";
+
 import {
     ArrowRight,
     Save,
@@ -12,9 +15,7 @@ import {
     Lock,
     Eye,
     EyeOff,
-    Shield,
     CheckCircle,
-    Info,
     KeyRound,
     Activity,
     CheckCircle2,
@@ -26,9 +27,11 @@ import {
     Image as ImageIcon,
     Upload,
     X,
+    ZoomIn,
+    RefreshCw,
 } from "lucide-react";
 
-// ============ نقشه آیکون‌ها ============
+// ============ نقشه آیکون‌های وضعیت ============
 const iconMap = {
     CheckCircle: CheckCircle2,
     XCircle: XCircle,
@@ -37,7 +40,112 @@ const iconMap = {
     Ban: Ban,
 };
 
-export default function Edit({ auth, barber, roles, statuses, scope }) {
+// ============ قدرت رمز عبور ============
+const getPasswordStrength = (password) => {
+    if (!password) {
+        return { score: 0, label: "", level: "" };
+    }
+
+    const checks = [
+        password.length >= 8,
+        password.length >= 12,
+        /[a-z]/.test(password) && /[A-Z]/.test(password),
+        /\d/.test(password),
+        /[^a-zA-Z0-9]/.test(password),
+    ];
+
+    const score = checks.filter(Boolean).length;
+
+    if (score <= 1) {
+        return { score, label: "بسیار ضعیف", level: "weak" };
+    }
+
+    if (score === 2) {
+        return { score, label: "ضعیف", level: "weak" };
+    }
+
+    if (score === 3) {
+        return { score, label: "متوسط", level: "medium" };
+    }
+
+    if (score === 4) {
+        return { score, label: "قوی", level: "good" };
+    }
+
+    return { score, label: "بسیار قوی", level: "strong" };
+};
+
+// ============ ساخت تصویر از URL ============
+const createImage = (url) =>
+    new Promise((resolve, reject) => {
+        const image = new Image();
+
+        image.addEventListener("load", () => resolve(image));
+        image.addEventListener("error", reject);
+
+        image.src = url;
+    });
+
+// ============ تولید فایل تصویر برش‌خورده ============
+const getCroppedImage = async (imageSrc, pixelCrop) => {
+    const image = await createImage(imageSrc);
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = 800;
+    canvas.height = 1280;
+
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+        throw new Error("Canvas context is not available.");
+    }
+
+    ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        800,
+        1280,
+    );
+
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (!blob) {
+                    reject(new Error("ساخت تصویر برش‌خورده ناموفق بود."));
+                    return;
+                }
+
+                resolve(
+                    new File([blob], `barber-card-${Date.now()}.webp`, {
+                        type: "image/webp",
+                    }),
+                );
+            },
+            "image/webp",
+            0.88,
+        );
+    });
+};
+
+export default function Edit({
+    auth,
+    barber,
+    roles = [],
+    statuses = [],
+    scope,
+}) {
+    // آدرس تصاویر فعلی که باید از Controller ارسال شوند
+    const existingAvatarUrl = barber.avatar_url || barber.avatarUrl || null;
+
+    const existingCardUrl =
+        barber.avatar_card_url || barber.avatarCardUrl || null;
+
     // ============ useForm ============
     const { data, setData, post, processing, errors } = useForm({
         _method: "PUT",
@@ -48,115 +156,170 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
         password_confirmation: "",
         roles: barber.roles || [],
         image: null,
-        remove_image: false,
+        card_image: null,
     });
 
-    const [imagePreview, setImagePreview] = useState(barber.image || null);
+    // ============ وضعیت تصاویر ============
+    const [imagePreview, setImagePreview] = useState(existingAvatarUrl);
 
+    const [cardPreview, setCardPreview] = useState(
+        existingCardUrl || existingAvatarUrl,
+    );
+
+    const [cropModalOpen, setCropModalOpen] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+    // ============ انتخاب تصویر جدید ============
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setData("image", file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(file.type)) {
+            alert("فرمت تصویر باید JPG، PNG یا WEBP باشد.");
+            e.target.value = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            alert("حجم تصویر نباید بیشتر از ۵ مگابایت باشد.");
+            e.target.value = "";
+            return;
+        }
+
+        // تصویر جدید انتخاب شده اما هنوز Crop تأیید نشده است
+        setData("image", file);
+        setData("card_image", null);
+
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppedAreaPixels(null);
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+            setCropModalOpen(true);
+        };
+
+        reader.readAsDataURL(file);
+
+        // امکان انتخاب دوباره همان فایل
+        e.target.value = "";
+    };
+
+    // ============ تغییر محدوده Crop ============
+    const handleCropComplete = (_, croppedPixels) => {
+        setCroppedAreaPixels(croppedPixels);
+    };
+
+    // ============ تأیید تصویر برش‌خورده ============
+    const handleCropSave = async () => {
+        if (!imagePreview || !croppedAreaPixels) return;
+
+        try {
+            const croppedFile = await getCroppedImage(
+                imagePreview,
+                croppedAreaPixels,
+            );
+
+            setData("card_image", croppedFile);
+
+            setCardPreview((previous) => {
+                if (previous && previous.startsWith("blob:")) {
+                    URL.revokeObjectURL(previous);
+                }
+
+                return URL.createObjectURL(croppedFile);
+            });
+
+            setCropModalOpen(false);
+        } catch (error) {
+            console.error("Image crop error:", error);
+            alert("خطا در آماده‌سازی تصویر. دوباره تلاش کنید.");
         }
     };
 
-    const handleImageRemove = () => {
+    // ============ لغو انتخاب تصویر جدید ============
+    const handleCropCancel = () => {
         setData("image", null);
-        setImagePreview(null);
+        setData("card_image", null);
+
+        setImagePreview(existingAvatarUrl);
+        setCardPreview(existingCardUrl || existingAvatarUrl);
+
+        setCropModalOpen(false);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+        setCroppedAreaPixels(null);
     };
 
+    // ============ باز کردن انتخاب تصویر ============
+    const handleChangeImage = () => {
+        document.getElementById("barber-edit-image-input")?.click();
+    };
+
+    // ============ نمایش رمز عبور ============
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [changePassword, setChangePassword] = useState(false);
 
+    const passwordStrength = getPasswordStrength(data.password);
+
     // ============ گزینه‌های نقش ============
-    const allRoleOptions = useMemo(
-        () =>
-            roles.map((role) => ({
-                value: role.id,
-                label: role.name,
-            })),
-        [roles],
-    );
 
-    const selectedRoles = useMemo(
-        () => allRoleOptions.filter((opt) => data.roles.includes(opt.value)),
-        [allRoleOptions, data.roles],
-    );
-
-    const unselectedRoleOptions = useMemo(
-        () => allRoleOptions.filter((opt) => !data.roles.includes(opt.value)),
-        [allRoleOptions, data.roles],
-    );
-
-    const handleRolesChange = (selectedOptions) => {
-        const selectedIds = selectedOptions
-            ? selectedOptions.map((opt) => opt.value)
-            : [];
-        setData("roles", selectedIds);
-    };
-
-    const handleSelectAll = () =>
-        setData(
-            "roles",
-            allRoleOptions.map((opt) => opt.value),
-        );
-
-    const handleClearAll = () => setData("roles", []);
-
-    // ============ گزینه‌های وضعیت (از Enum) ============
+    // ============ گزینه‌های وضعیت ============
     const statusOptions = useMemo(
         () =>
             statuses.map((status) => ({
-                value: status.value,
+                value: String(status.value),
                 label: status.label,
                 color: status.color,
                 icon: status.icon,
             })),
         [statuses],
     );
+    const selectedStatus = data.status;
 
-    // ============ وضعیت انتخاب شده فعلی ============
-    const selectedStatus = useMemo(
-        () => statusOptions.find((opt) => opt.value === data.status),
-        [statusOptions, data.status],
-    );
-
-    // ============ هندل تغییر وضعیت ============
-    const handleStatusChange = (selectedOption) => {
-        setData("status", selectedOption ? selectedOption.value : "");
+    const handleStatusChange = (selected) => {
+        setSelectedStatus(selected);
+        setData("status", selected?.value || "");
     };
+
+    // const handleStatusChange = (selectedOption) => {
+    //     setData("status", selectedOption ? selectedOption.value : "");
+    // };
 
     // ============ ارسال فرم ============
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // اگر رمز عبور غیرفعال است، خالی ارسال شود
         if (!changePassword) {
-            data.password = "";
-            data.password_confirmation = "";
+            setData("password", "");
+            setData("password_confirmation", "");
         }
 
-        // put(`/admin/barbers/${admin.slug}/update`);
+        // اگر تصویر جدید انتخاب شده ولی Crop تأیید نشده است
+        if (data.image && !data.card_image) {
+            alert("لطفاً ابتدا کادر تصویر جدید را تنظیم و تأیید کنید.");
+            setCropModalOpen(true);
+            return;
+        }
+
         post(`/admin/barbers/${barber.slug}/update`, {
             forceFormData: true,
             preserveScroll: true,
-            onSuccess: (page) => {
-                console.log("Success!", page);
-            },
-            onError: (errors) => {
-                console.error("Errors:", errors);
-            },
         });
     };
 
-    // ============ آیکون وضعیت انتخاب شده ============
+    // ============ آیکون وضعیت ============
     const StatusIcon = selectedStatus?.icon
-        ? iconMap[selectedStatus.icon]
+        ? iconMap[selectedStatus.icon] || Activity
         : Activity;
 
     return (
@@ -164,15 +327,23 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
             <Head title={`ویرایش آرایشگر: ${barber.name}`} />
 
             <div className="center-column">
-                {/* ============ هدر ============ */}
-                <div className="page-header-with-back">
+                <div className="roles-page-header">
+                    <div className="roles-header-content">
+                        <div className="roles-header-icon">
+                            <User size={23} strokeWidth={1.8} />
+                        </div>
+
+                        <div className="roles-header-info">
+                            <h1 className="roles-page-title">
+                                ویرایش آرایشگر: {barber.name}
+                            </h1>
+                        </div>
+                    </div>
+
                     <Link href="/admin/barbers" className="back-btn">
                         <ArrowRight size={20} />
                         <span>بازگشت به لیست آرایشگر‌ها</span>
                     </Link>
-                    <h1 className="page-title">
-                        ویرایش آرایشگر: {barber.name}
-                    </h1>
                 </div>
 
                 {/* ============ کارت فرم ============ */}
@@ -187,67 +358,106 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                         >
                             <Edit3 size={24} />
                         </div>
+
                         <div>
                             <h2 className="form-card-title">
                                 ویرایش اطلاعات آرایشگر
                             </h2>
+
                             <p className="form-card-subtitle">
-                                اطلاعات کاربری، وضعیت آرایشگر را می‌توانید تغییر
-                                دهید.
+                                اطلاعات کاربری و وضعیت آرایشگر را می‌توانید
+                                تغییر دهید.
                             </p>
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit} className="form-body">
-                        {/* ============ آپلود عکس ============ */}
+                        {/* ============ آپلود و پیش‌نمایش تصویر ============ */}
                         <div className="form-group">
                             <label className="form-label">
                                 <ImageIcon size={16} />
                                 تصویر آرایشگر
-                                <span className="required">*</span>
                             </label>
 
-                            <div className="image-upload-wrapper">
-                                {imagePreview ? (
-                                    <div className="image-preview-container">
-                                        <img
-                                            src={imagePreview}
-                                            alt="پیش‌نمایش"
-                                            className="image-preview"
-                                        />
-                                        <button
-                                            type="button"
-                                            className="image-remove-btn"
-                                            onClick={handleImageRemove}
-                                            title="حذف تصویر"
-                                        >
-                                            <X size={16} />
-                                        </button>
+                            <input
+                                id="barber-edit-image-input"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                onChange={handleImageChange}
+                                className="image-upload-input"
+                                hidden
+                            />
+
+                            <div className="barber-image-uploader">
+                                {cardPreview ? (
+                                    <div className="barber-image-result">
+                                        <div className="barber-image-card-preview">
+                                            <img
+                                                src={cardPreview}
+                                                alt="پیش‌نمایش کارت آرایشگر"
+                                            />
+
+                                            <div className="barber-image-overlay">
+                                                <span>
+                                                    {data.name || "نام آرایشگر"}
+                                                </span>
+                                                <small>
+                                                    پیش‌نمایش تصویر کارت
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <div className="barber-image-actions">
+                                            <button
+                                                type="button"
+                                                className="barber-image-action"
+                                                onClick={handleChangeImage}
+                                            >
+                                                <Upload size={16} />
+                                                تغییر تصویر
+                                            </button>
+
+                                            {data.image && (
+                                                <button
+                                                    type="button"
+                                                    className="barber-image-action"
+                                                    onClick={() =>
+                                                        setCropModalOpen(true)
+                                                    }
+                                                >
+                                                    <RefreshCw size={16} />
+                                                    تنظیم مجدد کادر
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
-                                    <label className="image-upload-box">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleImageChange}
-                                            className="image-upload-input"
-                                        />
-                                        <div className="image-upload-content">
-                                            <div className="image-upload-icon">
-                                                <Upload size={24} />
-                                            </div>
-                                            <p className="image-upload-text">
-                                                کلیک کنید یا تصویر را اینجا رها
-                                                کنید
-                                            </p>
-                                            <p className="image-upload-hint">
-                                                PNG, JPG, WEBP - حداکثر ۲
-                                                مگابایت
-                                            </p>
+                                    <label
+                                        className="barber-image-upload-box"
+                                        htmlFor="barber-edit-image-input"
+                                    >
+                                        <div className="barber-image-upload-icon">
+                                            <Upload size={28} />
                                         </div>
+
+                                        <strong>
+                                            تصویر آرایشگر را انتخاب کنید
+                                        </strong>
+
+                                        <span>برای انتخاب تصویر کلیک کنید</span>
+
+                                        <small>
+                                            JPG، PNG یا WEBP - حداکثر ۵ مگابایت
+                                        </small>
                                     </label>
                                 )}
                             </div>
+
+                            <p className="form-help-text">
+                                در صورت عدم انتخاب تصویر جدید، تصویر فعلی
+                                آرایشگر حفظ می‌شود. برای تغییر تصویر، عکس جدید
+                                را انتخاب و کادر آن را تنظیم کنید.
+                            </p>
 
                             {errors.image && (
                                 <div className="form-error">
@@ -255,7 +465,15 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                     <span>{errors.image}</span>
                                 </div>
                             )}
+
+                            {errors.card_image && (
+                                <div className="form-error">
+                                    <AlertCircle size={14} />
+                                    <span>{errors.card_image}</span>
+                                </div>
+                            )}
                         </div>
+
                         {/* ============ فیلد نام ============ */}
                         <div className="form-group">
                             <label htmlFor="name" className="form-label">
@@ -263,12 +481,11 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                 نام و نام خانوادگی
                                 <span className="required">*</span>
                             </label>
+
                             <input
                                 id="name"
                                 type="text"
-                                className={`form-input ${
-                                    errors.name ? "error" : ""
-                                }`}
+                                className={`form-input ${errors.name ? "error" : ""}`}
                                 value={data.name}
                                 onChange={(e) =>
                                     setData("name", e.target.value)
@@ -276,6 +493,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                 placeholder="مثلاً: علی محمدی"
                                 autoFocus
                             />
+
                             {errors.name && (
                                 <div className="form-error">
                                     <AlertCircle size={14} />
@@ -284,19 +502,18 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                             )}
                         </div>
 
-                        {/* ============ فیلد شماره تماس ============ */}
+                        {/* ============ شماره تماس ============ */}
                         <div className="form-group">
                             <label htmlFor="phone" className="form-label">
                                 <Phone size={16} />
                                 شماره تماس
                                 <span className="required">*</span>
                             </label>
+
                             <input
                                 id="phone"
                                 type="text"
-                                className={`form-input ${
-                                    errors.phone ? "error" : ""
-                                }`}
+                                className={`form-input ${errors.phone ? "error" : ""}`}
                                 value={data.phone}
                                 onChange={(e) =>
                                     setData("phone", e.target.value)
@@ -305,6 +522,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                 dir="ltr"
                                 style={{ textAlign: "left" }}
                             />
+
                             {errors.phone && (
                                 <div className="form-error">
                                     <AlertCircle size={14} />
@@ -313,7 +531,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                             )}
                         </div>
 
-                        {/* ============ فیلد وضعیت (از Enum) ============ */}
+                        {/* ============ وضعیت کاربری ============ */}
                         <div className="form-group">
                             <label htmlFor="status" className="form-label">
                                 <StatusIcon size={16} />
@@ -323,8 +541,8 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
 
                             <Select2
                                 options={statusOptions}
-                                value={selectedStatus}
-                                onChange={handleStatusChange}
+                                value={data.status}
+                                onChange={(value) => setData("status", value)}
                                 placeholder="انتخاب وضعیت..."
                                 isMulti={false}
                                 isRtl={true}
@@ -345,19 +563,21 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                             </p>
                         </div>
 
-                        {/* ============ بخش تغییر رمز عبور ============ */}
-                        {/* ============ بخش تغییر رمز عبور ============ */}
+                        {/* ============ تغییر رمز عبور ============ */}
                         <div className="password-section">
-                            {/* کارت قابل کلیک برای فعال/غیرفعال کردن تغییر رمز */}
                             <button
                                 type="button"
                                 className={`password-toggle-card ${changePassword ? "active" : ""}`}
                                 onClick={() => {
                                     const newState = !changePassword;
+
                                     setChangePassword(newState);
+
                                     if (!newState) {
                                         setData("password", "");
                                         setData("password_confirmation", "");
+                                        setShowPassword(false);
+                                        setShowConfirmPassword(false);
                                     }
                                 }}
                             >
@@ -367,10 +587,9 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
 
                                 <div className="password-toggle-card-content">
                                     <h4 className="password-toggle-card-title">
-                                        {changePassword
-                                            ? "تغییر رمز عبور"
-                                            : "تغییر رمز عبور"}
+                                        تغییر رمز عبور
                                     </h4>
+
                                     <p className="password-toggle-card-description">
                                         {changePassword
                                             ? "رمز عبور جدید را در فیلدهای زیر وارد کنید"
@@ -380,11 +599,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
 
                                 <div className="password-toggle-card-action">
                                     <span
-                                        className={`password-toggle-card-status ${
-                                            changePassword
-                                                ? "active"
-                                                : "inactive"
-                                        }`}
+                                        className={`password-toggle-card-status ${changePassword ? "active" : "inactive"}`}
                                     >
                                         {changePassword ? (
                                             <>
@@ -398,16 +613,14 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                             </>
                                         )}
                                     </span>
+
                                     <ChevronLeft
                                         size={20}
-                                        className={`password-toggle-card-chevron ${
-                                            changePassword ? "rotated" : ""
-                                        }`}
+                                        className={`password-toggle-card-chevron ${changePassword ? "rotated" : ""}`}
                                     />
                                 </div>
                             </button>
 
-                            {/* فیلدهای رمز عبور (فقط وقتی فعال است) */}
                             {changePassword && (
                                 <div
                                     className="password-fields"
@@ -423,6 +636,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                             رمز عبور جدید
                                             <span className="required">*</span>
                                         </label>
+
                                         <div className="password-input-wrapper">
                                             <input
                                                 id="password"
@@ -431,11 +645,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                         ? "text"
                                                         : "password"
                                                 }
-                                                className={`form-input ${
-                                                    errors.password
-                                                        ? "error"
-                                                        : ""
-                                                }`}
+                                                className={`form-input ${errors.password ? "error" : ""}`}
                                                 value={data.password}
                                                 onChange={(e) =>
                                                     setData(
@@ -447,6 +657,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                 dir="ltr"
                                                 style={{ textAlign: "left" }}
                                             />
+
                                             <button
                                                 type="button"
                                                 className="password-toggle-btn"
@@ -464,10 +675,56 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                 )}
                                             </button>
                                         </div>
+
                                         {errors.password && (
                                             <div className="form-error">
                                                 <AlertCircle size={14} />
                                                 <span>{errors.password}</span>
+                                            </div>
+                                        )}
+
+                                        {/* نمایشگر قدرت رمز */}
+                                        {data.password && (
+                                            <div
+                                                className={`password-strength ${passwordStrength.level}`}
+                                            >
+                                                <div className="password-strength-header">
+                                                    <span>قدرت رمز عبور</span>
+                                                    <strong>
+                                                        {passwordStrength.label}
+                                                    </strong>
+                                                </div>
+
+                                                <div
+                                                    className="password-strength-bars"
+                                                    role="meter"
+                                                    aria-label="قدرت رمز عبور"
+                                                    aria-valuemin={0}
+                                                    aria-valuemax={5}
+                                                    aria-valuenow={
+                                                        passwordStrength.score
+                                                    }
+                                                >
+                                                    {[1, 2, 3, 4, 5].map(
+                                                        (item) => (
+                                                            <span
+                                                                key={item}
+                                                                className={
+                                                                    item <=
+                                                                    passwordStrength.score
+                                                                        ? "active"
+                                                                        : ""
+                                                                }
+                                                            />
+                                                        ),
+                                                    )}
+                                                </div>
+
+                                                <p className="password-strength-hint">
+                                                    برای امنیت بیشتر، از حروف
+                                                    کوچک و بزرگ، اعداد و نمادها
+                                                    استفاده کنید.
+                                                </p>
                                             </div>
                                         )}
                                     </div>
@@ -482,6 +739,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                             تکرار رمز عبور جدید
                                             <span className="required">*</span>
                                         </label>
+
                                         <div className="password-input-wrapper">
                                             <input
                                                 id="password_confirmation"
@@ -490,11 +748,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                         ? "text"
                                                         : "password"
                                                 }
-                                                className={`form-input ${
-                                                    errors.password_confirmation
-                                                        ? "error"
-                                                        : ""
-                                                }`}
+                                                className={`form-input ${errors.password_confirmation ? "error" : ""}`}
                                                 value={
                                                     data.password_confirmation
                                                 }
@@ -508,6 +762,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                 dir="ltr"
                                                 style={{ textAlign: "left" }}
                                             />
+
                                             <button
                                                 type="button"
                                                 className="password-toggle-btn"
@@ -525,6 +780,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                                 )}
                                             </button>
                                         </div>
+
                                         {errors.password_confirmation && (
                                             <div className="form-error">
                                                 <AlertCircle size={14} />
@@ -536,7 +792,6 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                                             </div>
                                         )}
 
-                                        {/* نشانگر تطابق */}
                                         {data.password &&
                                             data.password_confirmation &&
                                             data.password ===
@@ -558,6 +813,7 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                             <Link href="/admin/barbers" className="btn-outline">
                                 انصراف
                             </Link>
+
                             <button
                                 type="submit"
                                 className="btn-primary"
@@ -585,6 +841,87 @@ export default function Edit({ auth, barber, roles, statuses, scope }) {
                     </form>
                 </div>
             </div>
+
+            {/* ============ Crop Image Modal ============ */}
+            {cropModalOpen && imagePreview && (
+                <div className="barber-crop-modal">
+                    <div className="barber-crop-dialog">
+                        <div className="barber-crop-header">
+                            <div>
+                                <h3>تنظیم تصویر آرایشگر</h3>
+                                <p>
+                                    کادر تصویر را برای نمایش بهتر در کارت تنظیم
+                                    کنید.
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="barber-crop-close"
+                                onClick={handleCropCancel}
+                                title="انصراف"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="barber-crop-area">
+                            <Cropper
+                                image={imagePreview}
+                                crop={crop}
+                                zoom={zoom}
+                                aspect={5 / 8}
+                                onCropChange={setCrop}
+                                onZoomChange={setZoom}
+                                onCropComplete={handleCropComplete}
+                                showGrid={true}
+                                objectFit="contain"
+                                restrictPosition={true}
+                            />
+                        </div>
+
+                        <div className="barber-crop-controls">
+                            <label htmlFor="barber-image-zoom">
+                                <ZoomIn size={16} />
+                                بزرگ‌نمایی
+                            </label>
+
+                            <input
+                                id="barber-image-zoom"
+                                type="range"
+                                min={1}
+                                max={3}
+                                step={0.1}
+                                value={zoom}
+                                onChange={(e) =>
+                                    setZoom(Number(e.target.value))
+                                }
+                            />
+
+                            <span>{zoom.toFixed(1)}x</span>
+                        </div>
+
+                        <div className="barber-crop-footer">
+                            <button
+                                type="button"
+                                className="btn-outline"
+                                onClick={handleCropCancel}
+                            >
+                                انصراف
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn-primary"
+                                onClick={handleCropSave}
+                            >
+                                <CheckCircle size={17} />
+                                تأیید و ذخیره کادر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 }

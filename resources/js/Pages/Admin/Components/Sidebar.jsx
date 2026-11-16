@@ -317,12 +317,7 @@ export default function Sidebar({
         },
         [isSuperAdmin, userPermissions],
     );
-    console.log("Sidebar Debug:", {
-        roles: userRoles,
-        permissions: userPermissions,
-        isSuperAdmin,
-        userPanel,
-    });
+
     // ========================================
     // وضعیت تکمیل راه‌اندازی نوبت‌دهی
     // ========================================

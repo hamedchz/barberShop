@@ -37,6 +37,7 @@ import {
 } from "../../../utils/persianNumbers";
 
 import "../Assets/css/AdminBarbers.css";
+import "./Assets/css/BarberShow.css";
 
 // ============ توابع کمکی ============
 const formatJalaliDate = (date) => {
@@ -82,52 +83,26 @@ const daysOfWeek = [
 ];
 
 const statusConfig = {
-    active: {
-        label: "فعال",
-        color: "#065f46",
-        bg: "#ecfdf5",
-        border: "#d1fae5",
-    },
-    inactive: {
-        label: "غیرفعال",
-        color: "#374151",
-        bg: "#f3f4f6",
-        border: "#e5e7eb",
-    },
-    suspended: {
-        label: "معلق",
-        color: "#9a3412",
-        bg: "#fff7ed",
-        border: "#ffedd5",
-    },
-    pending: {
-        label: "در انتظار",
-        color: "#1e40af",
-        bg: "#eff6ff",
-        border: "#dbeafe",
-    },
-    banned: {
-        label: "مسدود",
-        color: "#991b1b",
-        bg: "#fef2f2",
-        border: "#fee2e2",
-    },
+    active: { label: "فعال" },
+    inactive: { label: "غیرفعال" },
+    suspended: { label: "معلق" },
+    pending: { label: "در انتظار" },
+    banned: { label: "مسدود" },
 };
 
 const slotStatusConfig = {
     available: {
         label: "قابل رزرو",
         icon: Unlock,
-        color: "#065f46",
-        bg: "#ecfdf5",
     },
     booked: {
         label: "رزرو شده",
         icon: CheckCircle,
-        color: "#1e40af",
-        bg: "#eff6ff",
     },
-    blocked: { label: "بسته", icon: Lock, color: "#991b1b", bg: "#fef2f2" },
+    blocked: {
+        label: "بسته",
+        icon: Lock,
+    },
 };
 
 export default function BarbersShow({
@@ -168,12 +143,23 @@ export default function BarbersShow({
         <Layout>
             <Head title={`جزئیات آرایشگر: ${barber.name}`} />
 
-            <div className="center-column">
-                {/* ============ هدر با دکمه بازگشت ============ */}
-                <div className="page-header-with-back">
+            <div className="center-column barber-show-page">
+                <div className="roles-page-header">
+                    <div className="roles-header-content">
+                        <div className="roles-header-icon">
+                            <User size={23} strokeWidth={1.8} />
+                        </div>
+
+                        <div className="roles-header-info">
+                            <h1 className="roles-page-title">
+                                جزئیات آرایشگر: {barber.name}
+                            </h1>
+                        </div>
+                    </div>
+
                     <Link href="/admin/barbers" className="back-btn">
                         <ArrowRight size={20} />
-                        <span>بازگشت به لیست آرایشگران</span>
+                        <span>بازگشت به لیست آرایشگر‌ها</span>
                     </Link>
                 </div>
 
@@ -215,13 +201,9 @@ export default function BarbersShow({
 
                                 {/* Badge وضعیت */}
                                 <span
-                                    className="barber-status-badge"
-                                    style={{
-                                        backgroundColor: statusCfg.bg,
-                                        color: statusCfg.color,
-                                        borderColor: statusCfg.border,
-                                    }}
+                                    className={`barber-status-badge status-${barber.status}`}
                                 >
+                                    <span className="status-dot" />
                                     {statusCfg.label}
                                 </span>
 
@@ -747,13 +729,9 @@ export default function BarbersShow({
                                                 )}
 
                                                 <span
-                                                    className="upcoming-slot-status"
-                                                    style={{
-                                                        backgroundColor: cfg.bg,
-                                                        color: cfg.color,
-                                                    }}
+                                                    className={`upcoming-slot-status status-${slot.status}`}
                                                 >
-                                                    <StatusIcon size={12} />
+                                                    <StatusIcon size={13} />
                                                     {cfg.label}
                                                 </span>
 

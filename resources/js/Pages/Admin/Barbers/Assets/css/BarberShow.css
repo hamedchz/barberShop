@@ -1,0 +1,1228 @@
+/* =========================================================
+   Barber Show - Modern Admin UI
+   Dynamic Theme + Color Mix
+========================================================= */
+
+.barber-show-page {
+  --bs-primary: var(--color-primary, #10b981);
+  --bs-primary-hover: var(--color-primary-hover, #0d9668);
+  --bs-primary-tint: var(--color-primary-tint, #e8f8f2);
+  --bs-secondary: var(--color-secondary, #1e293b);
+
+  --bs-success: var(--color-success, #10b981);
+  --bs-danger: var(--color-danger, #ef4444);
+  --bs-warning: var(--color-warning, #f59e0b);
+  --bs-info: var(--color-info, #3b82f6);
+
+  --bs-surface: var(--color-card, #ffffff);
+  --bs-page-bg: var(--color-background, #f8fafc);
+  --bs-text: var(--color-text, #1e293b);
+  --bs-muted: var(--color-muted, #64748b);
+  --bs-border: var(--color-border, #e2e8f0);
+
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 32px;
+  color: var(--bs-text);
+  direction: rtl;
+}
+
+/* اگر متغیرهای surface در تم تعریف نشده باشند */
+.barber-show-page .card,
+.barber-show-page .barber-profile-card,
+.barber-show-page .service-card {
+  background: var(--bs-surface);
+}
+
+
+
+/* =========================================================
+   Profile Card
+========================================================= */
+
+.barber-show-page .barber-profile-card {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 22px;
+  border: 1px solid var(--bs-border);
+  border-radius: 20px;
+  box-shadow: 0 5px 22px rgba(15, 23, 42, .035);
+}
+
+.barber-show-page .barber-profile-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg,
+      var(--bs-primary),
+      var(--bs-primary-hover));
+}
+
+.barber-show-page .barber-profile-card.online::before {
+  background: linear-gradient(90deg, var(--bs-success), var(--bs-primary));
+}
+
+.barber-show-page .online-stripe {
+  display: none;
+}
+
+.barber-show-page .barber-profile-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 26px 25px 23px;
+}
+
+.barber-show-page .barber-profile-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.barber-show-page .barber-profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 94px;
+  height: 94px;
+  overflow: hidden;
+  border-radius: 23px;
+  border: 3px solid var(--bs-surface);
+  outline: 1px solid var(--bs-border);
+  background: color-mix(in srgb, var(--bs-primary) 10%, var(--bs-surface));
+  color: var(--bs-primary);
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.barber-show-page .barber-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.barber-show-page .online-indicator {
+  position: absolute;
+  left: -4px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border: 3px solid var(--bs-surface);
+  border-radius: 50%;
+  background: var(--bs-success);
+}
+
+.barber-show-page .pulse-ring {
+  display: none;
+}
+
+.barber-show-page .barber-profile-info {
+  flex: 1;
+  min-width: 230px;
+}
+
+.barber-show-page .barber-profile-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-bottom: 14px;
+}
+
+.barber-show-page .barber-profile-name {
+  margin: 0 4px 0 8px;
+  color: var(--bs-secondary);
+  font-size: 21px;
+  font-weight: 850;
+}
+
+.barber-show-page .barber-status-badge,
+.barber-show-page .barber-online-badge,
+.barber-show-page .role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 27px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.barber-show-page .barber-status-badge .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.barber-show-page .barber-status-badge.status-active {
+  color: var(--bs-success);
+  background: color-mix(in srgb, var(--bs-success) 10%, transparent);
+  border-color: color-mix(in srgb, var(--bs-success) 22%, transparent);
+}
+
+.barber-show-page .barber-status-badge.status-inactive {
+  color: var(--bs-muted);
+  background: color-mix(in srgb, var(--bs-muted) 9%, transparent);
+  border-color: color-mix(in srgb, var(--bs-muted) 18%, transparent);
+}
+
+.barber-show-page .barber-status-badge.status-suspended {
+  color: var(--bs-warning);
+  background: color-mix(in srgb, var(--bs-warning) 10%, transparent);
+  border-color: color-mix(in srgb, var(--bs-warning) 22%, transparent);
+}
+
+.barber-show-page .barber-status-badge.status-pending {
+  color: var(--bs-info);
+  background: color-mix(in srgb, var(--bs-info) 10%, transparent);
+  border-color: color-mix(in srgb, var(--bs-info) 22%, transparent);
+}
+
+.barber-show-page .barber-status-badge.status-banned {
+  color: var(--bs-danger);
+  background: color-mix(in srgb, var(--bs-danger) 10%, transparent);
+  border-color: color-mix(in srgb, var(--bs-danger) 22%, transparent);
+}
+
+.barber-show-page .barber-online-badge.online {
+  color: var(--bs-success);
+  background: color-mix(in srgb, var(--bs-success) 9%, transparent);
+  border-color: color-mix(in srgb, var(--bs-success) 18%, transparent);
+}
+
+.barber-show-page .barber-online-badge.offline {
+  color: var(--bs-muted);
+  background: color-mix(in srgb, var(--bs-muted) 8%, transparent);
+  border-color: color-mix(in srgb, var(--bs-muted) 16%, transparent);
+}
+
+.barber-show-page .role-badge {
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--bs-primary) 18%, transparent);
+}
+
+.barber-show-page .role-badge.crown {
+  color: var(--bs-warning);
+  background: color-mix(in srgb, var(--bs-warning) 10%, transparent);
+  border-color: color-mix(in srgb, var(--bs-warning) 22%, transparent);
+}
+
+/* Contact details */
+
+.barber-show-page .barber-contact-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.barber-show-page .contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--bs-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barber-show-page .contact-item svg {
+  flex-shrink: 0;
+  color: var(--bs-primary);
+}
+
+/* Action buttons */
+
+.barber-show-page .barber-edit-btn,
+.barber-show-page .barber-success-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 11px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+  transition: .2s ease;
+}
+
+.barber-show-page .barber-edit-btn {
+  color: var(--bs-primary);
+  border: 1px solid color-mix(in srgb, var(--bs-primary) 25%, transparent);
+  background: color-mix(in srgb, var(--bs-primary) 7%, var(--bs-surface));
+}
+
+.barber-show-page .barber-edit-btn:hover {
+  color: #fff;
+  border-color: var(--bs-primary-hover);
+  background: var(--bs-primary-hover);
+}
+
+.barber-show-page .barber-success-btn {
+  color: #fff;
+  border: 1px solid var(--bs-primary);
+  background: var(--bs-primary);
+}
+
+.barber-show-page .barber-success-btn:hover {
+  border-color: var(--bs-primary-hover);
+  background: var(--bs-primary-hover);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--bs-primary) 22%, transparent);
+}
+
+/* =========================================================
+   Quick Stats
+========================================================= */
+
+.barber-show-page .barber-quick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px 25px 23px;
+  border-top: 1px solid var(--bs-border);
+  background: color-mix(in srgb, var(--bs-primary) 2.5%, var(--bs-surface));
+}
+
+.barber-show-page .quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--bs-border);
+  border-radius: 13px;
+  background: var(--bs-surface);
+  transition: .2s ease;
+}
+
+.barber-show-page .quick-stat:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--bs-primary) 30%, var(--bs-border));
+  box-shadow: 0 5px 16px rgba(15, 23, 42, .045);
+}
+
+.barber-show-page .quick-stat-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+.barber-show-page .quick-stat-icon.green {
+  color: var(--bs-success);
+  background: color-mix(in srgb, var(--bs-success) 11%, transparent);
+}
+
+.barber-show-page .quick-stat-icon.blue {
+  color: var(--bs-info);
+  background: color-mix(in srgb, var(--bs-info) 11%, transparent);
+}
+
+.barber-show-page .quick-stat-icon.purple {
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 11%, transparent);
+}
+
+.barber-show-page .quick-stat-icon.orange {
+  color: var(--bs-warning);
+  background: color-mix(in srgb, var(--bs-warning) 12%, transparent);
+}
+
+.barber-show-page .quick-stat>div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.barber-show-page .quick-stat-value {
+  color: var(--bs-secondary);
+  font-size: 19px;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.barber-show-page .quick-stat-label {
+  color: var(--bs-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Tabs
+========================================================= */
+
+.barber-show-page .barber-tabs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  padding: 6px;
+  border: 1px solid var(--bs-border);
+  border-radius: 14px;
+  background: var(--bs-surface);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--bs-primary) 25%, transparent) transparent;
+}
+
+.barber-show-page .barber-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--bs-muted);
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.barber-show-page .barber-tab:hover {
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 5%, transparent);
+}
+
+.barber-show-page .barber-tab.active {
+  color: var(--bs-primary);
+  border-color: color-mix(in srgb, var(--bs-primary) 17%, transparent);
+  background: color-mix(in srgb, var(--bs-primary) 9%, var(--bs-surface));
+}
+
+.barber-show-page .barber-tab.active::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  left: 15px;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--bs-primary);
+}
+
+.barber-show-page .tab-count,
+.barber-show-page .permissions-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 7px;
+  color: var(--bs-muted);
+  background: color-mix(in srgb, var(--bs-muted) 9%, transparent);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.barber-show-page .barber-tab.active .tab-count {
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 13%, transparent);
+}
+
+/* =========================================================
+   Tab Content & General Cards
+========================================================= */
+
+.barber-show-page .barber-tab-content {
+  min-width: 0;
+  animation: barber-show-fade .22s ease;
+}
+
+@keyframes barber-show-fade {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.barber-show-page .overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: 17px;
+}
+
+.barber-show-page .card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--bs-border);
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, .025);
+}
+
+.barber-show-page .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--bs-border);
+}
+
+.barber-show-page .card-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: var(--bs-secondary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.barber-show-page .card-title svg {
+  color: var(--bs-primary);
+}
+
+/* Detailed stats */
+
+.barber-show-page .stats-detail-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.barber-show-page .stats-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 2px;
+  border-bottom: 1px dashed var(--bs-border);
+}
+
+.barber-show-page .stats-detail-row:last-child {
+  border-bottom: 0;
+}
+
+.barber-show-page .stats-detail-label {
+  color: var(--bs-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.barber-show-page .stats-detail-value {
+  color: var(--bs-secondary);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.barber-show-page .stats-detail-value.green {
+  color: var(--bs-success);
+}
+
+.barber-show-page .stats-detail-value.blue {
+  color: var(--bs-info);
+}
+
+.barber-show-page .stats-detail-value.red {
+  color: var(--bs-danger);
+}
+
+.barber-show-page .stats-detail-row.highlighted {
+  margin-top: 8px;
+  padding: 14px 12px;
+  border: 1px solid color-mix(in srgb, var(--bs-primary) 18%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bs-primary) 6%, var(--bs-surface));
+}
+
+.barber-show-page .stats-detail-value.primary {
+  color: var(--bs-primary);
+  font-size: 14px;
+}
+
+/* =========================================================
+   Weekly Schedule
+========================================================= */
+
+.barber-show-page .overview-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.barber-show-page .overview-day {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  background: var(--bs-surface);
+}
+
+.barber-show-page .overview-day.active {
+  border-color: color-mix(in srgb, var(--bs-success) 20%, var(--bs-border));
+  background: color-mix(in srgb, var(--bs-success) 4%, var(--bs-surface));
+}
+
+.barber-show-page .overview-day-name {
+  color: var(--bs-secondary);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.barber-show-page .overview-day-time {
+  color: var(--bs-success);
+  font-size: 12px;
+  font-weight: 750;
+  direction: ltr;
+}
+
+.barber-show-page .overview-day-off {
+  color: var(--bs-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.barber-show-page .schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.barber-show-page .schedule-day-card {
+  padding: 15px;
+  border: 1px solid var(--bs-border);
+  border-radius: 13px;
+  background: var(--bs-surface);
+}
+
+.barber-show-page .schedule-day-card.active {
+  border-color: color-mix(in srgb, var(--bs-success) 22%, var(--bs-border));
+  background: color-mix(in srgb, var(--bs-success) 3%, var(--bs-surface));
+}
+
+.barber-show-page .schedule-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.barber-show-page .schedule-day-name {
+  color: var(--bs-secondary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.barber-show-page .schedule-day-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.barber-show-page .schedule-day-status.active {
+  color: var(--bs-success);
+}
+
+.barber-show-page .schedule-day-status.inactive {
+  color: var(--bs-muted);
+}
+
+.barber-show-page .schedule-day-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bs-success);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.barber-show-page .schedule-day-time-off {
+  color: var(--bs-muted);
+  font-size: 11px;
+}
+
+/* =========================================================
+   Services
+========================================================= */
+
+.barber-show-page .services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.barber-show-page .service-card {
+  min-width: 0;
+  overflow: hidden;
+  padding: 11px;
+  border: 1px solid var(--bs-border);
+  border-radius: 15px;
+  transition: .2s ease;
+}
+
+.barber-show-page .service-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--bs-primary) 30%, var(--bs-border));
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .06);
+}
+
+.barber-show-page .service-card-image-wrapper {
+  position: relative;
+  height: 155px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bs-primary) 7%, var(--bs-surface));
+}
+
+.barber-show-page .service-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s ease;
+}
+
+.barber-show-page .service-card:hover .service-card-image {
+  transform: scale(1.04);
+}
+
+.barber-show-page .service-card-image-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 8%, var(--bs-surface));
+}
+
+.barber-show-page .service-status-badge {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.barber-show-page .service-status-badge.active {
+  color: var(--bs-success);
+  border-color: color-mix(in srgb, var(--bs-success) 20%, transparent);
+  background: color-mix(in srgb, var(--bs-surface) 90%, transparent);
+}
+
+.barber-show-page .service-status-badge.inactive {
+  color: var(--bs-muted);
+  border-color: var(--bs-border);
+  background: color-mix(in srgb, var(--bs-surface) 90%, transparent);
+}
+
+.barber-show-page .service-name {
+  margin: 13px 2px 7px;
+  color: var(--bs-secondary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.barber-show-page .service-description {
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: 36px;
+  margin: 0 2px 12px;
+  color: var(--bs-muted);
+  font-size: 11px;
+  line-height: 1.8;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.barber-show-page .service-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--bs-border);
+}
+
+.barber-show-page .service-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--bs-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.barber-show-page .service-meta-item.price {
+  color: var(--bs-primary);
+  font-weight: 800;
+}
+
+/* =========================================================
+   Upcoming Slots
+========================================================= */
+
+.barber-show-page .upcoming-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barber-show-page .upcoming-slot-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 14px;
+  border: 1px solid var(--bs-border);
+  border-radius: 12px;
+  background: var(--bs-surface);
+  transition: .2s ease;
+}
+
+.barber-show-page .upcoming-slot-row:hover {
+  border-color: color-mix(in srgb, var(--bs-primary) 28%, var(--bs-border));
+  background: color-mix(in srgb, var(--bs-primary) 2.5%, var(--bs-surface));
+}
+
+.barber-show-page .upcoming-slot-date,
+.barber-show-page .upcoming-slot-time,
+.barber-show-page .upcoming-slot-service,
+.barber-show-page .upcoming-slot-customer {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--bs-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.barber-show-page .upcoming-slot-date svg,
+.barber-show-page .upcoming-slot-time svg,
+.barber-show-page .upcoming-slot-service svg,
+.barber-show-page .upcoming-slot-customer svg {
+  flex-shrink: 0;
+  color: var(--bs-primary);
+}
+
+.barber-show-page .upcoming-slot-time {
+  direction: ltr;
+}
+
+.barber-show-page .upcoming-slot-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 27px;
+  margin-right: auto;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.barber-show-page .upcoming-slot-status.status-available {
+  color: var(--bs-success);
+  border-color: color-mix(in srgb, var(--bs-success) 22%, transparent);
+  background: color-mix(in srgb, var(--bs-success) 9%, transparent);
+}
+
+.barber-show-page .upcoming-slot-status.status-booked {
+  color: var(--bs-info);
+  border-color: color-mix(in srgb, var(--bs-info) 22%, transparent);
+  background: color-mix(in srgb, var(--bs-info) 9%, transparent);
+}
+
+.barber-show-page .upcoming-slot-status.status-blocked {
+  color: var(--bs-danger);
+  border-color: color-mix(in srgb, var(--bs-danger) 22%, transparent);
+  background: color-mix(in srgb, var(--bs-danger) 9%, transparent);
+}
+
+/* =========================================================
+   Empty States
+========================================================= */
+
+.barber-show-page .empty-text {
+  margin: 0;
+  padding: 28px 15px;
+  color: var(--bs-muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+.barber-show-page .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 30px 15px;
+  border: 1px dashed var(--bs-border);
+  border-radius: 15px;
+  color: var(--bs-muted);
+  background: var(--bs-surface);
+  text-align: center;
+}
+
+.barber-show-page .empty-state>svg {
+  margin-bottom: 14px;
+  color: var(--bs-primary);
+  opacity: .65;
+}
+
+.barber-show-page .empty-state h3 {
+  margin: 0 0 7px;
+  color: var(--bs-secondary);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.barber-show-page .empty-state p {
+  margin: 0;
+  font-size: 11px;
+}
+
+/* =========================================================
+   Responsive - Tablet
+========================================================= */
+
+@media (max-width: 1100px) {
+  .barber-show-page .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .barber-show-page .barber-profile-header {
+    gap: 16px;
+  }
+
+  .barber-show-page .barber-edit-btn,
+  .barber-show-page .barber-success-btn {
+    flex: 1;
+  }
+}
+
+/* =========================================================
+   Responsive - Mobile
+========================================================= */
+
+@media (max-width: 768px) {
+  .barber-show-page {
+    padding-bottom: 20px;
+  }
+
+  .barber-show-page .roles-page-header {
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+  }
+
+  .barber-show-page .roles-header-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .barber-show-page .roles-page-title {
+    font-size: 15px;
+  }
+
+  .barber-show-page .back-btn {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .barber-show-page .barber-profile-card {
+    border-radius: 16px;
+  }
+
+  .barber-show-page .barber-profile-header {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 13px;
+    padding: 21px 15px 16px;
+  }
+
+  .barber-show-page .barber-profile-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 17px;
+    font-size: 25px;
+  }
+
+  .barber-show-page .barber-profile-info {
+    min-width: 0;
+  }
+
+  .barber-show-page .barber-profile-name-row {
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+
+  .barber-show-page .barber-profile-name {
+    width: 100%;
+    margin: 0 0 3px;
+    font-size: 17px;
+  }
+
+  .barber-show-page .barber-status-badge,
+  .barber-show-page .barber-online-badge,
+  .barber-show-page .role-badge {
+    min-height: 24px;
+    padding: 3px 7px;
+    font-size: 9px;
+  }
+
+  .barber-show-page .barber-contact-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px 8px;
+    padding-top: 13px;
+    border-top: 1px solid var(--bs-border);
+  }
+
+  .barber-show-page .contact-item {
+    min-width: 0;
+    font-size: 10px;
+  }
+
+  .barber-show-page .contact-item span {
+    overflow-wrap: anywhere;
+  }
+
+  .barber-show-page .barber-edit-btn,
+  .barber-show-page .barber-success-btn {
+    grid-column: span 1;
+    min-height: 40px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+
+  .barber-show-page .barber-quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    padding: 13px 12px 15px;
+  }
+
+  .barber-show-page .quick-stat {
+    gap: 9px;
+    padding: 11px 9px;
+    border-radius: 11px;
+  }
+
+  .barber-show-page .quick-stat-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+  }
+
+  .barber-show-page .quick-stat-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .barber-show-page .quick-stat-value {
+    font-size: 16px;
+  }
+
+  .barber-show-page .quick-stat-label {
+    font-size: 10px;
+  }
+
+  .barber-show-page .barber-tabs {
+    gap: 4px;
+    margin-bottom: 14px;
+    padding: 5px;
+    border-radius: 12px;
+  }
+
+  .barber-show-page .barber-tab {
+    min-height: 39px;
+    gap: 6px;
+    padding: 0 11px;
+    font-size: 10px;
+  }
+
+  .barber-show-page .barber-tab svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .barber-show-page .overview-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .barber-show-page .card {
+    padding: 15px;
+    border-radius: 14px;
+  }
+
+  .barber-show-page .card-title {
+    font-size: 13px;
+  }
+
+  .barber-show-page .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .barber-show-page .service-card {
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .barber-show-page .service-card-image-wrapper {
+    height: 125px;
+  }
+
+  .barber-show-page .service-name {
+    font-size: 12px;
+  }
+
+  .barber-show-page .service-description {
+    font-size: 10px;
+  }
+
+  .barber-show-page .service-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .barber-show-page .service-meta-item {
+    font-size: 10px;
+  }
+
+  .barber-show-page .schedule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .barber-show-page .upcoming-slot-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 8px;
+    padding: 12px;
+  }
+
+  .barber-show-page .upcoming-slot-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-right: 0;
+  }
+
+  .barber-show-page .upcoming-slot-date,
+  .barber-show-page .upcoming-slot-time,
+  .barber-show-page .upcoming-slot-service,
+  .barber-show-page .upcoming-slot-customer {
+    min-width: 0;
+    font-size: 10px;
+  }
+}
+
+/* =========================================================
+   Small Mobile
+========================================================= */
+
+@media (max-width: 420px) {
+  .barber-show-page .roles-page-header {
+    flex-direction: column;
+  }
+
+  .barber-show-page .back-btn {
+    align-self: flex-start;
+  }
+
+  .barber-show-page .barber-profile-header {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 10px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .barber-show-page .barber-profile-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+  }
+
+  .barber-show-page .barber-profile-name {
+    font-size: 15px;
+  }
+
+  .barber-show-page .barber-contact-row {
+    grid-template-columns: 1fr;
+  }
+
+  .barber-show-page .barber-edit-btn,
+  .barber-show-page .barber-success-btn {
+    font-size: 9px;
+  }
+
+  .barber-show-page .quick-stat {
+    padding: 9px 7px;
+  }
+
+  .barber-show-page .quick-stat-value {
+    font-size: 14px;
+  }
+
+  .barber-show-page .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .barber-show-page .service-card-image-wrapper {
+    height: 170px;
+  }
+}
+
+/* =========================================================
+   Accessibility
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .barber-show-page *,
+  .barber-show-page *::before,
+  .barber-show-page *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

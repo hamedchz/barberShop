@@ -172,18 +172,13 @@ class User extends Authenticatable
 
     public function avatarCardUrl(): string
     {
-        $avatar = $this->attributes['avatar'] ?? null;
+        $path = $this->attributes['avatar_card'] ?? null;
 
-        if (empty($avatar)) {
-            return $this->avatarUrl();
-        }
-
-        $filename = pathinfo($avatar, PATHINFO_FILENAME);
-
-        $cardPath = 'thumbnails/cards/' . $filename . '.webp';
-
-        if (Storage::disk('public')->exists($cardPath)) {
-            return Storage::disk('public')->url($cardPath);
+        if (
+            !empty($path) &&
+            Storage::disk('public')->exists($path)
+        ) {
+            return Storage::disk('public')->url($path);
         }
 
         return $this->avatarUrl();

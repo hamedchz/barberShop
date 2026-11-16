@@ -5,6 +5,7 @@ namespace App\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Format;
+use Intervention\Image\Alignment;
 
 class Thumbnail
 {
@@ -59,30 +60,30 @@ class Thumbnail
 
     $img = Image::decode($source);
 
-    // اصلاح جهت تصویر
+    // اصلاح جهت تصویر بر اساس EXIF
     $img->orient();
 
-    // برش با نسبت 5:8
+    // برش تصویر با نسبت 5:8
     $img->cover(
-      width: $width,
-      height: $height,
-      position: 'top'
+      $width,
+      $height,
+      Alignment::TOP
     );
-
-    // تبدیل به WebP در Intervention Image 4
+    // تبدیل به WebP
     $encoded = (string) $img->encodeUsingFormat(
       Format::WEBP,
       quality: $quality
     );
 
+    // مسیر ذخیره تصویر
     $path = 'thumbnails/cards/' .
       pathinfo($filename, PATHINFO_FILENAME) .
       '.webp';
 
+    // ذخیره در دیسک public
     Storage::disk('public')->put($path, $encoded);
 
-    return 'cards/' .
-      pathinfo($filename, PATHINFO_FILENAME) .
-      '.webp';
+    // بازگرداندن مسیر واقعی فایل
+    return $path;
   }
 }
