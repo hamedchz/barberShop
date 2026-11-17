@@ -18,7 +18,9 @@ class PaymentController extends Controller
             'user.roles',
             'booking:id,status,amount,time_slot_id,service_id,barber_id,created_at',
             'booking.timeSlot:id,date,start_time,end_time',
-            'booking.service:id,name,price',
+            'booking.service:id,category_id,duration,price',
+            'booking.service.category:id,name,description,image',
+
         ]);
 
         // ============ فیلترها ============

@@ -112,7 +112,8 @@ class ReviewController extends Controller
                 'barber:id,name,phone,avatar,slug',
                 'booking:id,amount,time_slot_id,created_at',
                 'booking.timeSlot:id,date,start_time,end_time',
-                'booking.service:id,name,price',
+                'booking.service:id,category_id,duration,price',
+                'booking.service.category:id,name,description,image',
                 'moderatedBy:id,name',
                 'moderationHistory.admin:id,name',
             ])

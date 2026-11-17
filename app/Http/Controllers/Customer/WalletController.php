@@ -302,7 +302,8 @@ class WalletController extends Controller
             ->with([
                 'payment',
                 'barber:id,name,avatar',
-                'service:id,name',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
             ]);
 
         // ============ فیلتر وضعیت ============

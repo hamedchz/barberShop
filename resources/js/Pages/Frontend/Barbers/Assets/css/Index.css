@@ -1,0 +1,1320 @@
+/* =========================================
+   BARBER INDEX PAGE
+========================================= */
+
+.barber-index-page {
+  --barber-card-radius: 22px;
+  --barber-soft-bg: color-mix(in srgb,
+      var(--color-primary) 7%,
+      var(--color-bg-card));
+  --barber-primary-soft: color-mix(in srgb,
+      var(--color-primary) 12%,
+      transparent);
+  --barber-primary-border: color-mix(in srgb,
+      var(--color-primary) 25%,
+      var(--color-border));
+  --barber-text-soft: color-mix(in srgb,
+      var(--color-secondary) 65%,
+      var(--color-bg-card));
+
+  min-height: 100vh;
+  padding: 34px 0 80px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  direction: rtl;
+}
+
+.barber-index-container {
+  width: min(1180px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+/* =========================================
+   HERO
+========================================= */
+
+.barber-index-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 280px;
+  padding: 42px 48px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--barber-primary-border);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 12% 20%,
+      color-mix(in srgb, var(--color-primary) 18%, transparent),
+      transparent 34%),
+    linear-gradient(115deg,
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)),
+      var(--color-bg-card) 70%);
+}
+
+.barber-index-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 650px;
+}
+
+.barber-index-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  color: var(--color-primary);
+  background: var(--barber-primary-soft);
+  border: 1px solid var(--barber-primary-border);
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.barber-index-hero h1 {
+  margin: 20px 0 12px;
+  color: var(--color-text);
+  font-size: clamp(25px, 3vw, 36px);
+  font-weight: 900;
+  line-height: 1.6;
+}
+
+.barber-index-hero-content>p {
+  max-width: 560px;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 2;
+}
+
+.barber-index-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 27px;
+}
+
+.barber-index-hero-stats>div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-primary);
+}
+
+.barber-index-hero-stats strong {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.barber-index-hero-stats span {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.barber-index-hero-decoration {
+  position: absolute;
+  left: 7%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 230px;
+  height: 230px;
+  transform: translateY(-50%);
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 18%,
+      transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb,
+      var(--color-primary) 5%,
+      transparent);
+}
+
+.barber-index-hero-decoration::before,
+.barber-index-hero-decoration::after {
+  position: absolute;
+  content: "";
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 13%,
+      transparent);
+  border-radius: 50%;
+}
+
+.barber-index-hero-decoration::before {
+  inset: 20px;
+}
+
+.barber-index-hero-decoration::after {
+  inset: 42px;
+}
+
+.barber-index-hero-icon {
+  display: grid;
+  place-items: center;
+  width: 135px;
+  height: 135px;
+  color: var(--color-primary);
+  border-radius: 50%;
+  background: var(--barber-primary-soft);
+}
+
+.barber-index-decoration-dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 7px var(--barber-primary-soft);
+}
+
+.barber-index-decoration-dot.dot-one {
+  top: 28px;
+  right: 43px;
+}
+
+.barber-index-decoration-dot.dot-two {
+  bottom: 45px;
+  left: 18px;
+}
+
+.barber-index-decoration-dot.dot-three {
+  top: 50%;
+  right: -4px;
+}
+
+/* =========================================
+   CATEGORIES
+========================================= */
+
+.barber-index-categories {
+  margin-top: 35px;
+}
+
+.barber-index-categories-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 13px;
+}
+
+.barber-index-categories-title>span {
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.barber-index-categories-title small {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.barber-index-category-list {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 2px 1px 9px;
+  scrollbar-width: none;
+}
+
+.barber-index-category-list::-webkit-scrollbar {
+  display: none;
+}
+
+.barber-index-category-chip {
+  flex: 0 0 auto;
+  padding: 10px 17px;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 30px;
+  background: var(--color-bg-card);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.barber-index-category-chip:hover,
+.barber-index-category-chip.active {
+  color: var(--color-primary);
+  border-color: var(--barber-primary-border);
+  background: var(--barber-primary-soft);
+}
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+.barber-index-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 27px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-bg-card);
+}
+
+.barber-index-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 13px;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+}
+
+.barber-index-search:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--barber-primary-soft);
+}
+
+.barber-index-search input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  color: var(--color-text);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.barber-index-search input::placeholder {
+  color: var(--color-muted);
+}
+
+.barber-index-search button {
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  color: var(--color-muted);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.barber-index-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.barber-index-sort {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.barber-index-sort span {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.barber-index-sort select,
+.barber-index-filter-panel select {
+  height: 42px;
+  padding: 0 10px;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  outline: 0;
+  background: var(--color-bg);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.barber-index-sort select:focus,
+.barber-index-filter-panel select:focus {
+  border-color: var(--color-primary);
+}
+
+.barber-index-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 42px;
+  padding: 0 14px;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.barber-index-filter-btn:hover,
+.barber-index-filter-btn.active {
+  color: var(--color-primary);
+  border-color: var(--barber-primary-border);
+  background: var(--barber-primary-soft);
+}
+
+.barber-index-filter-panel {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  left: 14px;
+  display: flex;
+  align-items: end;
+  gap: 15px;
+  min-width: 270px;
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  background: var(--color-bg-card);
+  box-shadow: 0 14px 35px color-mix(in srgb,
+      var(--color-secondary) 13%,
+      transparent);
+}
+
+.barber-index-filter-panel>div {
+  display: grid;
+  gap: 7px;
+  flex: 1;
+}
+
+.barber-index-filter-panel label {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.barber-index-filter-panel select {
+  width: 100%;
+}
+
+.barber-index-filter-panel>button {
+  height: 42px;
+  padding: 0 12px;
+  color: var(--color-primary);
+  border: 1px solid var(--barber-primary-border);
+  border-radius: 10px;
+  background: var(--barber-primary-soft);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =========================================
+   RESULTS
+========================================= */
+
+.barber-index-results {
+  margin-top: 42px;
+}
+
+.barber-index-results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.barber-index-results-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.barber-index-results-title h2 {
+  margin: 5px 0 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.barber-index-result-count {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.barber-index-section-eyebrow {
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.barber-index-results-heading h2 {
+  margin: 6px 0 0;
+  color: var(--color-text);
+  font-size: 23px;
+  font-weight: 900;
+}
+
+
+
+/* =========================================
+   BARBER CARDS
+========================================= */
+
+.barber-index-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.barber-index-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--barber-card-radius);
+  background: var(--color-bg-card);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.barber-index-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--barber-primary-border);
+  box-shadow: 0 15px 35px color-mix(in srgb,
+      var(--color-secondary) 10%,
+      transparent);
+}
+
+.barber-index-card-image {
+  position: relative;
+  display: block;
+  height: 245px;
+  overflow: hidden;
+  background: var(--barber-soft-bg);
+}
+
+.barber-index-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  transition: transform 0.5s ease;
+}
+
+.barber-index-card:hover .barber-index-card-image img {
+  transform: scale(1.055);
+}
+
+.barber-index-avatar-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-primary);
+  background:
+    radial-gradient(circle at center,
+      var(--barber-primary-soft),
+      transparent 70%),
+    var(--barber-soft-bg);
+}
+
+.barber-index-image-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  height: 70px;
+  background: linear-gradient(to top,
+      color-mix(in srgb, #000 35%, transparent),
+      transparent);
+  pointer-events: none;
+}
+
+.barber-index-verified {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  color: #fff;
+  border: 1px solid color-mix(in srgb, #fff 25%, transparent);
+  border-radius: 30px;
+  background: color-mix(in srgb, #111 55%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.barber-index-card-body {
+  padding: 17px;
+}
+
+.barber-index-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.barber-index-name-wrap {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.barber-index-name {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 900;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.barber-index-name:hover {
+  color: var(--color-primary);
+}
+
+.barber-index-specialty {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.barber-index-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  color: #D69B25;
+  border-radius: 9px;
+  background: color-mix(in srgb, #D69B25 10%, transparent);
+  font-size: 11px;
+}
+
+.barber-index-rating strong {
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.barber-index-rating span {
+  color: var(--color-muted);
+  font-size: 10px;
+}
+
+.barber-index-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 15px;
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.barber-index-location svg {
+  flex: 0 0 auto;
+  color: var(--color-primary);
+}
+
+.barber-index-location span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barber-index-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.barber-index-services span {
+  padding: 6px 9px;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background: var(--color-bg);
+  font-size: 10px;
+}
+
+.barber-index-services .barber-index-more-services {
+  color: var(--color-primary);
+  border-color: var(--barber-primary-border);
+  background: var(--barber-primary-soft);
+}
+
+.barber-index-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--color-border);
+}
+
+.barber-index-price {
+  display: grid;
+  gap: 4px;
+}
+
+.barber-index-price>span {
+  color: var(--color-muted);
+  font-size: 10px;
+}
+
+.barber-index-price strong {
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.barber-index-price small {
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.barber-index-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 39px;
+  padding: 0 13px;
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  background: var(--color-primary);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.barber-index-book-btn:hover {
+  color: #fff;
+  border-color: var(--color-primary-hover, var(--color-primary));
+  background: var(--color-primary-hover, var(--color-primary));
+  box-shadow: 0 5px 15px color-mix(in srgb,
+      var(--color-primary) 22%,
+      transparent);
+}
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.barber-index-empty {
+  display: grid;
+  justify-items: center;
+  padding: 55px 20px;
+  border: 1px dashed var(--color-border);
+  border-radius: 20px;
+  background: var(--color-bg-card);
+  text-align: center;
+}
+
+.barber-index-empty>div {
+  display: grid;
+  place-items: center;
+  width: 65px;
+  height: 65px;
+  color: var(--color-primary);
+  border-radius: 50%;
+  background: var(--barber-primary-soft);
+}
+
+.barber-index-empty h3 {
+  margin: 17px 0 7px;
+  color: var(--color-text);
+  font-size: 17px;
+}
+
+.barber-index-empty p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.barber-index-empty button {
+  margin-top: 18px;
+  padding: 10px 17px;
+  color: var(--color-primary);
+  border: 1px solid var(--barber-primary-border);
+  border-radius: 10px;
+  background: var(--barber-primary-soft);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 992px) {
+  .barber-index-hero {
+    min-height: 255px;
+    padding: 35px;
+  }
+
+  .barber-index-hero-decoration {
+    left: 3%;
+    transform: translateY(-50%) scale(0.8);
+  }
+
+  .barber-index-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .barber-index-card-image {
+    height: 230px;
+  }
+}
+
+@media (max-width: 640px) {
+  .barber-index-page {
+    padding: 20px 0 55px;
+  }
+
+  .barber-index-container {
+    width: calc(100% - 28px);
+  }
+
+  .barber-index-hero {
+    min-height: auto;
+    padding: 27px 22px;
+    border-radius: 21px;
+  }
+
+  .barber-index-hero-content {
+    max-width: 100%;
+  }
+
+  .barber-index-hero h1 {
+    max-width: 390px;
+    margin-top: 15px;
+    font-size: 24px;
+    line-height: 1.7;
+  }
+
+  .barber-index-hero-content>p {
+    max-width: 390px;
+    font-size: 12px;
+  }
+
+  .barber-index-hero-decoration {
+    left: -95px;
+    top: auto;
+    bottom: -100px;
+    transform: scale(0.65);
+    opacity: 0.5;
+  }
+
+  .barber-index-hero-stats {
+    gap: 17px;
+    margin-top: 21px;
+  }
+
+  .barber-index-hero-stats>div {
+    gap: 5px;
+  }
+
+  .barber-index-hero-stats span {
+    font-size: 10px;
+  }
+
+  .barber-index-categories {
+    margin-top: 25px;
+  }
+
+  .barber-index-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 11px;
+    margin-top: 18px;
+  }
+
+  .barber-index-search {
+    flex: auto;
+    width: 100%;
+    height: 44px;
+  }
+
+  .barber-index-search input {
+    font-size: 11px;
+  }
+
+  .barber-index-toolbar-actions {
+    justify-content: space-between;
+  }
+
+  .barber-index-sort {
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .barber-index-sort select {
+    flex: 1;
+    max-width: 155px;
+  }
+
+  .barber-index-filter-panel {
+    right: 0;
+    left: 0;
+    min-width: 0;
+  }
+
+  .barber-index-results {
+    margin-top: 31px;
+  }
+
+  .barber-index-results-heading h2 {
+    font-size: 19px;
+  }
+
+  .barber-index-result-count {
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+
+  .barber-index-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .barber-index-card {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    border-radius: 17px;
+  }
+
+  .barber-index-card-image {
+    height: 100%;
+    min-height: 190px;
+  }
+
+  .barber-index-verified {
+    top: 8px;
+    right: 7px;
+    gap: 3px;
+    padding: 5px 6px;
+    font-size: 8px;
+  }
+
+  .barber-index-verified svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .barber-index-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    padding: 12px 11px;
+  }
+
+  .barber-index-card-heading {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .barber-index-name {
+    font-size: 14px;
+  }
+
+  .barber-index-specialty {
+    font-size: 10px;
+  }
+
+  .barber-index-rating {
+    align-self: flex-start;
+    padding: 4px 6px;
+  }
+
+  .barber-index-location {
+    margin-top: 10px;
+    font-size: 10px;
+  }
+
+  .barber-index-services {
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .barber-index-services span {
+    padding: 5px 6px;
+    font-size: 9px;
+  }
+
+  .barber-index-card-footer {
+    align-items: end;
+    gap: 5px;
+    margin-top: 11px;
+    padding-top: 10px;
+  }
+
+  .barber-index-price>span {
+    font-size: 9px;
+  }
+
+  .barber-index-price strong {
+    font-size: 12px;
+  }
+
+  .barber-index-price small {
+    font-size: 9px;
+  }
+
+  .barber-index-book-btn {
+    min-height: 34px;
+    gap: 4px;
+    padding: 0 8px;
+    font-size: 9px;
+  }
+
+  .barber-index-book-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .barber-index-container {
+    width: calc(100% - 22px);
+  }
+
+  .barber-index-card {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .barber-index-card-body {
+    padding: 10px 9px;
+  }
+
+  .barber-index-name {
+    font-size: 13px;
+  }
+
+  .barber-index-book-btn {
+    padding: 0 6px;
+    font-size: 8px;
+  }
+
+  .barber-index-price strong {
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================
+   Barber Index Pagination
+========================================= */
+
+.barber-index-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 36px;
+  direction: rtl;
+}
+
+.barber-index-page-link {
+  min-width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.barber-index-page-link:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.barber-index-page-link.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.barber-index-page-link.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.barber-index-pagination-info {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+@media (max-width: 576px) {
+  .barber-index-pagination {
+    gap: 5px;
+    margin-top: 24px;
+  }
+
+  .barber-index-page-link {
+    min-width: 35px;
+    height: 35px;
+    padding: 0 9px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .barber-index-results-heading {
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .barber-index-results-title h2 {
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .barber-index-result-count {
+    min-height: 32px;
+    padding: 0 9px;
+    font-size: 11px;
+    margin-top: 22px;
+  }
+}
+
+
+/* =========================================
+   Service Categories
+========================================= */
+
+.barber-categories-section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 24px 0 30px;
+  box-sizing: border-box;
+}
+
+.barber-categories-heading {
+  margin-bottom: 14px;
+}
+
+.barber-categories-heading h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.barber-categories-heading p {
+  margin: 2px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+/* Category list */
+
+.barber-index-category-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 2px 0;
+  margin: 0;
+
+  overflow: visible;
+  direction: rtl;
+  box-sizing: border-box;
+}
+
+.barber-index-category-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.barber-index-category-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.barber-index-category-list::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+}
+
+/* Category chip */
+
+.barber-index-category-chip {
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 38px;
+
+  padding: 0 15px;
+  margin: 0;
+
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+
+  background: var(--color-bg-card);
+  color: var(--color-text);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+
+  cursor: pointer;
+  box-sizing: border-box;
+
+  transition: all 0.2s ease;
+}
+
+.barber-index-category-chip:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.barber-index-category-chip.active {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.barber-index-category-chip.active:hover {
+  color: #fff;
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Active category */
+
+.barber-index-category-chip:active {
+  transform: scale(0.97);
+}
+
+.barber-index-category-chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+
+
+
+
+
+/* Tablet */
+
+@media (max-width: 768px) {
+  .barber-categories-section {
+    margin: 20px 0 24px;
+  }
+
+  .barber-index-category-list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 3px 1px 8px;
+    gap: 8px;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .barber-index-category-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .barber-index-category-chip {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 576px) {
+  .barber-categories-section {
+    margin: 18px 0 22px;
+  }
+
+  .barber-categories-heading {
+    margin-bottom: 10px;
+  }
+
+  .barber-categories-heading h3 {
+    font-size: 14px;
+  }
+
+  .barber-categories-heading p {
+    font-size: 11px;
+  }
+
+  .barber-index-category-list {
+    gap: 7px;
+  }
+
+  .barber-index-category-chip {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+}

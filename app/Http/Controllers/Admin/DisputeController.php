@@ -43,7 +43,9 @@ class DisputeController extends Controller
                     $q->with([
                         'barber:id,name,avatar,slug',
                         'user:id,name,avatar,phone',
-                        'service:id,name',
+
+                        'service:id,category_id,duration,price',
+                        'service.category:id,name,description,image',
                     ]);
                 },
                 'disputedByUser:id,name,avatar',
@@ -198,7 +200,8 @@ class DisputeController extends Controller
                 $q->with([
                     'barber:id,name,avatar,phone,slug',
                     'user:id,name,avatar,phone',
-                    'service:id,name,image,duration,price',
+                    'service:id,category_id,duration,price',
+                    'service.category:id,name,description,image',
                     'timeSlot:id,date,start_time,end_time',
                     'payment',
                     'review',

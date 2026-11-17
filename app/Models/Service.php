@@ -66,9 +66,9 @@ class Service extends Model
         return $this->category?->description;
     }
 
-    public function getImageUrlAttribute(): ?string
+    public function getImageAttribute(): ?string
     {
-        return $this->category?->image_url;
+        return $this->category?->image;
     }
 
 

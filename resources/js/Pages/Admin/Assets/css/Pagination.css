@@ -1,6 +1,8 @@
 /* ============================================
    Pagination
+   Dynamic Theme + Color Mix
    ============================================ */
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -15,45 +17,91 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   min-width: 2.25rem;
   height: 2.25rem;
   padding: 0 0.625rem;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.5rem;
+
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+
+  color: var(--color-text);
   text-decoration: none;
-  transition: all 0.2s;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
   direction: ltr;
   cursor: pointer;
   user-select: none;
 }
 
+/* Hover */
 .pagination-item:hover:not(.disabled):not(.active) {
-  background: #f9fafb;
-  border-color: #10b981;
-  color: #065f46;
+  background: color-mix(in srgb,
+      var(--color-primary) 8%,
+      var(--color-bg-card));
+
+  border-color: color-mix(in srgb,
+      var(--color-primary) 55%,
+      var(--color-border));
+
+  color: var(--color-primary-hover);
   transform: translateY(-1px);
 }
 
+/* Active */
 .pagination-item.active {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-primary-hover));
+
   color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: var(--color-primary);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-primary) 25%,
+      transparent);
+
   cursor: default;
 }
 
+/* Focus */
+.pagination-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Disabled */
 .pagination-item.disabled {
-  opacity: 0.4;
+  background: color-mix(in srgb,
+      var(--color-bg-card) 70%,
+      var(--color-bg));
+
+  border-color: color-mix(in srgb,
+      var(--color-border) 70%,
+      transparent);
+
+  color: var(--color-text-muted);
+  opacity: 0.5;
+
   cursor: not-allowed;
   pointer-events: none;
+  box-shadow: none;
+  transform: none;
 }
 
 /* ============ Responsive ============ */
+
 @media (max-width: 640px) {
   .pagination {
     gap: 0.25rem;
@@ -65,5 +113,6 @@
     height: 2rem;
     font-size: 0.75rem;
     padding: 0 0.5rem;
+    border-radius: 0.45rem;
   }
 }

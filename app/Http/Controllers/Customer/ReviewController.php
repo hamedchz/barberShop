@@ -115,7 +115,8 @@ class ReviewController extends Controller
         // ============ بارگذاری روابط ============
         $booking->load([
             'barber:id,name,avatar,slug,specialty',
-            'service:id,name,image,duration,price',
+            'service:id,category_id,duration,price',
+            'service.category:id,name,description,image',
             'timeSlot:id,date,start_time,end_time',
         ]);
 
@@ -226,7 +227,8 @@ class ReviewController extends Controller
 
         $review->booking->load([
             'barber:id,name,avatar,slug,specialty',
-            'service:id,name,image,duration,price',
+            'service:id,category_id,duration,price',
+            'service.category:id,name,description,image',
             'timeSlot:id,date,start_time,end_time',
         ]);
 

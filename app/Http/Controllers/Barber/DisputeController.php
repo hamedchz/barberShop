@@ -37,7 +37,8 @@ class DisputeController extends Controller
             ->with([
                 'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status',
                 'booking.user:id,name,avatar,phone',
-                'booking.service:id,name',
+                'booking.service:id,category_id,duration,price',
+                'booking.service.category:id,name,description,image',
                 'booking.timeSlot:id,date,start_time,end_time',
                 'disputedByUser:id,name,avatar',
                 'respondedByUser:id,name',
@@ -105,7 +106,8 @@ class DisputeController extends Controller
         $dispute->load([
             'booking:id,user_id,barber_id,amount,time_slot_id,service_id,status,notes,created_at,completed_at,completed_by',
             'booking.user:id,name,avatar,phone,slug',
-            'booking.service:id,name,price,duration',
+            'booking.service:id,category_id,duration,price',
+            'booking.service.category:id,name,description,image',
             'booking.timeSlot:id,date,start_time,end_time',
             'booking.payment:id,booking_id,gateway,status,amount,transaction_id,paid_at',
             'disputedByUser:id,name,avatar,phone,slug',
@@ -382,7 +384,8 @@ class DisputeController extends Controller
             'booking' => function ($q) {
                 $q->with([
                     'user:id,name,avatar,slug',
-                    'service:id,name,image,duration,price',
+                    'service:id,category_id,duration,price',
+                    'service.category:id,name,description,image',
                     'timeSlot:id,date,start_time,end_time',
                 ]);
             },

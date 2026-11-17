@@ -31,7 +31,8 @@ class BookingController extends Controller
         $query = Booking::where('barber_id', $barberId)
             ->with([
                 'user:id,name,avatar,phone',
-                'service:id,name,image,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
                 'payment:id,booking_id,status,amount',
             ]);
@@ -447,7 +448,8 @@ class BookingController extends Controller
         // ============================================
         $booking->load([
             'user:id,name,avatar,phone,slug',
-            'service:id,name,description,image,duration,price',
+            'service:id,category_id,duration,price',
+            'service.category:id,name,description,image',
             'timeSlot:id,date,start_time,end_time',
             'payment',
             'review' => function ($q) {

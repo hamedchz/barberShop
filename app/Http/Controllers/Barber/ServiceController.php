@@ -115,18 +115,12 @@ class ServiceController extends Controller
             $existingService->update([
                 'price' => $validated['price'] ?? null,
                 'duration' => $validated['duration'] ?? null,
-                'name' => $category->name,
-                'description' => $category->description,
-                'image' => $category->image,
                 'is_active' => true,
             ]);
         } else {
             Service::create([
                 'user_id' => $barberId,
                 'category_id' => $validated['category_id'],
-                'name' => $category->name,
-                'description' => $category->description,
-                'image' => $category->image,
                 'price' => $validated['price'] ?? null,
                 'duration' => $validated['duration'] ?? null,
                 'is_active' => true,

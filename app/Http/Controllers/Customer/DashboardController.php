@@ -57,7 +57,8 @@ class DashboardController extends Controller
             })
             ->with([
                 'barber:id,name,avatar',
-                'service:id,name,price,duration',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
             ])
             ->orderByRaw('(

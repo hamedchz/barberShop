@@ -182,7 +182,7 @@ class DashboardController extends Controller
     // ============ آخرین فعالیت‌ها ============
     private function buildRecent(): array
     {
-        $bookings = Booking::with(['user:id,name', 'service:id,name'])
+        $bookings = Booking::with(['user:id,name', 'service.category:id,name'])
             ->latest()
             ->limit(5)
             ->get()

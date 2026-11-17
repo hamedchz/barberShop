@@ -9,27 +9,31 @@ import {
     BriefcaseBusiness,
 } from "lucide-react";
 import "../Assets/css/FeaturedBarber.css";
-export default function FeaturedBarbers({ barbers = [] }) {
+import { toPersianNumber } from "../../../utils/persianNumbers";
+export default function FeaturedBarbers({ barbers = [], showHeader = true }) {
     if (!barbers.length) return null;
 
     return (
         <section className="front-section front-barbers-section" id="barbers">
             <div className="front-container">
-                <div className="front-section-header">
-                    <div>
-                        <span className="front-section-eyebrow">
-                            انتخاب حرفه‌ای‌ها
-                        </span>
+                {showHeader && (
+                    <div className="front-section-header">
+                        <div>
+                            <span className="front-section-eyebrow">
+                                انتخاب حرفه‌ای‌ها
+                            </span>
 
-                        <h2 className="front-section-title">آرایشگران منتخب</h2>
+                            <h2 className="front-section-title">
+                                آرایشگران منتخب
+                            </h2>
 
-                        <p className="front-section-description">
-                            با بهترین آرایشگران آشنا شو و استایل موردنظرت را
-                            انتخاب کن.
-                        </p>
+                            <p className="front-section-description">
+                                با بهترین آرایشگران آشنا شو و استایل موردنظرت را
+                                انتخاب کن.
+                            </p>
+                        </div>
                     </div>
-                </div>
-
+                )}
                 <div className="front-barbers-grid">
                     {barbers.map((barber) => (
                         <article key={barber.id} className="front-barber-card">
@@ -56,7 +60,9 @@ export default function FeaturedBarbers({ barbers = [] }) {
                                 {/* امتیاز */}
                                 <span className="front-barber-rating">
                                     <Star size={14} fill="currentColor" />
-                                    {Number(barber.rating || 0).toFixed(1)}
+                                    {toPersianNumber(
+                                        Number(barber.rating || 0).toFixed(1),
+                                    )}
                                 </span>
                             </a>
 
@@ -91,25 +97,49 @@ export default function FeaturedBarbers({ barbers = [] }) {
 
                                 {/* اطلاعات و دکمه */}
                                 <div className="front-barber-bottom">
+                                    {/* آمار آرایشگر */}
                                     <div className="front-barber-stats">
-                                        <span title="تعداد نظرات">
-                                            <MessageSquare size={16} />
-                                            {barber.reviews_count}
+                                        <span className="front-barber-stat-badge">
+                                            <MessageSquare size={14} />
+                                            <span className="front-barber-stat-label">
+                                                نظرات:
+                                            </span>
+                                            <strong>
+                                                {toPersianNumber(
+                                                    barber.reviews_count || 0,
+                                                )}
+                                            </strong>
                                         </span>
 
-                                        <span title="تعداد خدمات">
-                                            <Scissors size={16} />
-                                            {barber.services_count}
-                                        </span>
+                                        {/* <span className="front-barber-stat-badge">
+                                            <Scissors size={14} />
+                                            <span className="front-barber-stat-label">
+                                                خدمات:
+                                            </span>
+                                            <strong>
+                                                {toPersianNumber(
+                                                    barber.services_count || 0,
+                                                )}
+                                            </strong>
+                                        </span> */}
 
                                         {barber.experience_years > 0 && (
-                                            <span title="سال تجربه">
-                                                <BriefcaseBusiness size={16} />
-                                                {barber.experience_years}
+                                            <span className="front-barber-stat-badge">
+                                                <BriefcaseBusiness size={14} />
+                                                <span className="front-barber-stat-label">
+                                                    تجربه:
+                                                </span>
+                                                <strong>
+                                                    {toPersianNumber(
+                                                        barber.experience_years,
+                                                    )}{" "}
+                                                    سال
+                                                </strong>
                                             </span>
                                         )}
                                     </div>
 
+                                    {/* دکمه مشاهده پروفایل */}
                                     <a
                                         href={`/barbers/${barber.slug}`}
                                         className="front-barber-link"

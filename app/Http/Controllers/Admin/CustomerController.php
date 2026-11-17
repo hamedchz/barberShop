@@ -137,7 +137,8 @@ class CustomerController extends Controller
         $recentBookings = Booking::where('user_id', $customer->id)
             ->with([
                 'barber:id,name,avatar,phone',
-                'service:id,name,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'payment:id,booking_id,status,amount',
             ])
             ->latest()

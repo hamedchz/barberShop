@@ -25,7 +25,8 @@ class NeedsAttentionController extends Controller
         $disputes = Dispute::with([
             'booking.user:id,name,phone',
             'booking.barber:id,name,phone',
-            'booking.service:id,name',
+            'booking.service:id,category_id,duration,price',
+            'booking.service.category:id,name,description,image',
             'disputedBy',
         ])
             ->whereIn('status', [

@@ -30,7 +30,8 @@ class BarberBookingController extends Controller
         $query = Booking::where('barber_id', $barber->id)
             ->with([
                 'user:id,name,avatar,phone',
-                'service:id,name,image,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
                 'payment:id,booking_id,status,amount,gateway',
                 'latestDispute.disputedByUser:id,name,avatar,phone,slug',
@@ -267,7 +268,8 @@ class BarberBookingController extends Controller
 
         $booking->load([
             'user:id,name,avatar,phone,slug,email',
-            'service:id,name,description,image,duration,price',
+            'service:id,category_id,duration,price',
+            'service.category:id,name,description,image',
             'timeSlot:id,date,start_time,end_time',
             'payment',
             // ============ review با soft delete ============
@@ -501,7 +503,8 @@ class BarberBookingController extends Controller
             ->with([
                 'user:id,name,phone,avatar',
                 'barber:id,name,phone,avatar,slug',
-                'service:id,name,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
             ])
             ->withCount('disputes');
@@ -579,7 +582,8 @@ class BarberBookingController extends Controller
         $booking->load([
             'user:id,name,phone,avatar',
             'barber:id,name,phone,avatar,slug',
-            'service:id,name,duration,price,description',
+            'service:id,category_id,duration,price',
+            'service.category:id,name,description,image',
             'timeSlot:id,date,start_time,end_time',
             'payment',
             'review',

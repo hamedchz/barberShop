@@ -30,7 +30,8 @@ class DisputeController extends Controller
 
         $dispute->load([
             'booking.barber:id,name,avatar',
-            'booking.service:id,name,price',
+            'booking.service:id,category_id,duration,price',
+            'booking.service.category:id,name,description,image',
             'disputedByUser:id,name,avatar',
             'respondedByUser:id,name,avatar',
             'resolvedByUser:id,name',
@@ -165,7 +166,8 @@ class DisputeController extends Controller
             'booking' => function ($q) {
                 $q->with([
                     'barber:id,name,avatar,slug,specialty',
-                    'service:id,name,image,duration,price',
+                    'service:id,category_id,duration,price',
+                    'service.category:id,name,description,image',
                     'timeSlot:id,date,start_time,end_time',
                 ]);
             },

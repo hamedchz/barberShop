@@ -167,7 +167,7 @@ class BarberController extends Controller
     {
         // StickyAlert::alert('این بازه قابل رزرو نیست.', 'error');
         // بررسی آرایشگر بودن
-        if (!$barber->hasRole('آرایشگر') || $barber->status?->value !== UserStatus::ACTIVE->value) {
+        if (!$barber->hasRole(User::ROLE_BARBER) || $barber->status?->value !== UserStatus::ACTIVE->value) {
             abort(404);
         }
 
@@ -215,7 +215,7 @@ class BarberController extends Controller
             ]);
 
         // ============ خدمات ============
-        $services = Service::where('user_id', $barber->id)
+        $services = Service::with('category')->where('user_id', $barber->id)
             ->where('is_active', true)
             ->get()
             ->map(fn($service) => [

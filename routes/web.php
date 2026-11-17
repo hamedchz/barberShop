@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\BarberController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\ServiceController;
 use App\Http\Controllers\User\BankController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,20 +41,25 @@ Route::prefix('banks')
             ->name('show');
     });
 
-// // صفحه اصلی
-// Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::prefix('services')
+    ->name('services.')->controller(ServiceController::class)
+    ->group(function () {
+
+        Route::get('/',  'index')
+            ->name('index');
+    });
 
 // // آرایشگران
-// Route::get('/barbers', [BarberController::class, 'index'])->name('barbers.index');
-// Route::get('/barbers/{barber}', [BarberController::class, 'show'])->name('barbers.show');
-// Route::get('/barbers/{barber}/reviews', [BarberController::class, 'reviews'])->name('barbers.reviews');
+Route::get('/barbers', [BarberController::class, 'index'])->name('barbers.index');
+Route::get('/barbers/{barber}', [BarberController::class, 'show'])->name('barbers.show');
+Route::get('/barbers/{barber}/reviews', [BarberController::class, 'reviews'])->name('barbers.reviews');
 
 // // رزرو (برای همه، اما نیاز به auth برای ثبت نهایی)
-// Route::get('/barbers/{barber}/book', [BarberController::class, 'booking'])
-//     ->name('barbers.booking');
-// Route::post('/barbers/{barber}/book', [BarberController::class, 'storeBooking'])
-//     ->middleware('auth')
-//     ->name('barbers.booking.store');
+Route::get('/barbers/{barber}/book', [BarberController::class, 'booking'])
+    ->name('barbers.booking');
+Route::post('/barbers/{barber}/book', [BarberController::class, 'storeBooking'])
+    ->middleware('auth')
+    ->name('barbers.booking.store');
 
 // // صفحات ثابت
 // Route::get('/about', [PageController::class, 'about'])->name('about');

@@ -255,7 +255,11 @@ class CustomerController extends Controller
             // آخرین رزرو
             $lastBooking = Booking::where('user_id', $customer->id)
                 ->where('barber_id', $user->id)
-                ->with(['service:id,name', 'timeSlot:id,date,start_time'])
+                ->with([
+                    'service:id,category_id,duration,price',
+                    'service.category:id,name,description,image',
+                    'timeSlot:id,date,start_time'
+                ])
                 ->latest()
                 ->first();
 
@@ -321,7 +325,8 @@ class CustomerController extends Controller
         $bookings = Booking::where('user_id', $customer->id)
             ->where('barber_id', $user->id)
             ->with([
-                'service:id,name,price,duration',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
                 'payment:id,booking_id,amount,status,gateway,paid_at',
                 'review:id,booking_id,rating,comment,status,created_at',

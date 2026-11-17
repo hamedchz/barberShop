@@ -205,7 +205,8 @@ class DashboardController extends Controller
         return $user->barberBookings()
             ->with([
                 'user:id,name,phone,avatar',
-                'service:id,name,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
             ])
             ->whereHas('timeSlot', fn($q) => $q->whereDate('date', today()))
@@ -247,7 +248,8 @@ class DashboardController extends Controller
         return $user->barberBookings()
             ->with([
                 'user:id,name,phone,avatar',
-                'service:id,name,duration,price',
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
                 'timeSlot:id,date,start_time,end_time',
             ])
             ->whereHas('timeSlot', fn($q) => $q->whereDate('date', '>', today()))
@@ -313,7 +315,10 @@ class DashboardController extends Controller
     {
         return $user->barberBookings()
             ->select('service_id', DB::raw('COUNT(*) as count'))
-            ->with('service:id,name,price')
+            ->with([
+                'service:id,category_id,duration,price',
+                'service.category:id,name,description,image',
+            ])
             ->where('created_at', '>=', $from)
             ->groupBy('service_id')
             ->orderByDesc('count')

@@ -1,0 +1,522 @@
+/* =====================================================
+   SERVICE CATEGORIES - BARBER APP
+===================================================== */
+
+.front-categories-section {
+  overflow: hidden;
+}
+
+/* =====================================================
+   DESKTOP / TABLET VISIBILITY
+===================================================== */
+
+.front-categories-desktop {
+  display: block;
+}
+
+.front-categories-mobile {
+  display: none;
+}
+
+/* =====================================================
+   DESKTOP GRID
+===================================================== */
+
+.front-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: 225px;
+  gap: 16px;
+  direction: rtl;
+}
+
+/* Two large cards */
+.front-categories-grid>.front-category-card:nth-child(5n + 1) {
+  grid-column: span 5;
+}
+
+.front-categories-grid>.front-category-card:nth-child(5n + 2) {
+  grid-column: span 7;
+}
+
+/* Three smaller cards */
+.front-categories-grid>.front-category-card:nth-child(5n + 3),
+.front-categories-grid>.front-category-card:nth-child(5n + 4),
+.front-categories-grid>.front-category-card:nth-child(5n + 5) {
+  grid-column: span 4;
+}
+
+/* =====================================================
+   CATEGORY CARD
+===================================================== */
+
+.front-category-card {
+  display: grid;
+  grid-template-columns: 44% minmax(0, 56%);
+  direction: rtl;
+  min-width: 0;
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  text-decoration: none;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* =====================================================
+   CATEGORY IMAGE - RIGHT SIDE
+===================================================== */
+
+.front-category-image {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+}
+
+.front-category-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  transition: transform 0.5s ease;
+}
+
+.front-category-placeholder {
+  display: grid;
+  place-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  color: var(--color-primary);
+
+  background: color-mix(in srgb,
+      var(--color-primary) 9%,
+      var(--color-bg-card));
+}
+
+/* =====================================================
+   CATEGORY CONTENT - LEFT SIDE
+===================================================== */
+
+.front-category-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  min-width: 0;
+  padding: 20px 17px;
+
+  text-align: right;
+}
+
+.front-category-text {
+  min-width: 0;
+}
+
+.front-category-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+
+  color: var(--color-primary);
+
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.front-category-text h3 {
+  margin: 0;
+
+  color: var(--color-text);
+
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
+}
+
+.front-category-text p {
+  margin: 7px 0 0;
+
+  color: var(--color-muted);
+
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.9;
+}
+
+/* =====================================================
+   CATEGORY FOOTER
+===================================================== */
+
+.front-category-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.front-category-count {
+  color: var(--color-muted);
+
+  font-size: 10px;
+  font-weight: 750;
+
+  white-space: nowrap;
+}
+
+.front-category-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-height: 35px;
+  padding: 0 12px;
+
+  border-radius: 30px;
+
+  color: var(--color-secondary);
+  background: var(--color-primary);
+
+  font-size: 10px;
+  font-weight: 850;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =====================================================
+   HOVER EFFECT
+===================================================== */
+
+.front-category-card:hover {
+  transform: translateY(-4px);
+
+  border-color: var(--color-primary);
+
+  box-shadow: 0 12px 28px color-mix(in srgb,
+      var(--color-primary) 12%,
+      transparent);
+}
+
+.front-category-card:hover .front-category-image img {
+  transform: scale(1.07);
+}
+
+.front-category-card:hover .front-category-action {
+  background: color-mix(in srgb,
+      var(--color-primary) 82%,
+      white);
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 992px) and (min-width: 641px) {
+
+  .front-categories-grid {
+    grid-auto-rows: 195px;
+    gap: 12px;
+  }
+
+  .front-category-card {
+    grid-template-columns: 42% minmax(0, 58%);
+  }
+
+  .front-category-content {
+    padding: 14px 12px;
+  }
+
+  .front-category-eyebrow {
+    font-size: 9px;
+  }
+
+  .front-category-text h3 {
+    font-size: 16px;
+  }
+
+  .front-category-text p {
+    font-size: 10px;
+  }
+
+  .front-category-action {
+    min-height: 31px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 640px) {
+
+  /* Switch desktop to mobile layout */
+  .front-categories-desktop {
+    display: none;
+  }
+
+  .front-categories-mobile {
+    display: block;
+    width: 100%;
+  }
+
+  /* -------------------------------------------------
+       FEATURED CATEGORIES - FIRST TWO CARDS
+    ------------------------------------------------- */
+
+  .front-categories-featured {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .front-category-card.front-category-featured {
+    grid-template-columns: 40% minmax(0, 60%);
+
+    width: 100%;
+    height: 155px;
+
+    border-radius: 16px;
+  }
+
+  .front-category-featured .front-category-image {
+    min-height: 0;
+  }
+
+  .front-category-featured .front-category-content {
+    padding: 12px 11px;
+  }
+
+  .front-category-featured .front-category-eyebrow {
+    margin-bottom: 5px;
+    font-size: 8px;
+  }
+
+  .front-category-featured .front-category-text h3 {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .front-category-featured .front-category-text p {
+    margin-top: 5px;
+    font-size: 9px;
+    line-height: 1.7;
+  }
+
+  .front-category-featured .front-category-bottom {
+    gap: 7px;
+  }
+
+  .front-category-featured .front-category-count {
+    font-size: 9px;
+  }
+
+  .front-category-featured .front-category-action {
+    min-height: 29px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+
+  /* -------------------------------------------------
+       OTHER CATEGORIES HEADER
+    ------------------------------------------------- */
+
+  .front-categories-more {
+    margin-top: 24px;
+  }
+
+  .front-categories-more-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 12px;
+  }
+
+  .front-categories-more-header h3 {
+    margin: 0;
+
+    color: var(--color-text);
+
+    font-size: 14px;
+    font-weight: 850;
+  }
+
+  .front-categories-more-header>span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    color: var(--color-muted);
+
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
+  /* -------------------------------------------------
+       HORIZONTAL CAROUSEL
+    ------------------------------------------------- */
+
+  .front-categories-carousel {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 11px;
+
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 2px 1px 12px;
+
+    direction: rtl;
+
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1px;
+
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+  }
+
+  .front-categories-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* -------------------------------------------------
+       CAROUSEL CARDS
+    ------------------------------------------------- */
+
+  .front-category-card.front-category-carousel-card {
+    flex: 0 0 82%;
+
+    width: 82%;
+    min-width: 0;
+    height: 155px;
+
+    grid-template-columns: 40% minmax(0, 60%);
+
+    border-radius: 15px;
+
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .front-category-carousel-card .front-category-image {
+    min-height: 0;
+  }
+
+  .front-category-carousel-card .front-category-content {
+    padding: 12px 10px;
+  }
+
+  .front-category-carousel-card .front-category-eyebrow {
+    margin-bottom: 5px;
+    font-size: 8px;
+  }
+
+  .front-category-carousel-card .front-category-text h3 {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .front-category-carousel-card .front-category-text p {
+    margin-top: 5px;
+    font-size: 9px;
+    line-height: 1.7;
+  }
+
+  .front-category-carousel-card .front-category-bottom {
+    gap: 7px;
+  }
+
+  .front-category-carousel-card .front-category-count {
+    font-size: 9px;
+  }
+
+  .front-category-carousel-card .front-category-action {
+    min-height: 29px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+
+  .front-category-placeholder svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Disable hover movement on touch devices */
+  .front-category-card:hover {
+    transform: none;
+  }
+}
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .front-category-card.front-category-featured {
+    height: 140px;
+    grid-template-columns: 37% minmax(0, 63%);
+  }
+
+  .front-category-featured .front-category-content {
+    padding: 9px 8px;
+  }
+
+  .front-category-featured .front-category-text h3 {
+    font-size: 13px;
+  }
+
+  .front-category-featured .front-category-text p {
+    font-size: 8px;
+  }
+
+  .front-category-card.front-category-carousel-card {
+    height: 140px;
+
+    flex-basis: 88%;
+    width: 88%;
+
+    grid-template-columns: 37% minmax(0, 63%);
+  }
+
+  .front-category-carousel-card .front-category-content {
+    padding: 9px 8px;
+  }
+
+  .front-category-carousel-card .front-category-text h3 {
+    font-size: 13px;
+  }
+}
