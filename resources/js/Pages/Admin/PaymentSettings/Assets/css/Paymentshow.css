@@ -8,9 +8,9 @@
   gap: 0.875rem;
   padding: 0.875rem 1rem;
   border-radius: 0.875rem;
-  border: 1.5px solid;
+  border: 1.5px solid var(--color-border);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   user-select: none;
   position: relative;
   overflow: hidden;
@@ -23,40 +23,65 @@
   right: 0;
   bottom: 0;
   width: 4px;
-  transition: background 0.2s;
+  transition: background 0.2s ease;
 }
 
-/* ============ فعال ============ */
+/* ============================================
+   Active
+   ============================================ */
+
 .gateway-toggle-wrapper.active {
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
-  border-color: #a7f3d0;
+  background: color-mix(in srgb,
+      var(--color-success) 7%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-success) 35%,
+      var(--color-border));
 }
 
 .gateway-toggle-wrapper.active::before {
-  background: linear-gradient(180deg, #10b981, #059669);
+  background: linear-gradient(180deg,
+      var(--color-success),
+      color-mix(in srgb, var(--color-success) 75%, var(--color-primary-hover)));
 }
 
 .gateway-toggle-wrapper.active:hover {
-  border-color: #6ee7b7;
-  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.15);
+  border-color: var(--color-success);
+  box-shadow: 0 2px 12px color-mix(in srgb,
+      var(--color-success) 15%,
+      transparent);
 }
 
-/* ============ غیرفعال ============ */
+/* ============================================
+   Inactive
+   ============================================ */
+
 .gateway-toggle-wrapper.inactive {
-  background: linear-gradient(135deg, #f9fafb 0%, #fef2f2 100%);
-  border-color: #fecaca;
+  background: color-mix(in srgb,
+      var(--color-danger) 6%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
 }
 
 .gateway-toggle-wrapper.inactive::before {
-  background: linear-gradient(180deg, #ef4444, #dc2626);
+  background: linear-gradient(180deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 75%, #991b1b));
 }
 
 .gateway-toggle-wrapper.inactive:hover {
-  border-color: #fca5a5;
-  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
+  box-shadow: 0 2px 12px color-mix(in srgb,
+      var(--color-danger) 12%,
+      transparent);
 }
 
-/* ============ آیکون ============ */
+/* ============================================
+   Icon
+   ============================================ */
+
 .gateway-toggle-icon {
   width: 2.5rem;
   height: 2.5rem;
@@ -65,22 +90,33 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .gateway-toggle-wrapper.active .gateway-toggle-icon {
-  background: #d1fae5;
-  color: #065f46;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+  background: color-mix(in srgb,
+      var(--color-success) 15%,
+      var(--color-bg-card));
+  color: var(--color-success);
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--color-success) 18%,
+      transparent);
 }
 
 .gateway-toggle-wrapper.inactive .gateway-toggle-icon {
-  background: #fee2e2;
-  color: #991b1b;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+  background: color-mix(in srgb,
+      var(--color-danger) 13%,
+      var(--color-bg-card));
+  color: var(--color-danger);
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--color-danger) 15%,
+      transparent);
 }
 
-/* ============ محتوا ============ */
+/* ============================================
+   Content
+   ============================================ */
+
 .gateway-toggle-content {
   flex: 1;
   min-width: 0;
@@ -93,37 +129,42 @@
   font-size: 0.875rem;
   font-weight: 800;
   line-height: 1.4;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .gateway-toggle-wrapper.active .gateway-toggle-title {
-  color: #065f46;
+  color: var(--color-success);
 }
 
 .gateway-toggle-wrapper.inactive .gateway-toggle-title {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .gateway-toggle-desc {
   font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1.5;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .gateway-toggle-wrapper.active .gateway-toggle-desc {
-  color: #047857;
-  opacity: 0.8;
+  color: color-mix(in srgb,
+      var(--color-success) 85%,
+      var(--color-text));
+  opacity: 0.85;
 }
 
 .gateway-toggle-wrapper.inactive .gateway-toggle-desc {
-  color: #b91c1c;
-  opacity: 0.8;
+  color: color-mix(in srgb,
+      var(--color-danger) 85%,
+      var(--color-text));
+  opacity: 0.85;
 }
 
 /* ============================================
-   Switch (کلید کشویی)
+   Switch
    ============================================ */
+
 .gateway-switch {
   position: relative;
   width: 3rem;
@@ -134,21 +175,29 @@
   padding: 0;
   flex-shrink: 0;
   transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 2px 4px color-mix(in srgb,
+      #000000 8%,
+      transparent);
 }
 
 .gateway-switch.on {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg,
+      var(--color-success),
+      color-mix(in srgb, var(--color-success) 75%, #059669));
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.1),
-    0 0 0 3px rgba(16, 185, 129, 0.15);
+    0 0 0 3px color-mix(in srgb,
+      var(--color-success) 15%,
+      transparent);
 }
 
 .gateway-switch.off {
-  background: #d1d5db;
+  background: var(--color-bg-hover);
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.1),
-    0 0 0 3px rgba(156, 163, 175, 0.1);
+    0 0 0 3px color-mix(in srgb,
+      var(--color-text-muted) 10%,
+      transparent);
 }
 
 .gateway-switch:disabled {
@@ -156,7 +205,10 @@
   cursor: not-allowed;
 }
 
-/* ============ دستگیره ============ */
+/* ============================================
+   Switch Thumb
+   ============================================ */
+
 .gateway-switch-thumb {
   position: absolute;
   top: 0.1875rem;
@@ -192,15 +244,21 @@
   left: calc(100% - 1.6875rem);
 }
 
-/* ============ فوکوس ============ */
+/* ============================================
+   Focus
+   ============================================ */
+
 .gateway-switch:focus-visible {
-  outline: 3px solid rgba(139, 92, 246, 0.3);
+  outline: 3px solid color-mix(in srgb,
+      var(--color-primary) 35%,
+      transparent);
   outline-offset: 2px;
 }
 
 /* ============================================
    Responsive
    ============================================ */
+
 @media (max-width: 640px) {
   .gateway-toggle-wrapper {
     padding: 0.75rem 0.875rem;
@@ -237,5 +295,22 @@
 
   .gateway-switch.off .gateway-switch-thumb {
     left: calc(100% - 1.3125rem);
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .gateway-toggle-wrapper,
+  .gateway-toggle-wrapper::before,
+  .gateway-toggle-icon,
+  .gateway-toggle-title,
+  .gateway-toggle-desc,
+  .gateway-switch,
+  .gateway-switch-thumb {
+    transition: none;
   }
 }

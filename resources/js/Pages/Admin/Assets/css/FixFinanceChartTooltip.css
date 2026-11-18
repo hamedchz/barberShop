@@ -1,46 +1,56 @@
 /* ============================================
    Recharts Tooltip Fix
+   Dynamic Theme Compatible
    ============================================ */
 
-/* ✅ wrapper کارت نمودار */
+/* ============================================
+   Chart Card Wrapper
+   ============================================ */
+
 .finance-card {
   overflow: visible !important;
   position: relative;
   z-index: 1;
 }
 
-/* ✅ وقتی tooltip بازه، کارت بالاتر بره */
+/* وقتی Tooltip باز است */
 .finance-card:has(.recharts-tooltip-wrapper) {
   z-index: 100;
 }
 
-/* ✅ grid و main */
+/* Grid and Main */
 .revenue-grid,
 .revenue-main,
 .revenue-sidebar {
   overflow: visible !important;
 }
 
-/* ✅ خود wrapper tooltip */
+/* ============================================
+   Recharts Tooltip Wrapper
+   ============================================ */
+
 .recharts-tooltip-wrapper {
   z-index: 9999 !important;
   pointer-events: none !important;
   outline: none !important;
 }
 
-/* ✅ اگه از Portal استفاده میکنه */
+/* Portal Position */
 .recharts-tooltip-wrapper.recharts-tooltip-wrapper-right,
 .recharts-tooltip-wrapper.recharts-tooltip-wrapper-left {
   z-index: 9999 !important;
 }
 
-/* ✅ کارت نمودار دایره‌ای */
+/* ============================================
+   Pie Chart Wrapper
+   ============================================ */
+
 .revenue-pie-wrapper {
   overflow: visible !important;
   position: relative;
 }
 
-/* ✅ کانتینر chart */
+/* Chart Container */
 .admin-revenue-chart {
   overflow: visible !important;
   position: relative;
@@ -52,21 +62,29 @@
 }
 
 /* ============================================
-   Chart Tooltip (Recharts Portal)
+   Chart Tooltip Portal
    ============================================ */
 
 .chart-tooltip-portal {
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
+
   padding: 0.625rem 0.875rem;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+
+  box-shadow: 0 12px 32px var(--color-shadow);
+
   min-width: 140px;
+
   pointer-events: none;
   direction: rtl;
   font-family: inherit;
+
   animation: tooltipFadeIn 0.15s ease-out;
+
   z-index: 999999;
+  color: var(--color-text);
 }
 
 @keyframes tooltipFadeIn {
@@ -81,36 +99,48 @@
   }
 }
 
+/* Tooltip Date */
 .chart-tooltip-portal .tooltip-date {
   display: block;
+
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
+
   margin-bottom: 0.25rem;
   padding-bottom: 0.375rem;
-  border-bottom: 1px solid #f3f4f6;
+
+  border-bottom: 1px solid var(--color-border);
 }
 
+/* Tooltip Main Value */
 .chart-tooltip-portal .tooltip-value {
   display: flex;
   align-items: baseline;
   gap: 0.25rem;
+
   font-size: 0.875rem;
   font-weight: 800;
-  color: #065f46;
+
+  color: var(--color-primary);
 }
 
 .chart-tooltip-portal .currency {
   font-size: 0.625rem;
-  opacity: 0.7;
+  color: var(--color-text-muted);
+  opacity: 0.8;
 }
 
-/* ============ برای tooltip چند ردیفی (Area Chart) ============ */
+/* ============================================
+   Multi Row Tooltip (Area Chart)
+   ============================================ */
+
 .chart-tooltip-portal .tooltip-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
+
   font-size: 0.75rem;
   margin-bottom: 0.25rem;
 }
@@ -120,7 +150,7 @@
 }
 
 .chart-tooltip-portal .tooltip-row span {
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -128,17 +158,24 @@
   font-weight: 800;
 }
 
+/* Revenue */
 .chart-tooltip-portal .tooltip-row.revenue strong {
-  color: #10b981;
+  color: var(--color-primary);
 }
 
+/* Deposits */
 .chart-tooltip-portal .tooltip-row.deposits strong {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
+/* Settlements */
 .chart-tooltip-portal .tooltip-row.settlements strong {
-  color: #ef4444;
+  color: var(--color-danger);
 }
+
+/* ============================================
+   Standard Chart Tooltip
+   ============================================ */
 
 .chart-tooltip {
   position: relative;
@@ -151,24 +188,32 @@
   padding: 10px 14px;
   border-radius: 8px;
 
-  background: #fff;
-  color: #1f2937;
+  background: var(--color-bg-card);
+  color: var(--color-text);
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  border: 1px solid var(--color-border);
 
   direction: rtl;
   text-align: center;
   overflow-wrap: anywhere;
+
+  font-family: inherit;
 }
 
+/* Tooltip Date */
 .chart-tooltip .tooltip-date {
   display: block;
+
   margin-bottom: 6px;
+
   font-size: 12px;
   font-weight: 600;
+
+  color: var(--color-text-muted);
 }
 
+/* Tooltip Value */
 .chart-tooltip .tooltip-value {
   display: flex;
   align-items: center;
@@ -178,15 +223,31 @@
 
   font-size: 13px;
   font-weight: 700;
+
+  color: var(--color-primary);
 }
 
+/* Currency */
 .chart-tooltip .currency {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
-/* جلوگیری از انیمیشن‌هایی که موقعیت Tooltip را تغییر می‌دهند */
+/* ============================================
+   Recharts Animation / Position Fix
+   ============================================ */
+
 .recharts-tooltip-wrapper {
   z-index: 10000 !important;
-  pointer-events: none;
+  pointer-events: none !important;
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-tooltip-portal {
+    animation: none;
+  }
 }

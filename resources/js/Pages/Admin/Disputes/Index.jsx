@@ -20,6 +20,7 @@ import {
     Flame,
     Ban,
     Shield,
+    Scale,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
 import { toPersianNumber } from "../../../utils/persianNumbers";
@@ -318,18 +319,10 @@ export default function DisputesIndex({ auth, disputes, stats, filters }) {
                 {/* ============ لیست اعتراضات ============ */}
                 {disputesList.length === 0 ? (
                     <div className="card" style={{ padding: "3rem" }}>
-                        <EmptyList
-                            title={
-                                hasActiveFilters
-                                    ? "نتیجه‌ای یافت نشد"
-                                    : "اعتراضی وجود ندارد"
-                            }
-                            message={
-                                hasActiveFilters
-                                    ? "هیچ اعتراضی با فیلترهای انتخاب شده مطابقت ندارد."
-                                    : "در حال حاضر هیچ اعتراضی در سیستم ثبت نشده است."
-                            }
-                        />
+                        <div className="empty-state">
+                            <Scale size={48} />
+                            <p>اعتراضی یافت نشد.</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="disputes-list">

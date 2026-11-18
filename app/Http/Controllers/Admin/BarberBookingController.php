@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class BarberBookingController extends Controller
 {
@@ -27,51 +28,67 @@ class BarberBookingController extends Controller
             abort(404);
         }
 
+        $validStatuses = array_map(
+            fn($status) => $status->value,
+            BookingStatus::cases()
+        );
+
+        $validated = $request->validate([
+            'status' => [
+                'nullable',
+                'string',
+                Rule::in([...$validStatuses, 'today']),
+            ],
+            'search' => ['nullable', 'string', 'max:100'],
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to' => [
+                'nullable',
+                'date_format:Y-m-d',
+                'after_or_equal:date_from',
+            ],
+            'sort' => [
+                'nullable',
+                Rule::in(['latest', 'oldest', 'upcoming', 'amount_high', 'amount_low']),
+            ],
+        ]);
+
         $query = Booking::where('barber_id', $barber->id)
             ->with([
-                'user:id,name,avatar,phone',
+                'user:id,name,avatar,phone,email,slug',
+
                 'service:id,category_id,duration,price',
                 'service.category:id,name,description,image',
+
                 'timeSlot:id,date,start_time,end_time',
+
                 'payment:id,booking_id,status,amount,gateway',
+
                 'latestDispute.disputedByUser:id,name,avatar,phone,slug',
             ])
             ->withCount('disputes')
-            ->withCount(['disputes as active_disputes_count' => function ($q) {
-                $q->whereIn('status', [
-                    \App\Enums\Casts\DisputedStatus::pending->value,
-                    \App\Enums\Casts\DisputedStatus::investigating->value,
-                    \App\Enums\Casts\DisputedStatus::awaitingResponse->value,
-                ]);
-            }]);
+            ->withCount([
+                'disputes as active_disputes_count' => function ($q) {
+                    $q->whereIn('status', [
+                        \App\Enums\Casts\DisputedStatus::pending->value,
+                        \App\Enums\Casts\DisputedStatus::investigating->value,
+                        \App\Enums\Casts\DisputedStatus::awaitingResponse->value,
+                    ]);
+                },
+            ]);
 
         // ============ فیلتر وضعیت ============
-        if ($status = $request->input('status')) {
-            if ($status === 'today') {
-                $query->whereHas('timeSlot', function ($q) {
-                    $q->where('date', Carbon::today());
-                });
-            } elseif ($status === 'upcoming') {
-                $query->whereIn('status', [
-                    BookingStatus::pending->value,
-                    BookingStatus::confirmed->value,
-                ])
-                    ->whereHas('timeSlot', function ($q) {
-                        $q->where('date', '>=', Carbon::today());
-                    });
-            } elseif ($status === 'past') {
-                $query->where(function ($q) {
-                    $q->whereIn('status', [
-                        BookingStatus::completed->value,
-                        BookingStatus::cancelled->value,
-                    ])
-                        ->orWhereHas('timeSlot', function ($sq) {
-                            $sq->where('date', '<', Carbon::today());
-                        });
-                });
-            } else {
-                $query->where('status', $status);
-            }
+        $status = $validated['status'] ?? null;
+
+        if ($status === 'today') {
+
+            // رزروهای امروز، مستقل از وضعیت رزرو
+            $query->whereHas('timeSlot', function ($q) {
+                $q->whereDate('date', Carbon::today());
+            });
+        } elseif ($status !== null) {
+
+            // فیلتر وضعیت‌های واقعی رزرو
+            $query->where('status', $status);
         }
 
         // ============ فیلتر تاریخ ============
@@ -88,69 +105,107 @@ class BarberBookingController extends Controller
         }
 
         // ============ جستجو ============
-        if ($search = trim($request->input('search', ''))) {
+
+        $search = trim($validated['search'] ?? '');
+
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
+
                 $q->whereHas('user', function ($uq) use ($search) {
                     $uq->where('name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('service', function ($sq) use ($search) {
+                });
+
+                $q->orWhereHas('service.category', function ($sq) use ($search) {
                     $sq->where('name', 'like', "%{$search}%");
                 });
             });
         }
 
         // ============ مرتب‌سازی ============
-        $sort = $request->input('sort', 'latest');
+
+        $sort = $validated['sort'] ?? 'latest';
+
         switch ($sort) {
+
             case 'oldest':
-                $query->oldest();
+                $query->oldest('created_at');
                 break;
+
             case 'upcoming':
-                $query->join('time_slots', 'bookings.time_slot_id', '=', 'time_slots.id')
-                    ->orderBy('time_slots.date', 'asc')
-                    ->orderBy('time_slots.start_time', 'asc')
+                $query->whereHas('timeSlot')
+                    ->join('time_slots', 'bookings.time_slot_id', '=', 'time_slots.id')
+                    ->orderBy('time_slots.date')
+                    ->orderBy('time_slots.start_time')
                     ->select('bookings.*');
                 break;
+
             case 'amount_high':
-                $query->orderByDesc('amount');
+                $query->orderByDesc('bookings.amount');
                 break;
+
             case 'amount_low':
-                $query->orderBy('amount');
+                $query->orderBy('bookings.amount');
                 break;
+
             default:
-                $query->latest();
+                $query->latest('bookings.created_at');
+                break;
         }
 
         $bookings = $query->paginate(15)->withQueryString();
 
         // ============ آمار آرایشگر ============
+
+        $statsQuery = Booking::where('barber_id', $barber->id);
+
         $stats = [
-            'total' => Booking::where('barber_id', $barber->id)->count(),
-            'today' => Booking::where('barber_id', $barber->id)
-                ->whereHas('timeSlot', fn($q) => $q->where('date', Carbon::today()))
+            'total' => (clone $statsQuery)->count(),
+
+            'today' => (clone $statsQuery)
+                ->whereHas(
+                    'timeSlot',
+                    fn($q) =>
+                    $q->whereDate('date', Carbon::today())
+                )
                 ->count(),
-            'pending' => Booking::where('barber_id', $barber->id)
-                ->where('status', BookingStatus::pending->value)->count(),
-            'confirmed' => Booking::where('barber_id', $barber->id)
-                ->where('status', BookingStatus::confirmed->value)->count(),
-            'completed' => Booking::where('barber_id', $barber->id)
-                ->where('status', BookingStatus::completed->value)->count(),
-            'cancelled' => Booking::where('barber_id', $barber->id)
-                ->where('status', BookingStatus::cancelled->value)->count(),
-            'total_revenue' => Booking::where('barber_id', $barber->id)
+
+            'pending' => (clone $statsQuery)
+                ->where('status', BookingStatus::pending->value)
+                ->count(),
+
+            'confirmed' => (clone $statsQuery)
+                ->where('status', BookingStatus::confirmed->value)
+                ->count(),
+
+            'completed' => (clone $statsQuery)
+                ->where('status', BookingStatus::completed->value)
+                ->count(),
+
+            'cancelled' => (clone $statsQuery)
+                ->where('status', BookingStatus::cancelled->value)
+                ->count(),
+
+            'total_revenue' => (clone $statsQuery)
                 ->where('status', BookingStatus::completed->value)
                 ->sum('amount'),
-            'month_revenue' => Booking::where('barber_id', $barber->id)
+
+            'month_revenue' => (clone $statsQuery)
                 ->where('status', BookingStatus::completed->value)
                 ->whereHas('timeSlot', function ($q) {
                     $q->whereMonth('date', Carbon::now()->month)
                         ->whereYear('date', Carbon::now()->year);
                 })
                 ->sum('amount'),
-            'today_revenue' => Booking::where('barber_id', $barber->id)
+
+            'today_revenue' => (clone $statsQuery)
                 ->where('status', BookingStatus::completed->value)
-                ->whereHas('timeSlot', fn($q) => $q->where('date', Carbon::today()))
+                ->whereHas(
+                    'timeSlot',
+                    fn($q) =>
+                    $q->whereDate('date', Carbon::today())
+                )
                 ->sum('amount'),
         ];
 
@@ -179,16 +234,24 @@ class BarberBookingController extends Controller
                     'thumbnail' => $booking->user->avatarUrl(),
                     'phone' => $booking->user->phone,
                     'email' => $booking->user->email,
+                    'slug' => $booking->user->slug,
                 ] : null,
 
                 // ============ اطلاعات خدمت ============
+
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
-                    'name' => $booking->service->name,
-                    'image' => $booking->service->image
-                        ? asset('storage/' . $booking->service->image)
+
+                    'name' => $booking->service->category?->name,
+
+                    'description' => $booking->service->category?->description,
+
+                    'image' => $booking->service->category?->image
+                        ? asset('storage/' . $booking->service->category->image)
                         : null,
+
                     'duration' => $booking->service->duration,
+
                     'price' => (float) $booking->service->price,
                 ] : null,
 
@@ -228,6 +291,7 @@ class BarberBookingController extends Controller
         $barberInfo = [
             'id' => $barber->id,
             'name' => $barber->name,
+            'slug' => $barber->slug,
             'avatar' => $barber->avatar,
             'thumbnail' => $barber->avatarUrl(),
             'phone' => $barber->phone,
@@ -261,6 +325,7 @@ class BarberBookingController extends Controller
      */
     public function show(User $barber, Booking $booking)
     {
+
         // بررسی ارتباط رزرو با آرایشگر
         if ($booking->barber_id !== $barber->id) {
             abort(404);

@@ -1,13 +1,13 @@
 /* ============================================
-   Stat Detail Modal — Complete Styles
-   Theme-aware (Light/Dark/Auto)
+   Stat Detail Modal — Theme Aware
+   Light / Dark / Auto Dark
    ============================================ */
 
 /* ============ Overlay ============ */
 .stat-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   z-index: 9999;
@@ -42,11 +42,14 @@
   overflow: hidden;
   box-shadow:
     0 25px 50px var(--color-shadow),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    0 0 0 1px color-mix(in srgb, var(--color-text) 4%, transparent) inset;
   animation: statModalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-family: inherit;
   color: var(--color-text);
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s;
 }
 
 @keyframes statModalSlideIn {
@@ -86,27 +89,25 @@
 }
 
 .stat-modal-header.green::before {
-  background: linear-gradient(90deg,
-      var(--color-primary),
-      var(--color-primary-hover));
+  background: var(--gradient-primary);
 }
 
 .stat-modal-header.orange::before {
   background: linear-gradient(90deg,
       var(--color-warning),
-      color-mix(in srgb, var(--color-warning) 80%, black));
+      color-mix(in srgb, var(--color-warning) 75%, var(--color-text)));
 }
 
 .stat-modal-header.blue::before {
   background: linear-gradient(90deg,
       var(--color-info),
-      color-mix(in srgb, var(--color-info) 80%, black));
+      color-mix(in srgb, var(--color-info) 75%, var(--color-text)));
 }
 
 .stat-modal-header.red::before {
   background: linear-gradient(90deg,
       var(--color-danger),
-      color-mix(in srgb, var(--color-danger) 80%, black));
+      color-mix(in srgb, var(--color-danger) 75%, var(--color-text)));
 }
 
 /* آیکون هدر */
@@ -118,26 +119,36 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .stat-modal-header.green .stat-modal-header-icon {
-  background: var(--color-primary-tint);
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
   color: var(--color-primary);
 }
 
 .stat-modal-header.orange .stat-modal-header-icon {
-  background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
   color: var(--color-warning);
 }
 
 .stat-modal-header.blue .stat-modal-header-icon {
-  background: color-mix(in srgb, var(--color-info) 15%, transparent);
+  background: color-mix(in srgb,
+      var(--color-info) 12%,
+      var(--color-bg-card));
   color: var(--color-info);
 }
 
 .stat-modal-header.red .stat-modal-header-icon {
-  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  background: color-mix(in srgb,
+      var(--color-danger) 12%,
+      var(--color-bg-card));
   color: var(--color-danger);
 }
 
@@ -170,7 +181,7 @@
   height: 2rem;
   border-radius: 50%;
   background: var(--color-bg-hover);
-  border: none;
+  border: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,13 +192,15 @@
 }
 
 .stat-modal-close:hover {
-  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  background: color-mix(in srgb,
+      var(--color-danger) 12%,
+      var(--color-bg-card));
   color: var(--color-danger);
   transform: rotate(90deg);
 }
 
 .stat-modal-close:focus-visible {
-  outline: 2px solid var(--color-primary-light);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -223,7 +236,7 @@
 }
 
 /* ============================================
-   Main Value (مقدار کل)
+   Main Value
    ============================================ */
 .stat-modal-main-value {
   display: flex;
@@ -233,33 +246,45 @@
   border-radius: 0.875rem;
   text-align: center;
   border: 1px solid var(--color-border);
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 .stat-modal-main-value.green {
-  background: var(--color-primary-tint);
-  border-color: var(--color-primary-light);
+  background: color-mix(in srgb,
+      var(--color-primary) 9%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-primary) 25%,
+      var(--color-border));
 }
 
 .stat-modal-main-value.orange {
   background: color-mix(in srgb,
-      var(--color-warning) 8%,
+      var(--color-warning) 9%,
       var(--color-bg-card));
-  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+  border-color: color-mix(in srgb,
+      var(--color-warning) 25%,
+      var(--color-border));
 }
 
 .stat-modal-main-value.blue {
   background: color-mix(in srgb,
-      var(--color-info) 8%,
+      var(--color-info) 9%,
       var(--color-bg-card));
-  border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
+  border-color: color-mix(in srgb,
+      var(--color-info) 25%,
+      var(--color-border));
 }
 
 .stat-modal-main-value.red {
   background: color-mix(in srgb,
-      var(--color-danger) 8%,
+      var(--color-danger) 9%,
       var(--color-bg-card));
-  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+  border-color: color-mix(in srgb,
+      var(--color-danger) 25%,
+      var(--color-border));
 }
 
 .stat-modal-main-label {
@@ -283,7 +308,7 @@
 }
 
 .stat-modal-main-value.green .stat-modal-main-amount {
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
 }
 
 .stat-modal-main-value.orange .stat-modal-main-amount {
@@ -308,7 +333,9 @@
   background: var(--color-bg-hover);
   border-radius: 0.75rem;
   border-right: 3px solid var(--color-primary);
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 .stat-modal-description svg {
@@ -365,7 +392,7 @@
 
 .stat-modal-detail-item:hover {
   background: color-mix(in srgb,
-      var(--color-primary) 6%,
+      var(--color-primary) 7%,
       var(--color-bg-hover));
 }
 
@@ -379,7 +406,9 @@
   justify-content: center;
   color: var(--color-primary);
   flex-shrink: 0;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .stat-modal-detail-content {
@@ -413,8 +442,12 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.625rem 0.75rem;
-  background: color-mix(in srgb, var(--color-info) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent);
+  background: color-mix(in srgb,
+      var(--color-info) 9%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-info) 25%,
+      var(--color-border));
   border-radius: 0.625rem;
 }
 
@@ -454,12 +487,16 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px var(--color-primary-light);
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--color-primary) 25%,
+      transparent);
 }
 
 .stat-modal-btn-close:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--color-primary-light);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-primary) 35%,
+      transparent);
 }
 
 .stat-modal-btn-close:active {
@@ -467,7 +504,7 @@
 }
 
 .stat-modal-btn-close:focus-visible {
-  outline: 2px solid var(--color-primary-light);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -597,19 +634,6 @@
 }
 
 /* ============================================
-   Dark Mode — Overlay Refinement
-   ============================================ */
-@media (prefers-color-scheme: dark) {
-  .stat-modal-overlay {
-    background: rgba(0, 0, 0, 0.7);
-  }
-}
-
-html.dark .stat-modal-overlay {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-/* ============================================
    Reduced Motion
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -626,29 +650,42 @@ html.dark .stat-modal-overlay {
   .stat-modal-close:hover {
     transform: none;
   }
+
+  .stat-modal-btn-close:hover {
+    transform: none;
+  }
 }
 
 /* ============================================
-   Purple Variant (برای بازگشت وجه)
+   Purple Variant
+   بازگشت وجه — استفاده از ترکیب رنگ تم
    ============================================ */
 .stat-modal-header.purple::before {
   background: linear-gradient(90deg,
-      #8b5cf6,
-      color-mix(in srgb, #8b5cf6 80%, black));
+      var(--color-primary),
+      var(--color-info));
 }
 
 .stat-modal-header.purple .stat-modal-header-icon {
-  background: color-mix(in srgb, #8b5cf6 15%, transparent);
-  color: #8b5cf6;
+  background: color-mix(in srgb,
+      var(--color-primary) 10%,
+      color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card)));
+  color: color-mix(in srgb,
+      var(--color-primary) 50%,
+      var(--color-info));
 }
 
 .stat-modal-main-value.purple {
   background: color-mix(in srgb,
-      #8b5cf6 8%,
-      var(--color-bg-card));
-  border-color: color-mix(in srgb, #8b5cf6 25%, transparent);
+      var(--color-info) 8%,
+      color-mix(in srgb, var(--color-primary) 5%, var(--color-bg-card)));
+  border-color: color-mix(in srgb,
+      var(--color-info) 25%,
+      var(--color-border));
 }
 
 .stat-modal-main-value.purple .stat-modal-main-amount {
-  color: #8b5cf6;
+  color: color-mix(in srgb,
+      var(--color-primary) 45%,
+      var(--color-info));
 }

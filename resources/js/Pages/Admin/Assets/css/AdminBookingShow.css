@@ -1,10 +1,13 @@
 /* ============================================
    Admin Booking Show Page
+   Dynamic Theme Compatible
    ============================================ */
+
 .admin-booking-show-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
+  color: var(--color-text);
 }
 
 .admin-booking-show-back {
@@ -17,11 +20,13 @@
   align-items: flex-start;
   gap: 1.25rem;
   padding: 1.75rem;
-  border: 1px solid;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 1.5rem;
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 8px var(--color-shadow);
 }
 
 .admin-booking-show-header::before {
@@ -31,7 +36,9 @@
   left: -20%;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--color-primary) 10%, transparent) 0%,
+      transparent 70%);
   pointer-events: none;
 }
 
@@ -43,7 +50,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 2px solid;
+  border: 2px solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
   position: relative;
   z-index: 1;
 }
@@ -72,7 +81,7 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 800;
-  border: 1px solid;
+  border: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
@@ -81,25 +90,25 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 700;
   padding: 0.375rem 0.75rem;
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 9999px;
 }
 
 .admin-booking-show-title {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--color-text);
   margin: 0 0 0.375rem;
   line-height: 1.5;
 }
 
 .admin-booking-show-subtitle {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   margin: 0;
 }
 
@@ -130,11 +139,12 @@
 
 /* ============ کارت‌ها ============ */
 .admin-booking-show-card {
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 .admin-booking-show-card-header {
@@ -143,7 +153,7 @@
   gap: 0.75rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--color-border);
 }
 
 /* ============ اطلاعات مشتری ============ */
@@ -152,9 +162,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 1rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   flex-wrap: wrap;
 }
 
@@ -163,15 +173,17 @@
   height: 4rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
+  background: linear-gradient(135deg,
+      var(--color-info),
+      color-mix(in srgb, var(--color-info) 75%, var(--color-secondary)));
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1.5rem;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 .customer-info-avatar img {
@@ -188,7 +200,7 @@
 .customer-info-name {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0 0 0.5rem;
 }
 
@@ -203,20 +215,20 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.3125rem 0.625rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .customer-info-contact .contact-item:hover {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  color: #10b981;
+  background-color: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .view-customer-btn {
@@ -224,9 +236,9 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background-color: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 10%, var(--color-bg-card));
+  color: var(--color-info);
+  border: 1px solid color-mix(in srgb, var(--color-info) 25%, var(--color-border));
   border-radius: 0.625rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -236,28 +248,28 @@
 }
 
 .view-customer-btn:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background-color: var(--color-info);
+  color: #fff;
+  border-color: var(--color-info);
   transform: translateY(-1px);
 }
 
-/* ============ اطلاعات آرایشگر (کارت کوچک) ============ */
+/* ============ اطلاعات آرایشگر ============ */
 .barber-mini-card {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   text-decoration: none;
   transition: all 0.2s;
 }
 
 .barber-mini-card:hover {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   transform: translateY(-1px);
 }
 
@@ -266,8 +278,8 @@
   height: 3rem;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: var(--gradient-primary);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -292,12 +304,12 @@
 .barber-mini-name {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-hover);
 }
 
 .barber-mini-label {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -319,15 +331,15 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   transition: all 0.2s;
 }
 
 .info-block:hover {
-  background-color: #f0fdf4;
-  border-color: #d1fae5;
+  background-color: var(--color-primary-tint);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   transform: translateY(-2px);
 }
 
@@ -335,8 +347,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background-color: white;
-  color: #10b981;
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -352,7 +364,7 @@
 
 .info-label {
   font-size: 0.6875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -361,7 +373,7 @@
 .info-value {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
 }
 
 /* ============ توضیحات خدمت ============ */
@@ -371,20 +383,20 @@
   gap: 0.5rem;
   margin-top: 1rem;
   padding: 0.875rem 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border-right: 3px solid #10b981;
+  border-right: 3px solid var(--color-primary);
 }
 
 .service-description-box svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .service-description-box p {
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
@@ -408,20 +420,20 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.75rem 0.875rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.75rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
 }
 
 .payment-info-label {
   font-size: 0.6875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .payment-info-value {
   font-size: 0.8125rem;
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 700;
 }
 
@@ -447,8 +459,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  border: 1px solid #a7f3d0;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-success) 30%, var(--color-border));
   border-radius: 0.875rem;
 }
 
@@ -458,19 +470,19 @@
   gap: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #065f46;
+  color: var(--color-success);
 }
 
 .payment-total-value {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-success);
 }
 
 .payment-total-value .currency {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #047857;
+  color: var(--color-success);
 }
 
 /* ============ نمایش نظر ============ */
@@ -490,25 +502,27 @@
 
 .review-display-date {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .review-display-comment {
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-text);
   line-height: 1.9;
   margin: 0;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border-right: 3px solid #fbbf24;
+  border-right: 3px solid var(--color-warning);
 }
 
 /* ============ خلاصه ============ */
 .summary-card {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
-  border-color: #d1fae5;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-card)),
+      var(--color-bg-card));
+  border-color: color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
 }
 
 .summary-list {
@@ -526,36 +540,39 @@
 }
 
 .summary-row-label {
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .summary-row-value {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .summary-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #a7f3d0, transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--color-primary) 35%, var(--color-border)),
+      transparent);
   margin: 0.25rem 0;
 }
 
 .summary-row.total .summary-row-label {
   font-size: 0.875rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 800;
 }
 
 .summary-row.total .summary-row-value {
   font-size: 1.25rem;
-  color: #065f46;
+  color: var(--color-primary-hover);
   font-weight: 800;
 }
 
 .summary-row.total .currency {
   font-size: 0.75rem;
-  color: #047857;
+  color: var(--color-primary);
 }
 
 /* ============ دکمه‌های عملیات ============ */
@@ -570,13 +587,13 @@
   align-items: center;
   gap: 0.625rem;
   padding: 0.875rem 1rem;
-  background-color: white;
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.8125rem;
   font-weight: 700;
   font-family: inherit;
-  color: var(--text-main);
+  color: var(--color-text);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -589,41 +606,41 @@
 }
 
 .action-btn.print {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-color: #dbeafe;
+  background-color: color-mix(in srgb, var(--color-info) 9%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 25%, var(--color-border));
 }
 
 .action-btn.print:hover {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background-color: var(--color-info);
+  color: #fff;
+  border-color: var(--color-info);
   transform: translateY(-1px);
 }
 
 .action-btn.contact {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border-color: #d1fae5;
+  background-color: color-mix(in srgb, var(--color-success) 9%, var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 25%, var(--color-border));
 }
 
 .action-btn.contact:hover {
-  background-color: #10b981;
-  color: white;
-  border-color: #10b981;
+  background-color: var(--color-success);
+  color: #fff;
+  border-color: var(--color-success);
   transform: translateY(-1px);
 }
 
 .action-btn.cancel {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border-color: #fee2e2;
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, var(--color-border));
 }
 
 .action-btn.cancel:hover {
-  background-color: #ef4444;
-  color: white;
-  border-color: #ef4444;
+  background-color: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
   transform: translateY(-1px);
 }
 
@@ -640,13 +657,13 @@
 }
 
 .info-box.warning {
-  background-color: #fffbeb;
-  border-right: 3px solid #f59e0b;
-  color: #92400e;
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border-right: 3px solid var(--color-warning);
+  color: var(--color-text);
 }
 
 .info-box.warning svg {
-  color: #f59e0b;
+  color: var(--color-warning);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -671,12 +688,12 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
 }
 
 .status-guide-list li svg {
-  color: #10b981;
+  color: var(--color-success);
   flex-shrink: 0;
   margin-top: 3px;
 }
@@ -684,7 +701,7 @@
 /* ============ Empty Text ============ */
 .empty-text {
   font-size: 0.8125rem;
-  color: var(--text-light);
+  color: var(--color-text-muted);
   font-style: italic;
   text-align: center;
   padding: 1.5rem;
@@ -708,7 +725,7 @@
 
   .admin-booking-show-card {
     box-shadow: none;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border);
     page-break-inside: avoid;
   }
 }
@@ -756,24 +773,24 @@
 
 /* ============ دکمه تکمیل ادمین ============ */
 .action-btn.complete-admin {
-  background-color: #fef3c7;
-  color: #92400e;
-  border-color: #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 30%, var(--color-border));
 }
 
 .action-btn.complete-admin:hover {
-  background-color: #f59e0b;
-  color: white;
-  border-color: #f59e0b;
+  background-color: var(--color-warning);
+  color: #fff;
+  border-color: var(--color-warning);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 25%, transparent);
 }
 
 /* ============ Modal تکمیل ادمین ============ */
 .complete-admin-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -784,12 +801,14 @@
 }
 
 .complete-admin-modal {
-  background-color: white;
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 1.5rem;
   padding: 1.75rem;
   max-width: 520px;
   width: 100%;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px -12px var(--color-shadow);
   animation: modalSlideUp 0.3s ease;
   max-height: 90vh;
   overflow-y: auto;
@@ -808,12 +827,12 @@
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
+  background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card));
+  color: var(--color-warning);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fcd34d;
+  border: 2px solid color-mix(in srgb, var(--color-warning) 40%, var(--color-border));
   animation: iconPulse 2s ease-in-out infinite;
 }
 
@@ -821,18 +840,18 @@
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-warning) 40%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 12px rgba(245, 158, 11, 0);
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-warning) 0%, transparent);
   }
 }
 
 .complete-admin-modal-header h3 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -841,22 +860,22 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
+  background-color: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, var(--color-border));
   border-radius: 0.875rem;
-  border-right: 3px solid #f59e0b;
+  border-right: 3px solid var(--color-warning);
   margin-bottom: 1.25rem;
 }
 
 .complete-admin-warning svg {
-  color: #f59e0b;
+  color: var(--color-warning);
   flex-shrink: 0;
   margin-top: 2px;
 }
 
 .complete-admin-warning p {
   font-size: 0.75rem;
-  color: #92400e;
+  color: var(--color-text);
   line-height: 1.7;
   margin: 0;
 }
@@ -870,9 +889,9 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--color-bg-hover);
   border-radius: 0.875rem;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--color-border);
   margin-bottom: 1.25rem;
 }
 
@@ -885,12 +904,12 @@
 }
 
 .complete-admin-info .info-row span {
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .complete-admin-info .info-row strong {
-  color: var(--text-main);
+  color: var(--color-text);
   font-weight: 800;
 }
 
@@ -902,24 +921,24 @@
   display: block;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.5rem;
 }
 
 .required {
-  color: #ef4444;
+  color: var(--color-danger);
   margin-right: 0.25rem;
 }
 
 .form-textarea {
   width: 100%;
   padding: 0.875rem;
-  background-color: #f9fafb;
-  border: 1.5px solid var(--border-color);
+  background-color: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: var(--text-main);
+  font-family: "Vazirmatn", sans-serif;
+  color: var(--color-text);
   line-height: 1.7;
   resize: vertical;
   min-height: 100px;
@@ -928,22 +947,22 @@
 }
 
 .form-textarea:focus {
-  background-color: white;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background-color: var(--color-bg-card);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 .form-textarea.error {
-  border-color: #ef4444;
+  border-color: var(--color-danger);
 }
 
 .form-textarea::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .char-counter {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-align: left;
   direction: ltr;
@@ -955,7 +974,7 @@
   flex-direction: column-reverse;
   gap: 0.625rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
 }
 
 @media (min-width: 640px) {
@@ -983,26 +1002,26 @@
 }
 
 .btn-cancel {
-  background-color: white;
-  color: var(--text-muted);
-  border: 1.5px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
 }
 
 .btn-confirm {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 .btn-confirm:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
 .btn-confirm:disabled,
@@ -1017,12 +1036,12 @@
   gap: 0.375rem;
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 600;
 }
 
 .form-error svg {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .spinner {
@@ -1030,7 +1049,7 @@
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -1090,7 +1109,7 @@
   flex-wrap: wrap;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
 }
 
 .review-action-btn {
@@ -1119,44 +1138,44 @@
 
 /* ============ تایید نظر ============ */
 .review-action-btn.approve {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
-  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-success) 8%, transparent);
 }
 
 .review-action-btn.approve:hover:not(:disabled) {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  border-color: #10b981;
+  background: var(--color-success);
+  color: #fff;
+  border-color: var(--color-success);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-success) 30%, transparent);
 }
 
 .review-action-btn.approve:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-success) 25%, transparent);
 }
 
 /* ============ رد نظر ============ */
 .review-action-btn.reject {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
-  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.08);
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-danger) 8%, transparent);
 }
 
 .review-action-btn.reject:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #ffffff;
-  border-color: #ef4444;
+  background: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .review-action-btn.reject:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 /* ============ حالت غیرفعال ============ */
@@ -1201,20 +1220,23 @@
   }
 }
 
-
-
 /* ============================================
    Review Status Section
    ============================================ */
 .review-status-section {
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px dashed #e5e7eb;
+  padding: 1rem;
+  background: linear-gradient(135deg,
+      var(--color-bg-hover) 0%,
+      var(--color-bg-card) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
 }
 
 .review-status-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
@@ -1238,27 +1260,27 @@
 }
 
 .review-status-badge.status-pending {
-  background: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
 }
 
 .review-status-badge.status-approved {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
 }
 
 .review-status-badge.status-rejected {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
 }
 
 .review-status-badge.status-flagged {
-  background: #fff7ed;
-  color: #9a3412;
-  border-color: #ffedd5;
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
 }
 
 /* ============ اطلاعات تصمیم ادمین ============ */
@@ -1267,39 +1289,39 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1;
   flex-wrap: wrap;
 }
 
 .review-moderated-info svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
 .review-moderated-info .moderated-action {
-  color: #374151;
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .review-moderated-info .moderated-by {
-  color: #3b82f6;
+  color: var(--color-info);
   font-weight: 700;
 }
 
 .review-moderated-info .moderated-separator {
-  color: #d1d5db;
+  color: var(--color-border);
   font-size: 0.75rem;
   line-height: 1;
 }
 
 .review-moderated-info .moderated-date {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   direction: rtl;
 }
@@ -1318,27 +1340,9 @@
   }
 }
 
-.review-status-section {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-  border: 1px solid #f3f4f6;
-  border-radius: 1rem;
-}
-
-.review-status-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-
 /* ============================================
    Review Hero Actions — عملیات مدیریت نظر
    ============================================ */
-
 .review-hero-btn {
   display: inline-flex;
   align-items: center;
@@ -1346,17 +1350,14 @@
   gap: 0.5rem;
   min-height: 2.625rem;
   padding: 0.625rem 1rem;
-
   border: 1.5px solid transparent;
   border-radius: 0.75rem;
-
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 800;
   line-height: 1.4;
   white-space: nowrap;
   text-decoration: none;
-
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -1374,59 +1375,55 @@
 }
 
 /* ============ تغییر به رد ============ */
-
 .review-hero-btn.reject {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
-  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.08);
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-danger) 8%, transparent);
 }
 
 .review-hero-btn.reject:hover {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: var(--color-danger);
   color: #fff;
-  border-color: #ef4444;
+  border-color: var(--color-danger);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 /* ============ تغییر به تأیید ============ */
-
 .review-hero-btn.approve {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
-  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.08);
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-success) 8%, transparent);
 }
 
 .review-hero-btn.approve:hover {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--color-success);
   color: #fff;
-  border-color: #10b981;
+  border-color: var(--color-success);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-success) 25%, transparent);
 }
 
 /* ============ حذف نظر ============ */
-
 .review-hero-btn.delete {
   width: 2.625rem;
   min-width: 2.625rem;
   height: 2.625rem;
   padding: 0;
-
-  background: #fff1f2;
-  color: #be123c;
-  border-color: #fecdd3;
-  box-shadow: 0 1px 3px rgba(225, 29, 72, 0.06);
+  background: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 30%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-danger) 6%, transparent);
 }
 
 .review-hero-btn.delete:hover {
-  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  background: var(--color-danger);
   color: #fff;
-  border-color: #f43f5e;
+  border-color: var(--color-danger);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(225, 29, 72, 0.25);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-danger) 25%, transparent);
 }
 
 .review-hero-btn.delete:hover svg {
@@ -1434,38 +1431,34 @@
 }
 
 /* ============ بازیابی نظر ============ */
-
 .review-hero-btn.restore {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-color: #bfdbfe;
-  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.08);
+  background: color-mix(in srgb, var(--color-info) 9%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 35%, var(--color-border));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-info) 8%, transparent);
 }
 
 .review-hero-btn.restore:hover {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: var(--color-info);
   color: #fff;
-  border-color: #3b82f6;
+  border-color: var(--color-info);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--color-info) 25%, transparent);
 }
 
 /* ============ حالت کلیک ============ */
-
 .review-hero-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px var(--color-shadow);
 }
 
 /* ============ حالت فوکوس با کیبورد ============ */
-
 .review-hero-btn:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.35);
+  outline: 3px solid color-mix(in srgb, var(--color-info) 40%, transparent);
   outline-offset: 3px;
 }
 
 /* ============ حالت غیرفعال ============ */
-
 .review-hero-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -1474,7 +1467,6 @@
 }
 
 /* ============ واکنش‌گرایی ============ */
-
 @media (max-width: 640px) {
   .review-hero-btn {
     min-height: 2.75rem;
@@ -1504,17 +1496,17 @@
   display: flex;
   gap: 0.625rem;
   padding: 0.875rem 1rem;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
   border-radius: 0.875rem;
-  color: #92400e;
+  color: var(--color-text);
   font-size: 0.75rem;
   line-height: 1.7;
 }
 
 .review-restore-hint svg {
   flex-shrink: 0;
-  color: #f59e0b;
+  color: var(--color-warning);
   margin-top: 0.125rem;
 }
 
@@ -1522,32 +1514,32 @@
   display: block;
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #78350f;
+  color: var(--color-warning);
   margin-bottom: 0.25rem;
 }
 
 .review-restore-hint p {
   margin: 0;
   font-weight: 600;
-  color: #92400e;
+  color: var(--color-text);
 }
 
 /* ============================================
    Booking Review Card (کارت نظر مشتری)
    ============================================ */
-
 .booking-review-card {
-  background: #ffffff;
-  border: 1.5px solid #f3f4f6;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
   border-radius: 1.25rem;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px var(--color-shadow);
   transition: all 0.2s;
 }
 
 .booking-review-card:hover {
-  border-color: #fde68a;
-  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.08);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, var(--color-border));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-warning) 10%, transparent);
 }
 
 /* ============ هدر ============ */
@@ -1556,8 +1548,10 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
-  border-bottom: 1px solid #fef3c7;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card)) 0%,
+      var(--color-bg-card) 100%);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-warning) 25%, var(--color-border));
   flex-wrap: wrap;
 }
 
@@ -1565,12 +1559,13 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background: #fef3c7;
+  background: color-mix(in srgb, var(--color-warning) 15%, var(--color-bg-card));
+  color: var(--color-warning);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-warning) 15%, transparent);
 }
 
 .booking-review-card-title {
@@ -1584,7 +1579,7 @@
 .booking-review-card-title h2 {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
   line-height: 1.3;
 }
@@ -1601,7 +1596,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -1620,27 +1615,27 @@
 }
 
 .booking-review-status.status-pending {
-  background: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
 }
 
 .booking-review-status.status-approved {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border));
 }
 
 .booking-review-status.status-rejected {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
 }
 
 .booking-review-status.status-unknown {
-  background: #f3f4f6;
-  color: #6b7280;
-  border-color: #e5e7eb;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
 /* ============ بدنه ============ */
@@ -1658,8 +1653,8 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #fff7d6;
-  border: 1px solid #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
   border-radius: 0.75rem;
   flex-wrap: wrap;
 }
@@ -1667,6 +1662,7 @@
 .booking-review-card-stars {
   display: inline-flex;
   gap: 0.125rem;
+  color: var(--color-warning);
 }
 
 .booking-review-card-score {
@@ -1674,34 +1670,34 @@
   align-items: baseline;
   gap: 0.25rem;
   padding: 0.25rem 0.625rem;
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-radius: 0.5rem;
-  border: 1px solid #fde68a;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
 }
 
 .booking-review-card-score strong {
   font-size: 1.25rem;
   font-weight: 900;
-  color: #92400e;
+  color: var(--color-warning);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .booking-review-card-score span {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
 /* ============ متن نظر ============ */
 .booking-review-card-comment {
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--color-text);
   line-height: 2;
   margin: 0;
   padding: 0.875rem 1rem;
-  background: #fafbfc;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   position: relative;
   word-break: break-word;
@@ -1716,7 +1712,7 @@
   right: 0.75rem;
   font-size: 2.5rem;
   font-weight: 900;
-  color: #fbbf24;
+  color: var(--color-warning);
   line-height: 1;
   opacity: 0.3;
   pointer-events: none;
@@ -1728,10 +1724,10 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 1.25rem;
-  background: #f9fafb;
-  border: 1.5px dashed #e5e7eb;
+  background: var(--color-bg-hover);
+  border: 1.5px dashed var(--color-border);
   border-radius: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 600;
   font-style: italic;
@@ -1743,8 +1739,8 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
   border-radius: 0.625rem;
 }
 
@@ -1752,8 +1748,8 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 0.375rem;
-  background: #eff6ff;
-  color: #3b82f6;
+  background: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card));
+  color: var(--color-info);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1770,7 +1766,7 @@
   flex-wrap: wrap;
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .booking-review-card-moderation-action {
@@ -1783,22 +1779,22 @@
 }
 
 .booking-review-card-moderation-action.approved {
-  background: #ecfdf5;
-  color: #065f46;
+  background: color-mix(in srgb, var(--color-success) 12%, var(--color-bg-card));
+  color: var(--color-success);
 }
 
 .booking-review-card-moderation-action.rejected {
-  background: #fef2f2;
-  color: #991b1b;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  color: var(--color-danger);
 }
 
 .booking-review-card-moderation-by {
-  color: #4b5563;
+  color: var(--color-text);
   font-weight: 700;
 }
 
 .booking-review-card-moderation-date {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   margin-right: auto;
   font-size: 0.625rem;
@@ -1810,23 +1806,23 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: #fef2f2;
-  border: 1.5px solid #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-danger) 30%, var(--color-border));
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-text);
   line-height: 1.6;
   word-break: break-word;
 }
 
 .booking-review-card-rejection svg {
   flex-shrink: 0;
-  color: #ef4444;
+  color: var(--color-danger);
   margin-top: 0.125rem;
 }
 
 .booking-review-card-rejection strong {
-  color: #7f1d1d;
+  color: var(--color-danger);
   font-weight: 800;
 }
 
@@ -1835,23 +1831,23 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.625rem 0.875rem;
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
+  background: color-mix(in srgb, var(--color-info) 9%, var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-info) 30%, var(--color-border));
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #1e40af;
+  color: var(--color-text);
   line-height: 1.6;
   word-break: break-word;
 }
 
 .booking-review-card-note svg {
   flex-shrink: 0;
-  color: #3b82f6;
+  color: var(--color-info);
   margin-top: 0.125rem;
 }
 
 .booking-review-card-note strong {
-  color: #1e3a8a;
+  color: var(--color-info);
   font-weight: 800;
 }
 
@@ -1861,17 +1857,17 @@
   gap: 0.625rem;
   padding: 0.75rem 1rem;
   margin: 0 1.25rem 1rem;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-border));
   border-radius: 0.75rem;
-  color: #92400e;
+  color: var(--color-text);
   font-size: 0.75rem;
   line-height: 1.7;
 }
 
 .booking-review-card-deleted svg {
   flex-shrink: 0;
-  color: #f59e0b;
+  color: var(--color-warning);
   margin-top: 0.125rem;
 }
 
@@ -1879,14 +1875,14 @@
   display: block;
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #78350f;
+  color: var(--color-warning);
   margin-bottom: 0.125rem;
 }
 
 .booking-review-card-deleted p {
   margin: 0;
   font-weight: 600;
-  color: #92400e;
+  color: var(--color-text);
 }
 
 /* ============ اکشن‌ها ============ */
@@ -1894,8 +1890,8 @@
   display: flex;
   gap: 0.5rem;
   padding: 1rem 1.25rem;
-  border-top: 1px dashed #f3f4f6;
-  background: #fafbfc;
+  border-top: 1px dashed var(--color-border);
+  background: var(--color-bg-hover);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -1923,56 +1919,57 @@
 
 .booking-review-btn.approve,
 .booking-review-btn.change-approve {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+  background: var(--color-success);
+  color: #fff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-success) 25%, transparent);
 }
 
 .booking-review-btn.approve:hover:not(:disabled),
 .booking-review-btn.change-approve:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-success) 85%, #000);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-success) 35%, transparent);
 }
 
 .booking-review-btn.reject,
 .booking-review-btn.change-reject {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
 }
 
 .booking-review-btn.reject:hover:not(:disabled),
 .booking-review-btn.change-reject:hover:not(:disabled) {
-  background: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
+  background: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
   transform: translateY(-1px);
 }
 
 .booking-review-btn.delete {
-  background: #ffffff;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: var(--color-bg-card);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
   padding: 0.5625rem;
   min-width: 2.25rem;
   margin-right: auto;
 }
 
 .booking-review-btn.delete:hover:not(:disabled) {
-  background: #fef2f2;
-  border-color: #ef4444;
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg-card));
+  border-color: var(--color-danger);
 }
 
 .booking-review-btn.restore {
-  background: #f5f3ff;
-  color: #5b21b6;
-  border-color: #ddd6fe;
+  background: color-mix(in srgb, var(--color-info) 9%, var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb, var(--color-info) 35%, var(--color-border));
 }
 
 .booking-review-btn.restore:hover:not(:disabled) {
-  background: #8b5cf6;
-  color: #ffffff;
-  border-color: #8b5cf6;
+  background: var(--color-info);
+  color: #fff;
+  border-color: var(--color-info);
   transform: translateY(-1px);
 }
 
@@ -1988,7 +1985,7 @@
   width: 12px;
   height: 12px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
+  border-top-color: #fff;
   border-radius: 50%;
   animation: bookingReviewSpin 0.7s linear infinite;
   flex-shrink: 0;

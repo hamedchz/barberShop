@@ -679,7 +679,7 @@
   margin-bottom: 1.5rem;
 }
 
-.back-btn {
+/* .back-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -699,7 +699,7 @@
   border-color: #3b82f6;
   color: #1e40af;
   transform: translateX(3px);
-}
+} */
 
 /* ============ Profile Card ============ */
 .customer-profile-card {

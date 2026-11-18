@@ -15,12 +15,12 @@ import {
     Mail,
     CreditCard,
     Ban,
-    AlertTriangle,
     Search,
     MessageSquare,
-    Shield,
+    MapPin,
 } from "lucide-react";
 import { toJalaali } from "jalaali-js";
+
 import {
     toPersianNumber,
     toPersianTimeRange,
@@ -28,108 +28,97 @@ import {
 
 import { getDisputeTypeConfig } from "../../../Constants/disputeTypes";
 import "../Assets/css/AdminBarberBookingsCard.css";
-// ============ وضعیت‌ها ============
+
+// ============================================
+// Booking Status
+// ============================================
+
 const statusConfig = {
     pending: {
-        label: "در انتظار تایید",
+        label: "در انتظار تأیید",
         icon: Clock4,
-        color: "#92400e",
-        bg: "#fffbeb",
-        border: "#fde68a",
-        gradient: "linear-gradient(135deg, #fbbf24, #f59e0b)",
     },
     confirmed: {
-        label: "تایید شده",
+        label: "تأیید شده",
         icon: CheckCircle,
-        color: "#065f46",
-        bg: "#ecfdf5",
-        border: "#d1fae5",
-        gradient: "linear-gradient(135deg, #10b981, #059669)",
     },
     completed: {
         label: "تکمیل شده",
         icon: CheckCircle,
-        color: "#1e40af",
-        bg: "#eff6ff",
-        border: "#dbeafe",
-        gradient: "linear-gradient(135deg, #3b82f6, #2563eb)",
     },
     cancelled: {
         label: "لغو شده",
         icon: XCircle,
-        color: "#991b1b",
-        bg: "#fef2f2",
-        border: "#fee2e2",
-        gradient: "linear-gradient(135deg, #ef4444, #dc2626)",
     },
 };
-// ============ وضعیت اعتراض (برای نشانگر بالای کارت) ============
+
+// ============================================
+// Dispute Status
+// ============================================
+
 const disputeStatusConfig = {
     pending: {
         label: "در انتظار بررسی",
         icon: Clock4,
-        color: "#92400e",
-        bg: "#fffbeb",
-        border: "#fde68a",
-        accent: "#f59e0b",
     },
     investigating: {
         label: "در حال بررسی",
         icon: Search,
-        color: "#1e40af",
-        bg: "#eff6ff",
-        border: "#dbeafe",
-        accent: "#3b82f6",
     },
     awaiting_response: {
         label: "در انتظار پاسخ",
         icon: MessageSquare,
-        color: "#9a3412",
-        bg: "#fff7ed",
-        border: "#ffedd5",
-        accent: "#f97316",
     },
     resolved: {
-        label: "تایید شده",
+        label: "تأیید شده",
         icon: CheckCircle,
-        color: "#065f46",
-        bg: "#ecfdf5",
-        border: "#d1fae5",
-        accent: "#10b981",
     },
     rejected: {
         label: "رد شده",
         icon: XCircle,
-        color: "#991b1b",
-        bg: "#fef2f2",
-        border: "#fee2e2",
-        accent: "#ef4444",
     },
     cancelled: {
         label: "لغو شده",
         icon: Ban,
-        color: "#4b5563",
-        bg: "#f9fafb",
-        border: "#e5e7eb",
-        accent: "#9ca3af",
     },
 };
+
+// ============================================
+// Payment Status
+// ============================================
+
 const paymentStatusConfig = {
-    pending: { label: "در انتظار پرداخت", color: "#92400e", bg: "#fffbeb" },
-    success: { label: "موفق", color: "#065f46", bg: "#ecfdf5" },
-    failed: { label: "ناموفق", color: "#991b1b", bg: "#fef2f2" },
-    refunded: { label: "برگشت داده شده", color: "#5b21b6", bg: "#f5f3ff" },
+    pending: {
+        label: "در انتظار پرداخت",
+    },
+    success: {
+        label: "پرداخت موفق",
+    },
+    failed: {
+        label: "پرداخت ناموفق",
+    },
+    refunded: {
+        label: "بازپرداخت شده",
+    },
 };
 
-// ============ توابع کمکی ============
+// ============================================
+// Helpers
+// ============================================
+
 const formatJalaliDate = (date) => {
     if (!date) return "-";
+
     const d = new Date(date);
+
+    if (Number.isNaN(d.getTime())) return "-";
+
     const { jy, jm, jd } = toJalaali(
         d.getFullYear(),
         d.getMonth() + 1,
         d.getDate(),
     );
+
     return toPersianNumber(
         `${jy}/${String(jm).padStart(2, "0")}/${String(jd).padStart(2, "0")}`,
     );
@@ -137,6 +126,11 @@ const formatJalaliDate = (date) => {
 
 const getDayName = (date) => {
     if (!date) return "";
+
+    const d = new Date(date);
+
+    if (Number.isNaN(d.getTime())) return "";
+
     const days = [
         "یکشنبه",
         "دوشنبه",
@@ -146,124 +140,131 @@ const getDayName = (date) => {
         "جمعه",
         "شنبه",
     ];
-    return days[new Date(date).getDay()];
+
+    return days[d.getDay()];
 };
 
 const getRelativeTime = (date) => {
-    if (!date) return { label: "", color: "" };
-    const now = new Date();
+    if (!date) return null;
+
     const d = new Date(date);
+
+    if (Number.isNaN(d.getTime())) return null;
+
     d.setHours(0, 0, 0, 0);
-    const today = new Date(now);
+
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const diffInDays = Math.round((d - today) / 1000 / 60 / 60 / 24);
+    const diffInDays = Math.round((d - today) / (1000 * 60 * 60 * 24));
 
-    if (diffInDays === 0) return { label: "امروز", color: "#f59e0b" };
-    if (diffInDays === 1) return { label: "فردا", color: "#3b82f6" };
-    if (diffInDays === -1) return { label: "دیروز", color: "#9ca3af" };
-    if (diffInDays > 0)
+    if (diffInDays === 0) {
+        return { label: "امروز", type: "today" };
+    }
+
+    if (diffInDays === 1) {
+        return { label: "فردا", type: "tomorrow" };
+    }
+
+    if (diffInDays === -1) {
+        return { label: "دیروز", type: "past" };
+    }
+
+    if (diffInDays > 0) {
         return {
             label: `${toPersianNumber(diffInDays)} روز آینده`,
-            color: "#10b981",
+            type: "future",
         };
+    }
+
     return {
         label: `${toPersianNumber(Math.abs(diffInDays))} روز پیش`,
-        color: "#9ca3af",
+        type: "past",
     };
 };
 
+const formatPrice = (amount) => {
+    const value = Number(amount || 0);
+
+    return toPersianNumber(Math.round(value).toLocaleString("en-US"));
+};
+
+// ============================================
+// Component
+// ============================================
+
 export default function AdminBarberBookingCard({ booking, barberId }) {
     const config = statusConfig[booking.status] || statusConfig.pending;
+
     const StatusIcon = config.icon;
+
     const relativeTime = getRelativeTime(booking.date);
 
-    const isToday =
-        booking.date &&
-        new Date(booking.date).toDateString() === new Date().toDateString();
+    const isToday = relativeTime?.type === "today";
 
     const paymentCfg = booking.payment_status
         ? paymentStatusConfig[booking.payment_status]
         : null;
-    // ============ اطلاعات اعتراض ============
+
+    // ========================================
+    // Dispute
+    // ========================================
+
     const latestDispute = booking.latest_dispute;
-    const hasDisputes = booking.has_disputes && latestDispute;
+
+    const hasDisputes = Boolean(booking.has_disputes && latestDispute);
+
     const disputeCfg = hasDisputes
         ? disputeStatusConfig[latestDispute.status] ||
           disputeStatusConfig.pending
         : null;
+
     const DisputeIcon = disputeCfg?.icon;
+
     const disputeTypeLabel = hasDisputes
         ? getDisputeTypeConfig(latestDispute.dispute_type)?.label
         : null;
-    const isMyDispute = latestDispute?.disputed_by === "barber";
+
     return (
-        <div
+        <article
             className={`admin-booking-card status-${booking.status} ${
                 isToday ? "today" : ""
             }`}
         >
-            {/* نوار رنگی بالا */}
-            <div
-                className="admin-booking-card-stripe"
-                style={{ background: config.gradient }}
-            ></div>
+            {/* نوار وضعیت کارت */}
+            <div className="admin-booking-card-stripe" />
 
-            {/* نشانگر امروز */}
+            {/* نشانگر رزرو امروز */}
             {isToday && (
                 <div className="admin-today-badge">
-                    <Clock4 size={12} />
-                    امروز
+                    <Clock4 size={13} />
+                    رزرو امروز
                 </div>
             )}
-            {/* ============ نشانگر اعتراض ============ */}
+
+            {/* ========================================
+                Dispute Indicator
+            ======================================== */}
+
             {hasDisputes && (
                 <Link
                     href={`/admin/disputes/${latestDispute.id}`}
-                    className={`admin-booking-dispute-indicator status-${latestDispute.status}`}
-                    style={{
-                        background: `linear-gradient(135deg, ${disputeCfg.bg} 0%, #ffffff 100%)`,
-                        borderColor: disputeCfg.border,
-                    }}
+                    className={`admin-booking-dispute-indicator dispute-${latestDispute.status}`}
                 >
-                    {/* نوار رنگی کنار */}
-                    <div
-                        className="dispute-indicator-accent"
-                        style={{ background: disputeCfg.accent }}
-                    />
-
-                    {/* آیکون */}
-                    <div
-                        className="dispute-indicator-icon"
-                        style={{
-                            backgroundColor: disputeCfg.bg,
-                            color: disputeCfg.color,
-                            borderColor: disputeCfg.border,
-                        }}
-                    >
-                        {DisputeIcon && <DisputeIcon size={14} />}
+                    <div className="dispute-indicator-icon">
+                        {DisputeIcon && <DisputeIcon size={17} />}
                     </div>
 
-                    {/* محتوا */}
                     <div className="dispute-indicator-content">
                         <div className="dispute-indicator-title">
-                            <span
-                                className="dispute-indicator-label"
-                                style={{ color: disputeCfg.color }}
-                            >
+                            <strong>
                                 {latestDispute.disputed_by === "customer"
                                     ? "اعتراض مشتری"
                                     : "اعتراض آرایشگر"}
-                            </span>
+                            </strong>
 
                             {booking.disputes_count > 1 && (
-                                <span
-                                    className="dispute-indicator-count"
-                                    style={{
-                                        backgroundColor: disputeCfg.bg,
-                                        color: disputeCfg.color,
-                                    }}
-                                >
+                                <span className="dispute-indicator-count">
                                     +
                                     {toPersianNumber(
                                         booking.disputes_count - 1,
@@ -277,192 +278,220 @@ export default function AdminBarberBookingCard({ booking, barberId }) {
                         </div>
 
                         <div className="dispute-indicator-meta">
-                            <span className="dispute-indicator-type">
-                                {disputeTypeLabel}
-                            </span>
-                            <span className="dispute-indicator-separator">
-                                •
-                            </span>
-                            <span
-                                className="dispute-indicator-status"
-                                style={{ color: disputeCfg.color }}
-                            >
-                                {disputeCfg.label}
-                            </span>
+                            {disputeTypeLabel && (
+                                <span>{disputeTypeLabel}</span>
+                            )}
+
+                            {disputeTypeLabel && (
+                                <span className="dispute-indicator-separator">
+                                    ·
+                                </span>
+                            )}
+
+                            <span>{disputeCfg.label}</span>
                         </div>
                     </div>
 
-                    {/* دکمه مشاهده */}
-                    <div className="dispute-indicator-action">
+                    <span className="dispute-indicator-action">
+                        مشاهده اعتراض
                         <Eye size={14} />
-                    </div>
+                    </span>
                 </Link>
             )}
+
+            {/* ========================================
+                Main Content
+            ======================================== */}
+
             <div className="admin-booking-content">
-                {/* ============ ستون ۱: مشتری ============ */}
-                <div className="admin-booking-customer">
+                {/* اطلاعات مشتری */}
+                <section className="admin-booking-customer">
                     <div className="admin-customer-avatar-wrapper">
                         <div className="admin-customer-avatar">
                             {booking.customer?.thumbnail ? (
                                 <img
                                     src={booking.customer.thumbnail}
-                                    alt={booking.customer.name}
+                                    alt={booking.customer.name || "مشتری"}
+                                    loading="lazy"
                                 />
                             ) : (
                                 <span>
                                     {booking.customer?.name
                                         ?.charAt(0)
-                                        .toUpperCase()}
+                                        ?.toUpperCase() || "؟"}
                                 </span>
                             )}
                         </div>
-                        <span
-                            className="admin-customer-avatar-status"
-                            style={{ background: config.gradient }}
-                        ></span>
+
+                        <span className="admin-customer-avatar-status" />
                     </div>
 
                     <div className="admin-customer-info">
                         <span className="admin-customer-label">
-                            <User size={10} />
-                            مشتری
+                            <User size={13} />
+                            اطلاعات مشتری
                         </span>
-                        <span className="admin-customer-name">
-                            {booking.customer?.name}
-                        </span>
+
+                        <strong className="admin-customer-name">
+                            {booking.customer?.name || "مشتری حذف‌شده"}
+                        </strong>
 
                         {booking.customer?.phone && (
                             <a
                                 href={`tel:${booking.customer.phone}`}
-                                className="admin-customer-phone"
+                                className="admin-customer-contact"
+                                dir="ltr"
                             >
-                                <Phone size={12} />
-                                <span dir="ltr">{booking.customer.phone}</span>
+                                <Phone size={13} />
+                                {booking.customer.phone}
                             </a>
                         )}
 
                         {booking.customer?.email && (
-                            <span className="admin-customer-email">
-                                <Mail size={10} />
-                                <span dir="ltr">{booking.customer.email}</span>
+                            <span
+                                className="admin-customer-contact admin-customer-email"
+                                dir="ltr"
+                                title={booking.customer.email}
+                            >
+                                <Mail size={13} />
+                                {booking.customer.email}
                             </span>
                         )}
                     </div>
-                </div>
+                </section>
 
-                {/* ============ ستون ۲: جزئیات ============ */}
-                <div className="admin-booking-details">
-                    <div className="admin-detail-row service">
-                        <div className="admin-detail-icon-box">
-                            <Scissors size={14} />
+                {/* جزئیات رزرو */}
+                <section className="admin-booking-details">
+                    <div className="admin-booking-service">
+                        <div className="admin-detail-icon-box service-icon">
+                            <Scissors size={17} />
                         </div>
-                        <div className="admin-detail-content">
-                            <span className="admin-detail-label">خدمت</span>
-                            <span className="admin-detail-value">
-                                {booking.service?.name}
-                            </span>
-                        </div>
-                    </div>
 
-                    <div className="admin-detail-row date">
-                        <div className="admin-detail-icon-box">
-                            <Calendar size={14} />
-                        </div>
                         <div className="admin-detail-content">
-                            <span className="admin-detail-label">تاریخ</span>
-                            <span className="admin-detail-value">
-                                {getDayName(booking.date)}{" "}
-                                {formatJalaliDate(booking.date)}
+                            <span className="admin-detail-label">
+                                خدمت رزرو شده
                             </span>
-                            {relativeTime.label && (
-                                <span
-                                    className="admin-relative-time"
-                                    style={{ color: relativeTime.color }}
-                                >
-                                    {relativeTime.label}
+
+                            <strong className="admin-detail-value service-name">
+                                {booking.service?.name || "خدمت نامشخص"}
+                            </strong>
+
+                            {booking.service?.duration && (
+                                <span className="admin-detail-subtext">
+                                    <Clock size={12} />
+                                    {toPersianNumber(
+                                        booking.service.duration,
+                                    )}{" "}
+                                    دقیقه
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    <div className="admin-detail-row time">
-                        <div className="admin-detail-icon-box">
-                            <Clock size={14} />
-                        </div>
-                        <div className="admin-detail-content">
-                            <span className="admin-detail-label">ساعت</span>
-                            <span className="admin-detail-value time-value">
-                                {toPersianTimeRange(
-                                    booking.start_time,
-                                    booking.end_time,
+                    <div className="admin-booking-detail-grid">
+                        <div className="admin-detail-item">
+                            <div className="admin-detail-icon-box date-icon">
+                                <Calendar size={16} />
+                            </div>
+
+                            <div className="admin-detail-content">
+                                <span className="admin-detail-label">
+                                    تاریخ رزرو
+                                </span>
+
+                                <strong className="admin-detail-value">
+                                    {getDayName(booking.date)}{" "}
+                                    {formatJalaliDate(booking.date)}
+                                </strong>
+
+                                {relativeTime && (
+                                    <span
+                                        className={`admin-relative-time ${relativeTime.type}`}
+                                    >
+                                        {relativeTime.label}
+                                    </span>
                                 )}
-                            </span>
+                            </div>
+                        </div>
+
+                        <div className="admin-detail-item">
+                            <div className="admin-detail-icon-box time-icon">
+                                <Clock size={16} />
+                            </div>
+
+                            <div className="admin-detail-content">
+                                <span className="admin-detail-label">
+                                    ساعت مراجعه
+                                </span>
+
+                                <strong
+                                    className="admin-detail-value"
+                                    dir="ltr"
+                                >
+                                    {toPersianTimeRange(
+                                        booking.start_time,
+                                        booking.end_time,
+                                    )}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="admin-detail-item">
+                            <div className="admin-detail-icon-box price-icon">
+                                <DollarSign size={16} />
+                            </div>
+
+                            <div className="admin-detail-content">
+                                <span className="admin-detail-label">
+                                    مبلغ رزرو
+                                </span>
+
+                                <strong className="admin-detail-value price-value">
+                                    {formatPrice(booking.amount)}
+                                    <small>تومان</small>
+                                </strong>
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                    <div className="admin-detail-row price">
-                        <div className="admin-detail-icon-box">
-                            <DollarSign size={14} />
-                        </div>
-                        <div className="admin-detail-content">
-                            <span className="admin-detail-label">مبلغ</span>
-                            <span className="admin-detail-value price-value">
-                                {toPersianNumber(
-                                    booking.amount.toLocaleString(),
-                                )}{" "}
-                                تومان
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ============ ستون ۳: وضعیت و عملیات ============ */}
-                <div className="admin-booking-actions">
-                    <div className="admin-status-row">
-                        {/* Badge وضعیت */}
+                {/* وضعیت و عملیات */}
+                <section className="admin-booking-actions">
+                    <div className="admin-booking-statuses">
                         <span
-                            className="admin-status-badge"
-                            style={{
-                                backgroundColor: config.bg,
-                                color: config.color,
-                                borderColor: config.border,
-                            }}
+                            className={`admin-status-badge status-badge-${booking.status}`}
                         >
-                            <StatusIcon size={12} />
+                            <StatusIcon size={14} />
                             {config.label}
                         </span>
 
-                        {/* Badge وضعیت پرداخت */}
                         {paymentCfg && (
                             <span
-                                className="admin-payment-badge"
-                                style={{
-                                    backgroundColor: paymentCfg.bg,
-                                    color: paymentCfg.color,
-                                }}
+                                className={`admin-payment-badge payment-${booking.payment_status}`}
                             >
-                                <CreditCard size={10} />
+                                <CreditCard size={13} />
                                 {paymentCfg.label}
                             </span>
                         )}
-
-                        {/* کد رزرو */}
-                        <span className="admin-booking-code">
-                            <Hash size={10} />
-                            {toPersianNumber(booking.id)}
-                        </span>
                     </div>
 
-                    {/* دکمه مشاهده جزئیات */}
-                    <Link
-                        href={`/admin/bookings/${barberId}/barber/${booking.id}`}
-                        className="admin-booking-view-btn"
-                    >
-                        <Eye size={14} />
-                        مشاهده جزئیات
-                    </Link>
-                </div>
+                    <div className="admin-booking-footer">
+                        <span className="admin-booking-code">
+                            <Hash size={13} />
+                            کد رزرو:
+                            <strong>{toPersianNumber(booking.id)}</strong>
+                        </span>
+
+                        <Link
+                            href={`/admin/bookings/${barberId}/barber/${booking.id}`}
+                            className="admin-booking-view-btn"
+                        >
+                            مشاهده جزئیات
+                            <Eye size={16} />
+                        </Link>
+                    </div>
+                </section>
             </div>
-        </div>
+        </article>
     );
 }

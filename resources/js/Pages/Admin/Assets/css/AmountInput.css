@@ -1,5 +1,6 @@
 /* ============================================
-   AmountInput
+   AmountInput — Dynamic Theme
+   Light / Dark / Auto
    ============================================ */
 
 .amount-input-wrapper {
@@ -17,23 +18,30 @@
   width: 100%;
 }
 
+/* ============ Input Field ============ */
 .amount-input-field {
   width: 100%;
   padding: 0.625rem 3.75rem 0.625rem 0.75rem;
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
+
   font-family: inherit;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #1f2937;
+
+  color: var(--color-text);
+
   transition: all 0.2s;
   box-sizing: border-box;
+
   text-align: right;
   direction: ltr;
   font-variant-numeric: tabular-nums;
 }
 
+/* Remove Number Spinners */
 .amount-input-field::-webkit-outer-spin-button,
 .amount-input-field::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -45,79 +53,124 @@
   appearance: textfield;
 }
 
+/* ============ Focus ============ */
 .amount-input-field:focus {
   outline: none;
-  border-color: #8b5cf6;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+
+  border-color: var(--color-primary);
+
+  background: var(--color-bg-card);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--color-primary) 14%,
+      transparent);
 }
 
+/* ============ Disabled ============ */
 .amount-input-field:disabled,
 .amount-input-field.disabled {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
   cursor: not-allowed;
+  opacity: 0.8;
 }
 
+/* ============ Error State ============ */
 .amount-input-field.has-error {
-  border-color: #fca5a5;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+
+  background: color-mix(in srgb,
+      var(--color-danger) 6%,
+      var(--color-bg-card));
 }
 
 .amount-input-field.has-error:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--color-danger) 14%,
+      transparent);
 }
 
+/* ============ Success State ============ */
 .amount-input-field.has-success {
-  border-color: #86efac;
-  background: #f0fdf4;
+  border-color: var(--color-success);
+
+  background: color-mix(in srgb,
+      var(--color-success) 6%,
+      var(--color-bg-card));
 }
 
 .amount-input-field.has-success:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--color-success);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--color-success) 14%,
+      transparent);
 }
 
-/* ============ واحد ============ */
+/* ============ Unit ============ */
 .amount-input-unit {
   position: absolute;
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
+
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+
+  color: var(--color-text-muted);
+
   pointer-events: none;
-  background: #f9fafb;
+
+  background: var(--color-bg-hover);
+
   padding: 0.125rem 0.375rem;
   border-radius: 0.375rem;
+
+  transition: all 0.2s;
 }
 
+/* Focus Unit */
 .amount-input-field:focus~.amount-input-unit {
-  background: #f5f3ff;
-  color: #8b5cf6;
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+
+  color: var(--color-primary);
 }
 
+/* Error Unit */
 .amount-input-field.has-error~.amount-input-unit {
-  background: #fef2f2;
-  color: #991b1b;
+  background: color-mix(in srgb,
+      var(--color-danger) 10%,
+      var(--color-bg-card));
+
+  color: var(--color-danger);
 }
 
+/* Success Unit */
 .amount-input-field.has-success~.amount-input-unit {
-  background: #f0fdf4;
-  color: #065f46;
+  background: color-mix(in srgb,
+      var(--color-success) 10%,
+      var(--color-bg-card));
+
+  color: var(--color-success);
 }
 
-/* ============ پیش‌نمایش مبلغ ============ */
+/* ============ Amount Preview ============ */
 .amount-preview {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
+
   font-size: 0.8125rem;
   font-weight: 600;
+
   animation: amountPreviewIn 0.2s ease-out;
 }
 
@@ -133,16 +186,30 @@
   }
 }
 
+/* Valid Preview */
 .amount-preview.valid {
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
+  background: color-mix(in srgb,
+      var(--color-success) 9%,
+      var(--color-bg-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-success) 30%,
+      var(--color-border));
+
+  color: var(--color-success);
 }
 
+/* Invalid Preview */
 .amount-preview.invalid {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: color-mix(in srgb,
+      var(--color-danger) 8%,
+      var(--color-bg-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-danger) 28%,
+      var(--color-border));
+
+  color: var(--color-danger);
 }
 
 .amount-preview svg {
@@ -157,6 +224,7 @@
 .amount-preview-value {
   font-size: 0.9375rem;
   font-weight: 800;
+
   font-variant-numeric: tabular-nums;
   direction: ltr;
   unicode-bidi: plaintext;
@@ -167,21 +235,32 @@
   opacity: 0.7;
 }
 
+/* Success Icon */
 .amount-preview-icon.success {
   margin-right: auto;
-  color: #10b981;
+  color: var(--color-success);
 }
 
-/* ============ خطا / راهنما ============ */
+/* ============ Error / Helper ============ */
 .amount-input-error {
   display: flex;
   align-items: center;
   gap: 0.375rem;
+
   padding: 0.375rem 0.625rem;
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+
+  background: color-mix(in srgb,
+      var(--color-danger) 8%,
+      var(--color-bg-card));
+
+  color: var(--color-danger);
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-danger) 25%,
+      var(--color-border));
+
   border-radius: 0.375rem;
+
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.5;
@@ -191,10 +270,13 @@
   flex-shrink: 0;
 }
 
+/* ============ Hint ============ */
 .amount-input-hint {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
+
   font-weight: 600;
   line-height: 1.5;
+
   padding: 0 0.25rem;
 }

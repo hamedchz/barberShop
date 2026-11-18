@@ -1,9 +1,13 @@
-/* ============ Modal Overlay ============ */
+/* ============================================
+   Modal Overlay
+   ============================================ */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: color-mix(in srgb, #000 55%, transparent);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,21 +38,29 @@
   }
 }
 
-/* ============ Modal Content ============ */
+/* ============================================
+   Modal Content
+   ============================================ */
+
 .modal-content {
-  background-color: var(--white);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   max-width: 440px;
   width: 100%;
   box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    0 20px 25px -5px var(--color-shadow),
+    0 8px 10px -6px var(--color-shadow);
   position: relative;
   direction: rtl;
 }
 
-/* ============ Modal Header ============ */
+/* ============================================
+   Modal Header
+   ============================================ */
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -65,6 +77,8 @@
   justify-content: center;
   flex-shrink: 0;
   animation: pulseIcon 0.6s ease;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 @keyframes pulseIcon {
@@ -84,22 +98,22 @@
 }
 
 .modal-close {
-  background: none;
+  background: transparent;
   border: none;
-  color: var(--text-light);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   font-family: inherit;
 }
 
 .modal-close:hover:not(:disabled) {
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
 .modal-close:disabled {
@@ -107,7 +121,10 @@
   cursor: not-allowed;
 }
 
-/* ============ Modal Body ============ */
+/* ============================================
+   Modal Body
+   ============================================ */
+
 .modal-body {
   margin-bottom: 1.5rem;
 }
@@ -115,18 +132,21 @@
 .modal-title {
   font-size: 1.125rem;
   font-weight: bold;
-  color: var(--text-main);
+  color: var(--color-text);
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
 
 .modal-message {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   line-height: 1.7;
 }
 
-/* ============ Modal Actions ============ */
+/* ============================================
+   Modal Actions
+   ============================================ */
+
 .modal-actions {
   display: flex;
   flex-direction: column-reverse;
@@ -144,7 +164,7 @@
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   border: none;
   width: 100%;
 }
@@ -155,22 +175,24 @@
 }
 
 /* دکمه انصراف */
+
 .modal-btn-cancel {
-  background-color: var(--white);
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .modal-btn-cancel:hover:not(:disabled) {
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  border-color: #d1d5db;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+  border-color: var(--color-primary);
 }
 
 /* دکمه تایید */
+
 .modal-btn-confirm {
-  color: var(--white);
-  transition: all 0.2s;
+  color: #fff;
+  transition: all 0.2s ease;
 }
 
 .modal-btn-confirm:hover:not(:disabled) {
@@ -183,11 +205,12 @@
 }
 
 /* Spinner داخل دکمه */
+
 .modal-btn-confirm .spinner {
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -198,7 +221,10 @@
   }
 }
 
-/* ============ ریسپانسیو ============ */
+/* ============================================
+   Modal Responsive
+   ============================================ */
+
 @media (min-width: 640px) {
   .modal-content {
     padding: 2rem;
@@ -215,7 +241,6 @@
   }
 }
 
-/* ============ دسکتاپ: مخفی کردن اسکرول ============ */
 @media (min-width: 768px) {
   .modal-content {
     max-width: 460px;
@@ -223,7 +248,7 @@
 }
 
 /* ============================================
-   Modal Children (پشتیبانی از children)
+   Modal Children
    ============================================ */
 
 .modal-children {
@@ -247,27 +272,27 @@
 }
 
 /* ============================================
-   Preview Box (پیش‌نمایش اعلان)
+   Preview Box
    ============================================ */
 
 .modal-preview {
   padding: 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
 }
 
 .modal-preview-title {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin-bottom: 0.375rem;
   line-height: 1.4;
 }
 
 .modal-preview-text {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
   word-break: break-word;
@@ -275,7 +300,7 @@
 }
 
 /* ============================================
-   Warning Box (اخطار غیرقابل بازگشت)
+   Warning Box
    ============================================ */
 
 .modal-warning-box {
@@ -283,11 +308,15 @@
   align-items: flex-start;
   gap: 0.625rem;
   padding: 0.75rem 0.875rem;
-  background: #fef2f2;
-  border: 1.5px solid #fecaca;
+  background: color-mix(in srgb,
+      var(--color-danger) 10%,
+      var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
   line-height: 1.7;
   font-weight: 600;
   word-break: break-word;
@@ -296,14 +325,14 @@
 
 .modal-warning-box svg {
   flex-shrink: 0;
-  color: #ef4444;
+  color: var(--color-danger);
   margin-top: 0.125rem;
 }
 
 .modal-warning-box strong {
   display: block;
   margin-bottom: 0.25rem;
-  color: #7f1d1d;
+  color: var(--color-danger);
   font-weight: 800;
   font-size: 0.8125rem;
 }
@@ -311,11 +340,11 @@
 .modal-warning-box p {
   margin: 0;
   font-weight: 600;
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 /* ============================================
-   Info Box (اطلاعات)
+   Info Box
    ============================================ */
 
 .modal-info-box {
@@ -323,24 +352,28 @@
   align-items: flex-start;
   gap: 0.625rem;
   padding: 0.75rem 0.875rem;
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
+  background: color-mix(in srgb,
+      var(--color-info) 10%,
+      var(--color-bg-card));
+  border: 1.5px solid color-mix(in srgb,
+      var(--color-info) 30%,
+      var(--color-border));
   border-radius: 0.625rem;
   font-size: 0.75rem;
-  color: #1e40af;
+  color: var(--color-info);
   line-height: 1.7;
   font-weight: 600;
 }
 
 .modal-info-box svg {
   flex-shrink: 0;
-  color: #3b82f6;
+  color: var(--color-info);
   margin-top: 0.125rem;
 }
 
 .modal-info-box strong {
   display: block;
   margin-bottom: 0.25rem;
-  color: #1e3a8a;
+  color: var(--color-info);
   font-weight: 800;
 }

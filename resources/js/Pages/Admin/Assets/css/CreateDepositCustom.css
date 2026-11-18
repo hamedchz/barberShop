@@ -1,16 +1,25 @@
 /* ============================================
    Selected User Preview (در Modal)
    ============================================ */
+
 .selected-user-preview {
   display: flex;
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
   margin-top: 0.5rem;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+
+  background: color-mix(in srgb,
+      var(--color-success) 9%,
+      var(--color-bg-card));
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-success) 28%,
+      var(--color-border));
+
   border-radius: 0.5rem;
   animation: selectedUserIn 0.2s ease-out;
+  min-width: 0;
 }
 
 @keyframes selectedUserIn {
@@ -25,15 +34,20 @@
   }
 }
 
+/* Avatar */
+
 .selected-user-avatar {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: #065f46;
+
+  background: var(--color-success);
   color: #fff;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: 800;
   font-size: 0.8125rem;
   flex-shrink: 0;
@@ -46,6 +60,8 @@
   object-fit: cover;
 }
 
+/* User Info */
+
 .selected-user-info {
   display: flex;
   flex-direction: column;
@@ -56,11 +72,15 @@
 .selected-user-info strong {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #065f46;
+  color: var(--color-success);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .selected-user-info span {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
+  overflow-wrap: anywhere;
 }

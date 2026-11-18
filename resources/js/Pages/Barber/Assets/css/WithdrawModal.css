@@ -4,7 +4,7 @@
 .withdraw-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: color-mix(in srgb, var(--color-text) 55%, transparent);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -25,16 +25,17 @@
 }
 
 .withdraw-modal {
-  background: #ffffff;
+  background: var(--color-bg-card);
   border-radius: 1.5rem;
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
   padding: 1.75rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--color-shadow) 250%, transparent);
   animation: withdrawModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  border: 1px solid var(--color-border);
 }
 
 @keyframes withdrawModalIn {
@@ -58,25 +59,27 @@
   gap: 0.75rem;
   margin-bottom: 1.25rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed var(--color-border);
 }
 
 .withdraw-modal-icon {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-  color: #10b981;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint-soft),
+      var(--color-primary-tint-strong));
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+  box-shadow: var(--shadow-primary-md);
 }
 
 .withdraw-modal-header h3 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -87,20 +90,20 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #6b7280;
+  color: var(--color-text-muted);
   transition: all 0.2s;
 }
 
 .withdraw-modal-close:hover:not(:disabled) {
-  background: #fef2f2;
-  color: #ef4444;
-  border-color: #fecaca;
+  background: var(--status-cancelled-soft);
+  color: var(--color-danger);
+  border-color: var(--status-cancelled-border);
 }
 
 .withdraw-modal-close:disabled {
@@ -114,8 +117,10 @@
   flex-direction: column;
   gap: 0.375rem;
   padding: 1.25rem 1rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint-soft) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-border);
   border-radius: 1rem;
   text-align: center;
   margin-bottom: 1rem;
@@ -123,7 +128,7 @@
 
 .withdraw-balance-box .balance-label {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -136,7 +141,7 @@
   gap: 0.375rem;
   font-size: 1.625rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -152,10 +157,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
+  background: var(--status-pending-soft);
+  border: 1.5px solid var(--status-pending-border);
   border-radius: 0.875rem;
-  color: #92400e;
+  color: color-mix(in srgb, var(--color-warning) 80%, var(--color-text));
   font-size: 0.75rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -164,6 +169,7 @@
 
 .withdraw-warning-box svg {
   flex-shrink: 0;
+  color: var(--color-warning);
 }
 
 /* ============ نبود اطلاعات بانکی ============ */
@@ -174,19 +180,19 @@
   gap: 0.875rem;
   padding: 1.5rem 1rem;
   text-align: center;
-  background: #f9fafb;
-  border: 1.5px dashed #d1d5db;
+  background: var(--color-surface-muted);
+  border: 1.5px dashed var(--color-border-strong);
   border-radius: 1rem;
   margin-bottom: 1rem;
 }
 
 .no-bank-info-box svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .no-bank-info-box p {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
 }
@@ -197,22 +203,22 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.75rem 0.875rem;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--status-confirmed-soft);
+  border: 1px solid var(--color-primary-border);
   border-radius: 0.875rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #166534;
+  color: var(--color-primary-text);
   margin-bottom: 1rem;
 }
 
 .bank-info-preview-box svg {
-  color: #10b981;
+  color: var(--color-primary);
   flex-shrink: 0;
 }
 
 .bank-info-preview-box .separator {
-  color: #86efac;
+  color: var(--color-primary-border);
 }
 
 /* ============ فرم ============ */
@@ -229,19 +235,19 @@
   gap: 0.25rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .withdraw-modal .form-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
-  color: #1f2937;
-  background: #f9fafb;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
   transition: all 0.2s;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -250,22 +256,22 @@
 
 .withdraw-modal .form-input:focus {
   outline: none;
-  border-color: #10b981;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  border-color: var(--color-primary);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 .withdraw-modal .form-input.error {
-  border-color: #ef4444;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+  background: var(--status-cancelled-soft);
 }
 
 .withdraw-modal .form-input.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 12%, transparent);
 }
 
 .withdraw-modal .form-input::placeholder {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -285,17 +291,17 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
-  color: #ef4444;
+  color: color-mix(in srgb, var(--color-danger) 85%, var(--color-text));
   font-weight: 700;
   padding: 0.375rem 0.625rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--status-cancelled-soft);
+  border: 1px solid var(--status-cancelled-border);
   border-radius: 0.5rem;
 }
 
 .withdraw-modal .form-hint {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   text-align: center;
 }
@@ -307,7 +313,7 @@
   justify-content: flex-end;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed #e5e7eb;
+  border-top: 1px dashed var(--color-border);
 }
 
 .withdraw-modal-actions .btn-ghost,
@@ -328,27 +334,27 @@
 }
 
 .withdraw-modal-actions .btn-ghost {
-  background: #ffffff;
-  color: #6b7280;
-  border-color: #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
 .withdraw-modal-actions .btn-ghost:hover:not(:disabled) {
-  background: #f9fafb;
-  color: #374151;
-  border-color: #d1d5db;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 .withdraw-modal-actions .btn-primary {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
   border: none;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--shadow-primary-sm);
 }
 
 .withdraw-modal-actions .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+  box-shadow: var(--shadow-primary-md);
 }
 
 .withdraw-modal-actions .btn-ghost:disabled,
@@ -403,8 +409,10 @@
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.75rem 0.875rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #a7f3d0;
+  background: linear-gradient(135deg,
+      var(--color-primary-tint-soft) 0%,
+      var(--color-bg-card) 100%);
+  border: 1.5px solid var(--color-primary-border);
   border-radius: 0.875rem;
   margin-top: 0.5rem;
   animation: amountFadeIn 0.25s ease-out;
@@ -432,7 +440,7 @@
 .withdraw-modal .amount-display .amount-value {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--color-primary-text);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
@@ -440,7 +448,7 @@
 .withdraw-modal .amount-display .amount-currency {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #059669;
+  color: var(--color-primary);
 }
 
 .withdraw-modal .amount-display .amount-meta {
@@ -450,7 +458,7 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -458,17 +466,17 @@
   display: inline-flex;
   align-items: center;
   padding: 0.1875rem 0.5rem;
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--color-primary-tint-strong);
+  color: var(--color-primary-text);
   border-radius: 9999px;
   font-weight: 800;
   font-size: 0.625rem;
 }
 
 .withdraw-modal .amount-display .amount-remaining {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .withdraw-modal .amount-display .meta-separator {
-  color: #d1d5db;
+  color: var(--color-border-strong);
 }

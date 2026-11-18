@@ -1,16 +1,26 @@
 /* ============================================
    Deposit Warning (بالای فرم)
+   Dynamic Theme
    ============================================ */
+
 .deposit-warning {
   display: flex;
   align-items: flex-start;
   gap: 0.625rem;
   margin: 1rem 1.5rem 0;
   padding: 0.75rem 1rem;
-  background: #fffbeb;
-  border: 1.5px solid #fde68a;
+
+  background: color-mix(in srgb,
+      var(--color-warning) 10%,
+      var(--color-bg-card));
+
+  border: 1.5px solid color-mix(in srgb,
+      var(--color-warning) 30%,
+      var(--color-border));
+
   border-radius: 0.75rem;
-  color: #92400e;
+  color: var(--color-warning);
+
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.7;
@@ -18,25 +28,30 @@
 
 .deposit-warning svg {
   flex-shrink: 0;
-  color: #f59e0b;
+  color: var(--color-warning);
   margin-top: 0.125rem;
 }
 
 .deposit-warning strong {
-  color: #78350f;
+  color: color-mix(in srgb,
+      var(--color-warning) 80%,
+      var(--color-text));
   font-weight: 800;
 }
 
 /* ============================================
    Deposit Confirm Step (مرحله تایید)
    ============================================ */
+
 .confirm-details {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+
   border-radius: 0.75rem;
   margin-bottom: 1rem;
 }
@@ -50,39 +65,54 @@
 
 .confirm-label {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
 .confirm-value {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .confirm-amount {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #5b21b6;
+
+  color: var(--color-primary);
+
   font-variant-numeric: tabular-nums;
   direction: ltr;
   unicode-bidi: plaintext;
 }
 
+/* ============================================
+   Confirm Warning
+   ============================================ */
+
 .confirm-warning {
   display: flex;
+  align-items: flex-start;
   gap: 0.625rem;
   padding: 0.875rem 1rem;
-  background: #fef2f2;
-  border: 1.5px solid #fecaca;
+
+  background: color-mix(in srgb,
+      var(--color-danger) 9%,
+      var(--color-bg-card));
+
+  border: 1.5px solid color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
+
   border-radius: 0.75rem;
-  color: #991b1b;
+  color: var(--color-danger);
+
   margin-bottom: 1rem;
 }
 
 .confirm-warning svg {
   flex-shrink: 0;
-  color: #ef4444;
+  color: var(--color-danger);
   margin-top: 0.125rem;
 }
 
@@ -91,6 +121,7 @@
   font-size: 0.8125rem;
   font-weight: 800;
   margin-bottom: 0.375rem;
+  color: var(--color-danger);
 }
 
 .confirm-warning p {
@@ -98,41 +129,77 @@
   margin: 0 0 0.375rem;
   line-height: 1.6;
   font-weight: 500;
+  color: var(--color-text);
 }
 
 .confirm-warning p:last-child {
   margin-bottom: 0;
 }
 
+/* ============================================
+   Confirm Checkbox
+   ============================================ */
+
 .confirm-checkbox {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
+
+  background: var(--color-bg-hover);
+  border: 1.5px solid var(--color-border);
+
   border-radius: 0.5rem;
   cursor: pointer;
+
   font-size: 0.75rem;
-  color: #374151;
+  color: var(--color-text);
   font-weight: 600;
   line-height: 1.5;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.confirm-checkbox:hover {
+  background: color-mix(in srgb,
+      var(--color-primary) 5%,
+      var(--color-bg-card));
+
+  border-color: color-mix(in srgb,
+      var(--color-primary) 35%,
+      var(--color-border));
 }
 
 .confirm-checkbox input {
   margin-top: 0.125rem;
-  accent-color: #dc2626;
+
+  accent-color: var(--color-danger);
+
   width: 1rem;
   height: 1rem;
+
   cursor: pointer;
   flex-shrink: 0;
 }
+
+.confirm-checkbox:has(input:checked) {
+  border-color: color-mix(in srgb,
+      var(--color-danger) 35%,
+      var(--color-border));
+}
+
+/* ============================================
+   Confirm Actions
+   ============================================ */
 
 .confirm-actions {
   display: flex;
   gap: 0.5rem;
   padding: 1rem 1.5rem 1.25rem;
-  border-top: 1px solid #f3f4f6;
+
+  border-top: 1px solid var(--color-border);
 }
 
 .confirm-actions .btn-secondary {
@@ -140,32 +207,83 @@
   justify-content: center;
 }
 
+/* ============================================
+   Danger Button
+   ============================================ */
+
 .confirm-actions .btn-danger {
   flex: 1;
   justify-content: center;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff;
+
+  background: linear-gradient(135deg,
+      var(--color-danger),
+      color-mix(in srgb,
+        var(--color-danger) 75%,
+        #000000));
+
+  color: #ffffff;
+
   border: none;
   border-radius: 0.75rem;
+
   padding: 0.625rem 1rem;
+
   font-family: inherit;
   font-weight: 700;
   font-size: 0.8125rem;
+
   cursor: pointer;
+
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-  transition: all 0.2s;
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-danger) 25%,
+      transparent);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .confirm-actions .btn-danger:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(239, 68, 68, 0.4);
+
+  filter: brightness(1.05);
+
+  box-shadow: 0 8px 18px color-mix(in srgb,
+      var(--color-danger) 35%,
+      transparent);
 }
 
 .confirm-actions .btn-danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  filter: none;
+  box-shadow: none;
+}
+
+/* ============================================
+   Focus Accessibility
+   ============================================ */
+
+.confirm-checkbox input:focus-visible,
+.confirm-actions button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .confirm-checkbox,
+  .confirm-actions .btn-danger {
+    transition: none;
+  }
 }

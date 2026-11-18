@@ -27,6 +27,7 @@ import {
     WifiOff,
     Activity,
     Lock,
+    User,
 } from "lucide-react";
 
 // ============ نقشه وضعیت کاربران ============
@@ -524,22 +525,10 @@ export default function AdminsIndex({
                 {/* ============ حالت خالی ============ */}
                 {sortedAdmins.length === 0 && (
                     <div className="card" style={{ padding: "3rem" }}>
-                        <EmptyList
-                            title={
-                                filters?.only_online
-                                    ? "هیچ ادمینی آنلاین نیست"
-                                    : hasActiveFilters
-                                      ? "نتیجه‌ای یافت نشد"
-                                      : "ادمینی پیدا نشد"
-                            }
-                            message={
-                                filters?.only_online
-                                    ? "در حال حاضر هیچ ادمینی آنلاین نیست."
-                                    : hasActiveFilters
-                                      ? "هیچ ادمینی با فیلترهای انتخاب شده مطابقت ندارد."
-                                      : "در حال حاضر هیچ ادمینی در سیستم ثبت نشده است."
-                            }
-                        />
+                        <div className="empty-state">
+                            <User size={48} />
+                            <p>ادمینی یافت نشد.</p>
+                        </div>
                     </div>
                 )}
 

@@ -23,6 +23,7 @@ import {
     Calendar,
     Eye,
     UserKey,
+    User,
 } from "lucide-react";
 
 const iconMap = {
@@ -168,10 +169,10 @@ export default function Roles({ auth, roles, filters, scope }) {
                         className="card"
                         style={{ textAlign: "center", padding: "3rem" }}
                     >
-                        <EmptyList
-                            title="نقشی پیدا نشد."
-                            message="در حال حاضر هیچ نقشی برای نمایش وجود ندارد."
-                        />
+                        <div className="empty-state">
+                            <User size={48} />
+                            <p>نقشی یافت نشد.</p>
+                        </div>
                     </div>
                 )}
 

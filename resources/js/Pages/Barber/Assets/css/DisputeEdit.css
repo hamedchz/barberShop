@@ -1,40 +1,130 @@
 /* ============================================
-   Dispute Edit Page
+   Dispute Edit — Dynamic Theme Override
+   Light / Dark / Auto Compatible
    ============================================ */
 
 .dispute-edit-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
-}
+  /* Base theme */
 
-.dispute-edit-back {
-  margin-bottom: 1.5rem;
+  --dispute-primary: var(--color-primary);
+  --dispute-primary-hover: var(--color-primary-hover);
+
+  --dispute-card: var(--color-bg-card);
+  --dispute-bg: var(--color-bg);
+  --dispute-hover: var(--color-bg-hover);
+
+  --dispute-text: var(--color-text);
+  --dispute-muted: var(--color-text-muted);
+  --dispute-border: var(--color-border);
+  --dispute-shadow: var(--color-shadow);
+
+  /* Semantic colors */
+
+  --dispute-danger: var(--color-danger);
+  --dispute-warning: var(--color-warning);
+  --dispute-info: var(--color-info);
+  --dispute-success: var(--color-success);
+
+  --dispute-purple: #8b5cf6;
+
+  /* Soft backgrounds */
+
+  --dispute-primary-soft: color-mix(in srgb,
+      var(--dispute-primary) 10%,
+      var(--dispute-card));
+
+  --dispute-danger-soft: color-mix(in srgb,
+      var(--dispute-danger) 10%,
+      var(--dispute-card));
+
+  --dispute-warning-soft: color-mix(in srgb,
+      var(--dispute-warning) 13%,
+      var(--dispute-card));
+
+  --dispute-info-soft: color-mix(in srgb,
+      var(--dispute-info) 10%,
+      var(--dispute-card));
+
+  --dispute-success-soft: color-mix(in srgb,
+      var(--dispute-success) 10%,
+      var(--dispute-card));
+
+  --dispute-purple-soft: color-mix(in srgb,
+      var(--dispute-purple) 10%,
+      var(--dispute-card));
+
+  /* Borders */
+
+  --dispute-danger-border: color-mix(in srgb,
+      var(--dispute-danger) 35%,
+      var(--dispute-border));
+
+  --dispute-warning-border: color-mix(in srgb,
+      var(--dispute-warning) 40%,
+      var(--dispute-border));
+
+  --dispute-info-border: color-mix(in srgb,
+      var(--dispute-info) 35%,
+      var(--dispute-border));
+
+  --dispute-success-border: color-mix(in srgb,
+      var(--dispute-success) 35%,
+      var(--dispute-border));
+
+  /* Readable semantic text */
+
+  --dispute-danger-text: color-mix(in srgb,
+      var(--dispute-danger) 85%,
+      var(--dispute-text));
+
+  --dispute-warning-text: color-mix(in srgb,
+      var(--dispute-warning) 85%,
+      var(--dispute-text));
+
+  --dispute-info-text: color-mix(in srgb,
+      var(--dispute-info) 85%,
+      var(--dispute-text));
+
+  --dispute-success-text: color-mix(in srgb,
+      var(--dispute-success) 85%,
+      var(--dispute-text));
+
+  max-width: 800px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ============================================
    Header
    ============================================ */
-.dispute-edit-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+
+.dispute-edit-title,
+.dispute-edit-section-title {
+  color: var(--dispute-text);
 }
 
+.dispute-edit-subtitle,
+.dispute-edit-section-subtitle {
+  color: var(--dispute-muted);
+}
+
+/* ============================================
+   Header Icon
+   ============================================ */
+
 .dispute-edit-header-icon {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  color: #ef4444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  border: 2px solid #fecaca;
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.15);
-  animation: iconPulseRed 2s ease-in-out infinite;
+  background: linear-gradient(135deg,
+      var(--dispute-danger-soft),
+      color-mix(in srgb, var(--dispute-danger) 18%, var(--dispute-card)));
+
+  color: var(--dispute-danger);
+  border-color: var(--dispute-danger-border);
+
+  box-shadow: 0 8px 20px color-mix(in srgb,
+      var(--dispute-danger) 15%,
+      transparent);
 }
 
 @keyframes iconPulseRed {
@@ -42,1094 +132,527 @@
   0%,
   100% {
     box-shadow:
-      0 8px 20px rgba(239, 68, 68, 0.15),
-      0 0 0 0 rgba(239, 68, 68, 0.3);
+      0 8px 20px color-mix(in srgb, var(--dispute-danger) 15%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--dispute-danger) 30%, transparent);
   }
 
   50% {
     box-shadow:
-      0 8px 20px rgba(239, 68, 68, 0.15),
-      0 0 0 12px rgba(239, 68, 68, 0);
+      0 8px 20px color-mix(in srgb, var(--dispute-danger) 15%, transparent),
+      0 0 0 12px transparent;
   }
-}
-
-.dispute-edit-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0 0 0.375rem;
-  line-height: 1.3;
-}
-
-.dispute-edit-subtitle {
-  font-size: 0.9375rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.6;
 }
 
 /* ============================================
    Alerts
    ============================================ */
-.dispute-edit-alert {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-radius: 1rem;
-  margin-bottom: 1.25rem;
-  border: 1.5px solid;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.dispute-edit-alert svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.dispute-edit-alert div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.dispute-edit-alert strong {
-  font-size: 0.875rem;
-  font-weight: 800;
-}
-
-.dispute-edit-alert span {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.6;
-}
 
 .dispute-edit-alert.warning {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border-color: #fcd34d;
-  color: #92400e;
+  background: var(--dispute-warning-soft);
+  border-color: var(--dispute-warning-border);
+  color: var(--dispute-warning-text);
 }
 
 .dispute-edit-alert.warning svg {
-  color: #f59e0b;
+  color: var(--dispute-warning);
 }
 
 .dispute-edit-alert.info {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-color: #93c5fd;
-  color: #1e40af;
+  background: var(--dispute-info-soft);
+  border-color: var(--dispute-info-border);
+  color: var(--dispute-info-text);
 }
 
 .dispute-edit-alert.info svg {
-  color: #3b82f6;
+  color: var(--dispute-info);
 }
 
 /* ============================================
    Booking Summary
    ============================================ */
+
 .dispute-edit-booking {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  border: 1.5px solid #d1fae5;
-  border-radius: 1.25rem;
-  margin-bottom: 1.5rem;
-}
+  background: linear-gradient(135deg,
+      var(--dispute-success-soft),
+      var(--dispute-card));
 
-@media (min-width: 768px) {
-  .dispute-edit-booking {
-    grid-template-columns: 1fr auto 1fr auto 1fr;
-    align-items: center;
-  }
-}
-
-.booking-summary-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  border-color: var(--dispute-success-border);
 }
 
 .booking-summary-avatar {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  overflow: hidden;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1.125rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-}
+  background: var(--gradient-primary);
 
-.booking-summary-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.booking-summary-icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-primary) 25%,
+      transparent);
 }
 
 .booking-summary-icon.green {
-  background-color: #ecfdf5;
-  color: #10b981;
+  background: var(--dispute-success-soft);
+  color: var(--dispute-success);
 }
 
 .booking-summary-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
-}
-
-.booking-summary-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1875rem;
-  min-width: 0;
+  background: var(--dispute-info-soft);
+  color: var(--dispute-info);
 }
 
 .booking-summary-label {
-  font-size: 0.6875rem;
-  color: #6b7280;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--dispute-muted);
 }
 
 .booking-summary-value {
-  font-size: 0.875rem;
-  font-weight: 800;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--dispute-text);
 }
 
 .booking-summary-divider {
-  display: none;
-}
-
-@media (min-width: 768px) {
-  .booking-summary-divider {
-    display: block;
-    width: 1px;
-    height: 2.5rem;
-    background: linear-gradient(180deg,
-        transparent,
-        #a7f3d0,
-        transparent);
-  }
+  background: linear-gradient(180deg,
+      transparent,
+      var(--dispute-success-border),
+      transparent);
 }
 
 /* ============================================
    Form Sections
    ============================================ */
-.dispute-edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 
 .dispute-edit-section {
-  background-color: #ffffff;
-  border: 1.5px solid var(--border-color);
-  border-radius: 1.25rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background: var(--dispute-card);
+  border-color: var(--dispute-border);
+
+  box-shadow: 0 1px 3px var(--dispute-shadow);
 }
 
 .dispute-edit-section-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.875rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--border-color);
-  flex-wrap: wrap;
-}
-
-.dispute-edit-section-icon {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  border-bottom-color: var(--dispute-border);
 }
 
 .dispute-edit-section-icon.red {
-  background-color: #fef2f2;
-  color: #ef4444;
+  background: var(--dispute-danger-soft);
+  color: var(--dispute-danger);
 }
 
 .dispute-edit-section-icon.blue {
-  background-color: #eff6ff;
-  color: #3b82f6;
+  background: var(--dispute-info-soft);
+  color: var(--dispute-info);
 }
 
 .dispute-edit-section-icon.purple {
-  background-color: #f5f3ff;
-  color: #8b5cf6;
+  background: var(--dispute-purple-soft);
+  color: var(--dispute-purple);
 }
 
-.dispute-edit-section-title {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0 0 0.25rem;
-}
-
-.dispute-edit-section-subtitle {
-  font-size: 0.8125rem;
-  color: #6b7280;
-  margin: 0;
-  line-height: 1.5;
-}
+/* ============================================
+   Attachments Counter
+   ============================================ */
 
 .attachments-counter-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.3125rem 0.625rem;
-  background-color: #f0fdf4;
-  color: #065f46;
-  border: 1.5px solid #d1fae5;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  margin-right: auto;
-  direction: ltr;
+  background: var(--dispute-success-soft);
+  color: var(--dispute-success-text);
+  border-color: var(--dispute-success-border);
 }
 
 /* ============================================
    Dispute Type Options
    ============================================ */
-.dispute-type-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.625rem;
-}
-
-@media (min-width: 640px) {
-  .dispute-type-options {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
 
 .dispute-type-btn {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0.75rem 0.875rem;
-  background-color: #ffffff;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.75rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  font-family: inherit;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: right;
-  white-space: nowrap;
-  position: relative;
-  overflow: hidden;
+  background: var(--dispute-card);
+  border-color: var(--dispute-border);
+  color: var(--dispute-muted);
 }
 
 .dispute-type-btn:hover:not(:disabled) {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-  color: #991b1b;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.15);
+  background: var(--dispute-danger-soft);
+  border-color: var(--dispute-danger);
+  color: var(--dispute-danger-text);
+
+  box-shadow: 0 4px 8px color-mix(in srgb,
+      var(--dispute-danger) 15%,
+      transparent);
 }
 
 .dispute-type-btn.selected {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  border-color: #ef4444;
+  background: linear-gradient(135deg,
+      var(--dispute-danger),
+      color-mix(in srgb, var(--dispute-danger) 80%, black));
+
+  border-color: var(--dispute-danger);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
-  transform: translateY(-1px);
-}
 
-.dispute-type-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.dispute-type-btn svg {
-  flex-shrink: 0;
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-danger) 35%,
+      transparent);
 }
 
 /* ============================================
    Textarea
    ============================================ */
+
 .form-textarea {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  background-color: #f9fafb;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.875rem;
-  font-size: 0.875rem;
-  font-family: "Vazirmatn", inherit;
-  color: #1f2937;
-  line-height: 1.8;
-  resize: vertical;
-  min-height: 120px;
-  outline: none;
-  transition: all 0.2s;
-  direction: rtl;
+  background: var(--dispute-bg);
+  border-color: var(--dispute-border);
+  color: var(--dispute-text);
 }
 
 .form-textarea:hover:not(:disabled) {
-  border-color: #d1d5db;
-  background-color: #ffffff;
+  border-color: color-mix(in srgb,
+      var(--dispute-border) 60%,
+      var(--dispute-text));
+
+  background: var(--dispute-card);
 }
 
 .form-textarea:focus {
-  background-color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background: var(--dispute-card);
+  border-color: var(--dispute-primary);
+
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--dispute-primary) 12%,
+      transparent);
 }
 
 .form-textarea.error {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-}
-
-.form-textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  border-color: var(--dispute-danger);
+  background: var(--dispute-danger-soft);
 }
 
 .form-textarea::placeholder {
-  color: #9ca3af;
-  font-size: 0.8125rem;
+  color: var(--dispute-muted);
 }
 
 .char-counter {
-  font-size: 0.6875rem;
-  color: #9ca3af;
-  font-weight: 700;
-  text-align: left;
-  direction: ltr;
-  margin-top: 0.375rem;
-  padding: 0 0.25rem;
+  color: var(--dispute-muted);
 }
 
 /* ============================================
    Attachments
    ============================================ */
-.attachments-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
 
-.attachments-group-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
+.attachments-group-title,
+.attachment-name {
+  color: var(--dispute-text);
 }
 
 .attachments-group-title svg {
-  color: #10b981;
-}
-
-.attachments-preview {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.625rem;
-}
-
-@media (min-width: 640px) {
-  .attachments-preview {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  color: var(--dispute-primary);
 }
 
 .attachment-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background-color: #f9fafb;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.875rem;
-  transition: all 0.2s;
-  position: relative;
-  animation: attachmentFadeIn 0.3s ease;
+  background: var(--dispute-bg);
+  border-color: var(--dispute-border);
 }
 
 .attachment-item.new {
-  background-color: #f0fdf4;
-  border-color: #a7f3d0;
-  border-style: dashed;
-}
-
-@keyframes attachmentFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background: var(--dispute-success-soft);
+  border-color: var(--dispute-success-border);
 }
 
 .attachment-item:hover {
-  background-color: #ffffff;
-  border-color: #10b981;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+  background: var(--dispute-card);
+  border-color: var(--dispute-primary);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-primary) 12%,
+      transparent);
 }
 
 .attachment-image {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 0.625rem;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1.5px solid #e5e7eb;
-  background-color: #ffffff;
-}
-
-.attachment-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.attachment-name {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  direction: ltr;
-  text-align: right;
+  border-color: var(--dispute-border);
+  background: var(--dispute-card);
 }
 
 .attachment-size {
-  font-size: 0.625rem;
-  color: #6b7280;
-  font-weight: 700;
-  direction: ltr;
+  color: var(--dispute-muted);
 }
 
+/* Remove Attachment */
+
 .attachment-remove {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: #fef2f2;
-  color: #ef4444;
-  border: 1.5px solid #fee2e2;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s;
-  padding: 0;
+  background: var(--dispute-danger-soft);
+  color: var(--dispute-danger);
+
+  border-color: var(--dispute-danger-border);
 }
 
 .attachment-remove:hover:not(:disabled) {
-  background-color: #ef4444;
+  background: var(--dispute-danger);
   color: #ffffff;
-  border-color: #ef4444;
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
+  border-color: var(--dispute-danger);
 
-.attachment-remove:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-danger) 30%,
+      transparent);
 }
 
 /* ============================================
    Upload Button
    ============================================ */
+
 .attachment-upload-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 1rem 1.25rem;
-  background-color: #ffffff;
-  border: 2px dashed #d1d5db;
-  border-radius: 0.875rem;
-  cursor: pointer;
-  transition: all 0.25s;
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #6b7280;
-  font-family: inherit;
-  width: 100%;
-  text-align: right;
-  position: relative;
-  overflow: hidden;
+  background: var(--dispute-card);
+  border-color: var(--dispute-border);
+  color: var(--dispute-muted);
 }
 
 .attachment-upload-btn:hover {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-  color: #065f46;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+  background: var(--dispute-primary-soft);
+  border-color: var(--dispute-primary);
+  color: var(--dispute-primary);
+
+  box-shadow: 0 6px 16px color-mix(in srgb,
+      var(--dispute-primary) 15%,
+      transparent);
 }
 
 .attachment-upload-btn svg {
-  flex-shrink: 0;
-  color: #10b981;
-  transition: transform 0.3s;
-}
-
-.attachment-upload-btn:hover svg {
-  transform: translateY(-3px) scale(1.1);
+  color: var(--dispute-primary);
 }
 
 .attachment-upload-btn .upload-count {
-  margin-right: auto;
-  padding: 0.25rem 0.625rem;
-  background-color: #f3f4f6;
-  color: #6b7280;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  border-radius: 9999px;
-  direction: ltr;
-  transition: all 0.2s;
+  background: var(--dispute-bg);
+  color: var(--dispute-muted);
 }
 
 .attachment-upload-btn:hover .upload-count {
-  background-color: #10b981;
+  background: var(--dispute-primary);
   color: #ffffff;
 }
 
 /* ============================================
    Info Box
    ============================================ */
+
 .dispute-edit-info-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-  padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border: 1.5px solid #93c5fd;
-  border-radius: 1rem;
-  border-right: 4px solid #3b82f6;
+  background: var(--dispute-info-soft);
+  border-color: var(--dispute-info-border);
+  border-right-color: var(--dispute-info);
 }
 
 .dispute-edit-info-box svg {
-  color: #3b82f6;
-  flex-shrink: 0;
-  margin-top: 2px;
+  color: var(--dispute-info);
 }
 
 .dispute-edit-info-box p {
-  font-size: 0.8125rem;
-  color: #1e40af;
-  line-height: 1.8;
-  margin: 0;
+  color: var(--dispute-info-text);
 }
 
 .dispute-edit-info-box strong {
-  font-weight: 800;
-  color: #1e3a8a;
+  color: var(--dispute-info-text);
 }
 
 /* ============================================
    Actions
    ============================================ */
-.dispute-edit-actions {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.75rem;
-  padding-top: 1rem;
-}
-
-@media (min-width: 640px) {
-  .dispute-edit-actions {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-}
-
-.btn-cancel,
-.btn-save {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: 0.875rem;
-  font-size: 0.9375rem;
-  font-weight: 800;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  border: none;
-  white-space: nowrap;
-  width: 100%;
-}
-
-@media (min-width: 640px) {
-
-  .btn-cancel,
-  .btn-save {
-    width: auto;
-    min-width: 160px;
-  }
-}
 
 .btn-cancel {
-  background-color: #ffffff;
-  color: #6b7280;
-  border: 1.5px solid var(--border-color);
+  background: var(--dispute-card);
+  color: var(--dispute-muted);
+  border-color: var(--dispute-border);
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #1f2937;
-  transform: translateY(-1px);
+  background: var(--dispute-hover);
+  border-color: var(--dispute-border);
+  color: var(--dispute-text);
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: var(--gradient-primary);
   color: #ffffff;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+
+  box-shadow: 0 6px 16px color-mix(in srgb,
+      var(--dispute-primary) 30%,
+      transparent);
 }
 
 .btn-save:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.4);
-}
-
-.btn-save:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ============================================
-   Spinner
-   ============================================ */
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  box-shadow: 0 10px 24px color-mix(in srgb,
+      var(--dispute-primary) 40%,
+      transparent);
 }
 
 /* ============================================
    Form Error
    ============================================ */
+
 .form-error {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  background-color: #fef2f2;
-  border: 1.5px solid #fecaca;
-  border-radius: 0.75rem;
-  border-right: 3px solid #ef4444;
-  font-size: 0.75rem;
-  color: #991b1b;
-  font-weight: 700;
-  line-height: 1.6;
-  animation: shakeError 0.4s ease;
-}
-
-@keyframes shakeError {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-5px);
-  }
-
-  75% {
-    transform: translateX(5px);
-  }
+  background: var(--dispute-danger-soft);
+  border-color: var(--dispute-danger-border);
+  border-right-color: var(--dispute-danger);
+  color: var(--dispute-danger-text);
 }
 
 .form-error svg {
-  color: #ef4444;
-  flex-shrink: 0;
-  margin-top: 2px;
+  color: var(--dispute-danger);
 }
 
 /* ============================================
-   Responsive
-   ============================================ */
-@media (max-width: 640px) {
-  .dispute-edit-page {
-    padding: 1.5rem 1rem 3rem;
-  }
-
-  .dispute-edit-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .dispute-edit-header-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-  }
-
-  .dispute-edit-title {
-    font-size: 1.375rem;
-  }
-
-  .dispute-edit-section {
-    padding: 1.25rem;
-  }
-
-  .dispute-edit-section-header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .attachments-counter-badge {
-    margin-right: 0;
-  }
-
-  .attachments-preview {
-    grid-template-columns: 1fr;
-  }
-
-  .attachment-image {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  .dispute-type-options {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ============================================
-   Dispute Countdown Timer
+   Countdown Timer
    ============================================ */
 
 .dispute-banner-countdown {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.875rem;
-  padding: 1rem 1.25rem;
-  margin-top: 1rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 1.5px solid #fcd34d;
-  border-radius: 1rem;
-  border-right: 4px solid #f59e0b;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
-  position: relative;
-  overflow: hidden;
-  animation: countdownSlideIn 0.4s ease;
-  margin-bottom: 20px;
+  background: var(--dispute-warning-soft);
+  border-color: var(--dispute-warning-border);
+  border-right-color: var(--dispute-warning);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-warning) 15%,
+      transparent);
 }
 
-@keyframes countdownSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ============ نوار تزئینی ============ */
 .dispute-banner-countdown::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, #f59e0b, #d97706);
-  animation: pulseBar 2s ease-in-out infinite;
+  background: linear-gradient(180deg,
+      var(--dispute-warning),
+      color-mix(in srgb, var(--dispute-warning) 75%, black));
 }
 
-@keyframes pulseBar {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* ============ آیکون ============ */
 .dispute-banner-countdown>svg {
-  color: #f59e0b;
-  flex-shrink: 0;
-  margin-top: 3px;
-  animation: rotateClock 3s linear infinite;
-  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
-}
+  color: var(--dispute-warning);
 
-@keyframes rotateClock {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============ محتوا ============ */
-.countdown-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  flex: 1;
-  min-width: 0;
+  filter: drop-shadow(0 2px 4px color-mix(in srgb,
+        var(--dispute-warning) 30%,
+        transparent));
 }
 
 .countdown-content strong {
-  font-size: 0.8125rem;
-  font-weight: 800;
-  color: #92400e;
-  line-height: 1.5;
-  display: block;
+  color: var(--dispute-warning-text);
 }
 
-/* ============================================
-   Timer Blocks
-   ============================================ */
-.countdown-timer {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  direction: ltr;
-}
+/* Timer Blocks */
 
 .time-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.125rem;
-  min-width: 3.25rem;
-  padding: 0.5rem 0.625rem;
-  background-color: #ffffff;
-  border: 1.5px solid #fcd34d;
-  border-radius: 0.75rem;
-  box-shadow:
-    0 2px 8px rgba(245, 158, 11, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  background: var(--dispute-card);
+  border-color: var(--dispute-warning-border);
+
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--dispute-warning) 15%,
+      transparent);
 }
 
 .time-block::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #f59e0b, transparent);
-  opacity: 0.6;
+  background: linear-gradient(90deg,
+      transparent,
+      var(--dispute-warning),
+      transparent);
 }
 
 .time-block:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    0 6px 16px rgba(245, 158, 11, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  border-color: #f59e0b;
+  border-color: var(--dispute-warning);
+
+  box-shadow: 0 6px 16px color-mix(in srgb,
+      var(--dispute-warning) 25%,
+      transparent);
 }
 
-/* ============ مقادیر ============ */
 .time-value {
-  font-size: 1.375rem;
-  font-weight: 900;
-  color: #92400e;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
-  direction: ltr;
-  font-family: "Vazirmatn", "Courier New", monospace;
-  text-shadow: 0 1px 2px rgba(245, 158, 11, 0.1);
+  color: var(--dispute-warning-text);
+  text-shadow: none;
 }
 
 .time-label {
-  font-size: 0.5625rem;
-  font-weight: 800;
-  color: #a16207;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 0.125rem;
+  color: var(--dispute-warning-text);
 }
 
-/* ============ جداکننده ============ */
 .time-separator {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #f59e0b;
-  margin-bottom: 0.875rem;
-  animation: blinkSeparator 1s ease-in-out infinite;
-  line-height: 1;
-}
-
-@keyframes blinkSeparator {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.3;
-    transform: scale(0.9);
-  }
+  color: var(--dispute-warning);
 }
 
 /* ============================================
-   حالت هشدار (کمتر از ۳۰ دقیقه)
+   Countdown Warning
+   Less than 30 minutes
    ============================================ */
+
 .dispute-banner-countdown.warning {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border-color: #fca5a5;
-  border-right-color: #ef4444;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-  animation: countdownWarning 1s ease-in-out infinite;
+  background: color-mix(in srgb,
+      var(--dispute-danger) 14%,
+      var(--dispute-card));
+
+  border-color: var(--dispute-danger-border);
+  border-right-color: var(--dispute-danger);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--dispute-danger) 15%,
+      transparent);
 }
 
 @keyframes countdownWarning {
 
   0%,
   100% {
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    box-shadow: 0 4px 12px color-mix(in srgb,
+        var(--dispute-danger) 15%,
+        transparent);
   }
 
   50% {
-    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 20px color-mix(in srgb,
+        var(--dispute-danger) 35%,
+        transparent);
   }
 }
 
 .dispute-banner-countdown.warning::before {
-  background: linear-gradient(180deg, #ef4444, #dc2626);
+  background: var(--dispute-danger);
 }
 
 .dispute-banner-countdown.warning>svg {
-  color: #ef4444;
-  animation: rotateClock 1s linear infinite, shakeWarning 0.5s ease-in-out infinite;
-}
-
-@keyframes shakeWarning {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-2px);
-  }
-
-  75% {
-    transform: translateX(2px);
-  }
+  color: var(--dispute-danger);
 }
 
 .dispute-banner-countdown.warning .countdown-content strong {
-  color: #991b1b;
+  color: var(--dispute-danger-text);
 }
 
 .dispute-banner-countdown.warning .time-block {
-  background-color: #fef2f2;
-  border-color: #fca5a5;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+  background: var(--dispute-card);
+  border-color: var(--dispute-danger-border);
+
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--dispute-danger) 15%,
+      transparent);
 }
 
 .dispute-banner-countdown.warning .time-block::before {
-  background: linear-gradient(90deg, transparent, #ef4444, transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      var(--dispute-danger),
+      transparent);
 }
 
 .dispute-banner-countdown.warning .time-block:hover {
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
-  border-color: #ef4444;
+  border-color: var(--dispute-danger);
+
+  box-shadow: 0 6px 16px color-mix(in srgb,
+      var(--dispute-danger) 30%,
+      transparent);
 }
 
 .dispute-banner-countdown.warning .time-value {
-  color: #991b1b;
-  text-shadow: 0 1px 2px rgba(239, 68, 68, 0.1);
+  color: var(--dispute-danger-text);
+  text-shadow: none;
 }
 
 .dispute-banner-countdown.warning .time-label {
-  color: #b91c1c;
+  color: var(--dispute-danger-text);
 }
 
 .dispute-banner-countdown.warning .time-separator {
-  color: #ef4444;
+  color: var(--dispute-danger);
 }
 
 /* ============================================
-   حالت بحرانی (کمتر از ۵ دقیقه)
+   Countdown Critical
+   Less than 5 minutes
    ============================================ */
+
 .dispute-banner-countdown.critical {
-  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-  border-color: #ef4444;
-  border-right-color: #dc2626;
-  animation: criticalPulse 0.7s ease-in-out infinite;
+  background: color-mix(in srgb,
+      var(--dispute-danger) 22%,
+      var(--dispute-card));
+
+  border-color: var(--dispute-danger);
+  border-right-color: var(--dispute-danger);
 }
 
 @keyframes criticalPulse {
@@ -1137,84 +660,46 @@
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+    box-shadow: 0 4px 12px color-mix(in srgb,
+        var(--dispute-danger) 30%,
+        transparent);
   }
 
   50% {
     transform: scale(1.01);
-    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.6);
+
+    box-shadow: 0 4px 24px color-mix(in srgb,
+        var(--dispute-danger) 45%,
+        transparent);
   }
 }
 
 .dispute-banner-countdown.critical .time-value {
-  animation: criticalBlink 0.7s ease-in-out infinite;
-}
-
-@keyframes criticalBlink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
+  color: var(--dispute-danger-text);
 }
 
 /* ============================================
-   Responsive
+   Accessibility
    ============================================ */
-@media (max-width: 640px) {
-  .dispute-banner-countdown {
-    padding: 0.875rem 1rem;
-    gap: 0.625rem;
-    border-radius: 0.875rem;
-  }
 
-  .countdown-content strong {
-    font-size: 0.75rem;
-  }
-
-  .time-block {
-    min-width: 2.75rem;
-    padding: 0.4375rem 0.5rem;
-    border-radius: 0.625rem;
-  }
-
-  .time-value {
-    font-size: 1.125rem;
-  }
-
-  .time-label {
-    font-size: 0.5rem;
-  }
-
-  .time-separator {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-  }
+.dispute-edit-page :is(button,
+  a,
+  textarea):focus-visible {
+  outline: 2px solid var(--dispute-primary);
+  outline-offset: 3px;
 }
 
-@media (max-width: 380px) {
-  .countdown-timer {
-    gap: 0.25rem;
-  }
+/* Respect reduced motion */
 
-  .time-block {
-    min-width: 2.5rem;
-    padding: 0.375rem 0.4375rem;
-  }
+@media (prefers-reduced-motion: reduce) {
 
-  .time-value {
-    font-size: 1rem;
-  }
-
-  .time-label {
-    font-size: 0.4375rem;
-  }
-
-  .time-separator {
-    font-size: 1rem;
+  .dispute-edit-page *,
+  .dispute-edit-page *::before,
+  .dispute-edit-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

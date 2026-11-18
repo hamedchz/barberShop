@@ -424,10 +424,10 @@ export default function WalletDepositsIndex({
                             <div className="stat-content">
                                 <span className="stat-label">
                                     {card.title}
-                                    <Info
+                                    {/* <Info
                                         size={11}
                                         className="stat-label-hint-icon"
-                                    />
+                                    /> */}
                                 </span>
 
                                 <span

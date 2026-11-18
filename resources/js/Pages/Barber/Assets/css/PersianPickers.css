@@ -7,12 +7,12 @@
 .rmdp-input {
   width: 100% !important;
   padding: 0.75rem 1rem !important;
-  border-radius: var(--radius-sm) !important;
-  border: 1px solid #e5e7eb !important;
-  background-color: var(--white) !important;
+  border-radius: var(--radius-sm, 0.5rem) !important;
+  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
   font-family: inherit !important;
   font-size: 0.875rem !important;
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
   transition: all 0.2s !important;
   outline: none !important;
   min-height: 48px !important;
@@ -21,20 +21,20 @@
 }
 
 .rmdp-input:focus {
-  border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent) !important;
 }
 
 .rmdp-input::placeholder {
-  color: var(--text-light) !important;
+  color: var(--color-text-muted) !important;
 }
 
 /* ============ تقویم بازشو ============ */
 .rmdp-calendar {
-  background-color: var(--white) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md, 0.75rem) !important;
+  box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--color-shadow) 100%, transparent) !important;
   font-family: "Vazirmatn", sans-serif !important;
   padding: 0.75rem !important;
   direction: rtl !important;
@@ -44,17 +44,17 @@
 .rmdp-header {
   margin-bottom: 0.75rem !important;
   padding-bottom: 0.5rem !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid var(--color-border) !important;
 }
 
 .rmdp-header-values {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
   font-weight: 700 !important;
   font-size: 0.875rem !important;
 }
 
 .rmdp-arrow-container {
-  background-color: var(--primary-light) !important;
+  background-color: var(--color-primary-tint-soft) !important;
   border-radius: 50% !important;
   width: 1.75rem !important;
   height: 1.75rem !important;
@@ -66,20 +66,20 @@
 }
 
 .rmdp-arrow-container:hover {
-  background-color: var(--primary) !important;
+  background-color: var(--color-primary) !important;
 }
 
 .rmdp-arrow-container:hover .rmdp-arrow {
-  border-color: white !important;
+  border-color: #ffffff !important;
 }
 
 .rmdp-arrow {
-  border-color: var(--primary) !important;
+  border-color: var(--color-primary) !important;
 }
 
 /* ============ روزهای هفته ============ */
 .rmdp-week-day {
-  color: var(--text-muted) !important;
+  color: var(--color-text-muted) !important;
   font-size: 0.75rem !important;
   font-weight: 600 !important;
   padding: 0.5rem 0 !important;
@@ -87,27 +87,28 @@
 
 /* ============ روزها ============ */
 .rmdp-day {
-  color: var(--text-main) !important;
+  color: var(--color-text) !important;
   font-size: 0.8125rem !important;
   border-radius: 0.5rem !important;
   transition: all 0.2s !important;
 }
 
 .rmdp-day:hover {
-  background-color: var(--primary-light) !important;
-  color: var(--primary) !important;
+  background-color: var(--color-primary-tint-soft) !important;
+  color: var(--color-primary) !important;
 }
 
+/* امروز — از رنگ info استفاده می‌کنیم تا با primary قاطی نشود */
 .rmdp-day.rmdp-today span {
-  background-color: #eff6ff !important;
-  color: #1e40af !important;
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-bg-card)) !important;
+  color: color-mix(in srgb, var(--color-info) 80%, var(--color-text)) !important;
   font-weight: 700 !important;
 }
 
 .rmdp-day.rmdp-selected span:not(.highlight) {
-  background-color: var(--primary) !important;
-  color: white !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: var(--shadow-primary-sm) !important;
 }
 
 .rmdp-day.rmdp-disabled {
@@ -116,51 +117,51 @@
 
 /* ============ پنل انتخاب زمان ============ */
 .rmdp-time-picker {
-  background-color: var(--white) !important;
+  background-color: var(--color-bg-card) !important;
   padding: 0.75rem !important;
   direction: ltr !important;
 }
 
 .rmdp-time-picker div input {
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-sm, 0.5rem) !important;
   padding: 0.5rem !important;
   font-family: inherit !important;
   font-size: 0.875rem !important;
-  color: var(--text-main) !important;
-  background-color: var(--white) !important;
+  color: var(--color-text) !important;
+  background-color: var(--color-bg-card) !important;
   text-align: center !important;
   width: 3.5rem !important;
 }
 
 .rmdp-time-picker div input:focus {
-  border-color: var(--primary) !important;
+  border-color: var(--color-primary) !important;
   outline: none !important;
 }
 
 .rmdp-time-picker .rmdp-arrow-container {
-  background-color: var(--primary-light) !important;
+  background-color: var(--color-primary-tint-soft) !important;
 }
 
 .rmdp-time-picker .rmdp-arrow-container:hover {
-  background-color: var(--primary) !important;
+  background-color: var(--color-primary) !important;
 }
 
 /* ============ پنل بالا/پایین ============ */
 .rmdp-panel {
-  background-color: var(--primary) !important;
-  color: white !important;
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
 }
 
 .rmdp-panel-body li {
-  background-color: var(--white) !important;
-  color: var(--text-main) !important;
-  border-radius: var(--radius-sm) !important;
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-text) !important;
+  border-radius: var(--radius-sm, 0.5rem) !important;
 }
 
 .rmdp-panel-body li:hover {
-  background-color: var(--primary-light) !important;
-  color: var(--primary) !important;
+  background-color: var(--color-primary-tint-soft) !important;
+  color: var(--color-primary) !important;
 }
 
 /* ============ RTL ============ */

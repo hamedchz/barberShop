@@ -1,16 +1,26 @@
 /* ============================================
    Amount Display — زیر input مبلغ برداشت
    ============================================ */
+
 .amount-display {
+  --amount-bg: color-mix(in srgb, var(--color-success) 7%, var(--color-bg-card));
+  --amount-border: color-mix(in srgb, var(--color-success) 30%, var(--color-border));
+  --amount-text: var(--color-success);
+  --amount-muted: var(--color-text-muted);
+  --amount-soft: color-mix(in srgb, var(--color-success) 14%, var(--color-bg-card));
+
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.75rem 0.875rem;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
-  border: 1.5px solid #a7f3d0;
+  background: var(--amount-bg);
+  border: 1.5px solid var(--amount-border);
   border-radius: 0.875rem;
   margin-top: 0.5rem;
   animation: amountFadeIn 0.25s ease-out;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 @keyframes amountFadeIn {
@@ -26,6 +36,7 @@
 }
 
 /* ============ مبلغ اصلی ============ */
+
 .amount-display .amount-main {
   display: flex;
   align-items: baseline;
@@ -36,7 +47,7 @@
 .amount-display .amount-value {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #065f46;
+  color: var(--amount-text);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
@@ -44,10 +55,11 @@
 .amount-display .amount-currency {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #059669;
+  color: var(--color-success);
 }
 
 /* ============ متادیتا ============ */
+
 .amount-display .amount-meta {
   display: flex;
   align-items: center;
@@ -55,7 +67,7 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--amount-muted);
   font-weight: 600;
 }
 
@@ -63,33 +75,41 @@
   display: inline-flex;
   align-items: center;
   padding: 0.1875rem 0.5rem;
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--amount-soft);
+  color: var(--color-success);
   border-radius: 9999px;
   font-weight: 800;
   font-size: 0.625rem;
 }
 
 .amount-display .amount-remaining {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .amount-display .meta-separator {
-  color: #d1d5db;
+  color: var(--color-border);
 }
 
 /* ============ حالت خطا (بیشتر از موجودی) ============ */
+
 .amount-display.exceeds {
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
-  border-color: #fecaca;
+  --amount-bg: color-mix(in srgb, var(--color-danger) 7%, var(--color-bg-card));
+  --amount-border: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
+  --amount-text: var(--color-danger);
+  --amount-soft: color-mix(in srgb, var(--color-danger) 13%, var(--color-bg-card));
 }
 
 .amount-display.exceeds .amount-value {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
 .amount-display.exceeds .amount-currency {
-  color: #dc2626;
+  color: var(--color-danger);
+}
+
+.amount-display.exceeds .amount-percentage {
+  background: var(--amount-soft);
+  color: var(--color-danger);
 }
 
 .amount-display .amount-error-note {
@@ -98,11 +118,12 @@
   justify-content: center;
   gap: 0.25rem;
   font-size: 0.6875rem;
-  color: #991b1b;
+  color: var(--color-danger);
   font-weight: 700;
 }
 
 /* ============ داخل Withdraw Modal ============ */
+
 .withdraw-modal .amount-display {
   margin-top: 0.625rem;
 }
@@ -111,7 +132,23 @@
   justify-content: center;
 }
 
-/* ============ داخل Filters Panel (اختیاری) ============ */
+/* ============ داخل Filters Panel ============ */
+
 .filters-panel .amount-display {
   margin-top: 0.5rem;
+}
+
+/* ============ حالت فوکوس و دسترس‌پذیری ============ */
+
+.amount-display:focus-within {
+  border-color: var(--color-primary);
+}
+
+/* ============ کاهش حرکت ============ */
+
+@media (prefers-reduced-motion: reduce) {
+  .amount-display {
+    animation: none;
+    transition: none;
+  }
 }

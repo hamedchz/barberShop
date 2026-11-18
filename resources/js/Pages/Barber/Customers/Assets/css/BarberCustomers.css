@@ -10,17 +10,21 @@
   align-items: stretch;
 }
 
-
+/* SearchComponent فضای باقی‌مانده را بگیرد */
+.barber-customers-toolbar> :first-child {
+  flex: 1;
+  min-width: 0;
+}
 
 .barber-customers-sort {
   display: flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.625rem 0.875rem;
-  background: var(--color-bg-card, #ffffff);
-  border: 1.5px solid var(--color-border, #e5e7eb);
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.75rem;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   flex-shrink: 0;
 }
@@ -31,7 +35,7 @@
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-text, #374151);
+  color: var(--color-text);
   cursor: pointer;
   outline: none;
 }
@@ -49,8 +53,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: var(--color-bg, #f9fafb);
-  border: 1.5px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface-muted);
+  border: 1.5px solid var(--color-border);
   border-radius: 1rem;
   text-decoration: none;
   color: inherit;
@@ -60,10 +64,10 @@
 }
 
 .barber-customer-card:hover {
-  background: var(--color-bg-card, #ffffff);
-  border-color: var(--color-primary, #10b981);
+  background: var(--color-bg-card);
+  border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--color-shadow, rgba(0, 0, 0, 0.08));
+  box-shadow: var(--shadow-card-md);
 }
 
 /* ============ آواتار ============ */
@@ -71,8 +75,8 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-  color: #5b21b6;
+  background: color-mix(in srgb, var(--color-primary) 15%, var(--color-bg-card));
+  color: var(--color-primary-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,8 +84,8 @@
   font-size: 1.25rem;
   overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid var(--color-bg-card);
+  box-shadow: var(--shadow-card-sm);
 }
 
 .barber-customer-card-avatar img {
@@ -109,7 +113,7 @@
 .barber-customer-card-name {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: var(--color-text, #1f2937);
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -118,9 +122,11 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.125rem 0.5rem;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  border: 1px solid #fcd34d;
+  background: linear-gradient(135deg,
+      var(--status-pending-soft),
+      color-mix(in srgb, var(--color-warning) 22%, var(--color-bg-card)));
+  color: color-mix(in srgb, var(--color-warning) 80%, var(--color-text));
+  border: 1px solid var(--status-pending-border);
   border-radius: 9999px;
   font-size: 0.625rem;
   font-weight: 800;
@@ -138,7 +144,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.6875rem;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -158,38 +164,38 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.1875rem 0.5rem;
-  background: var(--color-bg-card, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
   border-radius: 0.375rem;
   font-size: 0.6875rem;
 }
 
 .barber-customer-card-stat svg {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   flex-shrink: 0;
 }
 
 .barber-customer-card-stat.amount svg {
-  color: var(--color-primary, #10b981);
+  color: var(--color-primary);
 }
 
 .barber-customer-card-stat.rating svg {
-  color: #fbbf24;
+  color: var(--color-warning);
 }
 
 .barber-customer-card-stat .stat-value {
   font-weight: 800;
-  color: var(--color-text, #1f2937);
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
 .barber-customer-card-stat.amount .stat-value {
-  color: var(--color-primary, #10b981);
+  color: var(--color-primary-text);
 }
 
 .barber-customer-card-stat .stat-label {
   font-size: 0.625rem;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
@@ -200,12 +206,12 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   padding-top: 0.5rem;
-  border-top: 1px dashed var(--color-border, #e5e7eb);
+  border-top: 1px dashed var(--color-border);
   font-size: 0.6875rem;
 }
 
 .last-booking-label {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
@@ -214,16 +220,16 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--color-text, #4b5563);
+  color: var(--color-text-soft);
   font-weight: 600;
 }
 
 .last-booking-service svg {
-  color: #8b5cf6;
+  color: var(--color-primary);
 }
 
 .last-booking-date svg {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
 }
 
 /* ============ نرخ تکمیل ============ */
@@ -256,20 +262,20 @@
   justify-content: center;
   font-size: 0.6875rem;
   font-weight: 900;
-  color: var(--color-primary, #10b981);
+  color: var(--color-primary-text);
   font-variant-numeric: tabular-nums;
 }
 
 .completion-label {
   font-size: 0.5625rem;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   font-weight: 700;
   text-transform: uppercase;
 }
 
 /* ============ فلش ============ */
 .barber-customer-card-arrow {
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted);
   opacity: 0.4;
   flex-shrink: 0;
   transition: all 0.2s;
@@ -277,7 +283,7 @@
 
 .barber-customer-card:hover .barber-customer-card-arrow {
   opacity: 1;
-  color: var(--color-primary, #10b981);
+  color: var(--color-primary);
   transform: translateX(-3px);
 }
 
@@ -311,6 +317,11 @@
     flex-direction: column;
   }
 
+  .barber-customers-toolbar> :first-child {
+    width: 100%;
+    flex: none;
+  }
+
   .barber-customers-sort {
     width: 100%;
     justify-content: space-between;
@@ -323,83 +334,5 @@
   .barber-customer-card-stat {
     flex: 1;
     justify-content: center;
-  }
-}
-
-/* ============ Dark Mode ============ */
-.dark .barber-customer-card {
-  background: var(--color-bg, #1e293b);
-  border-color: var(--color-border, #334155);
-}
-
-.dark .barber-customer-card:hover {
-  background: var(--color-bg-card, #0f172a);
-}
-
-.dark .barber-customer-card-stat {
-  background: var(--color-bg-card, #0f172a);
-}
-
-
-.dark .barber-customers-sort {
-  background: var(--color-bg-card, #1e293b);
-  border-color: var(--color-border, #334155);
-}
-
-/* ============================================
-   Barber Customers Toolbar
-   ============================================ */
-
-.barber-customers-toolbar {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: stretch;
-}
-
-/* SearchComponent فضای باقی‌مانده رو بگیره */
-.barber-customers-toolbar> :first-child {
-  flex: 1;
-  min-width: 0;
-}
-
-.barber-customers-sort {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.625rem 0.875rem;
-  background: var(--color-bg-card, #ffffff);
-  border: 1.5px solid var(--color-border, #e5e7eb);
-  border-radius: 0.75rem;
-  color: var(--color-text-muted, #6b7280);
-  font-size: 0.75rem;
-  flex-shrink: 0;
-}
-
-.barber-customers-sort-select {
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-text, #374151);
-  cursor: pointer;
-  outline: none;
-}
-
-/* ============ Responsive ============ */
-@media (max-width: 640px) {
-  .barber-customers-toolbar {
-    flex-direction: column;
-  }
-
-  .barber-customers-toolbar> :first-child {
-    width: 100%;
-    flex: none;
-  }
-
-  .barber-customers-sort {
-    width: 100%;
-    justify-content: space-between;
   }
 }

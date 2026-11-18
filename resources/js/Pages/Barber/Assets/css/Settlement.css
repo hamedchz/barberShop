@@ -1,6 +1,7 @@
 /* ============================================
    Active Settlement Card
    ============================================ */
+
 .active-settlement-card {
   display: flex;
   align-items: center;
@@ -12,11 +13,13 @@
   transition: all 0.25s;
   position: relative;
   overflow: hidden;
+
+  background: var(--color-bg-card);
 }
 
 .active-settlement-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px var(--color-shadow);
 }
 
 /* نوار رنگی سمت راست */
@@ -29,26 +32,46 @@
   width: 4px;
 }
 
-/* رنگ‌بندی بر اساس وضعیت */
+/* ============================================
+   Status Colors
+   ============================================ */
+
+/* Pending */
 .active-settlement-card.status-pending {
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
-  border-color: #fde68a;
+  background: color-mix(in srgb,
+      var(--color-warning) 7%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-warning) 35%,
+      var(--color-border));
 }
 
 .active-settlement-card.status-pending::before {
-  background: linear-gradient(180deg, #f59e0b, #d97706);
+  background: linear-gradient(180deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 75%, #92400e));
 }
 
+/* Processing */
 .active-settlement-card.status-processing {
-  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-  border-color: #bfdbfe;
+  background: color-mix(in srgb,
+      var(--color-info) 7%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-info) 35%,
+      var(--color-border));
 }
 
 .active-settlement-card.status-processing::before {
-  background: linear-gradient(180deg, #3b82f6, #2563eb);
+  background: linear-gradient(180deg,
+      var(--color-info),
+      color-mix(in srgb, var(--color-info) 75%, #1e40af));
 }
 
-/* ============ آیکون ============ */
+/* ============================================
+   Icon
+   ============================================ */
+
 .active-settlement-icon {
   width: 2.75rem;
   height: 2.75rem;
@@ -63,13 +86,17 @@
 }
 
 .status-pending .active-settlement-icon {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb,
+      var(--color-warning) 18%,
+      var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .status-processing .active-settlement-icon {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb,
+      var(--color-info) 18%,
+      var(--color-bg-card));
+  color: var(--color-info);
 }
 
 @keyframes activePulse {
@@ -84,7 +111,10 @@
   }
 }
 
-/* ============ محتوا ============ */
+/* ============================================
+   Content
+   ============================================ */
+
 .active-settlement-content {
   display: flex;
   flex-direction: column;
@@ -105,8 +135,12 @@
 .active-settlement-title {
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
+
+/* ============================================
+   Status Badge
+   ============================================ */
 
 .active-settlement-status {
   display: inline-flex;
@@ -119,16 +153,23 @@
 }
 
 .active-settlement-status.pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb,
+      var(--color-warning) 18%,
+      var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .active-settlement-status.processing {
-  background: #dbeafe;
-  color: #1e40af;
+  background: color-mix(in srgb,
+      var(--color-info) 18%,
+      var(--color-bg-card));
+  color: var(--color-info);
 }
 
-/* ============ اطلاعات ============ */
+/* ============================================
+   Information
+   ============================================ */
+
 .active-settlement-info {
   display: flex;
   align-items: center;
@@ -144,56 +185,75 @@
 }
 
 .active-settlement-info .info-label {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
 .active-settlement-info .info-value {
-  color: #374151;
+  color: var(--color-text);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
-/* ============ دکمه ============ */
+/* ============================================
+   Action Button
+   ============================================ */
+
 .active-settlement-action {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background: #ffffff;
+
+  background: var(--color-bg-card);
   border: 1.5px solid;
   border-radius: 0.625rem;
+
   font-size: 0.6875rem;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
+
   transition: all 0.2s;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
 }
 
+/* Pending Action */
 .status-pending .active-settlement-action {
-  color: #92400e;
-  border-color: #fde68a;
+  color: var(--color-warning);
+  border-color: color-mix(in srgb,
+      var(--color-warning) 40%,
+      var(--color-border));
 }
 
 .status-pending .active-settlement-action:hover {
-  background: #fef3c7;
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
   transform: translateX(-2px);
 }
 
+/* Processing Action */
 .status-processing .active-settlement-action {
-  color: #1e40af;
-  border-color: #bfdbfe;
+  color: var(--color-info);
+  border-color: color-mix(in srgb,
+      var(--color-info) 40%,
+      var(--color-border));
 }
 
 .status-processing .active-settlement-action:hover {
-  background: #dbeafe;
+  background: color-mix(in srgb,
+      var(--color-info) 12%,
+      var(--color-bg-card));
   transform: translateX(-2px);
 }
 
-/* ============ Responsive ============ */
+/* ============================================
+   Responsive
+   ============================================ */
+
 @media (max-width: 640px) {
   .active-settlement-card {
     flex-direction: column;
@@ -208,5 +268,19 @@
   .active-settlement-action {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .active-settlement-card,
+  .active-settlement-action,
+  .active-settlement-icon {
+    transition: none;
+    animation: none;
   }
 }

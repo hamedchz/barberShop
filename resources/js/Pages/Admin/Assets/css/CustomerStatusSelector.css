@@ -1,12 +1,17 @@
 /* ============================================
    Customer Status Selector
+   Dynamic Theme Compatible
    ============================================ */
+
 .customer-status-selector {
   position: relative;
   display: inline-block;
 }
 
-/* ============ Trigger ============ */
+/* ============================================
+   Trigger
+   ============================================ */
+
 .status-selector-trigger {
   display: inline-flex;
   align-items: center;
@@ -17,7 +22,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   border: 1.5px solid;
   white-space: nowrap;
 }
@@ -32,80 +37,117 @@
 }
 
 .status-selector-trigger .chevron {
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
 }
 
 .status-selector-trigger .chevron.open {
   transform: rotate(180deg);
 }
 
-/* رنگ‌بندی trigger */
+/* ============================================
+   Trigger Status Colors
+   ============================================ */
+
+/* Success / Green */
 .status-selector-trigger.status-green {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: color-mix(in srgb,
+      var(--color-success) 10%,
+      var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb,
+      var(--color-success) 30%,
+      var(--color-border));
 }
 
 .status-selector-trigger.status-green:hover:not(:disabled) {
-  background: #10b981;
+  background: var(--color-success);
   color: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  border-color: var(--color-success);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-success) 25%,
+      transparent);
 }
 
+/* Gray / Neutral */
 .status-selector-trigger.status-gray {
-  background: #f9fafb;
-  color: #6b7280;
-  border-color: #e5e7eb;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
 .status-selector-trigger.status-gray:hover:not(:disabled) {
-  background: #6b7280;
+  background: var(--color-text-muted);
   color: #ffffff;
-  border-color: #6b7280;
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  border-color: var(--color-text-muted);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-text-muted) 22%,
+      transparent);
 }
 
+/* Orange / Warning */
 .status-selector-trigger.status-orange {
-  background: #fff7ed;
-  color: #9a3412;
-  border-color: #ffedd5;
+  background: color-mix(in srgb,
+      var(--color-warning) 10%,
+      var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb,
+      var(--color-warning) 30%,
+      var(--color-border));
 }
 
 .status-selector-trigger.status-orange:hover:not(:disabled) {
-  background: #f59e0b;
+  background: var(--color-warning);
   color: #ffffff;
-  border-color: #f59e0b;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  border-color: var(--color-warning);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-warning) 25%,
+      transparent);
 }
 
+/* Yellow / Warning */
 .status-selector-trigger.status-yellow {
-  background: #fffbeb;
-  color: #92400e;
-  border-color: #fde68a;
+  background: color-mix(in srgb,
+      var(--color-warning) 10%,
+      var(--color-bg-card));
+  color: var(--color-warning);
+  border-color: color-mix(in srgb,
+      var(--color-warning) 30%,
+      var(--color-border));
 }
 
 .status-selector-trigger.status-yellow:hover:not(:disabled) {
-  background: #f59e0b;
+  background: var(--color-warning);
   color: #ffffff;
-  border-color: #f59e0b;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  border-color: var(--color-warning);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-warning) 25%,
+      transparent);
 }
 
+/* Red / Danger */
 .status-selector-trigger.status-red {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: color-mix(in srgb,
+      var(--color-danger) 9%,
+      var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
 }
 
 .status-selector-trigger.status-red:hover:not(:disabled) {
-  background: #ef4444;
+  background: var(--color-danger);
   color: #ffffff;
-  border-color: #ef4444;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  border-color: var(--color-danger);
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-danger) 25%,
+      transparent);
 }
 
-/* ============ Backdrop ============ */
+/* ============================================
+   Backdrop
+   ============================================ */
+
 .status-selector-backdrop {
   position: fixed;
   inset: 0;
@@ -113,16 +155,19 @@
   background: transparent;
 }
 
-/* ============ Dropdown ============ */
+/* ============================================
+   Dropdown
+   ============================================ */
+
 .status-selector-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
   left: 0;
   min-width: 340px;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px var(--color-shadow);
   z-index: 9999;
   overflow: hidden;
   animation: statusDropdownIn 0.2s ease-out;
@@ -141,23 +186,29 @@
   }
 }
 
+/* Dropdown Header */
 .status-selector-dropdown .dropdown-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+
+  background: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+
   font-size: 0.75rem;
   font-weight: 800;
-  color: #374151;
+  color: var(--color-text);
 }
 
 .status-selector-dropdown .dropdown-header svg {
-  color: #3b82f6;
+  color: var(--color-info);
 }
 
-/* ============ Options ============ */
+/* ============================================
+   Options
+   ============================================ */
+
 .status-options {
   padding: 0.5rem;
   max-height: 400px;
@@ -170,65 +221,86 @@
   gap: 0.75rem;
   width: 100%;
   padding: 0.75rem;
+
   background: transparent;
   border: 1.5px solid transparent;
   border-radius: 0.75rem;
+
   font-family: inherit;
   text-align: right;
   cursor: pointer;
-  transition: all 0.2s;
+
+  transition: all 0.2s ease;
 }
 
 .status-option:hover {
-  background: #f9fafb;
-  border-color: #e5e7eb;
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
 }
 
+/* Current Option */
 .status-option.current {
-  background: #f0f9ff;
-  border-color: #bae6fd;
+  background: color-mix(in srgb,
+      var(--color-info) 9%,
+      var(--color-bg-card));
+
+  border-color: color-mix(in srgb,
+      var(--color-info) 28%,
+      var(--color-border));
 }
 
+/* Pending Option */
 .status-option.pending {
-  background: #fef3c7;
-  border-color: #fde68a;
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
+
+  border-color: color-mix(in srgb,
+      var(--color-warning) 30%,
+      var(--color-border));
 }
 
+/* Option Icon */
 .status-option-icon {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-shrink: 0;
 }
 
 .status-option-icon.status-green {
-  background: #d1fae5;
-  color: #065f46;
+  background: color-mix(in srgb,
+      var(--color-success) 16%,
+      var(--color-bg-card));
+  color: var(--color-success);
 }
 
 .status-option-icon.status-gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
-.status-option-icon.status-orange {
-  background: #fed7aa;
-  color: #9a3412;
-}
-
+.status-option-icon.status-orange,
 .status-option-icon.status-yellow {
-  background: #fef3c7;
-  color: #92400e;
+  background: color-mix(in srgb,
+      var(--color-warning) 17%,
+      var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .status-option-icon.status-red {
-  background: #fee2e2;
-  color: #991b1b;
+  background: color-mix(in srgb,
+      var(--color-danger) 14%,
+      var(--color-bg-card));
+  color: var(--color-danger);
 }
 
+/* Option Content */
 .status-option-content {
   display: flex;
   flex-direction: column;
@@ -246,15 +318,18 @@
 .status-option-label {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
+/* Current Badge */
 .current-badge {
   display: inline-flex;
   align-items: center;
   padding: 0.125rem 0.5rem;
-  background: #3b82f6;
+
+  background: var(--color-info);
   color: #ffffff;
+
   border-radius: 9999px;
   font-size: 0.5625rem;
   font-weight: 800;
@@ -262,22 +337,32 @@
 
 .status-option-desc {
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.6;
   font-weight: 600;
 }
 
-/* ============ Confirm Modal ============ */
+/* ============================================
+   Confirm Modal Overlay
+   ============================================ */
+
 .status-confirm-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+
+  background: color-mix(in srgb,
+      var(--color-bg) 65%,
+      transparent);
+
   backdrop-filter: blur(4px);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   z-index: 99999;
   padding: 1rem;
+
   animation: statusOverlayIn 0.2s ease-out;
 }
 
@@ -291,13 +376,21 @@
   }
 }
 
+/* ============================================
+   Confirm Modal
+   ============================================ */
+
 .status-confirm-modal {
-  background: #ffffff;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+
   border-radius: 1.5rem;
   width: 100%;
   max-width: 480px;
   padding: 1.75rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+
+  box-shadow: 0 24px 60px var(--color-shadow);
+
   animation: statusModalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -313,6 +406,7 @@
   }
 }
 
+/* Modal Header */
 .status-confirm-header {
   display: flex;
   flex-direction: column;
@@ -321,50 +415,56 @@
   margin-bottom: 1.25rem;
 }
 
+/* Confirmation Icon */
 .status-confirm-icon {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .status-confirm-icon.status-green {
-  background: #d1fae5;
-  color: #10b981;
+  background: color-mix(in srgb,
+      var(--color-success) 15%,
+      var(--color-bg-card));
+  color: var(--color-success);
 }
 
 .status-confirm-icon.status-gray {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
 }
 
-.status-confirm-icon.status-orange {
-  background: #fed7aa;
-  color: #f59e0b;
-}
-
+.status-confirm-icon.status-orange,
 .status-confirm-icon.status-yellow {
-  background: #fef3c7;
-  color: #f59e0b;
+  background: color-mix(in srgb,
+      var(--color-warning) 16%,
+      var(--color-bg-card));
+  color: var(--color-warning);
 }
 
 .status-confirm-icon.status-red {
-  background: #fee2e2;
-  color: #ef4444;
+  background: color-mix(in srgb,
+      var(--color-danger) 14%,
+      var(--color-bg-card));
+  color: var(--color-danger);
 }
 
+/* Modal Title */
 .status-confirm-header h3 {
   font-size: 1.125rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
 }
 
+/* Modal Message */
 .status-confirm-message {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--color-text-muted);
   line-height: 1.9;
   text-align: center;
   margin: 0 0 1rem;
@@ -375,65 +475,76 @@
 }
 
 .status-confirm-message strong.status-green {
-  color: #065f46;
+  color: var(--color-success);
 }
 
 .status-confirm-message strong.status-gray {
-  color: #4b5563;
+  color: var(--color-text);
 }
 
-.status-confirm-message strong.status-orange {
-  color: #9a3412;
-}
-
+.status-confirm-message strong.status-orange,
 .status-confirm-message strong.status-yellow {
-  color: #92400e;
+  color: var(--color-warning);
 }
 
 .status-confirm-message strong.status-red {
-  color: #991b1b;
+  color: var(--color-danger);
 }
 
+/* Confirmation Description */
 .status-confirm-description {
   padding: 0.875rem 1rem;
   border-radius: 0.875rem;
   border: 1.5px solid;
+
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.7;
   text-align: center;
+
   margin-bottom: 1.5rem;
 }
 
 .status-confirm-description.status-green {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
-  color: #065f46;
+  background: color-mix(in srgb,
+      var(--color-success) 10%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-success) 30%,
+      var(--color-border));
+  color: var(--color-success);
 }
 
 .status-confirm-description.status-gray {
-  background: #f9fafb;
-  border-color: #e5e7eb;
-  color: #4b5563;
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
 }
 
-.status-confirm-description.status-orange {
-  background: #fff7ed;
-  border-color: #fed7aa;
-  color: #9a3412;
-}
-
+.status-confirm-description.status-orange,
 .status-confirm-description.status-yellow {
-  background: #fffbeb;
-  border-color: #fde68a;
-  color: #92400e;
+  background: color-mix(in srgb,
+      var(--color-warning) 10%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-warning) 30%,
+      var(--color-border));
+  color: var(--color-warning);
 }
 
 .status-confirm-description.status-red {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #991b1b;
+  background: color-mix(in srgb,
+      var(--color-danger) 9%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
+  color: var(--color-danger);
 }
+
+/* ============================================
+   Modal Actions
+   ============================================ */
 
 .status-confirm-actions {
   display: flex;
@@ -447,58 +558,79 @@
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
+
   padding: 0.625rem 1.25rem;
   border-radius: 0.75rem;
+
   font-family: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
+
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+
   border: 1.5px solid transparent;
 }
 
+/* Cancel Button */
 .status-confirm-actions .btn-ghost {
-  background: #ffffff;
-  color: #6b7280;
-  border-color: #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
 .status-confirm-actions .btn-ghost:hover:not(:disabled) {
-  background: #f9fafb;
-  color: #374151;
+  background: var(--color-bg-hover);
+  color: var(--color-text);
 }
 
+/* Confirm Button */
 .status-confirm-actions .btn-confirm {
   color: #ffffff;
 }
 
 .status-confirm-actions .btn-confirm.status-green {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg,
+      var(--color-success),
+      color-mix(in srgb, var(--color-success) 75%, #000000));
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-success) 25%,
+      transparent);
 }
 
 .status-confirm-actions .btn-confirm.status-gray {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
-  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  background: var(--color-text-muted);
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-text-muted) 20%,
+      transparent);
 }
 
-.status-confirm-actions .btn-confirm.status-orange {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
+.status-confirm-actions .btn-confirm.status-orange,
 .status-confirm-actions .btn-confirm.status-yellow {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg,
+      var(--color-warning),
+      color-mix(in srgb, var(--color-warning) 75%, #000000));
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-warning) 25%,
+      transparent);
 }
 
 .status-confirm-actions .btn-confirm.status-red {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg,
+      var(--color-danger),
+      color-mix(in srgb, var(--color-danger) 75%, #000000));
+
+  box-shadow: 0 4px 12px color-mix(in srgb,
+      var(--color-danger) 25%,
+      transparent);
 }
 
 .status-confirm-actions .btn-confirm:hover:not(:disabled) {
   transform: translateY(-1px);
+  filter: brightness(1.05);
 }
 
 .status-confirm-actions .btn-ghost:disabled,
@@ -508,11 +640,17 @@
   transform: none;
 }
 
+/* ============================================
+   Spinner
+   ============================================ */
+
 .spinner {
   width: 14px;
   height: 14px;
+
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #ffffff;
+
   border-radius: 50%;
   animation: statusSpin 0.7s linear infinite;
 }
@@ -523,12 +661,16 @@
   }
 }
 
-/* ============ Responsive ============ */
+/* ============================================
+   Responsive
+   ============================================ */
+
 @media (max-width: 640px) {
   .status-selector-dropdown {
     min-width: 280px;
     left: auto;
     right: 0;
+    max-width: calc(100vw - 2rem);
   }
 
   .status-confirm-actions {
@@ -538,5 +680,25 @@
   .status-confirm-actions .btn-ghost,
   .status-confirm-actions .btn-confirm {
     width: 100%;
+  }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .status-selector-trigger,
+  .status-selector-trigger .chevron,
+  .status-option,
+  .status-confirm-actions button {
+    transition: none;
+  }
+
+  .status-selector-dropdown,
+  .status-confirm-overlay,
+  .status-confirm-modal {
+    animation: none;
   }
 }

@@ -7,8 +7,10 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+  background: linear-gradient(135deg,
+      var(--color-info) 0%,
+      color-mix(in srgb, var(--color-info) 80%, #000) 100%);
+  color: #ffffff;
   border-radius: 0.875rem;
   font-size: 0.875rem;
   font-weight: 800;
@@ -16,7 +18,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-info) 30%, transparent);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
@@ -44,8 +46,8 @@
 
 .admin-view-bookings-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.45);
-  color: white;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-info) 45%, transparent);
+  color: #ffffff;
 }
 
 .admin-view-bookings-btn:active {
@@ -72,7 +74,7 @@
   height: 1.5rem;
   padding: 0 0.4375rem;
   background-color: rgba(255, 255, 255, 0.25);
-  color: white;
+  color: #ffffff;
   font-size: 0.75rem;
   font-weight: 800;
   border-radius: 9999px;
@@ -82,44 +84,49 @@
 }
 
 /* ============================================
-   واریانت‌های رنگی (اختیاری)
+   واریانت‌های رنگی
    ============================================ */
 
-/* سبز (اگر خواستید رنگ متفاوت باشد) */
+/* سبز — primary تم */
 .admin-view-bookings-btn.green {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-primary-md);
 }
 
 .admin-view-bookings-btn.green:hover {
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
-/* بنفش */
+/* بنفش — اگر secondary را بنفش تعریف کنید، از تم می‌آید */
+/* در غیر این صورت یک accent ثابت */
 .admin-view-bookings-btn.purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg,
+      var(--color-secondary) 0%,
+      color-mix(in srgb, var(--color-secondary) 80%, #000) 100%);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-secondary) 30%, transparent);
 }
 
 .admin-view-bookings-btn.purple:hover {
-  box-shadow: 0 12px 28px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-secondary) 45%, transparent);
 }
 
 /* ============================================
-   حالت Outline (اختیاری)
+   حالت Outline
    ============================================ */
 .admin-view-bookings-btn.outline {
-  background: white;
-  color: #2563eb;
-  border: 2px solid #3b82f6;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  background: var(--color-bg-card);
+  color: color-mix(in srgb, var(--color-info) 85%, var(--color-text));
+  border: 2px solid var(--color-info);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-info) 15%, transparent);
 }
 
 .admin-view-bookings-btn.outline:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  border-color: #3b82f6;
-  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg,
+      var(--color-info) 0%,
+      color-mix(in srgb, var(--color-info) 80%, #000) 100%);
+  color: #ffffff;
+  border-color: var(--color-info);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--color-info) 40%, transparent);
 }
 
 /* ============================================
@@ -142,5 +149,29 @@
     min-width: 1.25rem;
     height: 1.25rem;
     font-size: 0.6875rem;
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .admin-view-bookings-btn,
+  .admin-view-bookings-btn::before,
+  .admin-view-bookings-btn svg {
+    transition: none;
+  }
+
+  .admin-view-bookings-btn:hover {
+    transform: none;
+  }
+
+  .admin-view-bookings-btn:hover::before {
+    left: -100%;
+  }
+
+  .admin-view-bookings-btn:hover svg {
+    transform: none;
   }
 }

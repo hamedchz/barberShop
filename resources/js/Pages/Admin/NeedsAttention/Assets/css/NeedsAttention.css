@@ -1,6 +1,7 @@
 /* ============================================
-   Attention List
+   Attention List — Dynamic Theme
    ============================================ */
+
 .attention-list {
   display: flex;
   flex-direction: column;
@@ -12,20 +13,29 @@
   align-items: flex-start;
   gap: 0.875rem;
   padding: 0.875rem 1rem;
-  background: #ffffff;
-  border: 1.5px solid #f3f4f6;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 0.875rem;
   transition: all 0.2s;
   text-decoration: none;
-  color: inherit;
+  color: var(--color-text);
   cursor: pointer;
 }
 
 .attention-item:hover {
-  border-color: #ddd6fe;
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.08);
+  background: color-mix(in srgb,
+      var(--color-primary) 3%,
+      var(--color-bg-card));
+  border-color: color-mix(in srgb,
+      var(--color-primary) 30%,
+      var(--color-border));
+  box-shadow: 0 2px 8px color-mix(in srgb,
+      var(--color-primary) 10%,
+      transparent);
   transform: translateX(-2px);
 }
+
+/* ============ آیکون ============ */
 
 .attention-item-icon {
   width: 2.75rem;
@@ -35,7 +45,20 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  transition: all 0.2s;
 }
+
+.attention-item:hover .attention-item-icon {
+  background: color-mix(in srgb,
+      var(--color-primary) 18%,
+      var(--color-bg-card));
+}
+
+/* ============ محتوا ============ */
 
 .attention-item-content {
   flex: 1;
@@ -60,9 +83,11 @@
   flex-wrap: wrap;
   font-size: 0.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   line-height: 1.4;
 }
+
+/* ============ اولویت و نوع ============ */
 
 .attention-item-priority,
 .attention-item-type {
@@ -75,22 +100,28 @@
   white-space: nowrap;
 }
 
+/* ============ تاریخ ============ */
+
 .attention-item-date {
   font-size: 0.625rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
+/* ============ توضیحات ============ */
+
 .attention-item-subtitle {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   line-height: 1.7;
   margin: 0;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
+/* ============ اطلاعات تکمیلی ============ */
 
 .attention-item-meta {
   display: flex;
@@ -105,43 +136,53 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.6875rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .attention-item-meta-item svg {
   flex-shrink: 0;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
+
+/* ============ مبلغ ============ */
 
 .attention-item-meta-item.amount {
   font-weight: 800;
-  color: #5b21b6;
+  color: var(--color-primary);
   font-variant-numeric: tabular-nums;
   direction: ltr;
   unicode-bidi: plaintext;
-  background: #f5f3ff;
+  background: color-mix(in srgb,
+      var(--color-primary) 10%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 15%,
+      var(--color-border));
   padding: 0.125rem 0.5rem;
   border-radius: 9999px;
 }
+
+/* ============ فلش ============ */
 
 .attention-item-arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #d1d5db;
+  color: var(--color-text-muted);
   flex-shrink: 0;
   transition: all 0.15s;
   align-self: center;
 }
 
 .attention-item:hover .attention-item-arrow {
-  color: #8b5cf6;
+  color: var(--color-primary);
   transform: translateX(-3px);
 }
 
 /* ============ Responsive ============ */
+
 @media (max-width: 640px) {
   .attention-item {
     flex-wrap: wrap;
@@ -156,7 +197,18 @@
     width: 100%;
     justify-content: flex-end;
     padding-top: 0.5rem;
-    border-top: 1px dashed #f3f4f6;
+    border-top: 1px dashed var(--color-border);
     margin-top: 0.25rem;
+  }
+}
+
+/* ============ Reduced Motion ============ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .attention-item,
+  .attention-item-icon,
+  .attention-item-arrow {
+    transition: none;
   }
 }

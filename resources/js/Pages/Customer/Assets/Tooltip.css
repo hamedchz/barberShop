@@ -1,11 +1,14 @@
-/* ============ Tooltip Wrapper ============ */
+/* ============================================
+   Tooltip Wrapper
+   ============================================ */
+
 .tooltip-trigger {
   position: relative;
   display: inline-block;
   box-sizing: border-box;
 }
 
-/* فقط Tooltip های مربوط به ساعات رزرو */
+/* Tooltip ساعات رزرو */
 .public-slots-grid>.tooltip-trigger {
   width: 100%;
   min-width: 0;
@@ -18,47 +21,67 @@
   box-sizing: border-box;
 }
 
-/* ============ Tooltip اصلی ============ */
-.tooltip {
+/* ============================================
+   Tooltip Base
+   ============================================ */
+
+.tooltip,
+.tooltip-portal {
   position: absolute;
   z-index: 9999;
   pointer-events: none;
-  animation: tooltipFadeIn 0.2s ease;
   max-width: 260px;
   white-space: normal;
-  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+  animation: tooltipFadeIn 0.2s ease;
 }
 
-/* ============ محتوای Tooltip ============ */
-.tooltip-content {
+/* ============================================
+   Tooltip Content
+   ============================================ */
+
+.tooltip-content,
+.tooltip-portal .tooltip-content {
+  position: relative;
+  box-sizing: border-box;
   padding: 0.5rem 0.875rem;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #ffffff;
+  background: var(--color-secondary);
+  color: var(--color-bg-card);
   font-size: 0.75rem;
   font-weight: 600;
   font-family: inherit;
   line-height: 1.6;
   border-radius: 0.625rem;
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.3),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    0 10px 25px -5px var(--color-shadow),
+    0 4px 6px -2px var(--color-shadow);
   text-align: center;
   direction: rtl;
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb,
+      var(--color-bg-card) 12%,
+      transparent);
 }
 
-/* ============ فلش Tooltip ============ */
-.tooltip-arrow {
+/* ============================================
+   Tooltip Arrow
+   ============================================ */
+
+.tooltip-arrow,
+.tooltip-portal .tooltip-arrow {
   position: absolute;
   width: 0.625rem;
   height: 0.625rem;
-  background-color: #1f2937;
+  background: var(--color-secondary);
   transform: rotate(45deg);
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px -2px var(--color-shadow);
 }
 
-/* ============ موقعیت بالا (پیش‌فرض) ============ */
+/* ============================================
+   Tooltip Positions
+   ============================================ */
+
+/* بالا */
 .tooltip-top {
   bottom: calc(100% + 0.75rem);
   left: 50%;
@@ -71,7 +94,7 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-/* ============ موقعیت پایین ============ */
+/* پایین */
 .tooltip-bottom {
   top: calc(100% + 0.75rem);
   left: 50%;
@@ -84,7 +107,7 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-/* ============ موقعیت راست ============ */
+/* راست */
 .tooltip-right {
   right: calc(100% + 0.75rem);
   top: 50%;
@@ -97,7 +120,7 @@
   transform: translateY(-50%) rotate(45deg);
 }
 
-/* ============ موقعیت چپ ============ */
+/* چپ */
 .tooltip-left {
   left: calc(100% + 0.75rem);
   top: 50%;
@@ -110,7 +133,10 @@
   transform: translateY(-50%) rotate(45deg);
 }
 
-/* ============ انیمیشن ============ */
+/* ============================================
+   Tooltip Animations
+   ============================================ */
+
 @keyframes tooltipFadeIn {
   from {
     opacity: 0;
@@ -123,7 +149,6 @@
   }
 }
 
-/* انیمیشن برای موقعیت‌های دیگر */
 .tooltip-bottom {
   animation: tooltipFadeInBottom 0.2s ease;
 }
@@ -172,240 +197,122 @@
   }
 }
 
-/* ============ واریانت‌های رنگی ============ */
-/* اگر خواستید Tooltip رنگی داشته باشید */
-.tooltip.tooltip-success .tooltip-content {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
+/* ============================================
+   Semantic Color Variants
+   ============================================ */
 
-.tooltip.tooltip-success .tooltip-arrow {
-  background-color: #10b981;
-}
-
-.tooltip.tooltip-danger .tooltip-content {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.tooltip.tooltip-danger .tooltip-arrow {
-  background-color: #ef4444;
-}
-
-.tooltip.tooltip-warning .tooltip-content {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.tooltip.tooltip-warning .tooltip-arrow {
-  background-color: #f59e0b;
-}
-
-.tooltip.tooltip-info .tooltip-content {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.tooltip.tooltip-info .tooltip-arrow {
-  background-color: #3b82f6;
-}
-
-/* ============ Tooltip سبک (Light) ============ */
-.tooltip.tooltip-light .tooltip-content {
-  background-color: #ffffff;
-  color: #1f2937;
-  border: 1px solid #e5e7eb;
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.tooltip.tooltip-light .tooltip-arrow {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-top: none;
-  border-right: none;
-}
-
-/* ============ Tooltip سبز (برای تقویم) ============ */
-.tooltip.tooltip-primary .tooltip-content {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-}
-
-.tooltip.tooltip-primary .tooltip-arrow {
-  background-color: #10b981;
-}
-
-/* ============ ریسپانسیو ============ */
-/* @media (max-width: 640px) {
-  .tooltip-content {
-    font-size: 0.6875rem;
-    padding: 0.4375rem 0.75rem;
-    max-width: 220px;
-  }
-} */
-
-/* ============ Tooltip Portal ============ */
-.tooltip-portal {
-  position: absolute;
-  z-index: 999999;
-  pointer-events: none;
-  animation: tooltipFadeIn 0.2s ease;
-  max-width: 260px;
-  white-space: normal;
-  word-break: break-word;
-}
-
-.tooltip-portal.tooltip-top {
-  transform: translate(-50%, -100%);
-}
-
-.tooltip-portal.tooltip-bottom {
-  transform: translate(-50%, 0);
-}
-
-.tooltip-portal.tooltip-left {
-  transform: translate(-100%, -50%);
-}
-
-.tooltip-portal.tooltip-right {
-  transform: translate(0, -50%);
-}
-
-/* فلش */
-.tooltip-portal .tooltip-arrow {
-  position: absolute;
-  width: 0.625rem;
-  height: 0.625rem;
-  background-color: #1f2937;
-  transform: rotate(45deg);
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-}
-
-.tooltip-portal.tooltip-top .tooltip-arrow {
-  bottom: -0.3125rem;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.tooltip-portal.tooltip-bottom .tooltip-arrow {
-  top: -0.3125rem;
-  left: 50%;
-  transform: translateX(-50%) rotate(45deg);
-}
-
-.tooltip-portal.tooltip-left .tooltip-arrow {
-  right: -0.3125rem;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-}
-
-.tooltip-portal.tooltip-right .tooltip-arrow {
-  left: -0.3125rem;
-  top: 50%;
-  transform: translateY(-50%) rotate(45deg);
-}
-
-/* محتوا */
-.tooltip-portal .tooltip-content {
-  padding: 0.5rem 0.875rem;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #ffffff;
-  font-size: 0.75rem;
-  font-weight: 600;
-  font-family: inherit;
-  line-height: 1.6;
-  border-radius: 0.625rem;
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.3),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  direction: rtl;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* واریانت‌ها */
-.tooltip-portal.tooltip-success .tooltip-content {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-}
-
-.tooltip-portal.tooltip-success .tooltip-arrow {
-  background-color: #10b981;
-}
-
-.tooltip-portal.tooltip-danger .tooltip-content {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.tooltip-portal.tooltip-danger .tooltip-arrow {
-  background-color: #ef4444;
-}
-
-.tooltip-portal.tooltip-warning .tooltip-content {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.tooltip-portal.tooltip-warning .tooltip-arrow {
-  background-color: #f59e0b;
-}
-
-.tooltip-portal.tooltip-info .tooltip-content {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.tooltip-portal.tooltip-info .tooltip-arrow {
-  background-color: #3b82f6;
-}
-
+/* Primary */
+.tooltip-primary .tooltip-content,
 .tooltip-portal.tooltip-primary .tooltip-content {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--gradient-primary);
+  color: #fff;
+  border-color: color-mix(in srgb,
+      var(--color-primary) 35%,
+      transparent);
 }
 
+.tooltip-primary .tooltip-arrow,
 .tooltip-portal.tooltip-primary .tooltip-arrow {
-  background-color: #10b981;
+  background: var(--color-primary);
 }
 
+/* Success */
+.tooltip-success .tooltip-content,
+.tooltip-portal.tooltip-success .tooltip-content {
+  background: var(--color-success);
+  color: #fff;
+  border-color: color-mix(in srgb,
+      var(--color-success) 35%,
+      transparent);
+}
+
+.tooltip-success .tooltip-arrow,
+.tooltip-portal.tooltip-success .tooltip-arrow {
+  background: var(--color-success);
+}
+
+/* Danger */
+.tooltip-danger .tooltip-content,
+.tooltip-portal.tooltip-danger .tooltip-content {
+  background: var(--color-danger);
+  color: #fff;
+  border-color: color-mix(in srgb,
+      var(--color-danger) 35%,
+      transparent);
+}
+
+.tooltip-danger .tooltip-arrow,
+.tooltip-portal.tooltip-danger .tooltip-arrow {
+  background: var(--color-danger);
+}
+
+/* Warning */
+.tooltip-warning .tooltip-content,
+.tooltip-portal.tooltip-warning .tooltip-content {
+  background: var(--color-warning);
+  color: #fff;
+  border-color: color-mix(in srgb,
+      var(--color-warning) 35%,
+      transparent);
+}
+
+.tooltip-warning .tooltip-arrow,
+.tooltip-portal.tooltip-warning .tooltip-arrow {
+  background: var(--color-warning);
+}
+
+/* Info */
+.tooltip-info .tooltip-content,
+.tooltip-portal.tooltip-info .tooltip-content {
+  background: var(--color-info);
+  color: #fff;
+  border-color: color-mix(in srgb,
+      var(--color-info) 35%,
+      transparent);
+}
+
+.tooltip-info .tooltip-arrow,
+.tooltip-portal.tooltip-info .tooltip-arrow {
+  background: var(--color-info);
+}
+
+/* ============================================
+   Light Variant — سازگار با تم
+   ============================================ */
+
+.tooltip-light .tooltip-content,
 .tooltip-portal.tooltip-light .tooltip-content {
-  background-color: #ffffff;
-  color: #1f2937;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 25px -5px var(--color-shadow),
+    0 4px 6px -2px var(--color-shadow);
 }
 
+.tooltip-light .tooltip-arrow,
 .tooltip-portal.tooltip-light .tooltip-arrow {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
 }
 
-/* انیمیشن */
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-  }
+/* ============================================
+   Tooltip Portal
+   ============================================ */
 
-  to {
-    opacity: 1;
-  }
-}
-
-```css
-
-/* ============ Tooltip Portal ============ */
 .tooltip-portal {
   position: fixed !important;
   z-index: 2147483647 !important;
   pointer-events: none;
-
   max-width: 280px;
   width: max-content;
   box-sizing: border-box;
-
   white-space: normal;
   overflow-wrap: anywhere;
-
   animation: tooltipPortalFadeIn 0.2s ease;
 }
 
-/* موقعیت Tooltip */
+/* موقعیت Portal */
 .tooltip-portal.tooltip-top {
   transform: translate(-50%, -100%);
 }
@@ -422,63 +329,32 @@
   transform: translate(0, -50%);
 }
 
-/* محتوای Tooltip */
-.tooltip-portal .tooltip-content {
-  position: relative;
-  box-sizing: border-box;
-
-  padding: 0.5rem 0.875rem;
-  border-radius: 0.625rem;
-
-  background: linear-gradient(135deg,
-      #1f2937 0%,
-      #111827 100%);
-
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.6;
-  text-align: center;
-  direction: rtl;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.3),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
-}
-
-/* فلش */
-.tooltip-portal .tooltip-arrow {
-  position: absolute;
-
-  width: 0.625rem;
-  height: 0.625rem;
-
-  background: #1f2937;
-  transform: rotate(45deg);
-
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-}
-
+/* فلش Portal */
 .tooltip-portal.tooltip-top .tooltip-arrow {
   bottom: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
 }
 
 .tooltip-portal.tooltip-bottom .tooltip-arrow {
   top: -0.3125rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
 }
 
 .tooltip-portal.tooltip-left .tooltip-arrow {
   right: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .tooltip-portal.tooltip-right .tooltip-arrow {
   left: -0.3125rem;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
 }
 
-/* انیمیشن بدون تغییر transform موقعیت */
+/* انیمیشن مستقل Portal */
 @keyframes tooltipPortalFadeIn {
   from {
     opacity: 0;
@@ -489,4 +365,32 @@
   }
 }
 
-```
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 640px) {
+
+  .tooltip,
+  .tooltip-portal {
+    max-width: 220px;
+  }
+
+  .tooltip-content,
+  .tooltip-portal .tooltip-content {
+    font-size: 0.6875rem;
+    padding: 0.4375rem 0.75rem;
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .tooltip,
+  .tooltip-portal {
+    animation: none !important;
+  }
+}

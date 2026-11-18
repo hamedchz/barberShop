@@ -27,6 +27,7 @@ import {
     Info,
     Lock,
     Users,
+    User,
 } from "lucide-react";
 
 // ============ نقشه وضعیت کاربران ============
@@ -482,22 +483,10 @@ export default function AdminsIndex({
                 {/* ============ حالت خالی ============ */}
                 {sortedBarbers.length === 0 && (
                     <div className="card" style={{ padding: "3rem" }}>
-                        <EmptyList
-                            title={
-                                filters?.only_online
-                                    ? "هیچ آرایشگری آنلاین نیست"
-                                    : hasActiveFilters
-                                      ? "نتیجه‌ای یافت نشد"
-                                      : "آرایشگری پیدا نشد"
-                            }
-                            message={
-                                filters?.only_online
-                                    ? "در حال حاضر هیچ آرایشگری آنلاین نیست."
-                                    : hasActiveFilters
-                                      ? "هیچ آرایشگری با فیلترهای انتخاب شده مطابقت ندارد."
-                                      : "در حال حاضر هیچ آرایشگری در سیستم ثبت نشده است."
-                            }
-                        />
+                        <div className="empty-state">
+                            <User size={48} />
+                            <p>آرایشگری یافت نشد.</p>
+                        </div>
                     </div>
                 )}
 

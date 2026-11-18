@@ -15,6 +15,7 @@ import {
     TrendingUp,
     Users,
     X,
+    User,
 } from "lucide-react";
 import { toPersianNumber } from "../../../utils/persianNumbers";
 
@@ -192,18 +193,10 @@ export default function BarbersIndex({
                     {/* گرید یا لیست آرایشگران */}
                     {finalBarbers.length === 0 ? (
                         <div className="card" style={{ padding: "3rem" }}>
-                            <EmptyList
-                                title={
-                                    hasActiveFilters
-                                        ? "نتیجه‌ای یافت نشد"
-                                        : "آرایشگری پیدا نشد"
-                                }
-                                message={
-                                    hasActiveFilters
-                                        ? "هیچ آرایشگری با فیلترهای انتخاب شده مطابقت ندارد."
-                                        : "در حال حاضر هیچ آرایشگری در سیستم ثبت نشده است."
-                                }
-                            />
+                            <div className="empty-state">
+                                <User size={48} />
+                                <p>آرایشگری یافت نشد.</p>
+                            </div>
                         </div>
                     ) : (
                         <div

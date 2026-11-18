@@ -8,28 +8,33 @@
 }
 
 .payment-gateway-card {
-  background: #ffffff;
-  border: 1.5px solid #f3f4f6;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: 1.25rem;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  color: var(--color-text);
 }
 
 .payment-gateway-card:hover {
-  border-color: #ddd6fe;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.08);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 16px color-mix(in srgb,
+      var(--color-primary) 12%,
+      transparent);
   transform: translateY(-2px);
 }
 
 .payment-gateway-card.inactive {
   opacity: 0.7;
-  background: #f9fafb;
+  background: var(--color-bg);
 }
 
-/* هدر */
+/* ============================================
+   Header
+   ============================================ */
 .payment-gateway-card-header {
   display: flex;
   align-items: center;
@@ -40,8 +45,10 @@
   width: 3rem;
   height: 3rem;
   border-radius: 0.875rem;
-  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-  color: #5b21b6;
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-primary) 10%, var(--color-bg-card)),
+      color-mix(in srgb, var(--color-primary) 18%, var(--color-bg-card)));
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +66,7 @@
 .payment-gateway-title h3 {
   font-size: 0.9375rem;
   font-weight: 800;
-  color: #1f2937;
+  color: var(--color-text);
   margin: 0;
 }
 
@@ -69,6 +76,9 @@
   flex-wrap: wrap;
 }
 
+/* ============================================
+   Badges
+   ============================================ */
 .gateway-badge {
   display: inline-flex;
   align-items: center;
@@ -81,28 +91,41 @@
 }
 
 .gateway-badge.active {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: color-mix(in srgb,
+      var(--color-success) 12%,
+      var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb,
+      var(--color-success) 35%,
+      var(--color-border));
 }
 
 .gateway-badge.inactive {
-  background: #f3f4f6;
-  color: #6b7280;
-  border-color: #e5e7eb;
+  background: var(--color-bg-hover);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
 }
 
 .gateway-badge.mode {
-  border: 1px solid;
+  background: color-mix(in srgb,
+      var(--color-info) 10%,
+      var(--color-bg-card));
+  color: var(--color-info);
+  border-color: color-mix(in srgb,
+      var(--color-info) 30%,
+      var(--color-border));
 }
 
-/* اطلاعات */
+/* ============================================
+   Information
+   ============================================ */
 .payment-gateway-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #f9fafb;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
   border-radius: 0.625rem;
 }
 
@@ -118,17 +141,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  color: #6b7280;
+  color: var(--color-text-muted);
   font-weight: 700;
 }
 
 .payment-gateway-label svg {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .payment-gateway-value {
   font-weight: 700;
-  color: #1f2937;
+  color: var(--color-text);
 }
 
 .payment-gateway-value.ltr {
@@ -137,7 +160,9 @@
   font-size: 0.6875rem;
 }
 
-/* اکشن‌ها */
+/* ============================================
+   Actions
+   ============================================ */
 .payment-gateway-actions {
   display: flex;
   gap: 0.5rem;
@@ -156,57 +181,76 @@
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
   text-decoration: none;
   border: 1.5px solid;
 }
 
+/* Edit */
 .payment-gateway-btn.edit {
-  background: #f5f3ff;
-  color: #5b21b6;
-  border-color: #ddd6fe;
+  background: color-mix(in srgb,
+      var(--color-primary) 10%,
+      var(--color-bg-card));
+  color: var(--color-primary);
+  border-color: color-mix(in srgb,
+      var(--color-primary) 30%,
+      var(--color-border));
 }
 
 .payment-gateway-btn.edit:hover {
-  background: #8b5cf6;
+  background: var(--color-primary);
   color: #ffffff;
-  border-color: #8b5cf6;
+  border-color: var(--color-primary);
 }
 
+/* Activate */
 .payment-gateway-btn.toggle.activate {
-  background: #ecfdf5;
-  color: #065f46;
-  border-color: #a7f3d0;
+  background: color-mix(in srgb,
+      var(--color-success) 10%,
+      var(--color-bg-card));
+  color: var(--color-success);
+  border-color: color-mix(in srgb,
+      var(--color-success) 30%,
+      var(--color-border));
 }
 
 .payment-gateway-btn.toggle.activate:hover {
-  background: #10b981;
+  background: var(--color-success);
   color: #ffffff;
-  border-color: #10b981;
+  border-color: var(--color-success);
 }
 
+/* Deactivate */
 .payment-gateway-btn.toggle.deactivate {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: color-mix(in srgb,
+      var(--color-danger) 10%,
+      var(--color-bg-card));
+  color: var(--color-danger);
+  border-color: color-mix(in srgb,
+      var(--color-danger) 30%,
+      var(--color-border));
 }
 
 .payment-gateway-btn.toggle.deactivate:hover {
-  background: #ef4444;
+  background: var(--color-danger);
   color: #ffffff;
-  border-color: #ef4444;
+  border-color: var(--color-danger);
 }
 
-/* فرم */
+/* ============================================
+   Form Hint
+   ============================================ */
 .form-hint {
   font-size: 0.6875rem;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 600;
   margin-top: 0.25rem;
   line-height: 1.6;
 }
 
-/* Responsive */
+/* ============================================
+   Responsive
+   ============================================ */
 @media (max-width: 640px) {
   .payment-gateways-grid {
     grid-template-columns: 1fr;
@@ -214,5 +258,20 @@
 
   .filters-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  .payment-gateway-card,
+  .payment-gateway-btn {
+    transition: none;
+  }
+
+  .payment-gateway-card:hover {
+    transform: none;
   }
 }

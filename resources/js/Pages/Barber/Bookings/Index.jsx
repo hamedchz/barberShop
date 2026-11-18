@@ -568,18 +568,10 @@ export default function BookingsIndex({ auth, bookings, stats, filters }) {
                 {/* ============ لیست رزروها ============ */}
                 {bookingsList.length === 0 ? (
                     <div className="card" style={{ padding: "3rem" }}>
-                        <EmptyList
-                            title={
-                                hasActiveFilters
-                                    ? "نتیجه‌ای یافت نشد"
-                                    : "هنوز رزروی ثبت نشده است"
-                            }
-                            message={
-                                hasActiveFilters
-                                    ? "هیچ رزروی با فیلترهای انتخاب شده مطابقت ندارد."
-                                    : "به زودی مشتریان می‌توانند از شما نوبت بگیرند."
-                            }
-                        />
+                        <div className="empty-state">
+                            <Calendar size={48} />
+                            <p>رزروی یافت نشد.</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="barber-bookings-list">

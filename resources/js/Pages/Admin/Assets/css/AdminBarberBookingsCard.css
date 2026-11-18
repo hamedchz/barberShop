@@ -1,161 +1,838 @@
 /* ============================================
-   نشانگر اعتراض بالای کارت رزرو (پنل ادمین)
+   Admin Barber Booking Card
+   Dynamic Theme + Color Mix
    ============================================ */
-.admin-booking-dispute-indicator {
+
+.admin-booking-card {
+  --booking-accent: var(--color-primary);
+
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.625rem 0.875rem;
-  margin: 0.75rem 0.75rem 0;
-  border: 1.5px solid;
-  border-radius: 0.875rem;
-  text-decoration: none;
-  transition: all 0.2s;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
+
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+
+  box-shadow: 0 3px 14px color-mix(in srgb,
+      var(--color-text) 4%,
+      transparent);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.admin-booking-dispute-indicator:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.admin-booking-card:hover {
+  border-color: color-mix(in srgb,
+      var(--booking-accent) 35%,
+      var(--color-border));
+
+  box-shadow: 0 8px 24px color-mix(in srgb,
+      var(--color-text) 8%,
+      transparent);
+
+  transform: translateY(-2px);
 }
 
-.admin-booking-dispute-indicator.is-finalized {
-  opacity: 0.85;
-}
+/* ============================================
+   Status Accent
+   ============================================ */
 
-/* نوار رنگی کنار */
-.admin-booking-dispute-indicator .dispute-indicator-accent {
+.admin-booking-card-stripe {
   position: absolute;
-  right: 0;
   top: 0;
-  bottom: 0;
-  width: 4px;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background: var(--booking-accent);
 }
 
-/* آیکون */
-.admin-booking-dispute-indicator .dispute-indicator-icon {
-  width: 1.875rem;
-  height: 1.875rem;
-  border-radius: 0.625rem;
-  display: flex;
+.admin-booking-card.status-pending {
+  --booking-accent: var(--color-warning);
+}
+
+.admin-booking-card.status-confirmed {
+  --booking-accent: var(--color-success);
+}
+
+.admin-booking-card.status-completed {
+  --booking-accent: var(--color-info);
+}
+
+.admin-booking-card.status-cancelled {
+  --booking-accent: var(--color-danger);
+}
+
+.admin-booking-card.today {
+  border-color: color-mix(in srgb,
+      var(--color-warning) 35%,
+      var(--color-border));
+}
+
+/* ============================================
+   Today Badge
+   ============================================ */
+
+.admin-today-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1.5px solid;
+  gap: 5px;
+
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  z-index: 2;
+
+  padding: 5px 9px;
+  border-radius: 7px;
+
+  color: var(--color-warning);
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
+
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.admin-booking-content {
+  display: grid;
+  grid-template-columns:
+    minmax(190px, 0.85fr) minmax(0, 2fr) minmax(190px, 0.9fr);
+
+  align-items: stretch;
+  gap: 1.25rem;
+
+  padding: 1.35rem 1.5rem;
+  padding-right: 1.75rem;
+}
+
+/* ============================================
+   Customer
+   ============================================ */
+
+.admin-booking-customer {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+
+  min-width: 0;
+  padding: 0.5rem 0;
+}
+
+.admin-customer-avatar-wrapper {
+  position: relative;
   flex-shrink: 0;
 }
 
-/* محتوا */
-.admin-booking-dispute-indicator .dispute-indicator-content {
+.admin-customer-avatar {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+  border-radius: 1rem;
+
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.admin-customer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-customer-avatar-status {
+  position: absolute;
+  left: -3px;
+  bottom: -3px;
+
+  width: 13px;
+  height: 13px;
+
+  border: 3px solid var(--color-bg-card);
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.admin-customer-info {
   display: flex;
   flex-direction: column;
-  gap: 0.1875rem;
+  align-items: flex-start;
+  gap: 0.4rem;
+
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-customer-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.admin-customer-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.admin-customer-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  max-width: 100%;
+  color: var(--color-text-muted);
+
+  font-size: 0.72rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.admin-customer-contact svg {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.admin-customer-contact:hover {
+  color: var(--color-primary);
+}
+
+.admin-customer-email {
+  direction: ltr;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================
+   Booking Details
+   ============================================ */
+
+.admin-booking-details {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+
+  padding: 0 1.25rem;
+
+  border-right: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
+}
+
+.admin-booking-service {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  min-width: 0;
+}
+
+.admin-detail-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.admin-detail-icon-box {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 0.75rem;
+}
+
+.admin-detail-icon-box.service-icon {
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.admin-detail-label {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.admin-detail-value {
+  max-width: 100%;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.admin-detail-value.service-name {
+  font-size: 0.88rem;
+}
+
+.admin-detail-subtext {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  color: var(--color-text-muted);
+  font-size: 0.67rem;
+}
+
+.admin-booking-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.admin-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.admin-detail-icon-box.date-icon {
+  color: var(--color-info);
+  background: color-mix(in srgb,
+      var(--color-info) 11%,
+      var(--color-bg-card));
+}
+
+.admin-detail-icon-box.time-icon {
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.admin-detail-icon-box.price-icon {
+  color: var(--color-success);
+  background: color-mix(in srgb,
+      var(--color-success) 11%,
+      var(--color-bg-card));
+}
+
+.admin-relative-time {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.admin-relative-time.today {
+  color: var(--color-warning);
+}
+
+.admin-relative-time.tomorrow,
+.admin-relative-time.future {
+  color: var(--color-success);
+}
+
+.admin-relative-time.past {
+  color: var(--color-text-muted);
+}
+
+.price-value {
+  color: var(--color-success);
+  white-space: nowrap;
+}
+
+.price-value small {
+  margin-right: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+/* ============================================
+   Actions / Status
+   ============================================ */
+
+.admin-booking-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+
+  min-width: 0;
+  padding: 0.25rem 0;
+}
+
+.admin-booking-statuses {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-status-badge,
+.admin-payment-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-height: 29px;
+  padding: 0.35rem 0.6rem;
+
+  border-radius: 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-status-badge.status-badge-pending {
+  color: var(--color-warning);
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-warning) 25%,
+      transparent);
+}
+
+.admin-status-badge.status-badge-confirmed {
+  color: var(--color-success);
+  background: color-mix(in srgb,
+      var(--color-success) 12%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-success) 25%,
+      transparent);
+}
+
+.admin-status-badge.status-badge-completed {
+  color: var(--color-info);
+  background: color-mix(in srgb,
+      var(--color-info) 12%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-info) 25%,
+      transparent);
+}
+
+.admin-status-badge.status-badge-cancelled {
+  color: var(--color-danger);
+  background: color-mix(in srgb,
+      var(--color-danger) 12%,
+      var(--color-bg-card));
+  border: 1px solid color-mix(in srgb,
+      var(--color-danger) 25%,
+      transparent);
+}
+
+/* Payment */
+.admin-payment-badge {
+  color: var(--color-text-muted);
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+}
+
+.admin-payment-badge.payment-success {
+  color: var(--color-success);
+  background: color-mix(in srgb,
+      var(--color-success) 10%,
+      var(--color-bg-card));
+}
+
+.admin-payment-badge.payment-pending {
+  color: var(--color-warning);
+  background: color-mix(in srgb,
+      var(--color-warning) 10%,
+      var(--color-bg-card));
+}
+
+.admin-payment-badge.payment-failed {
+  color: var(--color-danger);
+  background: color-mix(in srgb,
+      var(--color-danger) 10%,
+      var(--color-bg-card));
+}
+
+.admin-payment-badge.payment-refunded {
+  color: var(--color-info);
+  background: color-mix(in srgb,
+      var(--color-info) 10%,
+      var(--color-bg-card));
+}
+
+/* ============================================
+   Booking Footer
+   ============================================ */
+
+.admin-booking-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.admin-booking-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+}
+
+.admin-booking-code strong {
+  color: var(--color-text);
+  font-weight: 900;
+}
+
+.admin-booking-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  width: 100%;
+  min-height: 40px;
+  padding: 0 0.8rem;
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 25%,
+      transparent);
+  border-radius: 0.7rem;
+
+  color: var(--color-primary);
+  background: var(--color-primary-tint);
+
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.admin-booking-view-btn:hover {
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ============================================
+   Dispute Indicator
+   ============================================ */
+
+.admin-booking-dispute-indicator {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  padding-right: 1.25rem;
+
+  color: var(--color-text);
+  background: color-mix(in srgb,
+      var(--color-warning) 7%,
+      var(--color-bg-card));
+
+  border-bottom: 1px solid var(--color-border);
+  text-decoration: none;
+
+  transition: background-color 0.2s ease;
+}
+
+.admin-booking-dispute-indicator:hover {
+  background: color-mix(in srgb,
+      var(--color-warning) 12%,
+      var(--color-bg-card));
+}
+
+.dispute-indicator-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 0.7rem;
+  color: var(--color-warning);
+  background: color-mix(in srgb,
+      var(--color-warning) 13%,
+      var(--color-bg-card));
+}
+
+.dispute-indicator-content {
   flex: 1;
   min-width: 0;
 }
 
-.admin-booking-dispute-indicator .dispute-indicator-title {
+.dispute-indicator-title,
+.dispute-indicator-meta {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
   flex-wrap: wrap;
+  gap: 0.45rem;
 }
 
-.admin-booking-dispute-indicator .dispute-indicator-label {
-  font-size: 0.75rem;
-  font-weight: 800;
+.dispute-indicator-title strong {
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
-.admin-booking-dispute-indicator .dispute-indicator-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0 0.375rem;
-  border-radius: 9999px;
-  font-size: 0.625rem;
-  font-weight: 800;
-  direction: ltr;
+.dispute-indicator-count {
+  padding: 2px 6px;
+  border-radius: 5px;
+  color: var(--color-warning);
+  background: color-mix(in srgb,
+      var(--color-warning) 14%,
+      var(--color-bg-card));
+  font-size: 0.65rem;
+  font-weight: 900;
 }
 
-/* نقطه ضربان برای اعتراض فعال */
-.admin-booking-dispute-indicator .dispute-indicator-active-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+.dispute-indicator-active-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #ef4444;
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  animation: disputePulse 2s infinite;
+  background: var(--color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--color-danger) 13%,
+      transparent);
 }
 
-@keyframes disputePulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+.dispute-indicator-meta {
+  margin-top: 5px;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
 }
 
-/* متادیتا */
-.admin-booking-dispute-indicator .dispute-indicator-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.6875rem;
-  color: #6b7280;
-  font-weight: 600;
+.dispute-indicator-separator {
+  color: var(--color-text-muted);
 }
 
-.admin-booking-dispute-indicator .dispute-indicator-type {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.admin-booking-dispute-indicator .dispute-indicator-separator {
-  color: #d1d5db;
-}
-
-.admin-booking-dispute-indicator .dispute-indicator-status {
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-/* دکمه مشاهده */
-.admin-booking-dispute-indicator .dispute-indicator-action {
+.dispute-indicator-action {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.75);
-  color: #6b7280;
+  gap: 5px;
+
   flex-shrink: 0;
-  transition: all 0.2s;
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 800;
 }
 
-.admin-booking-dispute-indicator:hover .dispute-indicator-action {
-  background: #ffffff;
-  color: #1f2937;
-  transform: scale(1.05);
+/* Dispute state colors */
+.admin-booking-dispute-indicator.dispute-pending {
+  --dispute-color: var(--color-warning);
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .admin-booking-dispute-indicator {
-    margin: 0.625rem 0.625rem 0;
-    padding: 0.5rem 0.75rem;
+.admin-booking-dispute-indicator.dispute-investigating {
+  --dispute-color: var(--color-info);
+}
+
+.admin-booking-dispute-indicator.dispute-awaiting_response {
+  --dispute-color: var(--color-warning);
+}
+
+.admin-booking-dispute-indicator.dispute-resolved {
+  --dispute-color: var(--color-success);
+}
+
+.admin-booking-dispute-indicator.dispute-rejected {
+  --dispute-color: var(--color-danger);
+}
+
+.admin-booking-dispute-indicator.dispute-cancelled {
+  --dispute-color: var(--color-text-muted);
+}
+
+.admin-booking-dispute-indicator .dispute-indicator-icon {
+  color: var(--dispute-color);
+  background: color-mix(in srgb,
+      var(--dispute-color) 12%,
+      var(--color-bg-card));
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 1100px) {
+  .admin-booking-content {
+    grid-template-columns:
+      minmax(170px, 0.8fr) minmax(0, 1.8fr) minmax(170px, 0.8fr);
+
+    gap: 0.85rem;
+    padding: 1.2rem;
+    padding-right: 1.45rem;
   }
 
-  .admin-booking-dispute-indicator .dispute-indicator-meta {
-    font-size: 0.625rem;
+  .admin-booking-details {
+    padding: 0 0.85rem;
+  }
+
+  .admin-booking-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .admin-booking-content {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: 1rem;
+  }
+
+  .admin-booking-customer {
+    grid-column: 1 / -1;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin-booking-details {
+    border: 0;
+    padding: 0;
+  }
+
+  .admin-booking-actions {
+    border-right: 1px solid var(--color-border);
+    padding-right: 1rem;
+  }
+
+  .admin-booking-footer {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-booking-card {
+    border-radius: 1rem;
+  }
+
+  .admin-booking-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    padding-right: 1.25rem;
+  }
+
+  .admin-booking-customer {
+    padding-bottom: 1rem;
+  }
+
+  .admin-customer-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 0.85rem;
+  }
+
+  .admin-customer-name {
+    font-size: 0.85rem;
+  }
+
+  .admin-booking-details {
+    gap: 0.85rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .admin-booking-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 0.5rem;
+  }
+
+  .admin-detail-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.65rem;
+  }
+
+  .admin-detail-value {
+    font-size: 0.74rem;
+  }
+
+  .admin-booking-actions {
+    border: 0;
+    padding: 0;
+    gap: 0.85rem;
+  }
+
+  .admin-booking-statuses {
+    gap: 0.4rem;
+  }
+
+  .admin-booking-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .admin-booking-view-btn {
+    width: auto;
+    min-width: 145px;
+  }
+
+  .admin-booking-dispute-indicator {
+    padding: 0.75rem;
+  }
+
+  .dispute-indicator-action {
+    font-size: 0;
+  }
+
+  .dispute-indicator-action svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .admin-today-badge {
+    top: 10px;
+    left: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .admin-booking-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-booking-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-booking-view-btn {
+    width: 100%;
+  }
+
+  .admin-today-badge {
+    position: static;
+    width: fit-content;
+    margin: 0.7rem 1rem 0;
   }
 }

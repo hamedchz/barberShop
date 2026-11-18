@@ -85,80 +85,71 @@ export default function BarberBookings({
             icon: XCircle,
         },
     ];
+    // ============ ارسال فیلترها به بک‌اند ============
 
+    const applyFilters = (overrides = {}, options = {}) => {
+        const params = {
+            status: filters?.status || "",
+            search: searchTerm || "",
+            sort: filters?.sort || "latest",
+            date_from: dateFrom || "",
+            date_to: dateTo || "",
+            page: 1,
+            ...overrides,
+        };
+
+        Object.keys(params).forEach((key) => {
+            if (
+                params[key] === "" ||
+                params[key] === null ||
+                params[key] === undefined
+            ) {
+                delete params[key];
+            }
+        });
+        console.log(barber.slug);
+        router.get(`/admin/bookings/barber/${barber.slug}`, params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onFinish: options.onFinish,
+        });
+    };
     // ============ تغییر وضعیت ============
     const handleStatusFilter = (status) => {
-        router.get(
-            `/admin/barbers/${barber.id}/bookings`,
-            {
-                status: status,
-                search: searchTerm,
-                sort: filters?.sort,
-                date_from: dateFrom,
-                date_to: dateTo,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
+        applyFilters({ status });
     };
 
     // ============ جستجو ============
     const handleSearch = (term) => {
         setIsSearching(true);
-        router.get(
-            `/admin/barbers/${barber.id}/bookings`,
-            {
-                status: filters?.status,
-                search: term,
-                sort: filters?.sort,
-                date_from: dateFrom,
-                date_to: dateTo,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                onFinish: () => setIsSearching(false),
-            },
+
+        applyFilters(
+            { search: term },
+            { onFinish: () => setIsSearching(false) },
         );
     };
 
     // ============ فیلتر تاریخ ============
     const handleDateFilter = () => {
-        router.get(
-            `/admin/barbers/${barber.id}/bookings`,
-            {
-                status: filters?.status,
-                search: searchTerm,
-                sort: filters?.sort,
-                date_from: dateFrom,
-                date_to: dateTo,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
+        applyFilters({
+            date_from: dateFrom,
+            date_to: dateTo,
+        });
     };
-
     // ============ پاک کردن فیلترها ============
     const handleClearFilters = () => {
         setSearchTerm("");
         setDateFrom("");
         setDateTo("");
-        router.get(
-            `/admin/barbers/${barber.id}/bookings`,
-            {},
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
+
+        applyFilters({
+            status: "",
+            search: "",
+            sort: "latest",
+            date_from: "",
+            date_to: "",
+        });
     };
 
     return (
@@ -166,14 +157,6 @@ export default function BarberBookings({
             <Head title={`رزروهای ${barber.name}`} />
 
             <div className="center-column">
-                {/* ============ دکمه بازگشت ============ */}
-                <div className="page-header-with-back">
-                    <Link href="/admin/barbers" className="back-btn">
-                        <ArrowRight size={20} />
-                        <span>بازگشت به لیست آرایشگران</span>
-                    </Link>
-                </div>
-
                 {/* ============ کارت پروفایل آرایشگر ============ */}
                 <div className="barber-info-card-admin">
                     <div className="barber-info-card-header">
@@ -255,14 +238,19 @@ export default function BarberBookings({
                                 )}
                             </div>
                         </div>
-
-                        <Link
-                            href={`/admin/barbers/${barber.id}`}
-                            className="barber-info-view-btn"
-                        >
-                            <Eye size={16} />
-                            پروفایل کامل
-                        </Link>
+                        <div className="flex gap-3 items-center flex-wrap">
+                            <Link
+                                href={`/admin/barbers/${barber.id}`}
+                                className="barber-info-view-btn"
+                            >
+                                <Eye size={16} />
+                                پروفایل کامل
+                            </Link>
+                            <Link href="/admin/barbers" className="back-btn">
+                                <ArrowRight size={20} />
+                                <span>بازگشت به لیست آرایشگران</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -431,18 +419,10 @@ export default function BarberBookings({
                 {/* ============ لیست رزروها ============ */}
                 {bookingsList.length === 0 ? (
                     <div className="card" style={{ padding: "3rem" }}>
-                        <EmptyList
-                            title={
-                                hasActiveFilters
-                                    ? "نتیجه‌ای یافت نشد"
-                                    : "رزروی ثبت نشده است"
-                            }
-                            message={
-                                hasActiveFilters
-                                    ? "هیچ رزروی با فیلترهای انتخاب شده مطابقت ندارد."
-                                    : "این آرایشگر هنوز رزروی دریافت نکرده است."
-                            }
-                        />
+                        <div className="empty-state">
+                            <Calendar size={48} />
+                            <p>رزروی یافت نشد.</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="admin-bookings-list">
