@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enums\Casts\Permissions;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -11,32 +10,54 @@ use Spatie\Permission\PermissionRegistrar;
 
 class PermisionsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // foreach (Permissions::toArray() as $key => $value) {
-        //     Permission::create([
-        //         'name' => $value,
-        //         'guard_name' => 'web'
-        //     ]);
-        // }
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // ایجاد و به‌روزرسانی توضیحات Permissionها
         foreach (Permissions::cases() as $permission) {
-            Permission::query()
-                ->where('name', $permission->value)
-                ->update([
+            Permission::query()->updateOrCreate(
+                [
+                    'name' => $permission->value,
+                    'guard_name' => 'web',
+                ],
+                [
                     'description' => $permission->description(),
-                ]);
+                ]
+            );
         }
 
-        $superAdmin = Role::firstOrCreate(['name' => 'سوپر ادمین', 'guard_name' => 'web',]);
-        $barber = Role::firstOrCreate(['name' => 'آرایشگر', 'guard_name' => 'web',]);
-        $barber = Role::firstOrCreate(['name' => 'مشتری', 'guard_name' => 'web',]);
-        $superAdmin->syncPermissions(Permission::where('guard_name', 'web')->get());
-        $barber->syncPermissions(['barber-dashboard-panel',]); // Reset cache again
-        $barber->syncPermissions(['customer-dashboard-panel',]); // Reset cache again
+        // ایجاد نقش‌ها
+        $superAdmin = Role::firstOrCreate([
+            'name' => 'سوپر ادمین',
+            'guard_name' => 'web',
+        ]);
+
+        $barber = Role::firstOrCreate([
+            'name' => 'آرایشگر',
+            'guard_name' => 'web',
+        ]);
+
+        $customer = Role::firstOrCreate([
+            'name' => 'مشتری',
+            'guard_name' => 'web',
+        ]);
+
+        // تمام دسترسی‌ها برای سوپر ادمین
+        $superAdmin->syncPermissions(
+            Permission::where('guard_name', 'web')->get()
+        );
+
+        // دسترسی آرایشگر
+        $barber->syncPermissions([
+            'barber-dashboard-panel',
+        ]);
+
+        // دسترسی مشتری
+        $customer->syncPermissions([
+            'customer-dashboard-panel',
+        ]);
+
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }

@@ -250,7 +250,7 @@ export default function CustomersIndex({ customers, stats, filters = {} }) {
                                     className="btn-ghost"
                                     onClick={clearFilters}
                                 >
-                                    <RotateCcw size={14} />
+                                    {/* <RotateCcw size={14} /> */}
                                     پاک کردن فیلترها
                                 </button>
                             )}

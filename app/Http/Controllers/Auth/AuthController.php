@@ -20,6 +20,7 @@ class AuthController extends Controller
 
     public function store(Request $request)
     {
+
         $credentials = $request->validate([
             'phone'    => ['required', 'string', 'regex:/^09\d{9}$/'],
             'password' => ['required', 'string', 'min:8'],

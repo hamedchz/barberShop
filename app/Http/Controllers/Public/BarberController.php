@@ -102,7 +102,7 @@ class BarberController extends Controller
     public function show(User $barber)
     {
         abort_unless(
-            $barber->hasRole('آرایشگر') && $barber->status->value === UserStatus::ACTIVE->value,
+            $barber->hasRole(User::ROLE_BARBER) && $barber->status->value === UserStatus::ACTIVE->value,
             404
         );
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Services\BarberBookingSetupService;
 use Closure;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class EnsureBarberBookingSetupCompleted
         $user = $request->user();
 
         // فقط برای آرایشگر اجرا شود
-        if (!$user || !$user->hasRole('آرایشگر')) {
+        if (!$user || !$user->hasRole(User::ROLE_BARBER)) {
             return $next($request);
         }
 

@@ -18,7 +18,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password'])]
+// #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -120,7 +120,7 @@ class User extends Authenticatable
                 : route('admin.barbers.show', $this->id),
 
             'customer'    => route('admin.customers.show', $this->id),
-            'super_admin' => route('admin.users.show', $this->id),
+            'super_admin' => "",
             default       => null,
         };
     }

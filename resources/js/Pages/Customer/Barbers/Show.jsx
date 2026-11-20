@@ -5,7 +5,7 @@ import HorizontalCalendar from "../Components/HorizontalCalendar";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../Components/RatingStars";
 import Tooltip from "../Components/Tooltip";
-
+import BookingAuthModal from "./Components/BookingAuthModal";
 import {
     ArrowRight,
     Star,
@@ -98,9 +98,10 @@ export default function BarbersShow({
     availabilities = [],
     slotsByDate = {},
     reviews = [],
+    holidays = {},
 }) {
     // ============ State ============
-
+    const [showAuthModal, setShowAuthModal] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState(
         () => services[0]?.id || null,
     );
@@ -168,6 +169,10 @@ export default function BarbersShow({
         getFirstAvailableDate(),
     );
 
+    const selectedService = services.find(
+        (service) => String(service.id) === String(selectedServiceId),
+    );
+
     const isLoggedIn = !!auth?.user;
 
     // ============ تاریخ میلادی به فرمت YYYY-MM-DD ============
@@ -197,7 +202,7 @@ export default function BarbersShow({
 
     // ============ هندلرها ============
     const handleSelectService = (serviceId) => {
-        if (selectedServiceId === serviceId) return;
+        if (String(selectedServiceId) === String(serviceId)) return;
 
         setSelectedServiceId(serviceId);
         setSelectedSlot(null);
@@ -208,25 +213,16 @@ export default function BarbersShow({
     };
 
     const openBookingModal = () => {
-        if (!selectedSlot) return;
+        if (!selectedServiceId) {
+            return;
+        }
+
+        if (!selectedSlot) {
+            return;
+        }
 
         if (!isLoggedIn) {
-            if (
-                confirm(
-                    "برای رزرو نوبت باید وارد حساب خود شوید. آیا می‌خواهید به صفحه ورود بروید؟",
-                )
-            ) {
-                sessionStorage.setItem(
-                    "pending_booking",
-                    JSON.stringify({
-                        time_slot_id: selectedSlot.id,
-                        barber_id: barber.id,
-                    }),
-                );
-
-                window.location.href = "/login";
-            }
-
+            setShowAuthModal(true);
             return;
         }
 
@@ -235,7 +231,6 @@ export default function BarbersShow({
             isLoading: false,
         });
     };
-
     const handleConfirmBooking = () => {
         if (!selectedSlot) return;
 
@@ -291,6 +286,105 @@ export default function BarbersShow({
         return slotDate < currentTime;
     };
 
+    const handleLogin = () => {
+        if (!selectedSlot || !selectedServiceId) return;
+
+        const pendingBooking = {
+            barber_id: barber.id,
+            service_id: selectedServiceId,
+            time_slot_id: selectedSlot.id,
+            date: selectedDateStr,
+            created_at: Date.now(),
+        };
+
+        sessionStorage.setItem(
+            "pending_booking",
+            JSON.stringify(pendingBooking),
+        );
+
+        window.location.href = `/auth/login?redirect=${encodeURIComponent(
+            window.location.href,
+        )}`;
+    };
+
+    // ============ بازیابی رزرو پس از ورود مشتری ============
+    useEffect(() => {
+        if (!isLoggedIn) return;
+
+        const savedBooking = sessionStorage.getItem("pending_booking");
+
+        if (!savedBooking) return;
+
+        try {
+            const pending = JSON.parse(savedBooking);
+
+            // بررسی اعتبار اطلاعات ذخیره‌شده (۱۵ دقیقه)
+            const isExpired =
+                !pending.created_at ||
+                Date.now() - pending.created_at > 15 * 60 * 1000;
+
+            if (isExpired) {
+                sessionStorage.removeItem("pending_booking");
+                return;
+            }
+
+            // بررسی اینکه رزرو مربوط به همین آرایشگر باشد
+            if (String(pending.barber_id) !== String(barber.id)) {
+                sessionStorage.removeItem("pending_booking");
+                return;
+            }
+
+            // بررسی وجود خدمت
+            const serviceExists = services.some(
+                (service) => String(service.id) === String(pending.service_id),
+            );
+
+            if (!serviceExists) {
+                sessionStorage.removeItem("pending_booking");
+                return;
+            }
+
+            // تبدیل تاریخ میلادی به Date بدون مشکل اختلاف منطقه زمانی
+            const [year, month, day] = pending.date.split("-").map(Number);
+
+            const restoredDate = new Date(year, month - 1, day);
+
+            // پیدا کردن ساعت ذخیره‌شده در لیست نوبت‌های همان تاریخ
+            const dateSlots = slotsByDate[pending.date] || [];
+
+            const restoredSlot = dateSlots.find(
+                (slot) =>
+                    String(slot.id) === String(pending.time_slot_id) &&
+                    String(slot.service_id) === String(pending.service_id),
+            );
+
+            // بازیابی خدمت و تاریخ
+            setSelectedServiceId(pending.service_id);
+            setSelectedDate(restoredDate);
+
+            // بازیابی ساعت در صورت موجود بودن
+            if (
+                restoredSlot &&
+                restoredSlot.status !== "booked" &&
+                restoredSlot.status !== "blocked"
+            ) {
+                setSelectedSlot(restoredSlot);
+            } else {
+                setSelectedSlot(null);
+            }
+
+            // انتقال به تب رزرو
+            setActiveTab("booking");
+
+            // حذف اطلاعات موقت پس از بازیابی
+            sessionStorage.removeItem("pending_booking");
+        } catch (error) {
+            console.error("خطا در بازیابی اطلاعات رزرو:", error);
+
+            sessionStorage.removeItem("pending_booking");
+        }
+    }, [isLoggedIn, barber.id, services, slotsByDate]);
+
     return (
         <PublicLayout>
             <Head title={`رزرو نوبت - ${barber.name}`} />
@@ -298,7 +392,10 @@ export default function BarbersShow({
             <div className="public-booking-container">
                 {/* ============ دکمه بازگشت ============ */}
                 <div className="public-back-wrapper">
-                    <Link href="/barbers" className="public-back-btn">
+                    <Link
+                        href={route("user.services.index")}
+                        className="public-back-btn"
+                    >
                         <ArrowRight size={18} />
                         <span>بازگشت به لیست آرایشگران</span>
                     </Link>
@@ -399,6 +496,12 @@ export default function BarbersShow({
                                     <div className="barber-hero-meta-item">
                                         <MapPin size={14} />
                                         <span>{barber.city}</span>
+                                    </div>
+                                )}
+                                {barber.address && (
+                                    <div className="barber-hero-meta-item barber-address">
+                                        <MapPin size={14} />
+                                        <span>{barber.address}</span>
                                     </div>
                                 )}
                             </div>
@@ -612,6 +715,7 @@ export default function BarbersShow({
                                 }}
                                 slotsByDate={slotsByDate}
                                 daysToShow={14}
+                                holidays={holidays}
                             />
 
                             <div className="public-day-info">
@@ -947,22 +1051,31 @@ export default function BarbersShow({
                 {selectedSlot && activeTab === "booking" && (
                     <div className="public-booking-summary">
                         <div className="summary-content">
-                            {selectedSlot.service && (
-                                <div className="summary-item">
-                                    <Scissors size={16} />
-                                    <span>{selectedSlot.service.name}</span>
-                                </div>
-                            )}
+                            <div className="summary-item">
+                                <User size={16} />
+                                <span>{barber.name}</span>
+                            </div>
+
+                            <div className="summary-item">
+                                <Scissors size={16} />
+                                <span>
+                                    {
+                                        services.find(
+                                            (service) =>
+                                                String(service.id) ===
+                                                String(selectedServiceId),
+                                        )?.name
+                                    }
+                                </span>
+                            </div>
 
                             <div className="summary-item">
                                 <Calendar size={16} />
-
                                 <span>{formatJalaliDate(selectedDate)}</span>
                             </div>
 
                             <div className="summary-item">
                                 <Clock size={16} />
-
                                 <span>
                                     {toPersianTimeRange(
                                         selectedSlot.start_time,
@@ -971,18 +1084,33 @@ export default function BarbersShow({
                                 </span>
                             </div>
 
-                            {selectedSlot.service && (
-                                <div className="summary-item price">
-                                    <DollarSign size={16} />
+                            <div className="summary-item">
+                                <Clock size={16} />
+                                <span>
+                                    {toPersianNumber(
+                                        services.find(
+                                            (service) =>
+                                                String(service.id) ===
+                                                String(selectedServiceId),
+                                        )?.duration || 0,
+                                    )}{" "}
+                                    دقیقه
+                                </span>
+                            </div>
 
-                                    <span>
-                                        {parseFloat(
-                                            selectedSlot.service.price,
-                                        ).toLocaleString("fa-IR")}{" "}
-                                        تومان
-                                    </span>
-                                </div>
-                            )}
+                            <div className="summary-item price">
+                                <DollarSign size={16} />
+                                <span>
+                                    {Number(
+                                        services.find(
+                                            (service) =>
+                                                String(service.id) ===
+                                                String(selectedServiceId),
+                                        )?.price || 0,
+                                    ).toLocaleString("fa-IR")}{" "}
+                                    تومان
+                                </span>
+                            </div>
                         </div>
 
                         <button
@@ -1004,6 +1132,15 @@ export default function BarbersShow({
                     </div>
                 )}
             </div>
+            <BookingAuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                onLogin={handleLogin}
+                barber={barber}
+                service={selectedService}
+                selectedDate={selectedDate}
+                selectedTime={selectedSlot}
+            />
 
             {/* ============ Modal رزرو ============ */}
             <ConfirmModal
@@ -1015,20 +1152,26 @@ export default function BarbersShow({
                     })
                 }
                 onConfirm={handleConfirmBooking}
-                title="تایید رزرو نوبت"
+                title="تأیید اطلاعات رزرو"
                 message={
-                    selectedSlot
-                        ? `آیا از رزرو نوبت در تاریخ ${formatJalaliDate(
-                              selectedDate,
-                          )} از ساعت ${toPersianTime(
-                              selectedSlot.start_time,
-                          )} تا ${toPersianTime(
-                              selectedSlot.end_time,
-                          )} مطمئن هستید؟`
+                    selectedSlot && selectedService
+                        ? `آیا اطلاعات زیر را برای رزرو تأیید می‌کنید؟
+
+آرایشگر: ${barber.name}
+
+خدمت: ${selectedService.name}
+
+تاریخ: ${formatJalaliDate(selectedDate)}
+
+ساعت: ${toPersianTime(selectedSlot.start_time)} تا ${toPersianTime(selectedSlot.end_time)}
+
+مدت خدمت: ${toPersianNumber(selectedService.duration)} دقیقه
+
+مبلغ: ${Number(selectedService.price).toLocaleString("fa-IR")} تومان`
                         : ""
                 }
-                confirmText="بله، رزرو کن"
-                cancelText="انصراف"
+                confirmText="تأیید و ثبت رزرو"
+                cancelText="بازگشت"
                 type="success"
                 isLoading={bookingModal.isLoading}
             />

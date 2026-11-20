@@ -81,7 +81,7 @@ class ServiceController extends Controller
                     $query->select([
                         'id',
                         'user_id',
-                        'name',
+                        // 'name',
                         'price',
                         'duration',
                         'category_id',

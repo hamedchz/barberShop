@@ -10,6 +10,7 @@ use App\Enums\Casts\WalletTransactionType;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\WalletTransaction;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -116,7 +117,7 @@ class DashboardController extends Controller
             'nextBooking' => $nextBooking ? [
                 'id' => $nextBooking->id,
                 'status' => $nextBooking->status?->value,
-                'date' => $nextBooking->timeSlot?->date,
+                'date' => Carbon::parse($nextBooking->timeSlot?->date)->format('Y-m-d'),
                 'start_time' => $nextBooking->timeSlot?->start_time,
                 'end_time' => $nextBooking->timeSlot?->end_time,
                 'barber' => [

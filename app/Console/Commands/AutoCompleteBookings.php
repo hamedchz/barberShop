@@ -129,7 +129,7 @@ class AutoCompleteBookings extends Command
 
                 // ============ Notification برای ادمین ============
                 try {
-                    $admins = User::role(['سوپر ادمین'])->get();
+                    $admins = User::role([User::ROLE_SUPER_ADMIN])->get();
                     foreach ($admins as $admin) {
                         $admin->notify(
                             new BookingAutoCompletedForAdmin($booking)

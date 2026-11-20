@@ -39,7 +39,7 @@ export default function FeaturedBarbers({ barbers = [], showHeader = true }) {
                         <article key={barber.id} className="front-barber-card">
                             {/* تصویر آرایشگر */}
                             <a
-                                href={`/barbers/${barber.slug}`}
+                                href={`/barbers/${barber.slug}/details`}
                                 className="front-barber-image"
                                 aria-label={`مشاهده پروفایل ${barber.name}`}
                             >
@@ -141,7 +141,7 @@ export default function FeaturedBarbers({ barbers = [], showHeader = true }) {
 
                                     {/* دکمه مشاهده پروفایل */}
                                     <a
-                                        href={`/barbers/${barber.slug}`}
+                                        href={`/barbers/${barber.slug}/details`}
                                         className="front-barber-link"
                                     >
                                         مشاهده پروفایل

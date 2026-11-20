@@ -22,7 +22,7 @@ class ReviewController extends Controller
      */
     public function reviews(Request $request, User $barber)
     {
-        if (!$barber->hasRole('آرایشگر')) {
+        if (!$barber->hasRole(User::ROLE_BARBER)) {
             abort(404);
         }
 

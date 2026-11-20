@@ -180,20 +180,15 @@ export default function DisputesIndex({ auth, disputes, stats, filters }) {
 
             <div className="center-column">
                 {/* ============ هدر ============ */}
-                <div className="roles-page-header">
-                    <div>
-                        <h1 className="roles-page-title">مدیریت اعتراضات</h1>
-                        <p
-                            style={{
-                                color: "#6b7280",
-                                fontSize: "0.875rem",
-                                marginTop: "0.25rem",
-                            }}
-                        >
-                            {hasActiveFilters
-                                ? `${disputes.total} نتیجه یافت شد`
-                                : `${stats.total} اعتراض در سیستم`}
-                        </p>
+                <div className="settlements-header">
+                    <div className="settlements-header-content">
+                        <div className="settlements-header-icon">
+                            <Scale size={28} />
+                        </div>
+                        <div>
+                            <h1>مدیریت اعتراضات</h1>
+                            <p>بررسی و پردازش اعتراضات کاربران</p>
+                        </div>
                     </div>
                 </div>
 

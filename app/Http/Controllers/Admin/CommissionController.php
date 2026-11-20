@@ -24,7 +24,7 @@ class CommissionController extends Controller
         $defaultRate = Setting::getCommissionRate();
         $search = trim($request->input('search', ''));
 
-        $query = User::role('آرایشگر')
+        $query = User::role(User::ROLE_BARBER)
             ->whereNotNull('commission_rate')
             ->select('id', 'name', 'avatar', 'commission_rate');
 
@@ -50,7 +50,7 @@ class CommissionController extends Controller
         ]);
 
         // ============ آرایشگرها (بدون pagination — برای select) ============
-        $barbers = User::role('آرایشگر')
+        $barbers = User::role(User::ROLE_BARBER)
             ->select('id', 'name', 'avatar')
             ->orderBy('name')
             ->get()->take(5)
@@ -103,7 +103,7 @@ class CommissionController extends Controller
         ]);
 
         // بررسی: کاربر آرایشگر باشه
-        if (!$user->hasRole('آرایشگر')) {
+        if (!$user->hasRole(User::ROLE_BARBER)) {
 
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
@@ -127,7 +127,7 @@ class CommissionController extends Controller
      */
     public function removeUserRate(User $user)
     {
-        if (!$user->hasRole('آرایشگر')) {
+        if (!$user->hasRole(User::ROLE_BARBER)) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return redirect()->back();

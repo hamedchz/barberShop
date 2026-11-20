@@ -312,3 +312,105 @@ html.dark .calendar-day-btn.selected .calendar-day-dot {
   background-color: var(--color-primary-tint);
   color: var(--color-primary-hover);
 }
+
+/* ============================================
+   Calendar Holidays
+   ============================================ */
+
+/* جمعه */
+.calendar-day-btn.friday {
+  border-color: color-mix(in srgb,
+      var(--color-danger) 35%,
+      var(--color-border));
+
+  background: color-mix(in srgb,
+      var(--color-danger) 5%,
+      var(--color-bg-card));
+}
+
+.calendar-day-btn.friday .calendar-day-name,
+.calendar-day-btn.friday .calendar-day-number {
+  color: var(--color-danger);
+}
+
+/* تعطیلات رسمی */
+.calendar-day-btn.official-holiday {
+  border-color: color-mix(in srgb,
+      var(--color-warning) 45%,
+      var(--color-border));
+
+  background: color-mix(in srgb,
+      var(--color-warning) 8%,
+      var(--color-bg-card));
+}
+
+.calendar-day-btn.official-holiday .calendar-day-name,
+.calendar-day-btn.official-holiday .calendar-day-number {
+  color: var(--color-warning);
+}
+
+/* روزی که هم جمعه و هم تعطیل رسمی است */
+.calendar-day-btn.friday.official-holiday {
+  border-color: color-mix(in srgb,
+      var(--color-danger) 55%,
+      var(--color-warning));
+}
+
+/* برچسب تعطیلی */
+.calendar-day-holiday-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-danger);
+  white-space: nowrap;
+}
+
+/* تعطیل رسمی */
+.calendar-day-btn.official-holiday .calendar-day-holiday-label {
+  color: var(--color-warning);
+}
+
+/* روز تعطیل انتخاب‌شده */
+.calendar-day-btn.holiday.selected {
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+
+  border-color: var(--color-primary);
+}
+
+.calendar-day-btn.holiday.selected .calendar-day-name,
+.calendar-day-btn.holiday.selected .calendar-day-number,
+.calendar-day-btn.holiday.selected .calendar-day-holiday-label {
+  color: var(--color-primary);
+}
+
+/* روز تعطیل بدون نوبت */
+.calendar-day-btn.holiday:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* نشانگر انتخاب */
+.calendar-day-selected-icon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  color: var(--color-primary);
+}
+
+/* نقطه وجود نوبت */
+.calendar-day-btn.holiday .calendar-day-dot {
+  background: var(--color-primary);
+}
+
+/* نمایش بهتر روی موبایل */
+@media (max-width: 576px) {
+  .calendar-day-holiday-label {
+    font-size: 0.58rem;
+  }
+}

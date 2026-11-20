@@ -287,7 +287,7 @@ class DisputeController extends Controller
             // ۱۰. Notification به ادمین
             // ============================================
             try {
-                User::role(['سوپر ادمین'])
+                User::role([User::ROLE_SUPER_ADMIN])
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(
@@ -517,7 +517,7 @@ class DisputeController extends Controller
 
             // ============ Notification به ادمین ============
             try {
-                User::role(['سوپر ادمین'])
+                User::role([User::ROLE_SUPER_ADMIN])
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(
@@ -658,7 +658,7 @@ class DisputeController extends Controller
 
             // ============ Notification به ادمین ============
             try {
-                User::role(['سوپر ادمین'])
+                User::role([User::ROLE_SUPER_ADMIN])
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(

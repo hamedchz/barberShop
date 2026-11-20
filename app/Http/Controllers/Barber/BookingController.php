@@ -9,6 +9,7 @@ use App\Enums\Casts\TimeSlotStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Review;
+use App\Models\User;
 use App\Notifications\BookingAutoCompletedForCustomer;
 use App\Notifications\BookingCompletedForAdmin;
 use App\Services\BookingCompletionService;
@@ -338,7 +339,7 @@ class BookingController extends Controller
 
             // ۴. Notification به ادمین (اختیاری)
             try {
-                \App\Models\User::role(['سوپر ادمین'])
+                \App\Models\User::role([User::ROLE_SUPER_ADMIN])
                     ->get()
                     ->each(function ($admin) use ($booking) {
                         $admin->notify(

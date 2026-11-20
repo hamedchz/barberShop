@@ -93,7 +93,7 @@ class ReviewController extends Controller
                     'color' => $s->color(),
                 ])
                 ->values(),
-            'barbers' => User::role('آرایشگر')
+            'barbers' => User::role(User::ROLE_BARBER)
                 ->select('id', 'name')
                 ->orderBy('name')
                 ->limit(100)

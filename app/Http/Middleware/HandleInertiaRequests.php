@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\BarberBookingSetupService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -66,7 +67,7 @@ class HandleInertiaRequests extends Middleware
                 'alert' => fn() => $request->session()->get('alert'),
             ],
             'bookingSetup' => fn() => auth()->check()
-                && auth()->user()->hasRole('آرایشگر')
+                && auth()->user()->hasRole(User::ROLE_BARBER)
                 ? app(BarberBookingSetupService::class)
                 ->getStatus(auth()->user())
                 : [],

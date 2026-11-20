@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "@inertiajs/react";
 import { Calendar, Clock, Scissors, ArrowLeft, User } from "lucide-react";
 import { toPersianNumber } from "../../../../utils/persianNumbers";
-import { formatFullDateTime } from "../../../../utils/dateHelpers";
+import { formatFullDateWithoutTime } from "../../../../utils/dateHelpers";
 
 export default function NextBookingCard({ booking }) {
     const [countdown, setCountdown] = useState("");
@@ -96,12 +96,13 @@ export default function NextBookingCard({ booking }) {
                 <div className="next-booking-details">
                     <div className="next-booking-detail-item">
                         <Calendar size={16} />
-                        <span>{formatFullDateTime(booking.date)}</span>
+                        <span>{formatFullDateWithoutTime(booking.date)}</span>
                     </div>
                     <div className="next-booking-detail-item">
                         <Clock size={16} />
                         <span dir="ltr">
-                            {booking.start_time} - {booking.end_time}
+                            {toPersianNumber(booking.start_time)} -{" "}
+                            {toPersianNumber(booking.end_time)}
                         </span>
                     </div>
                 </div>

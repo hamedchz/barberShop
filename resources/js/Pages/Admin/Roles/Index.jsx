@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Head, Link, router } from "@inertiajs/react";
 import Layout from "../Layouts/Layout";
 import PermissionBadge from "../Components/PermissionBadge";
-import EmptyList from "../Components/EmptyList";
 import ConfirmModal from "../Components/ConfirmModal";
 import { toJalaali } from "jalaali-js";
 import Pagination from "../Components/Pagination";

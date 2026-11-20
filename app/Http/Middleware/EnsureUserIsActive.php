@@ -25,11 +25,22 @@ class EnsureUserIsActive
             return redirect()->route('login');
         }
 
-        if ($user->status !== UserStatus::ACTIVE) {
-            Auth::logout();
+
+
+        if (
+            $user->status !== UserStatus::ACTIVE ||
+            ! $user->is_active
+        ) {
+            Auth::guard('web')->logout();
+
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            StickyAlert::alert($this->messageFor($user->status), 'error');
+
+            StickyAlert::alert(
+                $this->messageFor($user->status->value, $user->is_active),
+                'error'
+            );
+
             return redirect()->route('auth.login');
         }
 
@@ -39,10 +50,10 @@ class EnsureUserIsActive
     private function messageFor(UserStatus $status): string
     {
         return match ($status) {
-            UserStatus::PENDING   => 'حساب شما هنوز تأیید نشده است.',
-            UserStatus::INACTIVE  => 'حساب شما غیرفعال است. برای فعال‌سازی اقدام کنید.',
-            UserStatus::SUSPENDED => 'حساب شما موقتاً معلق شده است. با پشتیبانی تماس بگیرید.',
-            UserStatus::BANNED    => 'حساب شما مسدود شده است.',
+            UserStatus::PENDING->value   => 'حساب شما هنوز تأیید نشده است.',
+            UserStatus::INACTIVE->value  => 'حساب شما غیرفعال است. برای فعال‌سازی اقدام کنید.',
+            UserStatus::SUSPENDED->value => 'حساب شما موقتاً معلق شده است. با پشتیبانی تماس بگیرید.',
+            UserStatus::BANNED->value   => 'حساب شما مسدود شده است.',
             default               => 'امکان ورود وجود ندارد.',
         };
     }

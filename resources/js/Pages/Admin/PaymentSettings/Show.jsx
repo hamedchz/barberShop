@@ -57,22 +57,6 @@ export default function PaymentSettingsShow({
             <Head title={`تنظیمات ${setting.gateway_label}`} />
 
             <div className="admin-finance-page">
-                {/* بازگشت */}
-                <div
-                    className="booking-show-back"
-                    style={{
-                        margin: "10px",
-                    }}
-                >
-                    <Link
-                        href="/admin/payment-settings"
-                        className="btn-secondary"
-                    >
-                        <ArrowRight size={16} />
-                        بازگشت به تنظیمات درگاه‌ها
-                    </Link>
-                </div>
-
                 {/* هدر */}
                 <div className="finance-header">
                     <div className="finance-header-content">

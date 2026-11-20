@@ -21,6 +21,7 @@ class Setting extends Model
         'theme'   => 'ظاهر و رنگ',
         'contact' => 'تماس',
         'social'  => 'شبکه‌های اجتماعی',
+        'sms' => 'سرویس پیامکی',
     ];
 
     public const TYPES = [
@@ -74,13 +75,19 @@ class Setting extends Model
     /**
      * تنظیم مقدار
      */
-    public static function set(string $key, mixed $value, string $type = 'string', array $extra = []): self
-    {
+    public static function set(
+        string $key,
+        mixed $value,
+        string $type = 'string',
+        array $extra = []
+    ): self {
         return static::updateOrCreate(
             ['key' => $key],
             array_merge([
-                'value' => is_array($value) ? json_encode($value) : (string) $value,
-                'type'  => $type,
+                'value' => is_array($value)
+                    ? json_encode($value, JSON_UNESCAPED_UNICODE)
+                    : (string) $value,
+                'type' => $type,
             ], $extra)
         );
     }
@@ -97,7 +104,7 @@ class Setting extends Model
         return match ($type) {
             'integer' => (int) $value,
             'decimal' => (float) $value,
-            'boolean' => (bool) $value,
+            'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
             'json'    => json_decode($value, true),
             default   => $value,
         };

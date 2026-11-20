@@ -35,7 +35,7 @@ class BarberController extends Controller
         $query = User::query()
             ->with('roles')
             // ->where('is_admin', false)
-            ->role('آرایشگر');
+            ->role(User::ROLE_BARBER);
 
         // ============ فیلتر جستجو ============
         if ($search = trim($request->input('search', ''))) {
@@ -101,7 +101,7 @@ class BarberController extends Controller
         // ============ شمارش کل آنلاین‌ها ============
         $totalOnline = User::query()
             ->where('is_admin', false)
-            ->role('آرایشگر')
+            ->role(User::ROLE_BARBER)
 
             ->get()
             ->filter(fn($user) => $user->isOnline())
@@ -259,7 +259,7 @@ class BarberController extends Controller
     {
 
         // بررسی اینکه کاربر آرایشگر است
-        if (!$user->hasRole('آرایشگر')) {
+        if (!$user->hasRole(User::ROLE_BARBER)) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return to_route('admin.barbers.list');
@@ -308,7 +308,7 @@ class BarberController extends Controller
     {
 
         // بررسی نقش آرایشگر
-        if (!$user->hasRole('آرایشگر')) {
+        if (!$user->hasRole(User::ROLE_BARBER)) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
 
             return to_route('admin.barbers.list');
@@ -497,7 +497,7 @@ class BarberController extends Controller
 
 
         // بررسی اینکه کاربر آرایشگر است
-        if (!$barber->hasRole('آرایشگر')) {
+        if (!$barber->hasRole(User::ROLE_BARBER)) {
             StickyAlert::alert('این کاربر آرایشگر نیست.', 'error');
             return to_route('admin.barbers.list');
         }
@@ -630,7 +630,7 @@ class BarberController extends Controller
     public function onlineStatus()
     {
         $barbers = User::query()
-            ->where('is_admin', false)->role('آرایشگر')
+            ->where('is_admin', false)->role(User::ROLE_BARBER)
             ->get()
             ->map(function ($admin) {
                 return [

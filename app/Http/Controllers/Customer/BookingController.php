@@ -371,16 +371,48 @@ class BookingController extends Controller
         // ============================================
         $booking->load([
             'barber' => function ($q) {
-                $q->select('id', 'name', 'avatar', 'phone', 'slug', 'specialty', 'city', 'address');
+                $q->select(
+                    'id',
+                    'name',
+                    'avatar',
+                    'phone',
+                    'slug',
+                    'specialty',
+                    'city',
+                    'address'
+                );
             },
+
             'service' => function ($q) {
-                $q->select('id', 'name', 'description', 'image', 'duration', 'price');
+                $q->select(
+                    'id',
+                    'category_id',
+                    'duration',
+                    'price'
+                );
             },
+
+            'service.category' => function ($q) {
+                $q->select(
+                    'id',
+                    'name',
+                    'description',
+                    'image'
+                );
+            },
+
             'timeSlot' => function ($q) {
-                $q->select('id', 'date', 'start_time', 'end_time');
+                $q->select(
+                    'id',
+                    'date',
+                    'start_time',
+                    'end_time'
+                );
             },
+
             'payment',
             'review',
+
             'disputes' => function ($q) {
                 $q->with('disputedByUser:id,name,avatar')
                     ->latest();
@@ -1059,7 +1091,7 @@ class BookingController extends Controller
             // ============ Notification ها ============
             // به ادمین
             try {
-                User::role(['سوپر ادمین'])
+                User::role([User::ROLE_SUPER_ADMIN])
                     ->get()
                     ->each(function ($admin) use ($dispute) {
                         $admin->notify(new BookingDisputeByCustomer($dispute->booking));
@@ -1163,7 +1195,7 @@ class BookingController extends Controller
             );
 
             // ============ اطلاع‌رسانی به ادمین ============
-            User::role(['سوپر ادمین'])->get()
+            User::role([User::ROLE_SUPER_ADMIN])->get()
                 ->each(function ($admin) use ($booking) {
                     $admin->notify(
                         new BookingCompletedByCustomerForAdmin($booking)

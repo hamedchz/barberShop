@@ -21,7 +21,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::role('مشتری');
+        $query = User::role(User::ROLE_CUSTOMER);
 
         // فیلتر جستجو
         if ($search = trim($request->input('search', ''))) {
@@ -79,10 +79,10 @@ class CustomerController extends Controller
 
         // آمار کلی
         $stats = [
-            'total'    => User::role('مشتری')->count(),
-            'active'   => User::role('مشتری')->where('is_active', true)->count(),
-            'inactive' => User::role('مشتری')->where('is_active', false)->count(),
-            'banned'   => User::role('مشتری')
+            'total'    => User::role(User::ROLE_CUSTOMER)->count(),
+            'active'   => User::role(User::ROLE_CUSTOMER)->where('is_active', true)->count(),
+            'inactive' => User::role(User::ROLE_CUSTOMER)->where('is_active', false)->count(),
+            'banned'   => User::role(User::ROLE_CUSTOMER)
                 ->whereHas('warnings', fn($q) => $q->active())
                 ->count(),
         ];
@@ -104,7 +104,7 @@ class CustomerController extends Controller
      */
     public function show(User $customer)
     {
-        if (!$customer->hasRole('مشتری')) {
+        if (!$customer->hasRole(User::ROLE_CUSTOMER)) {
             abort(404);
         }
 
@@ -289,7 +289,7 @@ class CustomerController extends Controller
      */
     public function updateStatus(Request $request, User $customer)
     {
-        if (!$customer->hasRole('مشتری')) {
+        if (!$customer->hasRole(User::ROLE_CUSTOMER)) {
             abort(404);
         }
 
@@ -326,7 +326,7 @@ class CustomerController extends Controller
      */
     public function toggleStatus(User $customer)
     {
-        if (!$customer->hasRole('مشتری')) {
+        if (!$customer->hasRole(User::ROLE_CUSTOMER)) {
             abort(404);
         }
 

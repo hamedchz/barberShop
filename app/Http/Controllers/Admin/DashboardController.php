@@ -242,7 +242,7 @@ class DashboardController extends Controller
     {
         $from = now()->subDays($period);
 
-        return User::role('آرایشگر')
+        return User::role(User::ROLE_BARBER)
             ->withCount(['barberBookings as bookings_count' => fn($q) => $q->where('created_at', '>=', $from)])
             ->having('bookings_count', '>', 0)
             ->orderByDesc('bookings_count')

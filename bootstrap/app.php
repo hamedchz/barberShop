@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/web.php'));
 
             Route::prefix('customer')
-                ->middleware(['auth', 'web'])
+                ->middleware(['auth', 'web', 'ensure-user-is-active', 'permission:customer-dashboard-panel',])
                 ->name('customer.')
                 ->group(base_path('routes/customer.php'));
 
@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('admin.')
                 ->group(base_path('routes/admin.php'));
             Route::prefix('barber')
-                ->middleware(['web', 'auth', 'ensure-user-is-active', 'ensure-barber-booking-setup-completed'])
+                ->middleware(['web', 'auth', 'ensure-user-is-active', 'ensure-barber-booking-setup-completed', 'permission:barber-dashboard-panel',])
                 ->name('barber.')
                 ->group(base_path('routes/barber.php'));
             Route::prefix('auth')->middleware(['web'])

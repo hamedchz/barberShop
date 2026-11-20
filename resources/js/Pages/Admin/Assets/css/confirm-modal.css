@@ -5,7 +5,9 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: color-mix(in srgb, #000 55%, transparent);
+  background-color: color-mix(in srgb,
+      #000 55%,
+      transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -50,11 +52,15 @@
   padding: 1.5rem;
   max-width: 440px;
   width: 100%;
+
   box-shadow:
     0 20px 25px -5px var(--color-shadow),
     0 8px 10px -6px var(--color-shadow);
+
   position: relative;
   direction: rtl;
+
+  animation: modalSlideUp 0.25s ease-out;
 }
 
 /* ============================================
@@ -72,13 +78,23 @@
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
+
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
   animation: pulseIcon 0.6s ease;
-  background: var(--color-primary-tint);
+
+  background: color-mix(in srgb,
+      var(--color-primary) 12%,
+      var(--color-bg-card));
+
   color: var(--color-primary);
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 20%,
+      var(--color-border));
 }
 
 @keyframes pulseIcon {
@@ -104,9 +120,11 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: var(--radius-sm);
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   transition: all 0.2s ease;
   font-family: inherit;
 }
@@ -158,11 +176,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-sm);
+
   font-size: 0.875rem;
   font-weight: 600;
   font-family: inherit;
+
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
@@ -174,7 +195,9 @@
   cursor: not-allowed;
 }
 
-/* دکمه انصراف */
+/* ============================================
+   Cancel Button
+   ============================================ */
 
 .modal-btn-cancel {
   background-color: var(--color-bg-card);
@@ -185,32 +208,63 @@
 .modal-btn-cancel:hover:not(:disabled) {
   background-color: var(--color-bg-hover);
   color: var(--color-text);
-  border-color: var(--color-primary);
+
+  border-color: color-mix(in srgb,
+      var(--color-primary) 55%,
+      var(--color-border));
 }
 
-/* دکمه تایید */
+/* ============================================
+   Confirm Button
+   ============================================ */
 
 .modal-btn-confirm {
+  background: var(--gradient-primary);
   color: #fff;
+
+  border: 1px solid color-mix(in srgb,
+      var(--color-primary) 70%,
+      var(--color-primary-hover));
+
+  box-shadow: 0 3px 8px color-mix(in srgb,
+      var(--color-primary) 20%,
+      transparent);
+
   transition: all 0.2s ease;
 }
 
 .modal-btn-confirm:hover:not(:disabled) {
   transform: translateY(-1px);
-  filter: brightness(0.95);
+
+  box-shadow: 0 5px 12px color-mix(in srgb,
+      var(--color-primary) 30%,
+      transparent);
+
+  filter: brightness(0.97);
 }
 
 .modal-btn-confirm:active:not(:disabled) {
   transform: translateY(0);
+  box-shadow: none;
 }
 
-/* Spinner داخل دکمه */
+.modal-btn-confirm:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ============================================
+   Spinner
+   ============================================ */
 
 .modal-btn-confirm .spinner {
   width: 1rem;
   height: 1rem;
+
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
+
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -253,9 +307,11 @@
 
 .modal-children {
   margin-top: 1rem;
+
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+
   animation: modalChildrenIn 0.3s ease-out 0.1s both;
 }
 
@@ -277,7 +333,11 @@
 
 .modal-preview {
   padding: 0.75rem;
-  background: var(--color-bg);
+
+  background: color-mix(in srgb,
+      var(--color-bg-hover) 65%,
+      var(--color-bg-card));
+
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
 }
@@ -295,6 +355,7 @@
   color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
+
   word-break: break-word;
   overflow-wrap: anywhere;
 }
@@ -307,18 +368,24 @@
   display: flex;
   align-items: flex-start;
   gap: 0.625rem;
+
   padding: 0.75rem 0.875rem;
+
   background: color-mix(in srgb,
       var(--color-danger) 10%,
       var(--color-bg-card));
+
   border: 1.5px solid color-mix(in srgb,
       var(--color-danger) 30%,
       var(--color-border));
+
   border-radius: 0.625rem;
+
   font-size: 0.75rem;
   color: var(--color-danger);
   line-height: 1.7;
   font-weight: 600;
+
   word-break: break-word;
   overflow-wrap: anywhere;
 }
@@ -351,14 +418,19 @@
   display: flex;
   align-items: flex-start;
   gap: 0.625rem;
+
   padding: 0.75rem 0.875rem;
+
   background: color-mix(in srgb,
       var(--color-info) 10%,
       var(--color-bg-card));
+
   border: 1.5px solid color-mix(in srgb,
       var(--color-info) 30%,
       var(--color-border));
+
   border-radius: 0.625rem;
+
   font-size: 0.75rem;
   color: var(--color-info);
   line-height: 1.7;

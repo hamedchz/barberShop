@@ -24,7 +24,7 @@ class BarberBookingController extends Controller
     {
 
         // بررسی آرایشگر بودن
-        if (!$barber->hasRole('آرایشگر')) {
+        if (!$barber->hasRole(User::ROLE_BARBER)) {
             abort(404);
         }
 
@@ -633,7 +633,7 @@ class BarberBookingController extends Controller
             'statuses' => collect(BookingStatus::cases())
                 ->map(fn($s) => ['value' => $s->value, 'label' => $s->label() ?? $s->value])
                 ->values(),
-            'barbers' => User::role('آرایشگر')
+            'barbers' => User::role(User::ROLE_BARBER)
                 ->select('id', 'name')
                 ->orderBy('name')
                 ->limit(100)

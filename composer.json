@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "alizeinodin/smsapi": "2.2",
         "barryvdh/laravel-dompdf": "^3.1",
         "hekmatinasser/verta": "^9.0",
         "inertiajs/inertia-laravel": "^3.3",

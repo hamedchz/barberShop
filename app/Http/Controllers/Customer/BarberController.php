@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Morilog\Jalali\Jalalian;
+use App\Services\IranianHolidayService;
 
 class BarberController extends Controller
 {
@@ -24,7 +25,7 @@ class BarberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::role('آرایشگر')
+        $query = User::role(User::ROLE_BARBER)
             ->where('status', UserStatus::ACTIVE->value)
             ->withCount([
                 'services' => fn($q) => $q->where('is_active', true),
@@ -123,18 +124,18 @@ class BarberController extends Controller
         });
 
         // ============ لیست شهرها ============
-        $cities = User::role('آرایشگر')
+        $cities = User::role(User::ROLE_BARBER)
             ->whereNotNull('city')
             ->distinct()
             ->pluck('city')
             ->toArray();
 
         // ============ آمار ============
-        $totalBarbers = User::role('آرایشگر')
+        $totalBarbers = User::role(User::ROLE_BARBER)
             ->where('status', UserStatus::ACTIVE->value)
             ->count();
 
-        $onlineCount = User::role('آرایشگر')
+        $onlineCount = User::role(User::ROLE_BARBER)
             ->where('status', UserStatus::ACTIVE->value)
             ->get()
             ->filter(fn($b) => $b->isOnline())
@@ -163,12 +164,36 @@ class BarberController extends Controller
     /**
      * جزئیات آرایشگر + رزرو
      */
-    public function show(User $barber)
+    public function show(User $barber, IranianHolidayService $holidayService)
     {
         // StickyAlert::alert('این بازه قابل رزرو نیست.', 'error');
         // بررسی آرایشگر بودن
         if (!$barber->hasRole(User::ROLE_BARBER) || $barber->status?->value !== UserStatus::ACTIVE->value) {
             abort(404);
+        }
+
+        $startDate = Carbon::today();
+        $endDate = $startDate->copy()->addDays(14);
+
+        $holidays = [];
+
+        // دریافت تعطیلات تمام سال‌هایی که بازه تقویم پوشش می‌دهد
+        $years = range(
+            (int) $startDate->format('Y'),
+            (int) $endDate->format('Y')
+        );
+
+        foreach ($years as $year) {
+            try {
+                $holidays = array_replace(
+                    $holidays,
+                    $holidayService->getHolidays($year)
+                );
+            } catch (\Throwable $exception) {
+                report($exception);
+
+                // در صورت قطع اینترنت، صفحه رزرو همچنان نمایش داده شود.
+            }
         }
 
         // ============ اطلاعات پایه ============
@@ -291,6 +316,7 @@ class BarberController extends Controller
             'availabilities' => $availabilities,
             'slotsByDate' => $slotsByDate,
             'reviews' => $reviews,
+            'holidays' => $holidays,
 
         ]);
     }

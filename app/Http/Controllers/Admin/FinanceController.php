@@ -643,7 +643,7 @@ class FinanceController extends Controller
             ]);
 
         // ============ لیست آرایشگرها برای فیلتر ============
-        $barbers = User::role('آرایشگر')
+        $barbers = User::role(User::ROLE_BARBER)
             ->select('id', 'name')
             ->orderBy('name')->take(5)
             ->get();
@@ -1006,11 +1006,11 @@ class FinanceController extends Controller
         // اولویت: barber > customer > admin
         // (هر کدوم که مهم‌تره اول بیاد)
 
-        if ($user->hasRole('آرایشگر')) {
+        if ($user->hasRole(User::ROLE_BARBER)) {
             return "/admin/barbers/{$user->id}/detail";
         }
 
-        if ($user->hasRole('مشتری')) {
+        if ($user->hasRole(User::ROLE_CUSTOMER)) {
             return "/admin/customers/show/{$user->id}";
         }
 

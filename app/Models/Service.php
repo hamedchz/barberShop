@@ -27,7 +27,7 @@ class Service extends Model
     protected $appends = [
         'name',
         'description',
-        'image_url',
+        'image',
 
     ];
 

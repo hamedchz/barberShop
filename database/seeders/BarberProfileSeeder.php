@@ -16,7 +16,7 @@ class BarberProfileSeeder extends Seeder
     // database/seeders/BarberProfileSeeder.php
     public function run()
     {
-        $barbers = User::role('آرایشگر')->get();
+        $barbers = User::role(User::ROLE_BARBER)->get();
 
         foreach ($barbers as $barber) {
             $barber->update([
