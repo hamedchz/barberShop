@@ -152,11 +152,7 @@ class OtpService
     } catch (ValidationException $exception) {
       throw $exception;
     } catch (Throwable $exception) {
-      /*
-             * کد خام و اطلاعات اتصال نباید وارد Log شوند.
-             * فقط خطای عمومی به لایه کنترلر منتقل می‌شود.
-             */
-      // report($exception);
+      report($exception);
 
       throw ValidationException::withMessages([
         'phone' => 'ارسال کد تأیید با مشکل مواجه شد. لطفاً بعداً دوباره تلاش کنید.',

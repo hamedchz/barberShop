@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SettlementController;
+use App\Http\Controllers\Admin\SmsProviderController;
 use App\Http\Controllers\Admin\WalletDepositController;
 use Illuminate\Support\Facades\Route;
 
@@ -282,4 +283,21 @@ Route::prefix('settings')
     Route::patch('/', 'update')->name('update');
     Route::post('/logo', 'uploadLogo')->name('upload-logo');
     Route::post('/favicon', 'uploadFavicon')->name('upload-favicon');
+  });
+
+Route::prefix('sms-providers')
+  ->name('sms-providers.')
+  ->controller(SmsProviderController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
+
+    Route::post('/', 'store')->name('store');
+
+    Route::put('/{smsProvider}', 'update')->name('update');
+
+    Route::delete('/{smsProvider}', 'destroy')->name('destroy');
+
+    Route::patch('/{smsProvider}/toggle', 'toggle')->name('toggle');
+
+    Route::patch('/{smsProvider}/primary', 'setPrimary')->name('primary');
   });

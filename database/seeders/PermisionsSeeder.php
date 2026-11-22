@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Casts\Permissions;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -29,17 +30,17 @@ class PermisionsSeeder extends Seeder
 
         // ایجاد نقش‌ها
         $superAdmin = Role::firstOrCreate([
-            'name' => 'سوپر ادمین',
+            'name' => User::ROLE_SUPER_ADMIN,
             'guard_name' => 'web',
         ]);
 
         $barber = Role::firstOrCreate([
-            'name' => 'آرایشگر',
+            'name' => User::ROLE_BARBER,
             'guard_name' => 'web',
         ]);
 
         $customer = Role::firstOrCreate([
-            'name' => 'مشتری',
+            'name' => User::ROLE_CUSTOMER,
             'guard_name' => 'web',
         ]);
 

@@ -11,35 +11,27 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserIsActive
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
-    // app/Http/Middleware/EnsureUserIsActive.php
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 
         if (! $user) {
-            return redirect()->route('login');
+            return redirect()->route('auth.login');
         }
-
-
 
         if (
             $user->status !== UserStatus::ACTIVE ||
             ! $user->is_active
         ) {
+            // پیام را قبل از خروج از حساب استخراج می‌کنیم.
+            $message = $this->messageFor($user->status);
+
             Auth::guard('web')->logout();
 
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            StickyAlert::alert(
-                $this->messageFor($user->status->value, $user->is_active),
-                'error'
-            );
+            StickyAlert::alert($message, 'error');
 
             return redirect()->route('auth.login');
         }
@@ -47,14 +39,14 @@ class EnsureUserIsActive
         return $next($request);
     }
 
-    private function messageFor(UserStatus $status): string
+    private function messageFor(?UserStatus $status): string
     {
         return match ($status) {
-            UserStatus::PENDING->value   => 'حساب شما هنوز تأیید نشده است.',
-            UserStatus::INACTIVE->value  => 'حساب شما غیرفعال است. برای فعال‌سازی اقدام کنید.',
-            UserStatus::SUSPENDED->value => 'حساب شما موقتاً معلق شده است. با پشتیبانی تماس بگیرید.',
-            UserStatus::BANNED->value   => 'حساب شما مسدود شده است.',
-            default               => 'امکان ورود وجود ندارد.',
+            UserStatus::PENDING => 'حساب شما هنوز تأیید نشده است.',
+            UserStatus::INACTIVE => 'حساب شما غیرفعال است. برای فعال‌سازی اقدام کنید.',
+            UserStatus::SUSPENDED => 'حساب شما موقتاً معلق شده است. با پشتیبانی تماس بگیرید.',
+            UserStatus::BANNED => 'حساب شما مسدود شده است.',
+            default => 'امکان ورود به حساب کاربری وجود ندارد.',
         };
     }
 }

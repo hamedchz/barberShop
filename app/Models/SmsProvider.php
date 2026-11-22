@@ -46,7 +46,7 @@ class SmsProvider extends Model
     }
 
     /**
-     * بررسی اعتبار اولیه اطلاعات اتصال ارائه‌دهنده.
+     * بررسی اطلاعات اتصال متناسب با درایور
      */
     public function isReady(): bool
     {
@@ -64,13 +64,13 @@ class SmsProvider extends Model
             return false;
         }
 
-        if (empty($settings['line_number'])) {
-            return false;
-        }
-
         return match ($this->driver) {
-            self::DRIVER_KAVENEGAR,
-            self::DRIVER_FARAZSMS => ! empty($credentials['api_key']),
+            self::DRIVER_KAVENEGAR =>
+            ! empty($credentials['api_key']),
+
+            self::DRIVER_FARAZSMS =>
+            ! empty($credentials['api_key']) &&
+                ! empty($settings['line_number']),
 
             self::DRIVER_MELIPAYAMAK =>
             ! empty($credentials['username']) &&
@@ -80,9 +80,6 @@ class SmsProvider extends Model
         };
     }
 
-    /**
-     * دریافت تنظیمات قالب OTP.
-     */
     public function otpTemplate(): ?array
     {
         $settings = $this->settings ?? [];
@@ -91,22 +88,19 @@ class SmsProvider extends Model
         return is_array($template) ? $template : null;
     }
 
-    /**
-     * بررسی کامل بودن تنظیمات قالب OTP.
-     */
     public function hasOtpTemplate(): bool
     {
         $template = $this->otpTemplate();
 
-        return is_array($template)
-            && ($template['enabled'] ?? false) === true
-            && ! empty($template['template_id'])
-            && ! empty($template['code_parameter']);
+        if (! $template) {
+            return false;
+        }
+
+        return ($template['enabled'] ?? false) === true
+            && trim((string) ($template['template_id'] ?? '')) !== ''
+            && trim((string) ($template['code_parameter'] ?? '')) !== '';
     }
 
-    /**
-     * آماده بودن ارائه‌دهنده برای ارسال OTP.
-     */
     public function isOtpReady(): bool
     {
         return $this->isReady() && $this->hasOtpTemplate();

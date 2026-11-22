@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Menu,
     X,
@@ -10,9 +10,12 @@ import {
 } from "lucide-react";
 
 export default function Header({ auth = null }) {
+    const { props } = usePage();
+    const { site } = props;
+
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const user = auth?.user ?? auth;
+    const user = auth?.user ?? null;
 
     const navItems = [
         { label: "خانه", href: "#home" },
@@ -24,18 +27,34 @@ export default function Header({ auth = null }) {
 
     const closeMenu = () => setMenuOpen(false);
 
+    // باز کردن مودال ورود یا ثبت‌نام
+    const openAuthModal = (tab = "login") => {
+        closeMenu();
+
+        window.dispatchEvent(
+            new CustomEvent("auth:open", {
+                detail: { tab },
+            }),
+        );
+    };
+
     return (
         <header className="front-header">
             <div className="front-header-container">
                 {/* Logo */}
                 <a href="#home" className="front-logo" onClick={closeMenu}>
                     <span className="front-logo-icon">
-                        <Scissors size={23} strokeWidth={2.2} />
+                        {/* <Scissors size={23} strokeWidth={2.2} /> */}
+                        {site?.logo ? (
+                            <img src={site.logo} alt={site?.name || "لوگو"} />
+                        ) : (
+                            <span>{site?.name?.charAt(0) || "B"}</span>
+                        )}
                     </span>
 
                     <span className="front-logo-text">
-                        <strong>barber</strong>
-                        <span>App</span>
+                        <strong>{site.name}</strong>
+                        {/* <span>{site.name}</span> */}
                     </span>
                 </a>
 
@@ -60,9 +79,13 @@ export default function Header({ auth = null }) {
                             <span>حساب کاربری</span>
                         </Link>
                     ) : (
-                        <Link href="/login" className="front-login-link">
+                        <button
+                            type="button"
+                            onClick={() => openAuthModal("login")}
+                            className="front-login-link"
+                        >
                             ورود / ثبت‌نام
-                        </Link>
+                        </button>
                     )}
 
                     <a href="#barbers" className="front-header-booking">
@@ -110,13 +133,13 @@ export default function Header({ auth = null }) {
                             حساب کاربری
                         </Link>
                     ) : (
-                        <Link
-                            href="/login"
-                            onClick={closeMenu}
+                        <button
+                            type="button"
+                            onClick={() => openAuthModal("login")}
                             className="front-mobile-login"
                         >
                             ورود / ثبت‌نام
-                        </Link>
+                        </button>
                     )}
 
                     <a

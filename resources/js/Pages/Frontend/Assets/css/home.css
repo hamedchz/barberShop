@@ -69,6 +69,8 @@
   gap: 30px;
 }
 
+
+
 /* Logo */
 
 .front-logo {
@@ -85,11 +87,11 @@
   display: grid;
   place-items: center;
   color: #fff;
-  background: var(--color-primary);
+  /* background: var(--color-primary);
   border-radius: 14px;
   box-shadow: 0 5px 14px color-mix(in srgb,
       var(--color-primary) 25%,
-      transparent);
+      transparent); */
 }
 
 .front-logo-text {
@@ -171,6 +173,13 @@
 .front-login-link:hover,
 .front-account-link:hover {
   color: var(--color-primary);
+}
+
+.front-login-link,
+.front-mobile-login {
+
+  cursor: pointer;
+  text-align: center;
 }
 
 .front-header-booking {

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\Casts\UserStatus;
+use App\Facades\GenerateUtf8Slug;
 use App\Http\Controllers\Controller;
+use App\Models\OtpCode;
 use App\Models\User;
 use App\Services\Sms\OtpService;
 use Illuminate\Database\QueryException;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +28,7 @@ class RegistrationController extends Controller
     /**
      * ایجاد حساب مشتری پس از تأیید شماره موبایل.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:255'],
@@ -58,7 +60,7 @@ class RegistrationController extends Controller
         if (
             ! is_array($verification) ||
             ($verification['phone'] ?? null) !== $phone ||
-            ($verification['purpose'] ?? null) !== 'registration' ||
+            ($verification['purpose'] ?? null) !== OtpCode::PURPOSE_REGISTRATION ||
             ! isset($verification['verified_at'], $verification['expires_at']) ||
             $verification['verified_at'] > now()->timestamp ||
             $verification['expires_at'] <= now()->timestamp
@@ -98,7 +100,8 @@ class RegistrationController extends Controller
                 $customerRole,
                 $customerPermission
             ) {
-                $baseSlug = Str::slug($validated['name']);
+
+                $baseSlug = GenerateUtf8Slug::generateUtf8Slug($validated['name']);
 
                 if ($baseSlug === '') {
                     $baseSlug = 'customer';
@@ -149,12 +152,9 @@ class RegistrationController extends Controller
         // جلوگیری از Session Fixation.
         $request->session()->regenerate();
 
-        return response()->json([
-            'message' => 'ثبت‌نام با موفقیت انجام شد.',
-            'redirect' => $this->safeReturnUrl(
-                $validated['return_to'] ?? null
-            ),
-        ]);
+        return redirect()->to(
+            $this->safeReturnUrl($validated['return_to'] ?? null)
+        );
     }
 
     /**
