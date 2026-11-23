@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Casts\Permissions;
 use App\Enums\Casts\UserStatus;
 use App\Facades\GenerateUtf8Slug;
 use App\Http\Controllers\Controller;
@@ -90,7 +91,7 @@ class RegistrationController extends Controller
 
         try {
             $customerPermission = Permission::findByName(
-                'customer-dashboard-panel',
+                Permissions::CustomerDashboardPanel->value,
                 'web'
             );
 

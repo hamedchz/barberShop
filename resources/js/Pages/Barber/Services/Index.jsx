@@ -256,9 +256,9 @@ export default function Index({ categories = [], services = [] }) {
                                     key={service.id}
                                 >
                                     <div className="barber-service-image">
-                                        {service.image_url ? (
+                                        {service.image ? (
                                             <img
-                                                src={service.image_url}
+                                                src={service.image}
                                                 alt={service.name}
                                             />
                                         ) : (

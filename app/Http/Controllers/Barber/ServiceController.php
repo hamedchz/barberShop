@@ -21,7 +21,18 @@ class ServiceController extends Controller
             ->where('user_id', auth()->id())
             ->with('category')
             ->latest()
-            ->get();
+            ->get()->map(fn($service) => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'description' => $service->description,
+                'is_active' => $service->is_active,
+                'price' => $service->price,
+                'duration' => $service->duration,
+                'image' => $service->image ? asset('storage/' . $service->image) : null,
+
+            ]);
+
+
 
         return inertia('Barber/Services/Index', [
             'services' => $services,

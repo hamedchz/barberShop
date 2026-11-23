@@ -2,21 +2,20 @@ import React from "react";
 import { usePage } from "@inertiajs/react";
 
 import Header from "./Components/Header";
-import AuthModal from "@/Components/AuthModal";
+import { AuthModalProvider } from "../../Components/AuthModalContext";
 
 import "./Assets/css/home.css";
 
-export default function FrontLayout({ children, auth = null }) {
+export default function FrontLayout({ children }) {
     const { props } = usePage();
-    const { site } = props;
 
     return (
-        <div className="front-site" dir="rtl">
-            <Header auth={auth} />
+        <AuthModalProvider site={props.site}>
+            <div className="front-site" dir="rtl">
+                <Header auth={props.auth} />
 
-            <main className="front-main">{children}</main>
-
-            <AuthModal site={site} />
-        </div>
+                <main className="front-main">{children}</main>
+            </div>
+        </AuthModalProvider>
     );
 }

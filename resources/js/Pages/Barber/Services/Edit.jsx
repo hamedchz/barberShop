@@ -64,11 +64,8 @@ export default function Edit({ service }) {
                 <div className="barber-service-settings-card">
                     <div className="barber-service-settings-info">
                         <div className="barber-service-settings-image">
-                            {service.image_url ? (
-                                <img
-                                    src={service.image_url}
-                                    alt={service.name}
-                                />
+                            {service.image ? (
+                                <img src={service.image} alt={service.name} />
                             ) : (
                                 <ImageIcon size={30} />
                             )}

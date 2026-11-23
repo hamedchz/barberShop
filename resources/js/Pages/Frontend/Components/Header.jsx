@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
+import { useAuthModal } from "../../../Components/AuthModalContext";
 import {
     Menu,
     X,
@@ -27,17 +28,7 @@ export default function Header({ auth = null }) {
 
     const closeMenu = () => setMenuOpen(false);
 
-    // باز کردن مودال ورود یا ثبت‌نام
-    const openAuthModal = (tab = "login") => {
-        closeMenu();
-
-        window.dispatchEvent(
-            new CustomEvent("auth:open", {
-                detail: { tab },
-            }),
-        );
-    };
-
+    const { openAuthModal } = useAuthModal();
     return (
         <header className="front-header">
             <div className="front-header-container">

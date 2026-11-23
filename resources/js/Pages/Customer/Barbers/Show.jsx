@@ -1,11 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-import PublicLayout from "../Layouts/PublicLayout";
+// import PublicLayout from "../Layouts/PublicLayout";
+import PublicLayout from "../../Frontend/FrontLayout";
+import "../Assets/Public.css";
 import HorizontalCalendar from "../Components/HorizontalCalendar";
 import ConfirmModal from "../../Admin/Components/ConfirmModal";
 import RatingStars from "../Components/RatingStars";
 import Tooltip from "../Components/Tooltip";
 import BookingAuthModal from "./Components/BookingAuthModal";
+import { useAuthModal } from "../../../Components/AuthModalContext";
 import {
     ArrowRight,
     Star,
@@ -91,7 +94,7 @@ const formatRelativeDate = (date) => {
 };
 
 // ============ کامپوننت اصلی ============
-export default function BarbersShow({
+function BarbersShow({
     auth,
     barber,
     services = [],
@@ -100,6 +103,7 @@ export default function BarbersShow({
     reviews = [],
     holidays = {},
 }) {
+    const { openAuthModal } = useAuthModal();
     // ============ State ============
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState(
@@ -222,7 +226,7 @@ export default function BarbersShow({
         }
 
         if (!isLoggedIn) {
-            setShowAuthModal(true);
+            openAuthModal("login");
             return;
         }
 
@@ -386,7 +390,7 @@ export default function BarbersShow({
     }, [isLoggedIn, barber.id, services, slotsByDate]);
 
     return (
-        <PublicLayout>
+        <>
             <Head title={`رزرو نوبت - ${barber.name}`} />
 
             <div className="public-booking-container">
@@ -1175,6 +1179,12 @@ export default function BarbersShow({
                 type="success"
                 isLoading={bookingModal.isLoading}
             />
-        </PublicLayout>
+        </>
     );
 }
+
+// Layout باید بیرون از کامپوننت صفحه قرار بگیرد تا Hookهای صفحه
+// از جمله useAuthModal به AuthModalProvider دسترسی داشته باشند.
+BarbersShow.layout = (page) => <PublicLayout>{page}</PublicLayout>;
+
+export default BarbersShow;

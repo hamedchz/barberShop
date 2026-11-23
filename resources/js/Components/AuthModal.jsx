@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "@inertiajs/react";
-import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle, X } from "lucide-react";
 
 import "./Assets/css/AuthModal.css";
 
@@ -80,10 +80,8 @@ async function postJson(url, payload) {
     return data;
 }
 
-export default function AuthModal({ site }) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function AuthModal({ site, isOpen, mode, onClose }) {
     const [activeTab, setActiveTab] = useState("login");
-
     const loginForm = useForm({
         phone: "",
         password: "",
@@ -181,7 +179,7 @@ export default function AuthModal({ site }) {
 
         const handleKeyDown = (event) => {
             if (event.key === "Escape" && !loading) {
-                setIsOpen(false);
+                onClose?.();
             }
         };
 
@@ -195,8 +193,7 @@ export default function AuthModal({ site }) {
     }, [isOpen, loading]);
 
     const closeModal = () => {
-        if (loading) return;
-        setIsOpen(false);
+        onClose?.();
     };
 
     const changeTab = (tab) => {
@@ -265,7 +262,7 @@ export default function AuthModal({ site }) {
             preserveScroll: true,
 
             onSuccess: () => {
-                setIsOpen(false);
+                onClose?.();
             },
 
             onError: () => {
@@ -413,7 +410,7 @@ export default function AuthModal({ site }) {
             preserveScroll: true,
 
             onSuccess: () => {
-                setIsOpen(false);
+                onClose?.();
             },
 
             onError: (formErrors) => {
@@ -467,12 +464,11 @@ export default function AuthModal({ site }) {
             >
                 <button
                     type="button"
+                    onClick={onClose}
                     className="auth-modal-close"
-                    onClick={closeModal}
-                    disabled={loading}
                     aria-label="بستن"
                 >
-                    ×
+                    <X size={22} />
                 </button>
 
                 <div className="auth-modal-brand">

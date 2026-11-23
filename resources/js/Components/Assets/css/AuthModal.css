@@ -64,7 +64,7 @@
 /* =========================================================
    CLOSE BUTTON
 ========================================================= */
-
+/* TODO:ضربدر مدال ثبت نام وسط نیست */
 .auth-modal-close {
   position: absolute;
   top: 14px;
@@ -84,7 +84,7 @@
   background: var(--color-bg-hover);
   color: var(--color-text-muted);
 
-  font-family: inherit;
+  /* font-family: inherit; */
   font-size: 24px;
   line-height: 1;
 
@@ -139,9 +139,9 @@
   overflow: hidden;
   border-radius: 15px;
 
-  background: color-mix(in srgb,
+  /* background: color-mix(in srgb,
       var(--color-primary) 9%,
-      var(--color-bg-hover));
+      var(--color-bg-hover)); */
 
   color: var(--color-primary);
 }
