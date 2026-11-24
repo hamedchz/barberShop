@@ -157,12 +157,39 @@
   gap: 18px;
 }
 
-.front-login-link,
+.front-login-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  height: 44px;
+  min-width: 84px;
+  padding: 0 13px;
+
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border, #CBD5E1);
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+  text-align: center;
+
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
 .front-account-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
+
   color: var(--color-text);
   font-size: 13px;
   font-weight: 750;
@@ -170,9 +197,18 @@
   transition: color 0.2s ease;
 }
 
-.front-login-link:hover,
 .front-account-link:hover {
   color: var(--color-primary);
+}
+
+.front-login-link:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint, transparent);
+}
+
+.front-login-link svg {
+  flex-shrink: 0;
 }
 
 .navbar-btn.outline {
@@ -186,12 +222,7 @@
   border-color: var(--color-primary-light);
 }
 
-.front-login-link,
-.front-mobile-login {
 
-  cursor: pointer;
-  text-align: center;
-}
 
 .front-header-booking {
   min-height: 45px;

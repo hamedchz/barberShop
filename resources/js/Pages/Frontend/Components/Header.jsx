@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { useAuthModal } from "../../../Components/AuthModalContext";
+import { LogIn } from "lucide-react";
 import {
     Menu,
     X,
@@ -75,7 +76,8 @@ export default function Header({ auth = null }) {
                             onClick={() => openAuthModal("login")}
                             className="front-login-link"
                         >
-                            ورود / ثبت‌نام
+                            <LogIn size={16} strokeWidth={2} />
+                            <span>ورود</span>
                         </button>
                     )}
 

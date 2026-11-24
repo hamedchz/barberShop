@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Head, Link, router } from "@inertiajs/react";
-// import PublicLayout from "../Layouts/PublicLayout";
 import PublicLayout from "../../Frontend/FrontLayout";
 import "../Assets/Public.css";
 import HorizontalCalendar from "../Components/HorizontalCalendar";
