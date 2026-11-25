@@ -35,7 +35,19 @@ enum Permissions: string
   case manageBanks = 'manage-banks';
   case manageServices = 'manage-services';
 
+    // مدیریت صفحات
+  case pagesList =         'pages-list';
+  case pagesLreate =      'pages-create';
+  case pagesEdit =      'pages-edit';
+  case pagesDelete =      'pages-delete';
+  case pagesPublish =      'pages-publish';
+  case pagesPreview =      'pages-preview';
 
+    // مدیریت پیام‌های تماس
+  case pagesMessagesList =      'pages-messages-list';
+  case pagesMessagesView =      'pages-messages-view';
+  case pagesMessagesUpdate =      'pages-messages-update';
+  case pagesMessagesDelete =      'pages-messages-delete';
   public function description(): string
   {
     return match ($this) {
@@ -69,6 +81,19 @@ enum Permissions: string
       self::manageReviews => 'مدیریت نظرات',
       self::manageBanks => 'مدیریت بانک ها',
       self::manageServices => 'مدیریت سرویس ها',
+      // مدیریت صفحات
+      self::pagesList =>         'مدیریت لیست صفحات',
+      self::pagesLreate =>      'مدیریت ساخت صفحات',
+      self::pagesEdit =>     'مدیریت ویرایش صفحات',
+      self::pagesDelete =>    'مدیریت حذف صفحات',
+      self::pagesPublish =>    'مدیریت انتشار صفحات',
+      self::pagesPreview =>    'مدیریت صفحه نظرات',
+
+      // مدیریت پیام‌های تماس
+      self::pagesMessagesList =>  'مدیریت  صفحه لیست پیام ها',
+      self::pagesMessagesView =>     'مشاهده پیام ها',
+      self::pagesMessagesUpdate =>    'ویرایش  پیام ها',
+      self::pagesMessagesDelete =>    'حذف  پیام ها',
     };
   }
 

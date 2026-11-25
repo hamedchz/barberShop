@@ -50,8 +50,8 @@ Route::prefix('services')
     });
 
 // // آرایشگران
-Route::get('/barbers', [BarberController::class, 'index'])->name('barbers.index');
-Route::get('/barbers/{barber}', [BarberController::class, 'show'])->name('barbers.show');
+// Route::get('/barbers', [BarberController::class, 'index'])->name('barbers.index');
+// Route::get('/barbers/{barber}', [BarberController::class, 'show'])->name('barbers.show');
 Route::get('/barbers/{barber}/reviews', [BarberController::class, 'reviews'])->name('barbers.reviews');
 
 // // رزرو (برای همه، اما نیاز به auth برای ثبت نهایی)

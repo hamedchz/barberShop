@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             PermisionsSeeder::class,
             BarberProfileSeeder::class,
             BanksSeeder::class,
+            // PageBuilderPermissionSeeder::class,
         ]);
     }
 }

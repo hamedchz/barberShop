@@ -25,6 +25,10 @@ use App\Http\Controllers\Admin\SmsProviderController;
 use App\Http\Controllers\Admin\WalletDepositController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\PageSectionController;
+use App\Http\Controllers\Admin\PageContactSubmissionController;
+
 // Route::group(['middleware' => ''], function () {
 Route::controller(DashboardController::class)->group(function () {
   Route::get('/dashboard',  'index')->name('dashboard');
@@ -301,3 +305,96 @@ Route::prefix('sms-providers')
 
     Route::patch('/{smsProvider}/primary', 'setPrimary')->name('primary');
   });
+
+/*
+|--------------------------------------------------------------------------
+| Page Builder - مدیریت صفحات سایت
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('pages')->name('pages.')->group(function () {
+
+  // فهرست صفحات
+  Route::get('/', [PageController::class, 'index'])
+    ->name('index')->middleware('permission:pages-list');
+
+  // ایجاد صفحه
+  Route::get('/create', [PageController::class, 'create'])
+    ->name('create')->middleware('permission:pages-create');
+
+  Route::post('/', [PageController::class, 'store'])
+    ->name('store')
+    ->middleware('permission:pages-create');
+
+  // ویرایش صفحه
+  Route::get('/{page}/edit', [PageController::class, 'edit'])
+    ->name('edit')
+    ->middleware('permission:pages-edit');
+
+  Route::put('/{page}', [PageController::class, 'update'])
+    ->name('update')
+    ->middleware('permission:pages-edit');
+
+  // پیش‌نمایش صفحه
+  Route::get('/{page}/preview', [PageController::class, 'preview'])
+    ->name('preview')
+    ->middleware('permission:pages-preview');
+
+  // ذخیره بلوک‌های صفحه
+  Route::put('/{page}/sections', [PageSectionController::class, 'update'])
+    ->name('sections.update')
+    ->middleware('permission:pages-edit');
+
+  // انتشار صفحه
+  Route::post('/{page}/publish', [PageController::class, 'publish'])
+    ->name('publish')
+    ->middleware('permission:pages-publish');
+
+  // لغو انتشار صفحه
+  Route::post('/{page}/unpublish', [PageController::class, 'unpublish'])
+    ->name('unpublish')
+    ->middleware('permission:pages-publish');
+
+  // حذف صفحه
+  Route::delete('/{page}', [PageController::class, 'destroy'])
+    ->name('destroy')
+    ->middleware('permission:pages-delete');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Page Builder - پیام‌های فرم تماس
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('pages/messages')->name('pages.messages.')->group(function () {
+
+  Route::get('/', [
+    PageContactSubmissionController::class,
+    'index'
+  ])
+    ->name('index')
+    ->middleware('permission:pages-messages-list');
+
+  Route::get('/{submission}', [
+    PageContactSubmissionController::class,
+    'show'
+  ])
+    ->name('show')
+    ->middleware('permission:pages-messages-view');
+
+  Route::put('/{submission}', [
+    PageContactSubmissionController::class,
+    'update'
+  ])
+    ->name('update')
+    ->middleware('permission:pages-messages-update');
+
+  Route::delete('/{submission}', [
+    PageContactSubmissionController::class,
+    'destroy'
+  ])
+    ->name('destroy')
+    ->middleware('permission:pages-messages-delete');
+});
