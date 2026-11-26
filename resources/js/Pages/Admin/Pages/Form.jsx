@@ -16,7 +16,6 @@ import {
 
 import Layout from "../Layouts/Layout";
 import "./Assets/css/Form.css";
-import SectionsEditor from "./Components/SectionsEditor";
 
 const toPersianNumber = (value) =>
     String(value ?? "").replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]);
@@ -134,25 +133,29 @@ function ToggleField({ label, description, checked, onChange }) {
     );
 }
 
-export default function PageForm({
-    page = null,
-    mode = "create",
-    sectionTypes = {},
-}) {
+export default function PageForm({ page = null, mode = "create" }) {
     const isEdit = mode === "edit";
 
-    const { data, setData, post, put, processing, errors, recentlySuccessful } =
-        useForm({
-            title: page?.title ?? "",
-            slug: page?.slug ?? "",
-            excerpt: page?.excerpt ?? "",
-            seo_title: page?.seo_title ?? "",
-            seo_description: page?.seo_description ?? "",
-            show_in_header: page?.show_in_header ?? false,
-            show_in_footer: page?.show_in_footer ?? false,
-            header_order: page?.header_order ?? "",
-            footer_order: page?.footer_order ?? "",
-        });
+    const {
+        data,
+        setData,
+        post,
+        put,
+        transform,
+        processing,
+        errors,
+        recentlySuccessful,
+    } = useForm({
+        title: page?.title ?? "",
+        slug: page?.slug ?? "",
+        excerpt: page?.excerpt ?? "",
+        seo_title: page?.seo_title ?? "",
+        seo_description: page?.seo_description ?? "",
+        show_in_header: page?.show_in_header ?? false,
+        show_in_footer: page?.show_in_footer ?? false,
+        header_order: page?.header_order ?? "",
+        footer_order: page?.footer_order ?? "",
+    });
 
     const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
@@ -163,18 +166,23 @@ export default function PageForm({
     //     // می‌توان آن را از سمت سرور تولید کرد.
     // }, [data.title, isEdit]);
 
-    const submit = (event) => {
-        event.preventDefault();
-
+    const submit = (intent = "draft") => {
         if (isEdit) {
             put(route("admin.pages.update", page.id), {
                 preserveScroll: true,
             });
-        } else {
-            post(route("admin.pages.store"), {
-                preserveScroll: true,
-            });
+
+            return;
         }
+
+        transform((formData) => ({
+            ...formData,
+            intent,
+        }));
+
+        post(route("admin.pages.store"), {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -210,7 +218,13 @@ export default function PageForm({
                     </div>
                 </div>
 
-                <form onSubmit={submit} className="page-form">
+                <form
+                    onSubmit={(event) => {
+                        event.preventDefault();
+                        submit("draft");
+                    }}
+                    className="page-form"
+                >
                     <div className="page-form-main">
                         {/* اطلاعات عمومی */}
                         <section className="page-form-card">
@@ -294,14 +308,12 @@ export default function PageForm({
                                             value={data.slug}
                                             onChange={(e) => {
                                                 setSlugManuallyEdited(true);
-
-                                                const value = e.target.value
-                                                    .toLowerCase()
-                                                    .replace(/[^a-z0-9-]/g, "")
-                                                    .replace(/-+/g, "-")
-                                                    .replace(/^-|-$/g, "");
-
-                                                setData("slug", value);
+                                                setData(
+                                                    "slug",
+                                                    generateUtf8Slug(
+                                                        e.target.value,
+                                                    ),
+                                                );
                                             }}
                                             placeholder="about-us"
                                             dir="ltr"
@@ -508,18 +520,55 @@ export default function PageForm({
                         </section>
 
                         <section className="page-form-card page-form-actions-card">
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="page-form-submit"
-                            >
-                                <Save size={17} />
-                                {processing
-                                    ? "در حال ذخیره..."
-                                    : isEdit
-                                      ? "ذخیره تغییرات"
-                                      : "ایجاد صفحه"}
-                            </button>
+                            {isEdit ? (
+                                <>
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="page-form-submit"
+                                    >
+                                        <Save size={17} />
+                                        {processing
+                                            ? "در حال ذخیره..."
+                                            : "ذخیره تغییرات"}
+                                    </button>
+
+                                    <Link
+                                        href={route(
+                                            "admin.pages.builder",
+                                            page.id,
+                                        )}
+                                        className="page-form-cancel"
+                                    >
+                                        <LayoutTemplate size={16} />
+                                        طراحی محتوای صفحه
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        type="button"
+                                        disabled={processing}
+                                        className="page-form-submit"
+                                        onClick={() => submit("builder")}
+                                    >
+                                        <LayoutTemplate size={17} />
+                                        {processing
+                                            ? "در حال ذخیره..."
+                                            : "ذخیره و طراحی صفحه"}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        disabled={processing}
+                                        className="page-form-cancel"
+                                        onClick={() => submit("draft")}
+                                    >
+                                        <Save size={16} />
+                                        ذخیره و بازگشت
+                                    </button>
+                                </>
+                            )}
 
                             <Link
                                 href={route("admin.pages.index")}
@@ -536,13 +585,6 @@ export default function PageForm({
                         </section>
                     </aside>
                 </form>
-                {isEdit && (
-                    <SectionsEditor
-                        page={page}
-                        sections={page?.sections ?? []}
-                        sectionTypes={sectionTypes}
-                    />
-                )}
             </div>
         </Layout>
     );

@@ -340,6 +340,11 @@ Route::prefix('pages')->name('pages.')->group(function () {
     ->name('preview')
     ->middleware('permission:pages-preview');
 
+  // صفحه طراحی محتوای صفحه
+  Route::get('/{page}/builder', [PageController::class, 'builder'])
+    ->name('builder')
+    ->middleware('permission:pages-edit');
+
   // ذخیره بلوک‌های صفحه
   Route::put('/{page}/sections', [PageSectionController::class, 'update'])
     ->name('sections.update')

@@ -5,7 +5,6 @@ namespace App\Services\PageBuilder;
 use App\Models\Page;
 use App\Models\PageSection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Enums\Casts\PageStatus;
 use App\Facades\GenerateUtf8Slug;
@@ -62,41 +61,53 @@ class PageBuilderService
     ?Page $page = null
   ): array {
 
-    if (isset($data['title']) && empty($data['slug'])) {
-      $slug = GenerateUtf8Slug::generateUtf8Slug($data['title']);
-      $num = 1;
-      while (Page::where('slug', $slug)->exists()) {
-        $num++;
-        $slug = $slug . "-$num";
-      }
-      $data['slug'] = $slug;
+    /*
+    |--------------------------------------------------------------------------
+    | Generate slug when empty
+    |--------------------------------------------------------------------------
+    */
+
+    if (empty($data['slug']) && !empty($data['title'])) {
+      $data['slug'] = GenerateUtf8Slug::generateUtf8Slug(
+        $data['title']
+      );
     }
 
-    if (isset($data['slug'])) {
-      $slug = GenerateUtf8Slug::generateUtf8Slug($data['title']);
-      $num = 1;
-      while (Page::where('slug', $slug)->exists()) {
-        $num++;
-        $slug = $slug . "-$num";
-      }
-      $data['slug'] = $slug;
+    /*
+    |--------------------------------------------------------------------------
+    | Validate and normalize slug
+    |--------------------------------------------------------------------------
+    */
 
-      if (empty($data['slug'])) {
+    if (isset($data['slug'])) {
+
+      $slug = GenerateUtf8Slug::generateUtf8Slug(
+        $data['slug']
+      );
+
+      if (empty($slug)) {
         throw ValidationException::withMessages([
           'slug' => 'شناسه URL صفحه معتبر نیست.',
         ]);
       }
 
-      $exists = Page::query()
-        ->where('slug', $data['slug'])
-        ->when($page, fn($query) => $query->whereKeyNot($page->id))
-        ->exists();
+      $baseSlug = $slug;
+      $counter = 2;
 
-      if ($exists) {
-        throw ValidationException::withMessages([
-          'slug' => 'این آدرس قبلاً استفاده شده است.',
-        ]);
+      while (
+        Page::query()
+        ->where('slug', $slug)
+        ->when(
+          $page,
+          fn($query) => $query->where('id', '!=', $page->id)
+        )
+        ->exists()
+      ) {
+        $slug = $baseSlug . '-' . $counter;
+        $counter++;
       }
+
+      $data['slug'] = $slug;
     }
 
     return $data;
@@ -125,6 +136,17 @@ class PageBuilderService
     if (count($sections) > 50) {
       throw ValidationException::withMessages([
         'sections' => 'حداکثر ۵۰ بلوک برای هر صفحه مجاز است.',
+      ]);
+    }
+
+    $sectionIds = collect($sections)
+      ->pluck('id')
+      ->filter()
+      ->map(fn($id) => (int) $id);
+
+    if ($sectionIds->count() !== $sectionIds->unique()->count()) {
+      throw ValidationException::withMessages([
+        'sections' => 'شناسه یکی از بلوک‌ها تکراری است.',
       ]);
     }
 

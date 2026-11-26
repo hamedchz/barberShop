@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Head, Link, router, usePage } from "@inertiajs/react";
+
 import Layout from "../Layouts/Layout";
 
+import "./Assets/css/Index.css";
+import { toPersianNumber } from "../../../utils/persianNumbers";
+import SearchComponent from "../../../Components/Search";
+import Pagination from "../Components/Pagination";
+import ConfirmModal from "../Components/ConfirmModal";
+import Swal from "sweetalert2";
 import {
     Plus,
     Search,
@@ -17,9 +24,8 @@ import {
     ChevronLeft,
     ExternalLink,
     LayoutGrid,
+    GlobeLock,
 } from "lucide-react";
-
-import "./Assets/css/Index.css";
 
 const STATUS_OPTIONS = [
     { value: "", label: "همه وضعیت‌ها" },
@@ -27,8 +33,6 @@ const STATUS_OPTIONS = [
     { value: "draft", label: "پیش‌نویس" },
     { value: "archived", label: "بایگانی شده" },
 ];
-
-const toPersianNumber = (value) => Number(value || 0).toLocaleString("fa-IR");
 
 const getStatus = (status) => {
     const statuses = {
@@ -91,56 +95,73 @@ function StatCard({ title, value, icon: Icon, type = "default" }) {
 
 export default function Index() {
     const { props } = usePage();
-
-    const { pages, stats = {}, filters = {}, can = {} } = props;
-
-    const [search, setSearch] = useState(filters.search || "");
-    const [status, setStatus] = useState(filters.status || "");
+    const { pages, stats, filters, can } = usePage().props;
 
     const pageData = pages?.data || [];
     const paginationLinks = pages?.links || [];
 
-    const applyFilters = (event) => {
-        event.preventDefault();
+    const [searchTerm, setSearchTerm] = useState(filters.search ?? "");
+    const [status, setStatus] = useState(filters.status ?? "");
+    const [isSearching, setIsSearching] = useState(false);
 
-        router.get(
-            route("admin.pages.index"),
-            {
-                search: search || undefined,
-                status: status || undefined,
+    // هماهنگ‌سازی فیلترها با آدرس و پاسخ سرور
+    useEffect(() => {
+        setSearchTerm(filters.search ?? "");
+        setStatus(filters.status ?? "");
+    }, [filters.search, filters.status]);
+
+    // اعمال فیلترها
+    const applyFilters = (overrides = {}) => {
+        const params = {
+            search: searchTerm,
+            status,
+            ...overrides,
+            page: 1,
+        };
+
+        setIsSearching(true);
+
+        router.get(route("admin.pages.index"), params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onFinish: () => {
+                setIsSearching(false);
             },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
+        });
+    };
+
+    // جستجو
+    const handleSearch = (value) => {
+        applyFilters({
+            search: value,
+        });
+    };
+
+    // تغییر وضعیت
+    const handleStatusChange = (value) => {
+        setStatus(value);
+
+        applyFilters({
+            status: value,
+        });
     };
 
     const resetFilters = () => {
-        setSearch("");
+        setSearchTerm("");
         setStatus("");
+        setIsSearching(true);
 
         router.get(
             route("admin.pages.index"),
             {},
             {
-                preserveState: false,
+                preserveState: true,
+                preserveScroll: true,
                 replace: true,
+                onFinish: () => setIsSearching(false),
             },
         );
-    };
-
-    const deletePage = (page) => {
-        const confirmed = window.confirm(
-            `آیا از حذف صفحه «${page.title}» اطمینان دارید؟`,
-        );
-
-        if (!confirmed) return;
-
-        router.delete(route("admin.pages.destroy", page.id), {
-            preserveScroll: true,
-        });
     };
 
     const changePublishStatus = (page) => {
@@ -163,6 +184,159 @@ export default function Index() {
         );
     };
 
+    const [deleteModal, setDeleteModal] = useState({
+        isOpen: false,
+        page: null,
+        isLoading: false,
+    });
+
+    const openDeleteModal = (page) => {
+        setDeleteModal({
+            isOpen: true,
+            page,
+            isLoading: false,
+        });
+    };
+
+    const closeDeleteModal = () => {
+        if (deleteModal.isLoading) return;
+
+        setDeleteModal({
+            isOpen: false,
+            page: null,
+            isLoading: false,
+        });
+    };
+
+    const handleConfirmDelete = () => {
+        if (!deleteModal.page || deleteModal.isLoading) return;
+
+        setDeleteModal((prev) => ({
+            ...prev,
+            isLoading: true,
+        }));
+
+        router.delete(route("admin.pages.destroy", deleteModal.page.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                setDeleteModal({
+                    isOpen: false,
+                    page: null,
+                    isLoading: false,
+                });
+            },
+            onError: () => {
+                setDeleteModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                }));
+            },
+            onFinish: () => {
+                setDeleteModal((prev) => ({
+                    ...prev,
+                    isLoading: false,
+                }));
+            },
+        });
+    };
+
+    const [publishModal, setPublishModal] = useState({
+        isOpen: false,
+        page: null,
+        action: "publish",
+        isLoading: false,
+        error: null,
+    });
+
+    const openPublishModal = (page, action = "publish") => {
+        setPublishModal({
+            isOpen: true,
+            page,
+            action,
+            isLoading: false,
+            error: null,
+        });
+    };
+
+    const closePublishModal = () => {
+        if (publishModal.isLoading) return;
+
+        setPublishModal({
+            isOpen: false,
+            page: null,
+            action: "publish",
+            isLoading: false,
+            error: null,
+        });
+    };
+
+    const handleConfirmPublish = () => {
+        if (!publishModal.page || publishModal.isLoading) return;
+
+        const { page, action } = publishModal;
+
+        setPublishModal((prev) => ({
+            ...prev,
+            isLoading: true,
+        }));
+
+        router.post(
+            route(
+                action === "publish"
+                    ? "admin.pages.publish"
+                    : "admin.pages.unpublish",
+                page.id,
+            ),
+            {},
+            {
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    setPublishModal({
+                        isOpen: false,
+                        page: null,
+                        action: "publish",
+                        isLoading: false,
+                        error: null,
+                    });
+                },
+
+                onError: (errors) => {
+                    const message =
+                        errors?.sections ||
+                        Object.values(errors || {})[0] ||
+                        "خطایی هنگام انجام عملیات رخ داد.";
+
+                    // بستن مدال
+                    setPublishModal({
+                        isOpen: false,
+                        page: null,
+                        action: "publish",
+                        isLoading: false,
+                        error: null,
+                    });
+
+                    // نمایش خطا
+                    Swal.fire({
+                        icon: "error",
+                        title: "خطا",
+                        text: message,
+                        confirmButtonText: "متوجه شدم",
+                        customClass: {
+                            popup: "rtl-alert",
+                        },
+                    });
+                },
+
+                onFinish: () => {
+                    setPublishModal((prev) => ({
+                        ...prev,
+                        isLoading: false,
+                    }));
+                },
+            },
+        );
+    };
     return (
         <Layout>
             <Head title="مدیریت صفحات" />
@@ -243,36 +417,33 @@ export default function Index() {
                     {/* Filters */}
                     <form className="pages-filters" onSubmit={applyFilters}>
                         <div className="pages-search-wrapper">
-                            <Search size={18} />
-
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(event) =>
-                                    setSearch(event.target.value)
-                                }
-                                placeholder="جستجو بر اساس عنوان یا آدرس صفحه..."
+                            <SearchComponent
+                                value={searchTerm}
+                                onChange={setSearchTerm}
+                                onSearch={handleSearch}
+                                placeholder="جستجو در عنوان یا آدرس صفحه..."
+                                delay={500}
+                                isLoading={isSearching}
                             />
                         </div>
 
-                        <select
-                            value={status}
-                            onChange={(event) => setStatus(event.target.value)}
-                            aria-label="فیلتر وضعیت"
-                        >
-                            {STATUS_OPTIONS.map((item) => (
-                                <option key={item.value} value={item.value}>
-                                    {item.label}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="pages-filter-status">
+                            <select
+                                value={status}
+                                onChange={(e) =>
+                                    handleStatusChange(e.target.value)
+                                }
+                                disabled={isSearching}
+                                className="pages-status-select"
+                            >
+                                <option value="">همه وضعیت‌ها</option>
+                                <option value="published">منتشر شده</option>
+                                <option value="draft">پیش‌نویس</option>
+                                <option value="archived">بایگانی شده</option>
+                            </select>
+                        </div>
 
-                        <button type="submit" className="pages-filter-button">
-                            <Search size={16} />
-                            جستجو
-                        </button>
-
-                        {(search || status) && (
+                        {(searchTerm || status) && (
                             <button
                                 type="button"
                                 className="pages-reset-button"
@@ -401,50 +572,55 @@ export default function Index() {
                                                                 />
                                                             </a>
                                                         )}
-
-                                                        {can.publish && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
-                                                                    changePublishStatus(
-                                                                        page,
-                                                                    )
-                                                                }
-                                                                className={`pages-action-btn ${
-                                                                    page.status ===
-                                                                    "published"
-                                                                        ? "unpublish"
-                                                                        : "publish"
-                                                                }`}
-                                                                title={
-                                                                    page.status ===
-                                                                    "published"
-                                                                        ? "خارج کردن از انتشار"
-                                                                        : "انتشار صفحه"
-                                                                }
-                                                            >
-                                                                {page.status ===
-                                                                "published" ? (
-                                                                    <FileEdit
-                                                                        size={
-                                                                            16
-                                                                        }
-                                                                    />
-                                                                ) : (
+                                                        {can.publish &&
+                                                            page.status !==
+                                                                "published" && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="pages-action-btn pages-action-publish"
+                                                                    onClick={() =>
+                                                                        openPublishModal(
+                                                                            page,
+                                                                            "publish",
+                                                                        )
+                                                                    }
+                                                                    title="انتشار صفحه"
+                                                                >
                                                                     <Globe
                                                                         size={
                                                                             16
                                                                         }
                                                                     />
-                                                                )}
-                                                            </button>
-                                                        )}
+                                                                </button>
+                                                            )}
+
+                                                        {can.publish &&
+                                                            page.status ===
+                                                                "published" && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="pages-action-btn pages-action-unpublish"
+                                                                    onClick={() =>
+                                                                        openPublishModal(
+                                                                            page,
+                                                                            "unpublish",
+                                                                        )
+                                                                    }
+                                                                    title="لغو انتشار"
+                                                                >
+                                                                    <GlobeLock
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </button>
+                                                            )}
 
                                                         {can.delete && (
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
-                                                                    deletePage(
+                                                                    openDeleteModal(
                                                                         page,
                                                                     )
                                                                 }
@@ -465,49 +641,7 @@ export default function Index() {
                             </div>
 
                             {/* Pagination */}
-                            {paginationLinks.length > 3 && (
-                                <div className="pages-pagination">
-                                    <span className="pages-pagination-info">
-                                        نمایش {toPersianNumber(pages.from)} تا{" "}
-                                        {toPersianNumber(pages.to)} از{" "}
-                                        {toPersianNumber(pages.total)} مورد
-                                    </span>
-
-                                    <div className="pages-pagination-links">
-                                        {paginationLinks.map((item, index) => {
-                                            const isPrevious = index === 0;
-                                            const isNext =
-                                                index ===
-                                                paginationLinks.length - 1;
-
-                                            return (
-                                                <Link
-                                                    key={index}
-                                                    href={item.url || "#"}
-                                                    preserveScroll
-                                                    className={`pages-pagination-link ${
-                                                        item.active
-                                                            ? "active"
-                                                            : ""
-                                                    } ${!item.url ? "disabled" : ""}`}
-                                                >
-                                                    {isPrevious ? (
-                                                        <ChevronRight
-                                                            size={17}
-                                                        />
-                                                    ) : isNext ? (
-                                                        <ChevronLeft
-                                                            size={17}
-                                                        />
-                                                    ) : (
-                                                        item.label
-                                                    )}
-                                                </Link>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
+                            <Pagination links={pages.links} only={pages} />
                         </>
                     ) : (
                         <div className="pages-empty-state">
@@ -516,18 +650,18 @@ export default function Index() {
                             </div>
 
                             <h3>
-                                {search || status
+                                {searchTerm || status
                                     ? "صفحه‌ای با این مشخصات پیدا نشد"
                                     : "هنوز صفحه‌ای ایجاد نشده است"}
                             </h3>
 
                             <p>
-                                {search || status
+                                {searchTerm || status
                                     ? "فیلترهای جستجو را تغییر دهید یا آن‌ها را پاک کنید."
                                     : "برای شروع، اولین صفحه سایت خود را ایجاد کنید."}
                             </p>
 
-                            {can.create && !search && !status && (
+                            {can.create && !searchTerm && !status && (
                                 <Link
                                     href={route("admin.pages.create")}
                                     className="pages-primary-button"
@@ -537,7 +671,7 @@ export default function Index() {
                                 </Link>
                             )}
 
-                            {(search || status) && (
+                            {(searchTerm || status) && (
                                 <button
                                     type="button"
                                     onClick={resetFilters}
@@ -550,6 +684,48 @@ export default function Index() {
                     )}
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleConfirmDelete}
+                title="حذف صفحه"
+                message={
+                    deleteModal.page
+                        ? `آیا از حذف صفحه «${deleteModal.page.title}» مطمئن هستید؟`
+                        : ""
+                }
+                confirmText="بله، حذف کن"
+                cancelText="انصراف"
+                type="danger"
+                isLoading={deleteModal.isLoading}
+            />
+
+            <ConfirmModal
+                isOpen={publishModal.isOpen}
+                onClose={closePublishModal}
+                onConfirm={handleConfirmPublish}
+                title={
+                    publishModal.action === "publish"
+                        ? "انتشار صفحه"
+                        : "لغو انتشار صفحه"
+                }
+                message={
+                    publishModal.page
+                        ? publishModal.action === "publish"
+                            ? `آیا از انتشار صفحه «${publishModal.page.title}» مطمئن هستید؟`
+                            : `آیا از لغو انتشار صفحه «${publishModal.page.title}» مطمئن هستید؟`
+                        : ""
+                }
+                confirmText={
+                    publishModal.action === "publish"
+                        ? "بله، منتشر کن"
+                        : "بله، لغو انتشار کن"
+                }
+                cancelText="انصراف"
+                type={publishModal.action === "publish" ? "success" : "warning"}
+                isLoading={publishModal.isLoading}
+            />
         </Layout>
     );
 }

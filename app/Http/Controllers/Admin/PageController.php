@@ -26,27 +26,28 @@ class PageController extends Controller
     public function index(Request $request)
     {
 
-        $search = $request->input('search');
+        $search = trim((string) $request->input('search', ''));
         $status = $request->input('status');
 
         $query = Page::query()
             ->with(['creator:id,name', 'updater:id,name'])
             ->withCount('sections');
 
-        if ($search) {
+        if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
-        if ($status && in_array($status, ['draft', 'published', 'archived'], true)) {
+
+        if (in_array($status, [PageStatus::DRAFT->value, PageStatus::PUBLISHED->value, PageStatus::ARCHIVED->value], true)) {
             $query->where('status', $status);
         }
 
         $pages = $query
             ->latest('id')
-            ->paginate(15)
+            ->paginate(33)
             ->withQueryString()
             ->through(fn(Page $page) => [
                 'id' => $page->id,
@@ -94,9 +95,7 @@ class PageController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Pages/Create', [
-            'sectionTypes' => $this->sectionRegistry->all(),
-        ]);
+        return Inertia::render('Admin/Pages/Create');
     }
 
     /**
@@ -104,7 +103,6 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:190'],
             'slug' => [
@@ -122,7 +120,12 @@ class PageController extends Controller
             'show_in_footer' => ['nullable', 'boolean'],
             'header_order' => ['nullable', 'integer', 'min:0'],
             'footer_order' => ['nullable', 'integer', 'min:0'],
+            'intent' => ['required', Rule::in(['builder', 'draft'])],
         ]);
+
+        $intent = $validated['intent'];
+
+        unset($validated['intent']);
 
         $validated['show_in_header'] = $request->boolean('show_in_header');
         $validated['show_in_footer'] = $request->boolean('show_in_footer');
@@ -133,9 +136,21 @@ class PageController extends Controller
 
         $page = $this->pageBuilder->createPage($validated);
 
-        StickyAlert::toast('صفحه با موفقیت ایجاد شد. اکنون می‌توانید بلوک‌های آن را اضافه کنید.', 'success');
+        if ($intent === 'builder') {
+            StickyAlert::toast(
+                'صفحه ایجاد شد. اکنون می‌توانید محتوای آن را طراحی کنید.',
+                'success'
+            );
 
-        return  to_route('admin.pages.index');
+            return to_route('admin.pages.builder', $page);
+        }
+
+        StickyAlert::toast(
+            'صفحه به‌صورت پیش‌نویس ذخیره شد.',
+            'success'
+        );
+
+        return to_route('admin.pages.index');
     }
 
     /**
@@ -167,7 +182,7 @@ class PageController extends Controller
                 'string',
                 'max:190',
                 'regex:/^[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*$/u',
-                Rule::unique('pages', 'slug'),
+                Rule::unique('pages', 'slug')->ignore($page->id),
             ],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'featured_image' => ['nullable', 'string', 'max:2048'],
@@ -177,6 +192,7 @@ class PageController extends Controller
             'show_in_footer' => ['nullable', 'boolean'],
             'header_order' => ['nullable', 'integer', 'min:0'],
             'footer_order' => ['nullable', 'integer', 'min:0'],
+
         ]);
 
         $validated['show_in_header'] = $request->boolean('show_in_header');
@@ -185,7 +201,24 @@ class PageController extends Controller
 
         $this->pageBuilder->updatePage($page, $validated);
 
-        return back()->with('success', 'اطلاعات صفحه با موفقیت بروزرسانی شد.');
+        StickyAlert::toast('اطلاعات صفحه با موفقیت بروزرسانی شد.', 'success');
+        return  to_route('admin.pages.index');
+    }
+
+    public function builder(Page $page)
+    {
+        $page->load([
+            'sections' => function ($query) {
+                $query
+                    ->orderBy('sort_order')
+                    ->orderBy('id');
+            },
+        ]);
+
+        return Inertia::render('Admin/Pages/Builder', [
+            'page' => $page,
+            'sectionTypes' => $this->sectionRegistry->all(),
+        ]);
     }
 
     /**
@@ -213,7 +246,9 @@ class PageController extends Controller
     {
         $this->pageBuilder->publish($page);
 
-        return back()->with('success', 'صفحه با موفقیت منتشر شد.');
+        StickyAlert::toast('صفحه با موفقیت منتشر شد.', 'success');
+
+        return to_route('admin.pages.index');
     }
 
     /**
@@ -222,8 +257,8 @@ class PageController extends Controller
     public function unpublish(Page $page)
     {
         $this->pageBuilder->unpublish($page);
-
-        return back()->with('success', 'انتشار صفحه لغو شد.');
+        StickyAlert::toast('انتشار صفحه لغو شد.', 'success');
+        return  to_route('admin.pages.index');
     }
 
     /**
@@ -234,9 +269,7 @@ class PageController extends Controller
         DB::transaction(function () use ($page) {
             $page->delete();
         });
-
-        return redirect()
-            ->route('admin.pages.index')
-            ->with('success', 'صفحه با موفقیت حذف شد.');
+        StickyAlert::toast('صفحه با موفقیت حذف شد.', 'success');
+        return  to_route('admin.pages.index');
     }
 }
