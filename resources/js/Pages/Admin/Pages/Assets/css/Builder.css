@@ -154,9 +154,11 @@
 
 .builder-workspace {
   display: grid;
-  grid-template-columns: minmax(230px, 270px) minmax(300px, 1fr) minmax(280px, 340px);
-  gap: 16px;
+  grid-template-columns: 280px minmax(0, 1fr) 320px;
+  grid-template-areas: "library editor list";
+  gap: 18px;
   align-items: start;
+  direction: ltr;
 }
 
 .builder-panel {
@@ -566,4 +568,360 @@
       "library"
       "list";
   }
+}
+
+.builder-image-upload {
+  width: 100%;
+}
+
+.builder-upload-dropzone {
+  min-height: 145px;
+  padding: 22px;
+  border: 1.5px dashed var(--color-border);
+  border-radius: 14px;
+  background: var(--color-bg-hover);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: 0.2s ease;
+  text-align: center;
+}
+
+.builder-upload-dropzone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.builder-upload-dropzone strong {
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.builder-upload-dropzone span,
+.builder-upload-dropzone small {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.builder-upload-spinner {
+  animation: builder-spin 1s linear infinite;
+}
+
+@keyframes builder-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.builder-upload-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.builder-upload-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+}
+
+.builder-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.builder-upload-preview button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: var(--color-danger);
+  color: #fff;
+  cursor: pointer;
+}
+
+.builder-upload-change {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.builder-upload-error {
+  margin-top: 9px;
+  color: var(--color-danger);
+  font-size: 12px;
+}
+
+.builder-image-upload {
+  width: 100%;
+}
+
+.builder-upload-dropzone {
+  min-height: 145px;
+  padding: 22px;
+  border: 1.5px dashed var(--color-border);
+  border-radius: 14px;
+  background: var(--color-bg-hover);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: 0.2s ease;
+  text-align: center;
+}
+
+.builder-upload-dropzone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.builder-upload-dropzone strong {
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.builder-upload-dropzone span,
+.builder-upload-dropzone small {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.builder-upload-spinner {
+  animation: builder-spin 1s linear infinite;
+}
+
+@keyframes builder-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.builder-upload-previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.builder-upload-preview {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+}
+
+.builder-upload-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.builder-upload-preview button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: var(--color-danger);
+  color: #fff;
+  cursor: pointer;
+}
+
+.builder-upload-change {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.builder-upload-error {
+  margin-top: 9px;
+  color: var(--color-danger);
+  font-size: 12px;
+}
+
+/* آپلود تصویر */
+.builder-image-current {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg-card);
+}
+
+.builder-image-current>img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  background: var(--color-bg-hover);
+}
+
+.builder-image-current-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+}
+
+.builder-image-current-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.builder-image-current-actions button.is-danger {
+  color: var(--color-danger);
+}
+
+.builder-image-current-actions button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.builder-upload-dropzone:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.builder-upload-progress {
+  height: 4px;
+  overflow: hidden;
+  margin-top: 10px;
+  border-radius: 10px;
+  background: var(--color-border);
+}
+
+.builder-upload-progress span {
+  display: block;
+  width: 35%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+  animation: builder-progress 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes builder-progress {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(180%);
+  }
+}
+
+/* تبلت */
+@media (max-width: 1100px) {
+  .builder-workspace {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    grid-template-areas:
+      "editor editor"
+      "library list";
+  }
+}
+
+/* موبایل */
+@media (max-width: 700px) {
+  .builder-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "editor"
+      "library"
+      "list";
+  }
+
+  .builder-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .builder-header-actions {
+    width: 100%;
+  }
+
+  .builder-header-actions>* {
+    flex: 1;
+  }
+}
+
+/* پنل مرکزی ویرایش بلوک */
+.builder-editor-panel {
+  grid-area: editor;
+  direction: rtl;
+  min-width: 0;
+
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 22px;
+
+  box-shadow: 0 4px 16px var(--color-shadow);
+  min-height: 400px;
+}
+
+/* پس‌زمینه بخش داخلی ویرایشگر */
+.builder-editor-panel .block-editor {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+}
+
+/* حالت انتخاب‌نشدن بلوک */
+.builder-editor-empty {
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+
+  color: var(--color-text-muted);
+  background: var(--color-bg-hover);
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  text-align: center;
+  padding: 24px;
 }

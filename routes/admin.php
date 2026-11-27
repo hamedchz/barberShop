@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PageSectionController;
 use App\Http\Controllers\Admin\PageContactSubmissionController;
+use App\Http\Controllers\Admin\PageImageController;
 
 // Route::group(['middleware' => ''], function () {
 Route::controller(DashboardController::class)->group(function () {
@@ -326,6 +327,11 @@ Route::prefix('pages')->name('pages.')->group(function () {
     ->name('store')
     ->middleware('permission:pages-create');
 
+  Route::post(
+    '/pages/{page}/images',
+    [PageImageController::class, 'store']
+  )->name('images.upload');
+
   // ویرایش صفحه
   Route::get('/{page}/edit', [PageController::class, 'edit'])
     ->name('edit')
@@ -364,6 +370,11 @@ Route::prefix('pages')->name('pages.')->group(function () {
   Route::delete('/{page}', [PageController::class, 'destroy'])
     ->name('destroy')
     ->middleware('permission:pages-delete');
+
+  Route::delete('/{page}/sections/{section}', [
+    PageSectionController::class,
+    'destroy'
+  ])->name('sections.destroy');
 });
 
 

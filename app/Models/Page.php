@@ -28,6 +28,7 @@ class Page extends Model
         'published_at',
         'created_by',
         'updated_by',
+        'is_system'
     ];
 
     protected function casts(): array
@@ -37,10 +38,15 @@ class Page extends Model
             'published_at' => 'datetime',
             'show_in_header' => 'boolean',
             'show_in_footer' => 'boolean',
+            'is_system' => 'boolean',
             'header_order' => 'integer',
             'footer_order' => 'integer',
         ];
     }
+
+    protected $attributes = [
+        'is_system' => false,
+    ];
 
     /*
     |--------------------------------------------------------------------------

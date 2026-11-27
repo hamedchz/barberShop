@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\PageSection;
 use App\Services\PageBuilder\PageBuilderService;
+use App\Supports\StickyAlert;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -71,10 +73,22 @@ class PageSectionController extends Controller
         } catch (ValidationException $exception) {
             throw $exception;
         }
+        StickyAlert::toast('بلوک‌های صفحه با موفقیت ذخیره شدند.', 'success');
+        return back();
+    }
 
-        return back()->with(
-            'success',
-            'بلوک‌های صفحه با موفقیت ذخیره شدند.'
+    public function destroy(Page $page, PageSection $section)
+    {
+        abort_unless(auth()->user()->can('pages-edit'), 403);
+
+        // اطمینان از تعلق بلوک به صفحه موردنظر
+        abort_unless(
+            $section->page_id === $page->id,
+            404
         );
+
+        $section->delete();
+        StickyAlert::toast('بلوک با موفقیت حذف شد.', 'success');
+        return back();
     }
 }

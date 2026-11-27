@@ -36,6 +36,9 @@ import {
     CreditCardCheck,
     StickyNote,
     CopyPlus,
+    LayoutGrid,
+    FileText,
+    CirclePlus,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -286,6 +289,64 @@ export const menuConfig = [
         scopes: ["notifications"],
         permissions: ["manage-notifications"],
         panel: "admin",
+    },
+    // ============ مدیریت صفحات سایت ============
+
+    {
+        id: "Pages",
+        label: "صفحات سایت",
+        icon: LayoutGrid,
+        childrenPermissions: [
+            "pages-list",
+            "pages-create",
+            "pages-edit",
+            "pages-preview",
+            "pages-publish",
+        ],
+        panel: "admin",
+        children: [
+            {
+                id: "pages list",
+                label: "فهرست صفحات",
+                icon: FileText,
+                href: "/admin/pages",
+                scopes: ["pages-list"],
+                permissions: ["pages-list"],
+                panel: "admin",
+            },
+
+            // ============ آرایشگران ============
+            {
+                id: "New Page Create",
+                label: "ایجاد صفحه جدید",
+                icon: CirclePlus,
+                href: "/admin/pages/create",
+                scopes: ["pages-create"],
+                permissions: ["pages-create"],
+                panel: "admin",
+            },
+
+            // ============ کاربران ============
+            {
+                id: "customers",
+                label: "مشتریان",
+                icon: Users,
+                href: "/admin/customers",
+                scopes: ["users", "user-list"],
+                permissions: ["manage-users"],
+                panel: "admin",
+            },
+            // ============ نقشها ============
+            {
+                id: "roles",
+                label: "نقش ها",
+                icon: UserShield,
+                href: "/admin/roles",
+                scopes: ["roles", "role-list"],
+                permissions: ["manage-roles"],
+                panel: "admin",
+            },
+        ],
     },
     // ============ تنظیمات ============
 

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Inertia\Response;
 
 class PageController extends Controller
 {
@@ -221,6 +222,8 @@ class PageController extends Controller
         ]);
     }
 
+
+
     /**
      * پیش‌نمایش صفحه
      */
@@ -266,6 +269,12 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
+
+        if ($page->is_system) {
+            StickyAlert::alert('امکان حذف صفحات ثابت وجود ندارد.', 'error');
+            return redirect()->back();
+        }
+
         DB::transaction(function () use ($page) {
             $page->delete();
         });

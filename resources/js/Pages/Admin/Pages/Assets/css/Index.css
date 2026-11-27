@@ -514,6 +514,14 @@
       var(--color-bg-card));
 }
 
+.pages-action-btn.design:hover {
+  color: var(--color-success);
+  border-color: var(--color-success);
+  background: color-mix(in srgb,
+      var(--color-success) 9%,
+      var(--color-bg-card));
+}
+
 .pages-action-btn.unpublish:hover {
   color: var(--color-warning);
   border-color: var(--color-warning);

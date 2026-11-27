@@ -25,6 +25,7 @@ import {
     ExternalLink,
     LayoutGrid,
     GlobeLock,
+    SplinePointer,
 } from "lucide-react";
 
 const STATUS_OPTIONS = [
@@ -542,18 +543,36 @@ export default function Index() {
                                                 <td>
                                                     <div className="pages-actions">
                                                         {can.edit && (
-                                                            <Link
-                                                                href={route(
-                                                                    "admin.pages.edit",
-                                                                    page.id,
-                                                                )}
-                                                                className="pages-action-btn edit"
-                                                                title="ویرایش صفحه"
-                                                            >
-                                                                <Pencil
-                                                                    size={16}
-                                                                />
-                                                            </Link>
+                                                            <>
+                                                                <Link
+                                                                    href={route(
+                                                                        "admin.pages.edit",
+                                                                        page.id,
+                                                                    )}
+                                                                    className="pages-action-btn edit"
+                                                                    title="ویرایش صفحه"
+                                                                >
+                                                                    <Pencil
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </Link>
+                                                                <Link
+                                                                    href={route(
+                                                                        "admin.pages.builder",
+                                                                        page.id,
+                                                                    )}
+                                                                    className="pages-action-btn design"
+                                                                    title="طراحی صفحه"
+                                                                >
+                                                                    <SplinePointer
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                </Link>
+                                                            </>
                                                         )}
 
                                                         {can.preview && (
@@ -577,7 +596,7 @@ export default function Index() {
                                                                 "published" && (
                                                                 <button
                                                                     type="button"
-                                                                    className="pages-action-btn pages-action-publish"
+                                                                    className="pages-action-btn publish"
                                                                     onClick={() =>
                                                                         openPublishModal(
                                                                             page,

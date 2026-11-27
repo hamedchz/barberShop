@@ -2,10 +2,9 @@ import BlockFields from "./BlockFields";
 import { Settings2 } from "lucide-react";
 
 export default function BlockEditor({
+    pageId,
     section,
-    index,
-    sectionTypes,
-    errors = {},
+    sectionTypes = {},
     onContentChange,
     onSettingsChange,
 }) {
@@ -24,23 +23,13 @@ export default function BlockEditor({
     if (!definition) return null;
 
     return (
-        <div className="builder-panel builder-editor">
-            <div className="builder-panel-heading">
-                <h3>{definition.label}</h3>
-                <p>{definition.description}</p>
-            </div>
-
-            <div className="builder-editor-body">
-                <BlockFields
-                    type={section.type}
-                    content={section.content ?? {}}
-                    settings={section.settings ?? {}}
-                    index={index}
-                    errors={errors}
-                    onContentChange={onContentChange}
-                    onSettingsChange={onSettingsChange}
-                />
-            </div>
-        </div>
+        <BlockFields
+            pageId={pageId}
+            type={section.type}
+            content={section.content}
+            settings={section.settings}
+            onContentChange={onContentChange}
+            onSettingsChange={onSettingsChange}
+        />
     );
 }

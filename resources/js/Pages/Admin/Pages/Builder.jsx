@@ -114,19 +114,15 @@ export default function Builder({ page, sectionTypes = {} }) {
     };
 
     const deleteSection = (index) => {
-        const section = sections[index];
-        const name = sectionTypes[section.type]?.label ?? "این بلوک";
-
-        if (!window.confirm(`آیا از حذف «${name}» اطمینان دارید؟`)) {
-            return;
-        }
-
         setSections((previous) => previous.filter((_, i) => i !== index));
 
         setSelectedIndex((previous) => {
             if (previous === null) return null;
+
             if (previous === index) return null;
+
             if (previous > index) return previous - 1;
+
             return previous;
         });
     };
@@ -240,7 +236,7 @@ export default function Builder({ page, sectionTypes = {} }) {
                     </div>
                 </div>
 
-                {message && (
+                {/* {message && (
                     <div
                         className={`builder-message ${
                             Object.keys(errors).length
@@ -256,7 +252,7 @@ export default function Builder({ page, sectionTypes = {} }) {
 
                         <span>{message}</span>
                     </div>
-                )}
+                )} */}
 
                 <div className="builder-workspace">
                     {/* کتابخانه بلوک‌ها */}
@@ -270,18 +266,22 @@ export default function Builder({ page, sectionTypes = {} }) {
                     {/* فرم ویرایش در مرکز */}
                     <main className="builder-editor-panel">
                         <BlockEditor
+                            pageId={page.id}
                             section={selectedSection}
-                            index={selectedIndex}
                             sectionTypes={sectionTypes}
-                            errors={errors}
-                            onContentChange={updateContent}
-                            onSettingsChange={updateSettings}
+                            onContentChange={(field, value) =>
+                                updateContent(selectedIndex, field, value)
+                            }
+                            onSettingsChange={(field, value) =>
+                                updateSettings(selectedIndex, field, value)
+                            }
                         />
                     </main>
 
                     {/* فهرست بلوک‌های صفحه */}
                     <aside className="builder-list-panel">
                         <BlockList
+                            pageId={page.id}
                             sections={sections}
                             sectionTypes={sectionTypes}
                             selectedIndex={selectedIndex}

@@ -181,3 +181,346 @@
     flex: 1;
   }
 }
+
+
+/* =========================================
+   Builder - Repeatable Fields
+========================================= */
+
+.builder-repeatable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.builder-repeatable-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.builder-repeatable-item:hover {
+  border-color: color-mix(in srgb,
+      var(--color-primary) 40%,
+      var(--color-border));
+}
+
+.builder-repeatable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.builder-repeatable-header strong {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.builder-repeatable-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 11px;
+  border: 1px solid color-mix(in srgb,
+      var(--color-danger) 25%,
+      transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb,
+      var(--color-danger) 8%,
+      transparent);
+  color: var(--color-danger);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.builder-repeatable-header button:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+/* =========================================
+   Add Item Button
+========================================= */
+
+.builder-add-item-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px dashed var(--color-primary);
+  border-radius: 10px;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.builder-add-item-button:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-style: solid;
+}
+
+.builder-add-item-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Checkbox Fields
+========================================= */
+
+.builder-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 42px;
+  margin-top: 10px;
+  padding: 10px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 12px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.builder-checkbox-field:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-hover);
+}
+
+.builder-checkbox-field input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* =========================================
+   Gallery Upload
+========================================= */
+
+.builder-gallery-upload-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.builder-gallery-upload-item,
+.builder-gallery-add {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+}
+
+.builder-gallery-upload-item .builder-image-upload,
+.builder-gallery-add .builder-image-upload {
+  width: 100%;
+}
+
+.builder-gallery-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  border-color: color-mix(in srgb,
+      var(--color-primary) 45%,
+      var(--color-border));
+  background: var(--color-primary-tint);
+}
+
+/* =========================================
+   Field Layout Improvements
+========================================= */
+
+.block-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.block-field {
+  min-width: 0;
+}
+
+.block-field-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.block-field-input,
+.block-field-textarea,
+.block-field-select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.block-field-input,
+.block-field-select {
+  min-height: 43px;
+  padding: 9px 12px;
+}
+
+.block-field-textarea {
+  min-height: 100px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.9;
+}
+
+.block-field-input:focus,
+.block-field-textarea:focus,
+.block-field-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb,
+      var(--color-primary) 12%,
+      transparent);
+}
+
+.block-field-input::placeholder,
+.block-field-textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: .7;
+}
+
+.block-field-help {
+  display: block;
+  margin-top: 7px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+.block-field-error {
+  display: block;
+  margin-top: 7px;
+  color: var(--color-danger);
+  font-size: 11px;
+}
+
+/* =========================================
+   Section Settings
+========================================= */
+
+.block-fields-settings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 14px;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.block-fields-divider {
+  width: 100%;
+  height: 1px;
+  margin: 22px 0;
+  background: var(--color-border);
+}
+
+/* =========================================
+   Alignment Buttons
+========================================= */
+
+.block-alignment-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.block-alignment-options button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.block-alignment-options button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.block-alignment-options button.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* =========================================
+   Responsive
+========================================= */
+
+@media (max-width: 700px) {
+  .block-fields-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .builder-repeatable-item {
+    padding: 13px;
+  }
+
+  .builder-gallery-upload-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .block-alignment-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .block-alignment-options button {
+    padding: 8px 5px;
+  }
+}
