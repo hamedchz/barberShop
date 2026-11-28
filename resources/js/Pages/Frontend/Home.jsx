@@ -78,24 +78,6 @@ export default function Home({
                     <a href="/register">شروع همکاری</a>
                 </div>
             </section>
-
-            <footer className="front-footer">
-                <div className="front-container">
-                    <div className="front-footer-brand">
-                        <strong>
-                            barber<span>App</span>
-                        </strong>
-
-                        <p>راهی ساده‌تر برای انتخاب آرایشگر و رزرو آنلاین.</p>
-                    </div>
-
-                    <div className="front-footer-bottom">
-                        <span>© {new Date().getFullYear()} barberApp</span>
-
-                        <span>تمامی حقوق محفوظ است.</span>
-                    </div>
-                </div>
-            </footer>
         </FrontLayout>
     );
 }

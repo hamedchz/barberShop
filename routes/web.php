@@ -5,11 +5,12 @@ use App\Http\Controllers\Customer\BarberController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\PageContactSubmissionController;
 use App\Http\Controllers\Public\ServiceController;
 use App\Http\Controllers\User\BankController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
+use App\Http\Controllers\Public\PageController;
 
 // Route::prefix('/')
 //     ->name('home')->controller(HomeController::class)->group(function () {
@@ -60,6 +61,17 @@ Route::get('/barbers/{barber}/book', [BarberController::class, 'booking'])
 Route::post('/barbers/{barber}/book', [BarberController::class, 'storeBooking'])
     ->middleware('auth')
     ->name('barbers.booking.store');
+
+// نمایش صفحات ساخته‌شده با Page Builder
+Route::get('/pages/{slug}', [PageController::class, 'show'])
+    ->name('pages.show');
+
+Route::post('/pages/{slug}/contact', [
+    PageContactSubmissionController::class,
+    'store',
+])
+    ->middleware('throttle:5,1')
+    ->name('pages.contact.store');
 
 // // صفحات ثابت
 // Route::get('/about', [PageController::class, 'about'])->name('about');

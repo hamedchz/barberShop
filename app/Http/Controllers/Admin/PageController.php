@@ -55,6 +55,8 @@ class PageController extends Controller
                 'title' => $page->title,
                 'slug' => $page->slug,
                 'excerpt' => $page->excerpt,
+                'is_system' => $page->is_system,
+
                 'status' => $page->status instanceof PageStatus
                     ? $page->status->value
                     : $page->status,
@@ -206,7 +208,7 @@ class PageController extends Controller
         $validated['updated_by'] = $request->user()->id;
 
         // تاریخ انتشار را حفظ کن؛ اگر برای اولین بار منتشر می‌شود، تاریخ فعلی ثبت شود.
-        if ($validated['status'] === 'published') {
+        if ($validated['status'] === PageStatus::PUBLISHED->value) {
             $validated['published_at'] = $page->published_at ?? now();
         }
 

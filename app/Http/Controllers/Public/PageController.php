@@ -3,80 +3,49 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Service;
-use App\Models\User;
-use Illuminate\Support\Str;
+use App\Models\Page;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PageController extends Controller
 {
-    public function about()
+    /**
+     * نمایش عمومی یک صفحه منتشرشده
+     */
+    public function show(string $slug): Response
     {
-        return Inertia::render('Front/About');
-    }
+        $page = Page::query()
+            ->published()
+            ->where('slug', $slug)
+            ->with('activeSections')
+            ->firstOrFail();
 
-    public function faq()
-    {
-        return Inertia::render('Front/FAQ');
-    }
+        return Inertia::render('Frontend/Pages/Show', [
+            'page' => [
+                'id' => $page->id,
+                'title' => $page->title,
+                'slug' => $page->slug,
+                'excerpt' => $page->excerpt,
+                'featured_image' => $page->featured_image,
 
-    public function terms()
-    {
-        return Inertia::render('Front/Terms');
-    }
+                'seo' => [
+                    'title' => $page->seo_title ?: $page->title,
+                    'description' => $page->seo_description ?: $page->excerpt,
+                ],
 
-    public function privacy()
-    {
-        return Inertia::render('Front/Privacy');
-    }
+                'published_at' => $page->published_at,
 
-    // public function cities()
-    // {
-    //     // لیست شهرها
-    //     return Inertia::render('Front/Cities');
-    // }
-
-    public function services()
-    {
-        // لیست همه خدمات
-        $services = Service::where('is_active', true)
-            ->withCount('bookings')
-            ->orderByDesc('bookings_count')
-            ->get()
-            ->map(fn($s) => [
-                'id' => $s->id,
-                'name' => $s->name,
-                'description' => $s->description,
-                'min_price' => (float) ($s->min_price ?? 0),
-                'duration' => $s->duration,
-                'barbers_count' => User::whereHas('roles', fn($q) => $q->where('name', 'barber'))
-                    ->whereHas('services', fn($q) => $q->where('services.id', $s->id))
-                    ->count(),
-            ]);
-
-        return Inertia::render('Front/Services', [
-            'services' => $services,
-        ]);
-    }
-
-    public function cities()
-    {
-        // لیست شهرها با تعداد آرایشگر
-        $cities = User::whereHas('roles', fn($q) => $q->where('name', 'barber'))
-            ->where('status', 'active')
-            ->whereNotNull('city')
-            ->selectRaw('city, COUNT(*) as barbers_count')
-            ->groupBy('city')
-            ->orderByDesc('barbers_count')
-            ->get()
-            ->map(fn($c) => [
-                'name' => $c->city,
-                'barbers_count' => $c->barbers_count,
-                'slug' => Str::slug($c->city),
-            ]);
-
-        return Inertia::render('Front/Cities', [
-            'cities' => $cities,
+                'sections' => $page->activeSections
+                    ->map(fn($section) => [
+                        'id' => $section->id,
+                        'type' => $section->type,
+                        'content' => $section->content ?? [],
+                        'settings' => $section->settings ?? [],
+                        'sort_order' => $section->sort_order,
+                    ])
+                    ->values()
+                    ->all(),
+            ],
         ]);
     }
 }

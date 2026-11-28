@@ -1,0 +1,65 @@
+.preview-admin-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  min-height: 58px;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--color-bg-card, #fff);
+  border-bottom: 1px solid var(--preview-border);
+  box-shadow: 0 3px 15px rgba(15, 23, 42, .05);
+}
+
+.preview-toolbar-info,
+.preview-toolbar-actions,
+.preview-toolbar-button {
+  display: flex;
+  align-items: center;
+}
+
+.preview-toolbar-info {
+  gap: 10px;
+  color: var(--preview-primary);
+  font-weight: 700;
+}
+
+.preview-toolbar-info small {
+  margin-right: 8px;
+  color: var(--preview-muted);
+  font-weight: 400;
+}
+
+.preview-toolbar-button {
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 9px;
+  background: var(--preview-primary);
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: .2s ease;
+}
+
+.preview-toolbar-button:hover {
+  background: var(--preview-primary-hover);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .preview-admin-toolbar {
+    padding: 10px 13px;
+  }
+
+  .preview-toolbar-info small {
+    display: none;
+  }
+
+  .preview-toolbar-button {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+}

@@ -11,22 +11,46 @@ return new class extends Migration
         Schema::create('page_contact_submissions', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
-            $table->string('phone', 20);
-            $table->string('email')->nullable();
+            // صفحه‌ای که فرم تماس در آن قرار داشته است
+            $table->foreignId('page_id')
+                ->nullable()
+                ->constrained('pages')
+                ->nullOnDelete();
 
-            $table->string('subject')->nullable();
+            // کاربر ارسال‌کننده؛ برای مهمان null خواهد بود
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            // اطلاعات فرستنده
+            $table->string('name', 120);
+            $table->string('phone', 30);
+            $table->string('email', 150)->nullable();
+            $table->string('subject', 180)->nullable();
             $table->text('message');
 
-            // وضعیت رسیدگی
-            $table->string('status', 20)->default('new')->index();
+            // وضعیت پیگیری
+            $table->string('status', 20)->default('new');
+            // یادداشت داخلی مدیر
+            $table->text('admin_note')->nullable();
 
-            // اطلاعات تکمیلی
-            $table->string('ip_address', 45)->nullable();
+            // مدیر مسئول پیگیری پیام
+            $table->foreignId('handled_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            // زمان‌های پیگیری
+            $table->timestamp('read_at')->nullable();
+            $table->timestamp('answered_at')->nullable();
+            $table->timestamp('closed_at')->nullable();
 
             $table->timestamps();
 
             $table->index(['status', 'created_at']);
+            $table->index(['page_id', 'created_at']);
+            $table->index('phone');
         });
     }
 

@@ -1,42 +1,227 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { useAuthModal } from "../../../Components/AuthModalContext";
-import { LogIn } from "lucide-react";
 import {
+    LogIn,
     Menu,
     X,
-    Scissors,
     UserRound,
     CalendarDays,
     ChevronLeft,
+    ChevronDown,
 } from "lucide-react";
 
 export default function Header({ auth = null }) {
     const { props } = usePage();
-    const { site } = props;
+    const site = props.site;
+    const headerPages = props.headerPages || [];
+
+    const { openAuthModal } = useAuthModal();
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const [moreOpen, setMoreOpen] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(100);
+
+    const navRef = useRef(null);
+    const measureRef = useRef(null);
+    const moreMeasureRef = useRef(null);
+    const moreMenuRef = useRef(null);
 
     const user = auth?.user ?? null;
 
-    const navItems = [
-        { label: "خانه", href: "#home" },
-        { label: "خدمات", href: "#services" },
-        { label: "آرایشگران", href: "#barbers" },
-        { label: "مزایای ما", href: "#features" },
-        { label: "نظرات مشتریان", href: "#reviews" },
-    ];
+    const homeUrl = route("user.home");
 
-    const closeMenu = () => setMenuOpen(false);
+    const navItems = useMemo(
+        () => [
+            {
+                key: "home",
+                label: "خانه",
+                href: route("user.home"),
+                type: "anchor",
+            },
+            // {
+            //     key: "services",
+            //     label: "خدمات",
+            //     href: `${homeUrl}#services`,
+            //     type: "anchor",
+            // },
+            {
+                key: "barbers",
+                label: "آرایشگران",
+                href: route("user.services.index"),
+                type: "anchor",
+            },
+            // {
+            //     key: "features",
+            //     label: "مزایای ما",
+            //     href: `${homeUrl}#features`,
+            //     type: "anchor",
+            // },
+            // {
+            //     key: "reviews",
+            //     label: "نظرات مشتریان",
+            //     href: `${homeUrl}#reviews`,
+            //     type: "anchor",
+            // },
+            ...headerPages.map((page) => ({
+                key: `page-${page.id}`,
+                label: page.title,
+                href: route("user.pages.show", page.slug),
+                type: "page",
+            })),
+        ],
+        [headerPages, homeUrl],
+    );
 
-    const { openAuthModal } = useAuthModal();
+    const closeMenu = () => {
+        setMenuOpen(false);
+        setMoreOpen(false);
+    };
+
+    /*
+     * محاسبه تعداد لینک‌هایی که واقعاً در فضای هدر جا می‌شوند.
+     * عرض لینک‌ها از یک ردیف مخفی اندازه‌گیری می‌شود تا متن فارسی
+     * و طول عنوان صفحات داینامیک نیز در محاسبه لحاظ شود.
+     */
+    useEffect(() => {
+        const navElement = navRef.current;
+        const measureElement = measureRef.current;
+
+        if (!navElement || !measureElement) {
+            return;
+        }
+
+        const calculateVisibleItems = () => {
+            const availableWidth = navElement.clientWidth;
+
+            if (!availableWidth) {
+                return;
+            }
+
+            const measuredItems = Array.from(
+                measureElement.querySelectorAll("[data-measure-item]"),
+            );
+
+            const itemWidths = measuredItems.map(
+                (item) => item.getBoundingClientRect().width,
+            );
+
+            const moreWidth =
+                moreMeasureRef.current?.getBoundingClientRect().width || 80;
+
+            const styles = window.getComputedStyle(navElement);
+            const gap = parseFloat(styles.columnGap || styles.gap) || 0;
+
+            const totalWidth =
+                itemWidths.reduce((sum, width) => sum + width, 0) +
+                Math.max(0, itemWidths.length - 1) * gap;
+
+            // اگر تمام لینک‌ها جا شوند، نیازی به منوی بیشتر نیست.
+            if (totalWidth <= availableWidth) {
+                setVisibleCount(navItems.length);
+                return;
+            }
+
+            // در صورت وجود لینک اضافه، فضای دکمه «بیشتر» را رزرو می‌کنیم.
+            const itemsAvailableWidth = Math.max(
+                0,
+                availableWidth - moreWidth - gap,
+            );
+
+            let usedWidth = 0;
+            let count = 0;
+
+            for (const width of itemWidths) {
+                const nextWidth = count === 0 ? width : width + gap;
+
+                if (usedWidth + nextWidth > itemsAvailableWidth) {
+                    break;
+                }
+
+                usedWidth += nextWidth;
+                count++;
+            }
+
+            setVisibleCount(count);
+        };
+
+        calculateVisibleItems();
+
+        const resizeObserver = new ResizeObserver(calculateVisibleItems);
+        resizeObserver.observe(navElement);
+
+        window.addEventListener("resize", calculateVisibleItems);
+
+        // بعد از بارگذاری فونت فارسی نیز اندازه‌ها دوباره محاسبه شوند.
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(calculateVisibleItems);
+        }
+
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener("resize", calculateVisibleItems);
+        };
+    }, [navItems]);
+
+    // بستن منوی «بیشتر» با کلیک خارج از آن
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (
+                moreMenuRef.current &&
+                !moreMenuRef.current.contains(event.target)
+            ) {
+                setMoreOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsideClick);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutsideClick);
+        };
+    }, []);
+
+    const visibleItems = navItems.slice(0, visibleCount);
+    const overflowItems = navItems.slice(visibleCount);
+
+    const renderNavItem = (item, mobile = false) => {
+        const className = mobile ? "front-mobile-nav-link" : "front-nav-link";
+
+        if (item.type === "page") {
+            return (
+                <Link
+                    key={item.key}
+                    href={item.href}
+                    className={className}
+                    onClick={closeMenu}
+                >
+                    {item.label}
+                </Link>
+            );
+        }
+
+        return (
+            <a
+                key={item.key}
+                href={item.href}
+                className={className}
+                onClick={closeMenu}
+            >
+                {item.label}
+            </a>
+        );
+    };
+
     return (
         <header className="front-header">
             <div className="front-header-container">
                 {/* Logo */}
-                <a href="#home" className="front-logo" onClick={closeMenu}>
+                <a
+                    href={`${homeUrl}#home`}
+                    className="front-logo"
+                    onClick={closeMenu}
+                >
                     <span className="front-logo-icon">
-                        {/* <Scissors size={23} strokeWidth={2.2} /> */}
                         {site?.logo ? (
                             <img src={site.logo} alt={site?.name || "لوگو"} />
                         ) : (
@@ -45,23 +230,66 @@ export default function Header({ auth = null }) {
                     </span>
 
                     <span className="front-logo-text">
-                        <strong>{site.name}</strong>
-                        {/* <span>{site.name}</span> */}
+                        <strong>{site?.name || "Barber"}</strong>
                     </span>
                 </a>
 
                 {/* Desktop navigation */}
-                <nav className="front-nav">
+                <nav ref={navRef} className="front-nav" aria-label="منوی اصلی">
+                    {visibleItems.map((item) => renderNavItem(item))}
+
+                    {overflowItems.length > 0 && (
+                        <div className="front-nav-more" ref={moreMenuRef}>
+                            <button
+                                type="button"
+                                className={`front-nav-more-button ${
+                                    moreOpen ? "is-open" : ""
+                                }`}
+                                onClick={() => setMoreOpen((prev) => !prev)}
+                                aria-expanded={moreOpen}
+                                aria-haspopup="true"
+                            >
+                                بیشتر
+                                <ChevronDown size={15} />
+                            </button>
+
+                            {moreOpen && (
+                                <div className="front-nav-more-dropdown">
+                                    {overflowItems.map((item) => (
+                                        <div key={item.key}>
+                                            {renderNavItem(item)}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </nav>
+
+                {/* Hidden measurement row */}
+                <div
+                    ref={measureRef}
+                    className="front-nav-measure"
+                    aria-hidden="true"
+                >
                     {navItems.map((item) => (
-                        <a
-                            key={item.href}
-                            href={item.href}
+                        <span
+                            key={item.key}
+                            data-measure-item
                             className="front-nav-link"
                         >
                             {item.label}
-                        </a>
+                        </span>
                     ))}
-                </nav>
+
+                    <span
+                        ref={moreMeasureRef}
+                        className="front-nav-more-button"
+                    >
+                        بیشتر
+                        <ChevronDown size={15} />
+                    </span>
+                </div>
 
                 {/* Header actions */}
                 <div className="front-header-actions">
@@ -81,7 +309,10 @@ export default function Header({ auth = null }) {
                         </button>
                     )}
 
-                    <a href="#barbers" className="front-header-booking">
+                    <a
+                        href={route("user.services.index")}
+                        className="front-header-booking"
+                    >
                         <CalendarDays size={17} />
                         <span>رزرو نوبت</span>
                         <ChevronLeft size={16} />
@@ -92,27 +323,22 @@ export default function Header({ auth = null }) {
                 <button
                     type="button"
                     className="front-mobile-menu-btn"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={() => setMenuOpen((prev) => !prev)}
                     aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
                     aria-expanded={menuOpen}
+                    aria-controls="front-mobile-menu"
                 >
                     {menuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
             </div>
 
             {/* Mobile navigation */}
-            <div className={`front-mobile-menu ${menuOpen ? "is-open" : ""}`}>
-                <nav>
-                    {navItems.map((item) => (
-                        <a
-                            key={item.href}
-                            href={item.href}
-                            onClick={closeMenu}
-                            className="front-mobile-nav-link"
-                        >
-                            {item.label}
-                        </a>
-                    ))}
+            <div
+                id="front-mobile-menu"
+                className={`front-mobile-menu ${menuOpen ? "is-open" : ""}`}
+            >
+                <nav aria-label="منوی موبایل">
+                    {navItems.map((item) => renderNavItem(item, true))}
                 </nav>
 
                 <div className="front-mobile-menu-actions">
@@ -128,7 +354,10 @@ export default function Header({ auth = null }) {
                     ) : (
                         <button
                             type="button"
-                            onClick={() => openAuthModal("login")}
+                            onClick={() => {
+                                closeMenu();
+                                openAuthModal("login");
+                            }}
                             className="front-mobile-login"
                         >
                             ورود / ثبت‌نام
@@ -136,7 +365,7 @@ export default function Header({ auth = null }) {
                     )}
 
                     <a
-                        href="#barbers"
+                        href={`${homeUrl}#barbers`}
                         onClick={closeMenu}
                         className="front-mobile-booking"
                     >

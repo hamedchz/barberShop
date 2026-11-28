@@ -1,9 +1,8 @@
 import React from "react";
 import { usePage } from "@inertiajs/react";
-
 import Header from "./Components/Header";
+import Footer from "./Components/Footer";
 import { AuthModalProvider } from "../../Components/AuthModalContext";
-
 import "./Assets/css/home.css";
 
 export default function FrontLayout({ children }) {
@@ -15,6 +14,8 @@ export default function FrontLayout({ children }) {
                 <Header auth={props.auth} />
 
                 <main className="front-main">{children}</main>
+
+                <Footer />
             </div>
         </AuthModalProvider>
     );

@@ -58,8 +58,19 @@ class HandleInertiaRequests extends Middleware
                     : null,
             ],
 
-            'adminSidebarPages' => fn() => Page::query()
-                ->where('is_system', true)
+            'headerPages' => fn() => Page::query()
+                ->inHeader()
+                ->get([
+                    'id',
+                    'title',
+                    'slug',
+                    'header_order',
+                ]),
+
+            'footerPages' => fn() => Page::query()
+                ->published()
+                ->where('show_in_footer', true)
+                ->orderBy('footer_order')
                 ->get(['id', 'title', 'slug']),
 
             'theme' => $this->getTheme(),
