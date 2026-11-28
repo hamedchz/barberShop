@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Page;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\BarberBookingSetupService;
@@ -56,6 +57,10 @@ class HandleInertiaRequests extends Middleware
                     ]
                     : null,
             ],
+
+            'adminSidebarPages' => fn() => Page::query()
+                ->where('is_system', true)
+                ->get(['id', 'title', 'slug']),
 
             'theme' => $this->getTheme(),
             'site'  => $this->getSiteInfo(),

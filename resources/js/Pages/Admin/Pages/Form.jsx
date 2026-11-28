@@ -135,7 +135,6 @@ function ToggleField({ label, description, checked, onChange }) {
 
 export default function PageForm({ page = null, mode = "create" }) {
     const isEdit = mode === "edit";
-
     const {
         data,
         setData,
@@ -151,6 +150,7 @@ export default function PageForm({ page = null, mode = "create" }) {
         excerpt: page?.excerpt ?? "",
         seo_title: page?.seo_title ?? "",
         seo_description: page?.seo_description ?? "",
+        status: page?.status ?? "draft",
         show_in_header: page?.show_in_header ?? false,
         show_in_footer: page?.show_in_footer ?? false,
         header_order: page?.header_order ?? "",
@@ -491,31 +491,107 @@ export default function PageForm({ page = null, mode = "create" }) {
 
                                 <div>
                                     <h2>وضعیت صفحه</h2>
-                                    <p>وضعیت فعلی انتشار</p>
+                                    <p>وضعیت انتشار صفحه را مدیریت کنید.</p>
                                 </div>
                             </div>
 
                             <div className="page-form-card-body">
-                                <div className="page-form-status-info">
-                                    <span className="page-form-status-dot" />
-                                    <span>
-                                        {page?.status === "published"
-                                            ? "منتشر شده"
-                                            : page?.status === "archived"
-                                              ? "بایگانی شده"
-                                              : "پیش‌نویس"}
-                                    </span>
-                                </div>
+                                {isEdit ? (
+                                    <>
+                                        <div className="page-form-field">
+                                            <label
+                                                htmlFor="status"
+                                                className="page-form-label"
+                                            >
+                                                وضعیت انتشار
+                                            </label>
 
-                                <div className="page-form-info">
-                                    <Info size={16} />
-                                    <p>
-                                        انتشار و لغو انتشار صفحه از بخش مدیریت
-                                        صفحات انجام می‌شود. برای انتشار، ابتدا
-                                        باید حداقل یک بلوک فعال به صفحه اضافه
-                                        شود.
-                                    </p>
-                                </div>
+                                            <select
+                                                id="status"
+                                                value={data.status}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "status",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                className={`page-form-input ${
+                                                    errors.status
+                                                        ? "is-invalid"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <option value="draft">
+                                                    پیش‌نویس
+                                                </option>
+                                                <option value="published">
+                                                    منتشرشده
+                                                </option>
+                                                <option value="archived">
+                                                    آرشیوشده
+                                                </option>
+                                            </select>
+
+                                            <FieldError
+                                                message={errors.status}
+                                            />
+                                        </div>
+
+                                        {data.status === "archived" && (
+                                            <div className="page-form-info">
+                                                <Info size={16} />
+                                                <p>
+                                                    صفحه آرشیو شده و در سایت
+                                                    برای بازدیدکنندگان نمایش
+                                                    داده نمی‌شود. اطلاعات و
+                                                    بلوک‌های صفحه حفظ خواهند شد
+                                                    و هر زمان بخواهید می‌توانید
+                                                    دوباره آن را منتشر کنید.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {data.status === "draft" && (
+                                            <div className="page-form-info">
+                                                <Info size={16} />
+                                                <p>
+                                                    این صفحه پیش‌نویس است و تا
+                                                    زمان انتشار، برای
+                                                    بازدیدکنندگان قابل مشاهده
+                                                    نخواهد بود.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {data.status === "published" && (
+                                            <div className="page-form-info">
+                                                <Info size={16} />
+                                                <p>
+                                                    این صفحه پس از ذخیره، در
+                                                    سایت منتشر خواهد شد. برای
+                                                    نمایش صحیح محتوا، حداقل یک
+                                                    بلوک فعال باید داشته باشد.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="page-form-status-info">
+                                            <span className="page-form-status-dot" />
+                                            <span>پیش‌نویس</span>
+                                        </div>
+
+                                        <div className="page-form-info">
+                                            <Info size={16} />
+                                            <p>
+                                                صفحه جدید ابتدا به‌صورت پیش‌نویس
+                                                ایجاد می‌شود. پس از طراحی محتوا
+                                                می‌توانید آن را منتشر کنید.
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </section>
 

@@ -39,6 +39,9 @@ import {
     LayoutGrid,
     FileText,
     CirclePlus,
+    PhoneCall,
+    Handshake,
+    ShieldCheck,
 } from "lucide-react";
 
 export const menuConfig = [
@@ -315,7 +318,6 @@ export const menuConfig = [
                 panel: "admin",
             },
 
-            // ============ آرایشگران ============
             {
                 id: "New Page Create",
                 label: "ایجاد صفحه جدید",
@@ -323,27 +325,6 @@ export const menuConfig = [
                 href: "/admin/pages/create",
                 scopes: ["pages-create"],
                 permissions: ["pages-create"],
-                panel: "admin",
-            },
-
-            // ============ کاربران ============
-            {
-                id: "customers",
-                label: "مشتریان",
-                icon: Users,
-                href: "/admin/customers",
-                scopes: ["users", "user-list"],
-                permissions: ["manage-users"],
-                panel: "admin",
-            },
-            // ============ نقشها ============
-            {
-                id: "roles",
-                label: "نقش ها",
-                icon: UserShield,
-                href: "/admin/roles",
-                scopes: ["roles", "role-list"],
-                permissions: ["manage-roles"],
                 panel: "admin",
             },
         ],

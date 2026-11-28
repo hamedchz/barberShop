@@ -189,23 +189,33 @@ class PageController extends Controller
             'featured_image' => ['nullable', 'string', 'max:2048'],
             'seo_title' => ['nullable', 'string', 'max:190'],
             'seo_description' => ['nullable', 'string', 'max:500'],
+
+            'status' => [
+                'required',
+                Rule::enum(PageStatus::class),
+            ],
+
             'show_in_header' => ['nullable', 'boolean'],
             'show_in_footer' => ['nullable', 'boolean'],
             'header_order' => ['nullable', 'integer', 'min:0'],
             'footer_order' => ['nullable', 'integer', 'min:0'],
-
         ]);
 
         $validated['show_in_header'] = $request->boolean('show_in_header');
         $validated['show_in_footer'] = $request->boolean('show_in_footer');
         $validated['updated_by'] = $request->user()->id;
 
+        // تاریخ انتشار را حفظ کن؛ اگر برای اولین بار منتشر می‌شود، تاریخ فعلی ثبت شود.
+        if ($validated['status'] === 'published') {
+            $validated['published_at'] = $page->published_at ?? now();
+        }
+
         $this->pageBuilder->updatePage($page, $validated);
 
         StickyAlert::toast('اطلاعات صفحه با موفقیت بروزرسانی شد.', 'success');
-        return  to_route('admin.pages.index');
-    }
 
+        return to_route('admin.pages.index');
+    }
     public function builder(Page $page)
     {
         $page->load([
@@ -271,7 +281,13 @@ class PageController extends Controller
     {
 
         if ($page->is_system) {
-            StickyAlert::alert('امکان حذف صفحات ثابت وجود ندارد.', 'error');
+            StickyAlert::alert('این صفحه، یک صفحه سیستمی است
+
+حذف صفحات سیستمی امکان‌پذیر نیست؛ زیرا این صفحات بخشی از ساختار اصلی سایت هستند.
+
+اگر قصد دارید این صفحه در سایت نمایش داده نشود، می‌توانید از روش‌های زیر استفاده کنید:
+- عدم انتشار: وضعیت صفحه را به پیش‌نویس یا آرشیو تغییر دهید.
+- حذف از منو: نمایش صفحه در سربرگ یا فوتر را غیرفعال کنید.', 'error');
             return redirect()->back();
         }
 
